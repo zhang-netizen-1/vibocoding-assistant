@@ -243,7 +243,7 @@ def render_card(section, entry):
     </article>'''
 
 
-def render_guide_page(slug, nav_html, site_css_version, guide_css_version, visual_css_version, js_version):
+def render_guide_page(slug, nav_html, site_css_version, guide_css_version, visual_css_version, theme_css_version, js_version):
     guide = GUIDES[slug]
     count = len(all_items(guide))
     groups = '\n'.join(
@@ -263,10 +263,11 @@ def render_guide_page(slug, nav_html, site_css_version, guide_css_version, visua
                    '</div></aside>') if slug == 'visual' else ''
     return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="{escape(guide["name"])}速查：{escape(guide["intro"])}可体验示例并复制可执行提示词。">
-<meta name="theme-color" content="#f7f7f3"><title>{escape(guide["name"])}速查 · vibocoding助手</title>
-<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../assets/site.css?v={site_css_version}"><link rel="stylesheet" href="../assets/guides.css?v={guide_css_version}">{visual_css}
+<meta name="theme-color" content="#f7f7fd"><title>{escape(guide["name"])}速查 · vibocoding助手</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../assets/site.css?v={site_css_version}"><link rel="stylesheet" href="../assets/guides.css?v={guide_css_version}">{visual_css}<link rel="stylesheet" href="../assets/theme.css?v={theme_css_version}">
 <script defer src="../assets/guides.js?v={js_version}"></script></head><body class="site-guide" data-guide="{slug}">{nav_html}
 <main id="guide-main" class="guide-page"><header class="guide-hero"><div><p>{guide["number"]} / {guide["english"]}</p><h1>{escape(guide["name"])}<span>速查</span></h1><div class="guide-hero-lead">{escape(guide["intro"])}</div></div><div class="guide-hero-count"><strong>{count:02d}</strong><span>个可体验条目<br>选择状态 · 复制提示词</span></div></header>
 <div class="guide-toolbar"><label for="guide-search">搜索{escape(guide["short"])}条目</label><div><input id="guide-search" type="search" placeholder="输入名称或英文术语…" autocomplete="off"><kbd>/</kbd></div><span id="guide-count" role="status" aria-live="polite">{count} / {count} 个条目</span></div>
+<p id="guide-copy-status" class="site-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
 {visual_note}<div id="guide-sections">{groups}</div><div id="guide-empty" class="guide-empty" hidden><b>没有匹配的条目</b><p>换个名称试试，或清除搜索词。</p><button type="button" id="guide-clear">清除搜索</button></div>
 <p class="guide-footnote">这些是帮助辨认设计做法的本地演示。提示词可直接交给 Coding Agent；Agent 会先检查当前项目，再实施并验证。</p></main><footer class="site-home-footer"><div><strong>vibocoding助手</strong><span>让界面的表达更准确。</span></div><a href="../">回到首页 ↑</a></footer></body></html>'''

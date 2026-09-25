@@ -32,21 +32,14 @@ PAGES = (
 
 
 def site_navigation(section: str) -> str:
-    links = (("首页", "../", "home"), ("UI 元素", "../ui/", "ui"), ("动效", "../motion/", "motion"))
+    links = (("首页", "../", "home"), ("UI 元素", "../ui/", "ui"), ("动效", "../motion/", "motion")) + tuple(
+        (guide["name"], f"../{slug}/", slug) for slug, guide in GUIDES.items()
+    ) + (("UI 与交互 Skills", "../skills/", "skills"),)
     items = "".join(
         f'<a href="{href}"{(" aria-current=\"page\"" if key == section else "")}>{label}</a>'
         for label, href, key in links
     )
-    more = "".join(
-        f'<a href="../{slug}/"{current}>{guide["name"]}</a>'
-        for slug, guide in GUIDES.items()
-        for current in [(' aria-current="page"' if slug == section else '')]
-    )
-    skill_current = ' aria-current="page"' if section == "skills" else ""
-    more += f'<a href="../skills/"{skill_current}>UI 与交互 Skills</a>'
-    more = ('<details class="site-more"><summary>更多分类</summary><div class="site-more-menu">'
-            '<a class="site-more-mobile" href="../ui/">UI 元素</a>'
-            '<a class="site-more-mobile" href="../motion/">动效</a>' + more + '</div></details>')
+    more = f'<details class="site-more"><summary>分类目录</summary><div class="site-more-menu">{items}</div></details>'
     skip_target = "skills-main" if section == "skills" else "guide-main" if section in GUIDES else "site-content"
     return (
         f'<a class="site-skip" href="#{skip_target}">跳到主要内容</a>'
@@ -54,7 +47,7 @@ def site_navigation(section: str) -> str:
         '<a class="site-brand" href="../" aria-label="vibocoding助手首页">'
         '<span class="site-brand-icon" aria-hidden="true"><i></i><i></i><i></i></span>'
         '<span>vibocoding助手<small>INTERFACE FIELD GUIDE</small></span></a>'
-        f'<div class="site-nav-links">{items}{more}</div></div></nav>'
+        f'<div class="site-nav-links"><span class="site-nav-section">浏览目录</span>{items}{more}</div></div></nav>'
     )
 
 
@@ -66,18 +59,19 @@ def wrap_reference(source: str, section: str, description: str, card_class: str,
 
     head = (
         f'<meta name="description" content="{description}">\n'
-        '<meta name="theme-color" content="#f7f7f3">\n'
+        '<meta name="theme-color" content="#f7f7fd">\n'
         '<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">\n'
         f'<link rel="stylesheet" href="../assets/site.css?v={asset_version("site.css")}">\n'
+        f'<link rel="stylesheet" href="../assets/theme.css?v={asset_version("theme.css")}">\n'
     )
     page = source.replace("</head>", head + "</head>", 1)
     page_title = "UI 元素速查" if section == "ui" else "动效速查"
     page, title_count = re.subn(r"<title>[^<]*</title>", f"<title>{page_title} · vibocoding助手</title>", page, count=1)
     if title_count != 1:
         raise ValueError(f"{section}: expected one page title")
-    page = page.replace("<body>", f'<body class="site-reference" data-section="{section}">' + site_navigation(section), 1)
+    page = page.replace("<body>", f'<body class="site-reference" data-section="{section}">' + site_navigation(section) + '<div class="site-reference-workspace">', 1)
     page = page.replace('<main class="wrap">', '<main class="wrap" id="site-content">', 1)
-    page = page.replace("</body>", f'<script defer src="../assets/site.js?v={asset_version("site.js")}"></script>\n</body>', 1)
+    page = page.replace("</body>", f'</div>\n<script defer src="../assets/site.js?v={asset_version("site.js")}"></script>\n</body>', 1)
     return page
 
 
@@ -94,12 +88,12 @@ def build() -> None:
     subprocess.run([sys.executable, str(ROOT / "动效速查-src" / "build_motion_glossary.py")], check=True, cwd=ROOT)
     prepare_output()
     home = (SITE_SOURCE / "index.html").read_text(encoding="utf-8")
-    for name in ("site.css", "site.js"):
+    for name in ("site.css", "theme.css", "site.js"):
         home = home.replace(f'./assets/{name}"', f'./assets/{name}?v={asset_version(name)}"')
     (OUTPUT / "index.html").write_text(home, encoding="utf-8")
     assets = OUTPUT / "assets"
     assets.mkdir()
-    for name in ("site.css", "site.js", "guides.css", "guides.js", "visual-styles.css", "skills.css", "skills.js", "favicon.svg"):
+    for name in ("site.css", "theme.css", "site.js", "guides.css", "guides.js", "visual-styles.css", "skills.css", "skills.js", "favicon.svg"):
         shutil.copy2(SITE_SOURCE / name, assets / name)
     for section, path, label, description, card_class, expected_cards in PAGES:
         destination = OUTPUT / section
@@ -113,16 +107,16 @@ def build() -> None:
     for slug, guide in GUIDES.items():
         destination = OUTPUT / slug
         destination.mkdir()
-        html = GUIDE_MODULE.render_guide_page(slug, site_navigation(slug), asset_version("site.css"), asset_version("guides.css"), asset_version("visual-styles.css"), asset_version("guides.js"))
+        html = GUIDE_MODULE.render_guide_page(slug, site_navigation(slug), asset_version("site.css"), asset_version("guides.css"), asset_version("visual-styles.css"), asset_version("theme.css"), asset_version("guides.js"))
         (destination / "index.html").write_text(html, encoding="utf-8")
         print(f"Built {guide['name']}: {destination / 'index.html'}")
     skill_destination = OUTPUT / "skills"
     skill_destination.mkdir()
-    skill_html = SKILL_MODULE.render_page(site_navigation("skills"), asset_version("site.css"), asset_version("skills.css"), asset_version("skills.js"))
+    skill_html = SKILL_MODULE.render_page(site_navigation("skills"), asset_version("site.css"), asset_version("skills.css"), asset_version("theme.css"), asset_version("skills.js"))
     (skill_destination / "index.html").write_text(skill_html, encoding="utf-8")
     print(f"Built UI 与交互 Skills: {skill_destination / 'index.html'}")
     files = sorted(str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*") if path.is_file())
-    expected = sorted((MARKER, "index.html", "ui/index.html", "motion/index.html", "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html", "assets/site.css", "assets/site.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg", "skills/index.html", *(f"{slug}/index.html" for slug in GUIDES)))
+    expected = sorted((MARKER, "index.html", "ui/index.html", "motion/index.html", "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html", "assets/site.css", "assets/theme.css", "assets/site.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg", "skills/index.html", *(f"{slug}/index.html" for slug in GUIDES)))
     if files != expected:
         raise RuntimeError(f"Unexpected build files: {files}")
     print("Built site: 9 pages, 152 entries, curated static output")

@@ -85,7 +85,7 @@ def render_card(entry, number):
     </article>'''
 
 
-def render_page(nav_html, site_css_version, skills_css_version, js_version):
+def render_page(nav_html, site_css_version, skills_css_version, theme_css_version, js_version):
     sections = '\n'.join(
         f'<section class="skill-section"><div class="skill-section-title"><div><span>SECTION / {index:02d}</span><h2>{escape(group)}</h2></div><small>{len(entries)} 个 Skill</small></div><div class="skill-grid">' +
         '\n'.join(render_card(entry, number) for number, entry in enumerate(entries, sum(len(items) for _, items in GROUPS[:index-1]) + 1)) +
@@ -94,12 +94,13 @@ def render_page(nav_html, site_css_version, skills_css_version, js_version):
     )
     return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="精选 GitHub 上的 UI 与交互 Agent Skills，查看用途、来源，并复制可直接交给 Codex 的安装提示词。">
-<meta name="theme-color" content="#f7f7f3"><title>UI 与交互 Skills · vibocoding助手</title>
-<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../assets/site.css?v={site_css_version}"><link rel="stylesheet" href="../assets/skills.css?v={skills_css_version}">
+<meta name="theme-color" content="#f7f7fd"><title>UI 与交互 Skills · vibocoding助手</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../assets/site.css?v={site_css_version}"><link rel="stylesheet" href="../assets/skills.css?v={skills_css_version}"><link rel="stylesheet" href="../assets/theme.css?v={theme_css_version}">
 <script defer src="../assets/skills.js?v={js_version}"></script></head><body class="site-skills">{nav_html}
 <main id="skills-main" class="skills-page"><header class="skills-hero"><div><p>08 / AGENT TOOLKIT</p><h1>UI 与交互<br><span>Skills</span></h1><div class="skills-hero-lead">从视觉设计到交互验证，挑选真正能放进 Coding Agent 工作流的 Skill。</div></div><div class="skills-hero-count"><strong>{len(all_skills()):02d}</strong><span>个已核对的 GitHub Skill<br>查看用途 · 复制安装提示词</span></div></header>
 <aside class="skills-note"><strong>安装前先辨别</strong><p>这里收录的是 Agent Skill，不是 UI 组件库。点击来源可查看原始 SKILL.md；复制提示词后，将其粘贴到已打开的 Codex 会话即可请求安装。安装范围为 Codex 全局目录，不会自动改动当前网站。</p></aside>
 <div class="skills-toolbar"><label for="skill-search">搜索 Skill</label><input id="skill-search" type="search" placeholder="按名称、场景或来源搜索…" autocomplete="off"><span id="skill-count" role="status" aria-live="polite">{len(all_skills())} / {len(all_skills())} 个 Skill</span></div>
+<p id="skill-copy-status" class="site-announcement" role="status" aria-live="polite" aria-atomic="true"></p>
 <div id="skill-sections">{sections}</div><div id="skill-empty" class="skill-empty" hidden><strong>没有匹配的 Skill</strong><p>换个关键词，或清空搜索内容。</p><button type="button" id="skill-clear">清空搜索</button></div>
 <p class="skills-footnote">来源核对日期：{VERIFIED_DATE}。GitHub 内容和安装方式可能更新，实际安装时应重新核对仓库文件。</p></main>
 <footer class="site-home-footer"><div><strong>vibocoding助手</strong><span>让界面的表达更准确。</span></div><a href="../">回到首页 ↑</a></footer></body></html>'''

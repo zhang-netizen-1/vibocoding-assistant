@@ -4,6 +4,7 @@
   const search = document.querySelector('#guide-search');
   const count = document.querySelector('#guide-count');
   const empty = document.querySelector('#guide-empty');
+  const copyStatus = document.querySelector('#guide-copy-status');
   const cards = [...document.querySelectorAll('.guide-card')];
 
   function filterCards() {
@@ -141,9 +142,11 @@
     navigator.clipboard.writeText(value).then(() => {
       const original = button.textContent;
       button.textContent = '已复制';
+      copyStatus.textContent = `已复制「${button.closest('.guide-card').querySelector('h3').textContent}」的${promptButton ? '提示词' : '链接'}。`;
       window.setTimeout(() => { button.textContent = original; }, 1800);
     }).catch(() => {
       button.textContent = '复制失败';
+      copyStatus.textContent = '复制失败。请手动选择内容并复制。';
     });
   });
 })();

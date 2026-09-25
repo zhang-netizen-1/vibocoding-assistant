@@ -52,7 +52,7 @@ class SiteBuildTest(unittest.TestCase):
             ".generated-site", "index.html", "ui/index.html", "motion/index.html",
             "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html",
             "layout/index.html", "visual/index.html", "interaction/index.html", "pages/index.html", "data/index.html", "skills/index.html",
-            "assets/site.css", "assets/site.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg",
+            "assets/site.css", "assets/theme.css", "assets/site.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg",
         })
 
     def test_site_routes_and_all_cards(self):
@@ -107,17 +107,23 @@ class SiteBuildTest(unittest.TestCase):
             self.assertRegex(page, r'href="../assets/site\.css\?v=[0-9a-f]{8}"')
             self.assertIn('class="site-nav"', page)
             self.assertIn('class="site-skip"', page)
+            self.assertIn('class="site-reference-workspace"', page)
         for section in ("layout", "visual", "interaction", "pages", "data"):
             page = (DIST / section / "index.html").read_text(encoding="utf-8")
             self.assertRegex(page, r'src="../assets/guides\.js\?v=[0-9a-f]{8}"')
             self.assertRegex(page, r'href="../assets/guides\.css\?v=[0-9a-f]{8}"')
             self.assertIn('class="site-skip"', page)
+            self.assertIn('id="guide-copy-status" class="site-announcement" role="status"', page)
             if section == "visual":
                 self.assertRegex(page, r'href="../assets/visual-styles\.css\?v=[0-9a-f]{8}"')
         skills_page = (DIST / "skills" / "index.html").read_text(encoding="utf-8")
         self.assertRegex(skills_page, r'src="../assets/skills\.js\?v=[0-9a-f]{8}"')
         self.assertRegex(skills_page, r'href="../assets/skills\.css\?v=[0-9a-f]{8}"')
         self.assertIn('aria-current="page">UI 与交互 Skills', skills_page)
+        self.assertIn('id="skill-copy-status" class="site-announcement" role="status"', skills_page)
+        for page_path in (DIST / "index.html", *(DIST / section / "index.html" for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills"))):
+            page = page_path.read_text(encoding="utf-8")
+            self.assertRegex(page, r'assets/theme\.css\?v=[0-9a-f]{8}')
 
     def test_guide_prompts_are_actionable_and_unique(self):
         prompts = {}
