@@ -531,7 +531,7 @@
         <span class="cat">输入</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：聚焦有高亮</span>
-        <input class="i" type="text" placeholder="请输入你的名字…">
+        <input class="i" type="text" aria-label="姓名" placeholder="请输入你的名字…">
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>让用户填一句/短文本</li><li>带占位提示文字</li></ul>
@@ -548,7 +548,7 @@
         <span class="cat">输入</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：多行输入，可拖高</span>
-        <textarea class="i" placeholder="写点备注…"></textarea>
+        <textarea class="i" aria-label="备注" placeholder="写点备注…"></textarea>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>让用户填多行长文本</li><li>可以拖动右下角变高</li></ul>
@@ -565,7 +565,7 @@
         <span class="cat">输入</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：点开选择</span>
-        <select class="i">
+        <select class="i" aria-label="城市">
           <option>请选择城市…</option><option>北京</option><option>上海</option><option>深圳</option>
         </select>
       </div>
@@ -625,7 +625,7 @@
         <span class="cat">输入</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：点一下开/关</span>
-        <label class="switch"><input type="checkbox" checked onclick="toast(this.checked?'已开启':'已关闭')"><span class="slider"></span></label>
+        <label class="switch"><input type="checkbox" aria-label="演示开关" checked onclick="toast(this.checked?'已开启':'已关闭')"><span class="slider"></span></label>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>像灯的开关，开/关两态</li><li>带动画过渡</li></ul>
@@ -643,7 +643,7 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：拖动调节</span>
         <div style="display:flex;align-items:center;gap:10px;">
-          <input type="range" min="0" max="100" value="40" style="width:190px" oninput="this.nextElementSibling.textContent=this.value+'%'">
+          <input type="range" min="0" max="100" value="40" aria-label="数值调节示例" style="width:190px" oninput="this.nextElementSibling.textContent=this.value+'%'">
           <span style="font-size:13px;color:#6b7280">40%</span>
         </div>
       </div>
@@ -663,9 +663,9 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点 + / − 或直接输入</span>
         <div class="stepper">
-          <button onclick="stepNum(-1)">−</button>
-          <input id="num" type="number" value="2" min="0">
-          <button onclick="stepNum(1)">+</button>
+          <button aria-label="减少数量" onclick="stepNum(-1)">−</button>
+          <input id="num" type="number" value="2" min="0" aria-label="数量">
+          <button aria-label="增加数量" onclick="stepNum(1)">+</button>
         </div>
       </div>
       <div class="cmp-foot">
@@ -701,7 +701,7 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点开色盘</span>
         <div style="display:flex;align-items:center;gap:10px;">
-          <input type="color" value="#059669" style="width:44px;height:36px;border:none;background:none;cursor:pointer">
+          <input type="color" value="#059669" aria-label="选择颜色" style="width:44px;height:36px;border:none;background:none;cursor:pointer">
           <span id="hexc" style="font-family:ui-monospace,monospace;font-size:13px;color:#374151">#059669</span>
         </div>
       </div>
@@ -1184,9 +1184,9 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点 × 删除</span>
         <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-          <span class="chip">vue <button onclick="this.parentNode.remove()">×</button></span>
-          <span class="chip">html <button onclick="this.parentNode.remove()">×</button></span>
-          <span class="chip">css <button onclick="this.parentNode.remove()">×</button></span>
+          <span class="chip">vue <button aria-label="移除 vue 标签" onclick="this.parentNode.remove()">×</button></span>
+          <span class="chip">html <button aria-label="移除 html 标签" onclick="this.parentNode.remove()">×</button></span>
+          <span class="chip">css <button aria-label="移除 css 标签" onclick="this.parentNode.remove()">×</button></span>
         </div>
       </div>
       <div class="cmp-foot">
@@ -1446,7 +1446,7 @@
 
 <div class="drawer-mask" id="dmask" onclick="closeDrawer()"></div>
 <div class="drawer-panel" id="dpanel">
-  <div class="drawer-head">筛选面板 <button onclick="closeDrawer()">×</button></div>
+  <div class="drawer-head">筛选面板 <button aria-label="关闭筛选面板" onclick="closeDrawer()">×</button></div>
   <div class="drawer-body">这是一个从右侧滑出的抽屉（Drawer），常用于筛选或侧边设置面板。</div>
 </div>
 

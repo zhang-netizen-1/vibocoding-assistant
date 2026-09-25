@@ -15,12 +15,12 @@ def test_motion_glossary():
         page.on('pageerror', lambda e: errors.append(str(e)))
         page.goto(FILE.as_uri())
         cards = page.locator('article.effect-card')
-        assert cards.count() == 47, f'效果卡数：{cards.count()}'
+        assert cards.count() == 65, f'效果卡数：{cards.count()}'
         assert set(cards.evaluate_all('(els)=>els.map(e=>e.dataset.cat)')) == EXPECTED
         assert page.get_by_text('波浪矩阵', exact=True).count() >= 1
-        assert page.locator('article.effect-card .stage').count() == 47
+        assert page.locator('article.effect-card .stage').count() == 65
         prompts = cards.locator('.prompt-text').all_text_contents()
-        assert len(prompts) == len(set(prompts)) == 47
+        assert len(prompts) == len(set(prompts)) == 65
         forbidden = ['订单','报销','购物车','用户资料','登录页','商品详情','虚构接口']
         assert all(not any(w in s for w in forbidden) for s in prompts)
         assert all('沿用项目现有设计规范' in s for s in prompts)
@@ -49,7 +49,7 @@ def test_motion_glossary():
         page.locator('#q').fill('不可能匹配的字符xyz')
         assert page.locator('#empty').is_visible()
         page.locator('#q').fill('')
-        assert page.locator('article.effect-card:visible').count() == 47
+        assert page.locator('article.effect-card:visible').count() == 65
         assert not errors, errors
         for width in (1440,390,344):
             page.set_viewport_size({'width':width,'height':860})
@@ -60,11 +60,11 @@ def test_motion_glossary():
         reduced = browser.new_context(reduced_motion='reduce',viewport={'width':390,'height':844})
         pr = reduced.new_page()
         pr.goto(FILE.as_uri())
-        assert pr.locator('article.effect-card').count() == 47
+        assert pr.locator('article.effect-card').count() == 65
         assert pr.locator('#e-background-particles .stage').is_visible()
         reduced.close()
         browser.close()
-    print('PASS: 9 类 / 47 真实演示 / 复制逐字一致 / 交互 / 筛选 / 移动 / 减弱动态')
+    print('PASS: 9 类 / 65 真实演示 / 复制逐字一致 / 交互 / 筛选 / 移动 / 减弱动态')
 
 if __name__ == '__main__':
     test_motion_glossary()

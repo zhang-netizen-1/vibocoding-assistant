@@ -8,14 +8,14 @@ with sync_playwright() as pw:
  page.on('pageerror',lambda e:errors.append(str(e)))
  page.goto(p)
  ids=page.locator('.effect-card').evaluate_all('(els)=>els.map(e=>e.id)')
- assert len(ids)==47
+ assert len(ids)==65
  for eid in ids:
   card=page.locator('#'+eid)
   card.locator('details').evaluate('(e)=>e.open=true')
   text=card.locator('.prompt-text').inner_text()
   card.locator('.copy-prompt').click()
   assert page.evaluate('navigator.clipboard.readText()')==text,eid
- print('47/47 copy prompts exact')
+ print('65/65 copy prompts exact')
  # Exercise every in-demo button and every replayer; report JS failures.
  for eid in ids:
   card=page.locator('#'+eid)
@@ -27,12 +27,13 @@ with sync_playwright() as pw:
   replay_button=card.locator('.demo-tools [data-action]')
   if replay_button.count(): replay_button.first.click()
  assert not errors,errors
- print('47/47 stages exercised without JS exception')
+ print('65/65 stages exercised without JS exception')
  # Visual facts: shared element changes the same node's geometry; scroll movement changes scroll state.
  shared=page.locator('#e-view-shared .shared-chip')
  if shared.get_attribute('aria-expanded')=='true':shared.click()
  shared.click()
  assert shared.get_attribute('aria-expanded')=='true'
+ page.wait_for_function('''() => document.querySelector('#e-view-shared .shared-chip').getBoundingClientRect().width > 180''')
  assert shared.bounding_box()['width']>180
  shared.click()
  assert shared.get_attribute('aria-expanded')=='false'

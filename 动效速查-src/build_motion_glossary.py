@@ -1,10 +1,12 @@
 from pathlib import Path
 import html, json, math
+from extra_demos import DEMOS
 
 SOURCE=Path(__file__).resolve().parent
 ROOT=SOURCE.parent
 entries=json.loads((SOURCE/'motion_entries.json').read_text(encoding='utf-8'))
-assert len(entries)==47 and len({e[0] for e in entries})==47
+assert len(entries)==65 and len({e[0] for e in entries})==65
+assert {e[0] for e in entries if e[0].startswith('extra-')}==set(DEMOS)
 
 CATS={
 'view':('页面与视图','整块界面如何进入、离开和衔接'),
@@ -25,11 +27,19 @@ def shell(text='动效预览'):
     return f'<div class="specimen"><span class="s-icon">◈</span><strong>{esc(text)}</strong><span class="s-line"></span></div>'
 
 def demo(kind):
-    if kind=='view-crossfade': return '<div class="view-stack"><div class="mini-view view-a">视图 A</div><div class="mini-view view-b" aria-hidden="true">视图 B</div></div>'+btn('切换视图','next')
-    if kind=='view-slide': return f'<div class="view-window"><div class="view-track"><div>视图 A</div><div>视图 B</div></div></div>{btn("前进 / 返回","next")}'
-    if kind=='view-curtain': return '<div class="mini-view curtain-target">下一层内容<span class="curtain"></span></div>'
-    if kind=='view-shared': return '<div class="shared-box"><span class="shared-origin-label">概览位置</span><span class="shared-destination-label">详情位置</span><button class="shared-chip" type="button" data-action="toggle" aria-expanded="false"><strong>展开详情 ↗</strong><span>同一元素跨位置衔接</span></button></div>'
-    if kind=='view-stagger': return '<div class="stagger-box"><strong>主标题</strong><span>辅助说明随后出现</span><i>操作入口 →</i></div>'
+    if kind=='view-crossfade':
+        return ('''<div class="view-stack scene-stack">
+          <div class="mini-view view-a"><span class="scene-topline"><i></i> MY WORKSPACE <em>01 / 02</em></span><strong>创作概览</strong><span class="scene-description">把想法整理为清晰的下一步。</span><span class="scene-progress"><i></i></span><span class="scene-metrics"><b>12 <small>个灵感</small></b><b>04 <small>进行中</small></b></span></div>
+          <div class="mini-view view-b" aria-hidden="true"><span class="scene-topline"><i></i> PROJECT DETAIL <em>02 / 02</em></span><strong>页面设计</strong><span class="scene-description">本周的重点，正在稳步完成。</span><span class="scene-task"><i>✓</i> 结构草图 <small>已完成</small></span><span class="scene-task"><i>→</i> 动效细化 <small>进行中</small></span></div>
+        </div>''' + btn('切换视图','next'))
+    if kind=='view-slide':
+        return ('''<div class="view-window scene-window"><div class="view-track"><div class="scene-slide"><span class="scene-topline"><i></i> DISCOVER <em>01 / 02</em></span><strong>寻找灵感</strong><span class="scene-description">从不同方向，找到你的表达。</span><span class="scene-thumbs"><i></i><i></i><i></i></span></div><div class="scene-slide"><span class="scene-topline"><i></i> COLLECTION <em>02 / 02</em></span><strong>精选灵感</strong><span class="scene-description">收藏的内容，继续向前探索。</span><span class="scene-thumbs"><i></i><i></i><i></i></span></div></div></div>''' + btn('前进 / 返回','next'))
+    if kind=='view-curtain':
+        return '<div class="mini-view curtain-target scene-curtain"><span class="scene-topline"><i></i> NEW CHAPTER <em>03 / 03</em></span><strong>下一段旅程</strong><span class="scene-description">打开新的视角与可能。</span><span class="scene-curtain-art" aria-hidden="true"></span><span class="curtain"></span></div>'
+    if kind=='view-shared':
+        return '<div class="shared-box"><span class="shared-origin-label">概览卡片</span><span class="shared-destination-label">详情面板</span><button class="shared-chip" type="button" data-action="toggle" aria-expanded="false"><span class="shared-art" aria-hidden="true"></span><strong>展开详情 ↗</strong><span>同一内容，跨位置衔接</span></button></div>'
+    if kind=='view-stagger':
+        return '<div class="stagger-box"><span class="stagger-kicker">NEW / 2026</span><strong>让想法，<br>逐步成形。</strong><span>从第一行标题开始，层层展开。</span><i>开始探索 <b>↗</b></i></div>'
     if kind.startswith('scroll-'):
         body={
          'scroll-reveal':'<div class="scroll-target reveal-target">进入视口才显现</div>',
@@ -54,10 +64,10 @@ def demo(kind):
     if kind=='text-scramble': return '<div class="scramble" data-final="从混沌到清晰" aria-label="从混沌到清晰">从混沌到清晰</div>'
     if kind=='text-draw': return '<svg class="draw-svg" viewBox="0 0 210 90" role="img" aria-label="弧形路径描画"><path d="M12 66 C52 6 103 9 124 46 S174 94 201 20" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="201" cy="20" r="5" fill="currentColor"/></svg>'
     if kind=='media-wipe': return '<div class="art art-a wipe-art"><span>色彩在遮罩下出现</span></div>'
-    if kind=='media-carousel': return f'<div class="media-frame"><div class="media-track"><div class="art art-a" aria-current="true">画面 A</div><div class="art art-b">画面 B</div><div class="art art-c">画面 C</div></div></div><div class="media-actions">{btn("上一张","prev")}{btn("下一张","next")}</div><span class="carousel-status" role="status" aria-live="polite">第 1 / 3 张</span>'
-    if kind=='media-blur': return '<div class="art art-b focus-art">逐渐清晰</div>'
+    if kind=='media-carousel': return f'<div class="media-frame"><div class="media-track"><div class="art art-a" aria-current="true"><span>画面 A</span></div><div class="art art-b"><span>画面 B</span></div><div class="art art-c"><span>画面 C</span></div></div></div><div class="media-actions">{btn("上一张","prev")}{btn("下一张","next")}</div><span class="carousel-status" role="status" aria-live="polite">第 1 / 3 张</span>'
+    if kind=='media-blur': return '<div class="art art-b focus-art"><span>逐渐清晰</span></div>'
     if kind=='media-compare': return '<div class="compare" style="--split:50%"><div class="art compare-art"><span class="compare-sun"></span><span class="compare-hill"></span><b>明亮</b></div><div class="art compare-art compare-top compare-after"><span class="compare-sun"></span><span class="compare-hill"></span><b>深色</b></div></div><label class="compare-label">拖动分界 <input type="range" min="0" max="100" value="50" aria-label="前后对比分界线"></label>'
-    if kind=='media-glitch': return '<div class="art art-c glitch-art" data-text="GLITCH">GLITCH</div>'
+    if kind=='media-glitch': return '<div class="art art-c glitch-art" data-text="GLITCH"><span>GLITCH</span></div>'
     if kind=='component-lift': return f'<button class="micro-card lift-card" type="button"><strong>悬停在这里</strong><span>离开后平稳归位</span></button>'
     if kind=='component-tilt': return '<div class="micro-card tilt-card" tabindex="0"><strong>移动鼠标</strong><span>卡片跟手倾斜</span></div>'
     if kind=='component-spotlight': return '<div class="micro-card spot-card" tabindex="0"><strong>局部聚光</strong><span>光斑跟随指针位置</span></div>'
@@ -80,19 +90,21 @@ def demo(kind):
     if kind=='mobile-pull': return '<div class="phone-demo pull-zone" data-drag="pull" data-refresh-count="0" tabindex="0" aria-label="可滚动的下拉刷新演示"><span class="pull-indicator">到顶下拉刷新</span><div class="pull-result" role="status">列表版本 0</div><div>列表项一</div><div>列表项二</div><div>列表项三</div><div>列表项四</div><div>列表项五</div></div>'
     if kind=='mobile-rubber': return '<div class="phone-demo rubber-zone" data-drag="rubber" tabindex="0"><div class="rubber-item">沿水平方向拖动我</div><small>松手回到合法边界</small></div>'
     if kind=='mobile-pager': return f'<div class="phone-demo pager" data-drag="pager"><div class="pager-track"><div>01</div><div>02</div><div>03</div></div></div><div class="pager-actions">{btn("上一页","prev")}{btn("下一页","next")}</div>'
+    if kind in DEMOS: return DEMOS[kind]
     raise ValueError(kind)
 
 loop={'background-aurora','background-wave','background-particles','background-fluid','data-skeleton'}
 replay={'view-curtain','view-stagger','text-stagger','text-mask','text-typewriter','text-scramble','text-draw','media-wipe','media-blur','media-glitch','data-count','data-bars','data-success'}
-scroll={x[0] for x in entries if x[1]=='scroll'}
+scroll={x[0] for x in entries if x[1]=='scroll' and not x[0].startswith('extra-')}
 
 def card(e):
     kind,cat,name,en,trigger,description,prompt=e
     tools = ('<button class="run-demo" type="button" data-action="scroll-play">模拟滚动</button>' if kind in scroll else '<button class="run-demo" type="button" data-action="replay">重播效果</button>' if kind in replay else '<button class="run-demo pause-loop" type="button" data-action="pause" aria-pressed="false">暂停动画</button>' if kind in loop else '')
     if not tools: tools='<span class="gesture-note">'+esc(trigger)+'</span>'
+    backdrop = '<div class="overlay-preview-shell" aria-hidden="true"><span class="overlay-preview-title">工作台 <small>OVERVIEW</small></span><span class="overlay-preview-line"></span><span class="overlay-preview-line short"></span><span class="overlay-preview-tiles"><i></i><i></i><i></i></span></div>' if cat=='overlay' and not kind.startswith('extra-') else ''
     return f'''<article class="effect-card" id="e-{esc(kind)}" data-cat="{esc(cat)}" data-name="{esc(name+' '+en+' '+trigger+' '+description)}">
       <div class="card-head"><div><h3>{esc(name)}</h3><button class="english" type="button" data-copy="{esc(en)}" aria-label="复制英文名称：{esc(en)}">{esc(en)}</button></div><span class="tag">{esc(trigger)}</span></div>
-      <div class="stage {'dark-stage' if cat=='background' else ''}" data-effect="{esc(kind)}"><span class="stage-label">{esc(trigger)}</span>{demo(kind)}</div>
+      <div class="stage {'dark-stage' if cat=='background' else ''}" data-effect="{esc(kind)}"><span class="stage-label">{esc(trigger)}</span><span class="stage-live" aria-hidden="true"><i></i> LIVE DEMO</span>{backdrop}{demo(kind)}<span class="stage-signature" aria-hidden="true">{esc(cat.upper())} / MOTION STUDY</span></div>
       <div class="demo-tools">{tools}<span class="preview-label">真实交互演示</span></div>
       <div class="card-note">{esc(description)}</div>
       <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">{esc(prompt)}</p><button class="copy-prompt" type="button">复制需求</button></details>
@@ -105,8 +117,10 @@ for key,(name,description) in CATS.items():
     assert items
     sections.append(f'<section class="category-section" id="section-{key}" data-cat="{key}"><div class="section-head"><div><h2>{name}</h2><p>{description}</p></div><span class="section-count">{len(items)} 种效果</span></div><div class="grid">'+''.join(card(e) for e in items)+'</div></section>')
 source=(SOURCE/'motion_template.html').read_text(encoding='utf-8')
-assert all(source.count(token)==1 for token in ('__CHIPS__','__SECTIONS__'))
-output=source.replace('__CHIPS__',chips).replace('__SECTIONS__','\n'.join(sections))
+assert all(source.count(token)==1 for token in ('__CHIPS__','__SECTIONS__','__EXTRA_CSS__','__EXTRA_JS__'))
+output=(source.replace('__CHIPS__',chips).replace('__SECTIONS__','\n'.join(sections))
+        .replace('__EXTRA_CSS__',(SOURCE/'motion_extra.css').read_text(encoding='utf-8'))
+        .replace('__EXTRA_JS__',(SOURCE/'motion_extra.js').read_text(encoding='utf-8')))
 target=ROOT/'动效速查.html'
 target.write_text(output,encoding='utf-8')
 print(f'Built {target}: {len(entries)} effect cards, {len(CATS)} categories, {target.stat().st_size} bytes')

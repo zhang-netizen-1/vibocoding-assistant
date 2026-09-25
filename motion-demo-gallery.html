@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>图片画廊 · 转场演示</title>
+<style>
+@view-transition{navigation:auto}
+*{box-sizing:border-box}body{margin:0;padding:12px;background:#f8fafb;color:#29465b;font:11px/1.4 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;color:#708b9c;font:9px ui-monospace,Menlo,monospace}h1{margin:7px 0 10px;font-size:15px;line-height:1.1}
+.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:7px}.tile{display:block;min-height:85px;overflow:hidden;border-radius:9px;text-decoration:none;color:#fff;background:#d9e6e8;box-shadow:0 6px 11px #2a496128}.tile:focus-visible{outline:2px solid #2c63b5;outline-offset:2px}
+.art{height:63px;position:relative;overflow:hidden;background:radial-gradient(circle at 71% 24%,#ffe3ad 0 9%,transparent 10%),linear-gradient(160deg,transparent 0 54%,#2d6272 55% 75%,#244960 76%),linear-gradient(#8fc8d0,#f5cfb0);view-transition-name:featured-image}
+.art:after{content:"";position:absolute;left:-20px;bottom:-15px;width:90px;height:45px;border-radius:50%;background:#4c8b87;transform:rotate(-14deg)}
+.tile b{display:block;padding:3px 6px;font-size:9px;color:#2e4d61;background:#e6f0ee}.tile+.tile .art{view-transition-name:none;filter:hue-rotate(75deg)}
+@media(prefers-reduced-motion:reduce){::view-transition-old(*),::view-transition-new(*){animation-duration:.001ms!important}}
+</style>
+</head>
+<body>
+<header><span>GALLERY / 01</span><span>2 ITEMS</span></header>
+<h1>选择一张作品</h1>
+<div class="grid"><a class="tile" href="motion-demo-detail.html" aria-label="打开山间日落详情"><div class="art" aria-hidden="true"></div><b>山间日落 ↗</b></a><div class="tile" aria-hidden="true"><div class="art"></div><b>另一幅作品</b></div></div>
+</body>
+</html>

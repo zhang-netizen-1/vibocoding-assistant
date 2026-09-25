@@ -27,6 +27,8 @@ with sync_playwright() as pw:
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.goto(URL)
+    # Keep pointer coordinates stable while the audit jumps between distant cards.
+    page.evaluate('document.documentElement.style.scrollBehavior = "auto"')
     failures = []
 
     def run(name, fn):

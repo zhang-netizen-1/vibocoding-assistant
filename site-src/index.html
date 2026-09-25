@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="通过可操作示例认识界面设计，并查找来自 GitHub 的 UI 与交互 Skills，复制实现或安装提示词。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="vibocoding助手 · 界面设计速查">
+  <meta property="og:description" content="8 类共 152 个可查条目。先体验，再准确表达。">
+  <meta name="theme-color" content="#f7f7f3">
+  <title>vibocoding助手 · 界面设计速查</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./assets/site.css">
+  <script defer src="./assets/site.js"></script>
+</head>
+<body class="site-home">
+  <a class="site-skip" href="#main">跳到主要内容</a>
+  <nav class="site-nav" aria-label="网站导航">
+    <div class="site-nav-inner">
+      <a class="site-brand" href="./" aria-label="vibocoding助手首页"><span class="site-brand-icon" aria-hidden="true"><i></i><i></i><i></i></span><span>vibocoding助手<small>INTERFACE FIELD GUIDE</small></span></a>
+      <div class="site-nav-links"><a href="./" aria-current="page">首页</a><a href="./ui/">UI 元素</a><a href="./motion/">动效</a><details class="site-more"><summary>更多分类</summary><div class="site-more-menu"><a class="site-more-mobile" href="./ui/">UI 元素</a><a class="site-more-mobile" href="./motion/">动效</a><a href="./layout/">布局与响应式</a><a href="./visual/">视觉风格</a><a href="./interaction/">交互规则</a><a href="./pages/">页面类型</a><a href="./data/">数据可视化</a><a href="./skills/">UI 与交互 Skills</a></div></details></div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <section class="home-hero" aria-labelledby="hero-title">
+      <div class="home-hero-copy">
+        <p class="home-eyebrow"><span class="home-eyebrow-line" aria-hidden="true"></span> Vibe Coding 的界面设计速查</p>
+        <h1 id="hero-title">看懂界面，<br>说清<span>需求。</span></h1>
+        <p class="home-lead">不知道界面里的做法叫什么、该怎么描述？从组件到页面结构，先体验，再把想法变成清楚的实现需求。</p>
+        <div class="home-actions"><a class="home-button home-button-primary" href="./ui/">浏览 UI 元素 <span aria-hidden="true">↗</span></a><a class="home-button home-button-secondary" href="./motion/">浏览动效 <span aria-hidden="true">↗</span></a></div>
+        <p class="home-hero-meta"><strong>152</strong> 个可查条目 <span aria-hidden="true">·</span> 8 个分类 <span aria-hidden="true">·</span> 可体验与复制提示词</p>
+      </div>
+
+      <div class="home-demo" aria-label="可操作的界面示例">
+        <div class="home-demo-top"><div><span class="home-demo-live" aria-hidden="true"></span><strong>先试，再理解</strong></div><span>LIVE PREVIEW / 01</span></div>
+        <div class="home-demo-tabs" role="tablist" aria-label="示例类型">
+          <button type="button" role="tab" id="home-tab-ui" aria-selected="true" aria-controls="home-panel-ui">UI 元素</button>
+          <button type="button" role="tab" id="home-tab-motion" aria-selected="false" aria-controls="home-panel-motion" tabindex="-1">动效</button>
+        </div>
+        <div class="home-demo-panel" role="tabpanel" id="home-panel-ui" aria-labelledby="home-tab-ui">
+          <div class="home-demo-caption"><span>01 / 组件示例</span><strong>操作后会发生什么？</strong></div>
+          <div class="home-demo-form">
+            <label for="home-demo-name">项目名称</label>
+            <input id="home-demo-name" type="text" placeholder="给你的项目起个名字" autocomplete="off">
+            <label class="home-demo-check"><input id="home-demo-notice" type="checkbox" checked> 创建后显示提醒</label>
+            <button class="home-demo-submit" type="button" id="home-demo-submit">模拟创建项目 <span aria-hidden="true">↗</span></button>
+            <p class="home-demo-result" id="home-demo-result" role="status" aria-live="polite">这里演示输入框、复选框与按钮的组合。</p>
+          </div>
+        </div>
+        <div class="home-demo-panel" role="tabpanel" id="home-panel-motion" aria-labelledby="home-tab-motion" hidden>
+          <div class="home-demo-caption"><span>02 / 动效示例</span><strong>点击切换，观察变化</strong></div>
+          <div class="home-demo-motion-box" aria-live="polite"><div class="home-demo-motion-content" id="home-demo-motion-content"><small>VIEW 01</small><strong>概览视图</strong><span>内容会平滑切换，而不是突然消失。</span></div></div>
+          <button class="home-demo-motion-button" type="button" id="home-demo-motion-button">切换视图 <span aria-hidden="true">↗</span></button>
+          <p class="home-demo-result">这是“交叉淡化”：旧内容淡出，新内容同时淡入。</p>
+        </div>
+        <div class="home-demo-bottom"><span>示例只在本页运行</span><span>交互优先于装饰</span></div>
+      </div>
+    </section>
+
+    <section class="home-index" aria-labelledby="index-title">
+      <div class="home-section-heading"><p class="home-kicker">THE INDEX / 内容索引</p><h2 id="index-title">从你遇到的问题开始。</h2><p>看实物、找名称、试交互。每个条目都附有可复制的实现要求。</p></div>
+      <div class="home-index-grid">
+        <article class="home-index-card home-index-ui">
+          <div class="home-index-card-top"><span>01 / COMPONENTS</span><span>47 个条目</span></div>
+          <div class="home-index-card-main"><span class="home-index-symbol" aria-hidden="true">□</span><div><h3>UI 元素速查</h3><p>认出按钮、输入框、弹窗等组件，理解它们的形态、状态和交互。</p></div></div>
+          <div class="home-index-examples"><span>按钮</span><span>输入框</span><span>弹窗</span><span>导航</span><span>+43</span></div>
+          <a class="home-index-link" href="./ui/">进入 UI 元素速查 <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="home-index-card home-index-motion">
+          <div class="home-index-card-top"><span>02 / MOTION</span><span>65 个条目</span></div>
+          <div class="home-index-card-main"><span class="home-index-symbol" aria-hidden="true">↗</span><div><h3>动效速查</h3><p>对照触发方式与变化过程，准确表达“这个界面应该怎么动”。</p></div></div>
+          <div class="home-index-examples"><span>视图切换</span><span>滚动显现</span><span>微交互</span><span>手势</span><span>+61</span></div>
+          <a class="home-index-link" href="./motion/">进入动效速查 <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="home-index-card home-index-layout">
+          <div class="home-index-card-top"><span>03 / LAYOUT</span><span>6 个条目</span></div>
+          <div class="home-index-card-main"><span class="home-index-symbol" aria-hidden="true">▦</span><div><h3>布局与响应式速查</h3><p>观察网格、分栏与容器如何适应不同宽度，明确内容顺序。</p></div></div>
+          <div class="home-index-examples"><span>响应式网格</span><span>侧栏</span><span>容器适配</span><span>信息密度</span></div>
+          <a class="home-index-link" href="./layout/">进入布局与响应式速查 <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="home-index-card home-index-visual">
+          <div class="home-index-card-top"><span>04 / VISUAL</span><span>6 个条目</span></div>
+          <div class="home-index-card-main"><span class="home-index-symbol" aria-hidden="true">◐</span><div><h3>视觉风格速查</h3><p>用同一内容比较六种完整风格，看页面气质如何延续到组件细节。</p></div></div>
+          <div class="home-index-examples"><span>极简主义</span><span>编辑式排版</span><span>玻璃拟态</span><span>新粗野主义</span></div>
+          <a class="home-index-link" href="./visual/">进入视觉风格速查 <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="home-index-card home-index-interaction">
+          <div class="home-index-card-top"><span>05 / BEHAVIOR</span><span>6 个条目</span></div>
+          <div class="home-index-card-main"><span class="home-index-symbol" aria-hidden="true">↔</span><div><h3>交互规则速查</h3><p>明确输入、反馈、恢复和异常时的界面行为，让操作可预期。</p></div></div>
+          <div class="home-index-examples"><span>字段校验</span><span>提交状态</span><span>撤销</span><span>键盘焦点</span></div>
+          <a class="home-index-link" href="./interaction/">进入交互规则速查 <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="home-index-card home-index-pages">
+          <div class="home-index-card-top"><span>06 / PAGE TYPES</span><span>6 个条目</span></div>
+          <div class="home-index-card-main"><span class="home-index-symbol" aria-hidden="true">▤</span><div><h3>页面类型速查</h3><p>从页面目标出发，看落地页、列表页和详情页如何组织内容。</p></div></div>
+          <div class="home-index-examples"><span>落地页</span><span>仪表盘</span><span>列表页</span><span>分步表单</span></div>
+          <a class="home-index-link" href="./pages/">进入页面类型速查 <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="home-index-card home-index-data">
+          <div class="home-index-card-top"><span>07 / DATA VIS</span><span>6 个条目</span></div>
+          <div class="home-index-card-main"><span class="home-index-symbol" aria-hidden="true">▥</span><div><h3>数据可视化速查</h3><p>区分趋势、对比、构成和明细，选择与问题相符的图形。</p></div></div>
+          <div class="home-index-examples"><span>折线</span><span>柱状</span><span>热力矩阵</span><span>数据表</span></div>
+          <a class="home-index-link" href="./data/">进入数据可视化速查 <span aria-hidden="true">↗</span></a>
+        </article>
+        <article class="home-index-card home-index-skills">
+          <div class="home-index-card-top"><span>08 / AGENT SKILLS</span><span>10 个 Skill</span></div>
+          <div class="home-index-card-main"><span class="home-index-symbol" aria-hidden="true">✳</span><div><h3>UI 与交互 Skills</h3><p>查看 GitHub 上的设计与交互 Skill，了解用途，复制可直接交给 Codex 的安装提示词。</p></div></div>
+          <div class="home-index-examples"><span>视觉设计</span><span>设计系统</span><span>无障碍</span><span>浏览器验证</span></div>
+          <a class="home-index-link" href="./skills/">进入 UI 与交互 Skills <span aria-hidden="true">↗</span></a>
+        </article>
+      </div>
+    </section>
+
+    <section class="home-method" aria-labelledby="method-title"><div><p class="home-kicker">HOW IT WORKS / 使用方式</p><h2 id="method-title">看见、命名、表达。</h2></div><ol><li><span>01</span><div><strong>先体验</strong><p>点击、悬停、拖动或滚动，确认你要的是哪种交互。</p></div></li><li><span>02</span><div><strong>找到名称</strong><p>用准确的中文名称和英文术语继续搜索或沟通。</p></div></li><li><span>03</span><div><strong>复制需求</strong><p>结合自己项目的内容，再交给 Coding Agent 实现。</p></div></li></ol></section>
+  </main>
+  <footer class="site-home-footer"><div><strong>vibocoding助手</strong><span>让界面的表达更准确。</span></div><p>示例用于辨认组件与效果；实际业务行为以你的项目为准。</p><a href="#main">回到顶部 ↑</a></footer>
+</body>
+</html>
