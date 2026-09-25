@@ -2,6 +2,10 @@
 
 面向 Vibe Coding 初学者的界面速查网站。包含 UI 元素、动效、布局与响应式、视觉风格、交互规则、页面类型、数据可视化及 UI 与交互 Skills 八类，共 152 个可查条目。前七类提供示例与实现需求，Skills 类提供 GitHub 来源和可复制的 Codex 安装提示词。
 
+根路径 `/` 是紧凑的全部速查目录：可以选择八个类别，也可以跨类别搜索并直达具体条目。搜索索引在构建时从同一批内容源生成。
+
+`/flows/` 是补充阅读页，展示搜索与筛选、注册表单、文件选择与预览三组组合流程；它不计入八类条目总数。
+
 ## 本地构建与预览
 
 需要 Python 3。网站本身不依赖后端或第三方前端包。
@@ -17,10 +21,11 @@ python3 -m http.server 4173 --directory dist
 
 - UI 元素：编辑 `网页UI元素速查.html`。
 - 动效：编辑 `动效速查-src/motion_entries.json` 和 `动效速查-src/motion_template.html`；新增演示分别在 `动效速查-src/extra_demos.py`、`动效速查-src/motion_extra.css`、`动效速查-src/motion_extra.js`。构建脚本会先重新生成 `动效速查.html`。
-- 首页与共用导航：编辑 `site-src/index.html`、`site-src/site.css` 和 `site-src/site.js`。全站视觉变量和覆盖规则集中在 `site-src/theme.css`，修改前先对照 `docs/design-system.md`。
+- 全部速查与共用导航：编辑 `site-src/index.html`、`site-src/home.css`、`site-src/home.js` 和 `site-src/site.css`。跨类别索引由 `site-src/search_index.py` 从条目源生成；全站视觉变量和覆盖规则集中在 `site-src/theme.css`，修改前先对照 `docs/design-system.md`。
 - 其他五类速查：在 `site-src/guide_pages.py` 中维护内容和 HTML，在 `site-src/guides.css`、`site-src/guides.js` 中维护共用视觉和示例交互；视觉风格的六套风格样式在 `site-src/visual-styles.css`。
 - UI 与交互 Skills：在 `site-src/skill_catalog.py` 中维护条目和安装提示词，在 `site-src/skills.css`、`site-src/skills.js` 中维护页面样式与交互。
-- 站点输出：`scripts/build_site.py` 使用明确的文件清单构建首页、七类速查页、Skills 页、两个跨页转场演示页及共用资源；同目录中的其他文件不会进入 `dist/`。
+- 组合流程：在 `site-src/flow_pages.py` 中维护案例和提示词，在 `site-src/flows.css`、`site-src/flows.js` 中维护页面样式、复制和本地表单演示。
+- 站点输出：`scripts/build_site.py` 使用明确的文件清单构建首页、七类速查页、Skills 页、组合流程页、两个跨页转场演示页及共用资源；同目录中的其他文件不会进入 `dist/`。
 
 运行构建检查：
 

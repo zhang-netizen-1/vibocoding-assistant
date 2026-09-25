@@ -1,6 +1,8 @@
 from html.parser import HTMLParser
 from pathlib import Path
 import importlib.util
+import json
+import re
 import subprocess
 import sys
 import unittest
@@ -51,17 +53,22 @@ class SiteBuildTest(unittest.TestCase):
         self.assertEqual(files, {
             ".generated-site", "index.html", "ui/index.html", "motion/index.html",
             "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html",
-            "layout/index.html", "visual/index.html", "interaction/index.html", "pages/index.html", "data/index.html", "skills/index.html",
-            "assets/site.css", "assets/theme.css", "assets/site.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg",
+            "layout/index.html", "visual/index.html", "interaction/index.html", "pages/index.html", "data/index.html", "skills/index.html", "flows/index.html",
+            "assets/site.css", "assets/theme.css", "assets/site.js", "assets/home.css", "assets/home.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/flows.css", "assets/flows.js", "assets/favicon.svg",
         })
 
     def test_site_routes_and_all_cards(self):
         home = parse(DIST / "index.html")
         self.assertIn("./ui/", home.links)
         self.assertIn("./motion/", home.links)
+        self.assertIn("./flows/", home.links)
         home_html = (DIST / "index.html").read_text(encoding="utf-8")
-        self.assertIn("<strong>152</strong> 个可查条目", home_html)
-        self.assertIn("65 个条目", home_html)
+        self.assertIn("<strong>152</strong><span>个可查条目", home_html)
+        self.assertIn('id="global-search"', home_html)
+        self.assertEqual(home_html.count('<a class="directory-card'), 8)
+        self.assertNotIn('class="home-demo"', home_html)
+        self.assertEqual((DIST / "ui" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制组件实现提示词</summary>"), 47)
+        self.assertEqual((DIST / "motion" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制动效实现提示词</summary>"), 65)
         for section, original, prefix, expected_count in (
             ("ui", "网页UI元素速查.html", "c-", 47),
             ("motion", "动效速查.html", "e-", 65),
@@ -76,10 +83,23 @@ class SiteBuildTest(unittest.TestCase):
             self.assertIn("../ui/", built.links)
             self.assertIn("../motion/", built.links)
             self.assertIn("site-content", built.ids)
+        ui_html = (DIST / "ui" / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn('class="scenarios"', ui_html)
+        self.assertIn('class="flow-context"', ui_html)
+        self.assertIn('href="../flows/">查看组合流程示例', ui_html)
+        flows_html = (DIST / "flows" / "index.html").read_text(encoding="utf-8")
+        self.assertEqual(flows_html.count('class="flow-card"'), 3)
+        self.assertIn('id="sample-register"', flows_html)
+        self.assertIn('id="flows-main"', flows_html)
+        self.assertIn('<a href="../ui/">UI 元素</a> / COMPOSED FLOWS', flows_html)
+        for page_path in (DIST / "index.html", *(DIST / section / "index.html" for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills", "flows"))):
+            page = page_path.read_text(encoding="utf-8")
+            self.assertNotIn('>组合流程</a>', page)
 
         for section in ("layout", "visual", "interaction", "pages", "data"):
             built = parse(DIST / section / "index.html")
             self.assertEqual(len(built.cards), 6, section)
+            self.assertEqual((DIST / section / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制实现提示词</summary>"), 6, section)
             self.assertEqual(len(set(built.cards)), 6, section)
             self.assertTrue(all(card.startswith(f"g-{section}-") for card in built.cards))
             self.assertIn(f"./{section}/", home.links)
@@ -93,6 +113,7 @@ class SiteBuildTest(unittest.TestCase):
         self.assertNotIn('<h3>字体层级</h3>', visual_html)
         skills = parse(DIST / "skills" / "index.html")
         self.assertEqual(len(skills.cards), 10)
+        self.assertEqual((DIST / "skills" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制 Skill 安装提示词</summary>"), 10)
         self.assertEqual(len(set(skills.cards)), 10)
         self.assertTrue(all(card.startswith("skill-") for card in skills.cards))
         self.assertIn("./skills/", home.links)
@@ -100,6 +121,9 @@ class SiteBuildTest(unittest.TestCase):
         self.assertIn("../", skills.links)
 
     def test_site_scripts_and_metadata(self):
+        home = (DIST / "index.html").read_text(encoding="utf-8")
+        self.assertRegex(home, r'src="\./assets/home\.js\?v=[0-9a-f]{8}"')
+        self.assertRegex(home, r'href="\./assets/home\.css\?v=[0-9a-f]{8}"')
         for section in ("ui", "motion"):
             page = (DIST / section / "index.html").read_text(encoding="utf-8")
             self.assertIn('name="description"', page)
@@ -121,9 +145,32 @@ class SiteBuildTest(unittest.TestCase):
         self.assertRegex(skills_page, r'href="../assets/skills\.css\?v=[0-9a-f]{8}"')
         self.assertIn('aria-current="page">UI 与交互 Skills', skills_page)
         self.assertIn('id="skill-copy-status" class="site-announcement" role="status"', skills_page)
-        for page_path in (DIST / "index.html", *(DIST / section / "index.html" for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills"))):
+        flows_page = (DIST / "flows" / "index.html").read_text(encoding="utf-8")
+        self.assertRegex(flows_page, r'src="../assets/flows\.js\?v=[0-9a-f]{8}"')
+        self.assertRegex(flows_page, r'href="../assets/flows\.css\?v=[0-9a-f]{8}"')
+        for page_path in (DIST / "index.html", *(DIST / section / "index.html" for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills", "flows"))):
             page = page_path.read_text(encoding="utf-8")
             self.assertRegex(page, r'assets/theme\.css\?v=[0-9a-f]{8}')
+
+    def test_global_search_index_matches_real_anchors(self):
+        home = (DIST / "index.html").read_text(encoding="utf-8")
+        match = re.search(r'<script type="application/json" id="home-search-index">(.*?)</script>', home, re.S)
+        self.assertIsNotNone(match)
+        entries = json.loads(match.group(1))
+        self.assertEqual(len(entries), 152)
+        self.assertEqual(len({entry["href"] for entry in entries}), 152)
+        counts = {category: sum(entry["category"] == category for entry in entries) for category in {entry["category"] for entry in entries}}
+        self.assertEqual(counts["UI 元素"], 47)
+        self.assertEqual(counts["动效"], 65)
+        self.assertEqual(counts["UI 与交互 Skills"], 10)
+        self.assertEqual(sorted(counts.values()), [6, 6, 6, 6, 6, 10, 47, 65])
+        page_ids = {}
+        for entry in entries:
+            route, anchor = entry["href"].removeprefix("./").split("/#", 1)
+            if route not in page_ids:
+                page_ids[route] = parse(DIST / route / "index.html").ids
+            self.assertIn(anchor, page_ids[route], entry)
+            self.assertTrue(entry["title"])
 
     def test_guide_prompts_are_actionable_and_unique(self):
         prompts = {}

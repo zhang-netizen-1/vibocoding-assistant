@@ -3,6 +3,7 @@
 from pathlib import Path
 import hashlib
 import importlib.util
+import json
 import re
 import shutil
 import subprocess
@@ -20,6 +21,12 @@ GUIDES = GUIDE_MODULE.GUIDES
 SKILL_MODULE_SPEC = importlib.util.spec_from_file_location("skill_catalog", SITE_SOURCE / "skill_catalog.py")
 SKILL_MODULE = importlib.util.module_from_spec(SKILL_MODULE_SPEC)
 SKILL_MODULE_SPEC.loader.exec_module(SKILL_MODULE)
+FLOW_MODULE_SPEC = importlib.util.spec_from_file_location("flow_pages", SITE_SOURCE / "flow_pages.py")
+FLOW_MODULE = importlib.util.module_from_spec(FLOW_MODULE_SPEC)
+FLOW_MODULE_SPEC.loader.exec_module(FLOW_MODULE)
+SEARCH_MODULE_SPEC = importlib.util.spec_from_file_location("search_index", SITE_SOURCE / "search_index.py")
+SEARCH_MODULE = importlib.util.module_from_spec(SEARCH_MODULE_SPEC)
+SEARCH_MODULE_SPEC.loader.exec_module(SEARCH_MODULE)
 
 
 def asset_version(name: str) -> str:
@@ -32,7 +39,7 @@ PAGES = (
 
 
 def site_navigation(section: str) -> str:
-    links = (("首页", "../", "home"), ("UI 元素", "../ui/", "ui"), ("动效", "../motion/", "motion")) + tuple(
+    links = (("全部速查", "../", "home"), ("UI 元素", "../ui/", "ui"), ("动效", "../motion/", "motion")) + tuple(
         (guide["name"], f"../{slug}/", slug) for slug, guide in GUIDES.items()
     ) + (("UI 与交互 Skills", "../skills/", "skills"),)
     items = "".join(
@@ -40,11 +47,11 @@ def site_navigation(section: str) -> str:
         for label, href, key in links
     )
     more = f'<details class="site-more"><summary>分类目录</summary><div class="site-more-menu">{items}</div></details>'
-    skip_target = "skills-main" if section == "skills" else "guide-main" if section in GUIDES else "site-content"
+    skip_target = "skills-main" if section == "skills" else "flows-main" if section == "flows" else "guide-main" if section in GUIDES else "site-content"
     return (
         f'<a class="site-skip" href="#{skip_target}">跳到主要内容</a>'
         '<nav class="site-nav" aria-label="网站导航"><div class="site-nav-inner">'
-        '<a class="site-brand" href="../" aria-label="vibocoding助手首页">'
+        '<a class="site-brand" href="../" aria-label="vibocoding助手全部速查">'
         '<span class="site-brand-icon" aria-hidden="true"><i></i><i></i><i></i></span>'
         '<span>vibocoding助手<small>INTERFACE FIELD GUIDE</small></span></a>'
         f'<div class="site-nav-links"><span class="site-nav-section">浏览目录</span>{items}{more}</div></div></nav>'
@@ -88,12 +95,19 @@ def build() -> None:
     subprocess.run([sys.executable, str(ROOT / "动效速查-src" / "build_motion_glossary.py")], check=True, cwd=ROOT)
     prepare_output()
     home = (SITE_SOURCE / "index.html").read_text(encoding="utf-8")
-    for name in ("site.css", "theme.css", "site.js"):
+    search_entries = SEARCH_MODULE.build_search_index(
+        (ROOT / "网页UI元素速查.html").read_text(encoding="utf-8"),
+        (ROOT / "动效速查.html").read_text(encoding="utf-8"),
+        GUIDES, GUIDE_MODULE, SKILL_MODULE.all_skills(),
+    )
+    search_json = json.dumps(search_entries, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
+    home = home.replace("__SEARCH_INDEX__", search_json, 1)
+    for name in ("site.css", "theme.css", "home.css", "home.js"):
         home = home.replace(f'./assets/{name}"', f'./assets/{name}?v={asset_version(name)}"')
     (OUTPUT / "index.html").write_text(home, encoding="utf-8")
     assets = OUTPUT / "assets"
     assets.mkdir()
-    for name in ("site.css", "theme.css", "site.js", "guides.css", "guides.js", "visual-styles.css", "skills.css", "skills.js", "favicon.svg"):
+    for name in ("site.css", "theme.css", "site.js", "home.css", "home.js", "guides.css", "guides.js", "visual-styles.css", "skills.css", "skills.js", "flows.css", "flows.js", "favicon.svg"):
         shutil.copy2(SITE_SOURCE / name, assets / name)
     for section, path, label, description, card_class, expected_cards in PAGES:
         destination = OUTPUT / section
@@ -115,11 +129,16 @@ def build() -> None:
     skill_html = SKILL_MODULE.render_page(site_navigation("skills"), asset_version("site.css"), asset_version("skills.css"), asset_version("theme.css"), asset_version("skills.js"))
     (skill_destination / "index.html").write_text(skill_html, encoding="utf-8")
     print(f"Built UI 与交互 Skills: {skill_destination / 'index.html'}")
+    flow_destination = OUTPUT / "flows"
+    flow_destination.mkdir()
+    flow_html = FLOW_MODULE.render_page(site_navigation("flows"), asset_version("site.css"), asset_version("guides.css"), asset_version("flows.css"), asset_version("theme.css"), asset_version("flows.js"))
+    (flow_destination / "index.html").write_text(flow_html, encoding="utf-8")
+    print(f"Built 组合流程: {flow_destination / 'index.html'}")
     files = sorted(str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*") if path.is_file())
-    expected = sorted((MARKER, "index.html", "ui/index.html", "motion/index.html", "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html", "assets/site.css", "assets/theme.css", "assets/site.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg", "skills/index.html", *(f"{slug}/index.html" for slug in GUIDES)))
+    expected = sorted((MARKER, "index.html", "ui/index.html", "motion/index.html", "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html", "assets/site.css", "assets/theme.css", "assets/site.js", "assets/home.css", "assets/home.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/flows.css", "assets/flows.js", "assets/favicon.svg", "skills/index.html", "flows/index.html", *(f"{slug}/index.html" for slug in GUIDES)))
     if files != expected:
         raise RuntimeError(f"Unexpected build files: {files}")
-    print("Built site: 9 pages, 152 entries, curated static output")
+    print("Built site: 10 pages, 152 entries, curated static output")
 
 
 if __name__ == "__main__":

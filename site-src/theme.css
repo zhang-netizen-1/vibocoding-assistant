@@ -199,6 +199,11 @@ body.site-reference { --paper: var(--ds-canvas); background: var(--ds-shell); }
 .site-reference .ref-guide { border: 0; border-radius: 20px; }
 .site-reference .ref-guide > summary { color: var(--ds-ink); }
 .site-reference .ref-guide > summary:after { color: var(--ds-ink); }
+.site-reference .flow-context { border: 0; border-radius: 22px; background: #fff; padding: 21px 25px; }
+.site-reference .flow-context strong { color: var(--ds-ink); font-size: 16px; }
+.site-reference .flow-context p { color: var(--ds-muted); }
+.site-reference .flow-context a { background: var(--ds-lime); color: var(--ds-ink); }
+.site-reference .flow-context a:hover { background: var(--ds-lime-hover); }
 .site-reference .ref-tools button { color: var(--ds-ink); border: 0; border-radius: 999px; }
 .site-reference .cmp, .site-reference .effect-card { border: 0; border-radius: var(--ds-radius-card); box-shadow: 0 8px 24px #28283609; }
 .site-reference .cmp:hover, .site-reference .effect-card:hover { border: 0; box-shadow: 0 15px 32px #28283614; }
@@ -216,6 +221,11 @@ body.site-reference { --paper: var(--ds-canvas); background: var(--ds-shell); }
 .site-reference .card-prompt .prompt-text { background: var(--ds-soft); border: 0; border-radius: 16px; }
 .site-reference .card-prompt .copy-prompt { color: var(--ds-ink); background: var(--ds-lime); border-radius: 999px; padding-inline: 15px; }
 .site-reference .card-prompt .copy-prompt:hover { background: var(--ds-lime-hover); }
+.site-reference .card-prompt, .guide-card-prompt, .skill-install { background: #f0f9dc; border-top-color: #d6e9ae; }
+.site-reference .card-prompt summary, .guide-card-prompt summary, .skill-install summary { min-height: 54px; color: #243018; font-size: 14px; font-weight: 750; line-height: 1.4; }
+.site-reference .card-prompt summary::after, .guide-card-prompt summary::after, .skill-install summary::after { content: "查看 ↗"; flex: none; padding: 8px 12px; color: var(--ds-ink); background: var(--ds-lime); border-radius: 999px; font-size: 11px; font-weight: 750; line-height: 1; }
+.site-reference .card-prompt[open] summary::after, .guide-card-prompt[open] summary::after, .skill-install[open] summary::after { content: "收起 ↑"; background: #fff; }
+.site-reference .card-prompt .copy-prompt, .guide-card-prompt .guide-copy, .skill-install .skill-copy { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 18px; font-size: 13px; font-weight: 750; cursor: pointer; }
 .site-reference .site-card-tools { padding-inline: 24px; border-color: var(--ds-line); }
 .site-reference .site-card-tools a, .site-reference .site-card-tools button { color: #51535e; }
 .site-reference .site-card-tools a, .site-reference .site-card-tools button { display: inline-flex; align-items: center; min-height: 44px; }

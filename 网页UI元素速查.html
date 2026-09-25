@@ -35,8 +35,6 @@
     border-bottom:1px solid var(--line);
   }
   .tb-in{max-width:1280px;margin:0 auto;padding:12px 20px 10px;}
-  #scenarios-title{scroll-margin-top:172px;}
-  @media (max-width:700px){#scenarios-title{scroll-margin-top:190px;}}
   .tb-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
   .brand{display:flex;align-items:center;gap:11px;}
   .mark{width:30px;height:30px;border-radius:9px;flex:none;
@@ -87,6 +85,11 @@
   }
   .hint strong{color:#fff;font-weight:650;flex:none;}
   .hint .formula{display:block;margin:5px 0;color:#ecfdf5;font-weight:600;}
+  .flow-context{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:18px;padding:18px 20px;border:1px solid var(--line2);border-radius:16px;background:var(--bg2);}
+  .flow-context strong{display:block;margin:0 0 3px;font-size:16px;}
+  .flow-context p{margin:0;color:var(--muted);font-size:13px;line-height:1.6;}
+  .flow-context a{flex:none;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border-radius:999px;background:var(--acc);color:#13201a;font-size:13px;font-weight:700;text-decoration:none;}
+  .flow-context a:hover{background:#a7f3d0;}
   .grid{
     display:grid;grid-template-columns:repeat(auto-fill,minmax(345px,1fr));
     gap:15px;margin-top:18px;
@@ -385,33 +388,6 @@
   .popover-box{position:absolute;top:calc(100% + 9px);left:50%;transform:translateX(-50%);z-index:35;width:250px;padding:13px;border-radius:10px;border:1px solid #d1d5db;background:#fff;box-shadow:0 12px 30px rgba(0,0,0,.18);color:#374151;font-size:13px;text-align:left;}
   .popover-box[hidden]{display:none;}
   .popover-box p{margin:5px 0 0;color:#6b7280;}
-  .scenarios{margin-top:40px;border-top:1px solid var(--line);padding-top:28px;}
-  .scenarios h2{font-size:22px;margin:0 0 7px;}
-  .scenarios .lead{color:var(--muted);margin:0 0 18px;font-size:14px;}
-  .scenario-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;}
-  .scenario{background:var(--bg2);border:1px solid var(--line2);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px;}
-  .scenario h3{font-size:16px;margin:0;}
-  .ex-tag{display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.02em;color:var(--acc);background:var(--acc-dim);border:1px solid rgba(16,185,129,.3);border-radius:20px;padding:2px 9px;margin-left:8px;vertical-align:middle;}
-  .scenario .route{font-size:12px;color:var(--acc);margin:0;}
-  .scenario dl{display:grid;grid-template-columns:45px 1fr;gap:7px 8px;font-size:12.5px;margin:0;line-height:1.55;}
-  .scenario dt{color:var(--faint);}.scenario dd{margin:0;color:var(--muted);}
-  .scenario .prompt{white-space:pre-wrap;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink);background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:12px;margin:0;}
-  .scenario .prompt{overflow-wrap:anywhere;}
-  .scenario .copy-prompt{align-self:flex-start;background:var(--acc-dim);border:1px solid rgba(16,185,129,.3);color:var(--acc);border-radius:8px;padding:8px 12px;cursor:pointer;font:inherit;font-size:12px;}
-  .scenario .copy-prompt:hover{background:rgba(16,185,129,.2);}
-  .sample-form{display:grid;gap:9px;border-top:1px solid var(--line2);padding-top:13px;}
-  .state-lab{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:15px;padding:22px;background:var(--bg2);border:1px solid var(--line2);border-radius:16px;}
-  .state-lab h3{font-size:16px;margin:0 0 8px;}
-  .state-lab p{font-size:13px;line-height:1.7;color:var(--muted);margin:0 0 12px;}
-  .state-lab ul{margin:0;padding-left:18px;color:var(--muted);font-size:12.5px;line-height:1.9;}
-  .sample-form .demo-note{margin:0;color:var(--muted);font-size:12px;}
-  .sample-form label{display:grid;gap:5px;color:var(--ink);font-size:12px;}
-  .sample-form input{width:100%;border:1px solid var(--line2);background:var(--bg3);color:var(--ink);border-radius:8px;padding:9px 10px;font:inherit;font-size:13px;}
-  .sample-form .err{min-height:16px;color:#fca5a5;font-size:11.5px;}
-  .sample-form button{justify-self:start;border:0;border-radius:8px;padding:9px 14px;background:var(--acc-solid);color:#041b13;cursor:pointer;font:inherit;font-size:13px;font-weight:700;}
-  .sample-form button:disabled{cursor:wait;opacity:.6;}
-  .sample-form [role=status]{font-size:12px;color:var(--acc);min-height:18px;}
-
   .alert{border-radius:10px;padding:12px 14px;font-size:13.5px;width:300px;display:flex;gap:9px;align-items:flex-start;}
   .alert.blue{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;}
   .alert.yellow{background:#fffbeb;color:#b45309;border:1px solid #fde68a;}
@@ -457,11 +433,9 @@
     .canvas{padding:28px 12px 18px;}
     .hint{display:block;}
     .hint strong{display:block;margin-bottom:5px;}
+    .flow-context{align-items:flex-start;flex-direction:column;}
     .grid{grid-template-columns:1fr;}
-    .scenario-grid{grid-template-columns:1fr;}
-    .state-lab{grid-template-columns:1fr;}
   }
-  @media(min-width:641px) and (max-width:980px){.scenario-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 </style>
 </head>
 <body>
@@ -498,8 +472,10 @@
 
   <div class="hint">
     <strong>看示例，抄需求</strong>
-    <span>上方示例帮你认出组件叫什么、长什么样，不代表真实页面要把所有样式并排摆出来。每张卡片下方是该组件自身的实现需求，可直接复制给 coding agent；页面位置、文案、数据和业务动作沿用你项目的上下文，词典不替你编。<span class="formula">结构怎么读：形态与变体 → 状态 → 可配置项 → 交互约束 → 沿用项目规范。</span><a href="#scenarios-title" style="color:inherit;text-underline-offset:3px">跳到页末三个组合示例 ↗</a></span>
+    <span>上方示例帮你认出组件叫什么、长什么样，不代表真实页面要把所有样式并排摆出来。每张卡片下方是该组件自身的实现需求，可直接复制给 coding agent；页面位置、文案、数据和业务动作沿用你项目的上下文，词典不替你编。<span class="formula">结构怎么读：形态与变体 → 状态 → 可配置项 → 交互约束 → 沿用项目规范。</span></span>
   </div>
+
+  <aside class="flow-context" aria-label="组合流程示例"><div><strong>组件如何组成完整任务？</strong><p>看搜索、注册和文件选择三个组合流程，再按自己的项目修改需求。</p></div><a href="../flows/">查看组合流程示例 <span aria-hidden="true">↗</span></a></aside>
 
   <div class="grid" id="grid">
 
@@ -521,7 +497,7 @@
         <p class="where">提交、保存、跳转、删除等"做一个动作"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现可复用的按钮（Button）组件：支持主要、次要、危险三种用途样式，以及悬停、聚焦、禁用、加载状态；按钮文字与点击行为可配置，禁用或加载中不可重复触发。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现可复用的按钮（Button）组件：支持主要、次要、危险三种用途样式，以及悬停、聚焦、禁用、加载状态；按钮文字与点击行为可配置，禁用或加载中不可重复触发。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 02 输入框 -->
@@ -538,7 +514,7 @@
         <p class="where">填用户名、搜索词、邮箱等"一句话"的内容。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现输入框（Input）组件：支持标签、占位提示、帮助文字与错误提示；有默认、聚焦、禁用、错误状态；必填与长度规则可配置，失焦时校验并在字段下方说明具体原因。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现输入框（Input）组件：支持标签、占位提示、帮助文字与错误提示；有默认、聚焦、禁用、错误状态；必填与长度规则可配置，失焦时校验并在字段下方说明具体原因。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 03 文本域 -->
@@ -555,7 +531,7 @@
         <p class="where">填写备注、简介、评论、一段话。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现文本域（Textarea）组件：支持多行输入与手动拖拽调整高度；可配置字数上限并实时显示剩余字数，超限时停止追加并说明；有聚焦、禁用与错误状态。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现文本域（Textarea）组件：支持多行输入与手动拖拽调整高度；可配置字数上限并实时显示剩余字数，超限时停止追加并说明；有聚焦、禁用与错误状态。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 04 下拉框 -->
@@ -574,7 +550,7 @@
         <p class="where">选城市、语言、分类等"固定几个选项挑一个"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现下拉框（Select）组件：接收选项列表渲染可选项，同一时刻只能选一项；支持占位项与禁用项，展开后可用键盘上下移动、回车确认、Esc 关闭。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现下拉框（Select）组件：接收选项列表渲染可选项，同一时刻只能选一项；支持占位项与禁用项，展开后可用键盘上下移动、回车确认、Esc 关闭。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 05 复选框 -->
@@ -595,7 +571,7 @@
         <p class="where">可多选的项，如"勾选你感兴趣的话题"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现复选框（Checkbox）组件：接收选项列表渲染一组可独立勾选的项，每一项可单独禁用；有选中、未选中、聚焦与禁用状态，点击标签文字也可切换。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现复选框（Checkbox）组件：接收选项列表渲染一组可独立勾选的项，每一项可单独禁用；有选中、未选中、聚焦与禁用状态，点击标签文字也可切换。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 06 单选按钮 -->
@@ -615,7 +591,7 @@
         <p class="where">性别、套餐、支付方式等"只能挑一个"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现单选按钮（Radio Button）组件：接收选项列表渲染一组互斥选项，同一时刻只有一项被选中；支持默认选中项与禁用项，可用键盘方向键在选项间移动。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现单选按钮（Radio Button）组件：接收选项列表渲染一组互斥选项，同一时刻只有一项被选中；支持默认选中项与禁用项，可用键盘方向键在选项间移动。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 07 开关 -->
@@ -632,7 +608,7 @@
         <p class="where">标题栏、深色模式、是否开启某个功能。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现开关（Switch）组件：表示单个二值设置的开启与关闭，滑块位置随当前值变化，可配置是否附带状态文字；支持键盘切换，禁用时不可操作。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现开关（Switch）组件：表示单个二值设置的开启与关闭，滑块位置随当前值变化，可配置是否附带状态文字；支持键盘切换，禁用时不可操作。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 08 滑动条 -->
@@ -652,7 +628,7 @@
         <p class="where">音量、亮度、价格区间调节。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现滑动条（Slider）组件：最小值、最大值、步长与当前值均可配置；支持鼠标拖动、点击轨道与键盘方向键调整，是否显示当前数值可配置，到达两端即停止。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现滑动条（Slider）组件：最小值、最大值、步长与当前值均可配置；支持鼠标拖动、点击轨道与键盘方向键调整，是否显示当前数值可配置，到达两端即停止。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 09 数字输入 -->
@@ -673,7 +649,7 @@
         <p class="where">数量、金额、倍数等"数值型"输入。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现数字输入框（Number Input）组件：中间可直接键入数值，两侧加减按钮微调；最小值、最大值与步长可配置，超出范围时纠正并说明原因，到边界时对应按钮变为禁用。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现数字输入框（Number Input）组件：中间可直接键入数值，两侧加减按钮微调；最小值、最大值与步长可配置，超出范围时纠正并说明原因，到边界时对应按钮变为禁用。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 10 日期选择 -->
@@ -690,7 +666,7 @@
         <p class="where">预约、生日、下单日期等选具体某天。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现日期选择器（Date Picker）组件：点击字段展开日历选择日期，可选范围可配置，范围外的日期显示为禁用；支持键盘方向键切换日期、回车确认与手动输入，未选择时字段保持为空。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现日期选择器（Date Picker）组件：点击字段展开日历选择日期，可选范围可配置，范围外的日期显示为禁用；支持键盘方向键切换日期、回车确认与手动输入，未选择时字段保持为空。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 11 颜色选择 -->
@@ -710,7 +686,7 @@
         <p class="where">主题配色、标签颜色、画笔颜色。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现颜色选择器（Color Picker）组件：提供色板或取色方式选择颜色，实时预览并输出色值；浅色底上文字自动转为深色以保证可读，已选值支持清空还原。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现颜色选择器（Color Picker）组件：提供色板或取色方式选择颜色，实时预览并输出色值；浅色底上文字自动转为深色以保证可读，已选值支持清空还原。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 12 评分 -->
@@ -727,7 +703,7 @@
         <p class="where">商品评价、服务打分、满意度。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现星级评分（Rating）组件：悬停时预览分值，点击后确定；总分与是否允许半星可配置，选定后显示当前分值，支持键盘调整，只读模式下不可修改。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现星级评分（Rating）组件：悬停时预览分值，点击后确定；总分与是否允许半星可配置，选定后显示当前分值，支持键盘调整，只读模式下不可修改。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 13 搜索框 -->
@@ -744,7 +720,7 @@
         <p class="where">站内搜索、命令检索，通常放顶部导航。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现搜索框（Search Box）组件：带搜索图标，输入后回车或点击图标触发搜索回调，支持一键清空；焦点与禁用状态齐全。筛选结果、结果数量与空状态由使用处处理，不内置在搜索框内。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现搜索框（Search Box）组件：带搜索图标，输入后回车或点击图标触发搜索回调，支持一键清空；焦点与禁用状态齐全。筛选结果、结果数量与空状态由使用处处理，不内置在搜索框内。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- c-cmdk -->
@@ -761,7 +737,7 @@
         <p class="where">Linear / Notion / VS Code 的 ⌘K。这页自己就装了一个：按 ⌘K 试试，能跳到任何组件。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现命令面板（Command Palette）组件：通过快捷键唤起并自动聚焦输入框，输入即时筛选可选命令；支持上下键移动高亮、回车执行、Esc 或点击遮罩关闭并归还焦点。命令项由使用处传入，不内置业务项。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现命令面板（Command Palette）组件：通过快捷键唤起并自动聚焦输入框，输入即时筛选可选命令；支持上下键移动高亮、回车执行、Esc 或点击遮罩关闭并归还焦点。命令项由使用处传入，不内置业务项。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 14 表单 -->
@@ -782,7 +758,7 @@
         <p class="where">注册、登录、提交信息。"一整套输入 + 提交"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现表单（Form）组件：由字段标签、输入控件、帮助文字与提交按钮组成；提交前校验必填与格式，错误提示定位到对应字段下方；校验通过后进入提交中状态并防止重复提交。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现表单（Form）组件：由字段标签、输入控件、帮助文字与提交按钮组成；提交前校验必填与格式，错误提示定位到对应字段下方；校验通过后进入提交中状态并防止重复提交。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 15 进度条 -->
@@ -799,7 +775,7 @@
         <p class="where">上传、下载、任务完成度。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现进度条（Progress Bar）组件：接收当前进度值渲染填充宽度与百分比，是否显示数值可配置；完成时停止动画，无法预估进度时使用不确定形态。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现进度条（Progress Bar）组件：接收当前进度值渲染填充宽度与百分比，是否显示数值可配置；完成时停止动画，无法预估进度时使用不确定形态。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 16 模态弹窗 -->
@@ -816,7 +792,7 @@
         <p class="where">确认删除、填写一次性信息、重要提示。通常带"确定/取消"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现模态弹窗（Modal）组件：打开时显示遮罩并锁定背景滚动，支持取消按钮、Esc 键与点击遮罩三种关闭方式；确认后执行传入的动作，关闭时把焦点归还触发元素，重复点击不叠加。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现模态弹窗（Modal）组件：打开时显示遮罩并锁定背景滚动，支持取消按钮、Esc 键与点击遮罩三种关闭方式；确认后执行传入的动作，关闭时把焦点归还触发元素，重复点击不叠加。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 17 Toast -->
@@ -833,7 +809,7 @@
         <p class="where">保存成功、操作反馈这类"轻提示"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现轻提示（Toast）组件：接收提示内容与类型，出现后延时自动消失，多条按时间顺序堆叠；成功、失败、警告使用不同样式区分，提示不遮挡主要操作区域。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现轻提示（Toast）组件：接收提示内容与类型，出现后延时自动消失，多条按时间顺序堆叠；成功、失败、警告使用不同样式区分，提示不遮挡主要操作区域。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- c-states -->
@@ -855,7 +831,7 @@
         <p class="where">不是组件，是三个天天用的词。对 agent 说"悬停变亮""当前选中项高亮"，对应的就是它们。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">为项目中的可交互控件统一补齐交互状态：默认清楚可点，鼠标悬停有视觉反馈，键盘聚焦有明显外框，按下有瞬时反馈，不可用时明确置灰。同一控件随条件在各状态间切换。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">为项目中的可交互控件统一补齐交互状态：默认清楚可点，鼠标悬停有视觉反馈，键盘聚焦有明显外框，按下有瞬时反馈，不可用时明确置灰。同一控件随条件在各状态间切换。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 18 Tooltip -->
@@ -872,7 +848,7 @@
         <p class="where">图标按钮、专业术语的"悬停解释"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现悬停提示（Tooltip）组件：鼠标悬停或键盘聚焦触发元素时显示说明文字，移开或失焦后消失；出现方向可配置，靠近视口边缘时自动调整位置避免被裁切。被说明的控件本身仍需有可读名称。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现悬停提示（Tooltip）组件：鼠标悬停或键盘聚焦触发元素时显示说明文字，移开或失焦后消失；出现方向可配置，靠近视口边缘时自动调整位置避免被裁切。被说明的控件本身仍需有可读名称。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 19 提示横幅 -->
@@ -894,7 +870,7 @@
         <p class="where">页面顶部的重要提醒，如"你还有未保存的更改"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现提示横幅（Alert）组件：在内容区顶部显示一条提醒，类型（信息、成功、警告、错误）与是否可关闭可配置；是否显示由使用处传入的条件决定。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现提示横幅（Alert）组件：在内容区顶部显示一条提醒，类型（信息、成功、警告、错误）与是否可关闭可配置；是否显示由使用处传入的条件决定。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 20 加载中 -->
@@ -911,7 +887,7 @@
         <p class="where">数据请求中、上传中、等待中。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现加载指示（Loader）组件：接收是否加载中的状态，在内容区域显示加载动画，结束后移除；尺寸与是否附带说明文字可配置。加载期间是否禁用其他操作、之后显示什么内容，由使用处决定。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现加载指示（Loader）组件：接收是否加载中的状态，在内容区域显示加载动画，结束后移除；尺寸与是否附带说明文字可配置。加载期间是否禁用其他操作、之后显示什么内容，由使用处决定。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 21 骨架屏 -->
@@ -933,7 +909,7 @@
         <p class="where">数据请求中的列表/卡片占位，提升等待体验。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现骨架屏（Skeleton）组件：内容加载前显示占位块，行数、形状与尺寸由使用处按最终布局传入；数据到达后替换为真实内容以避免布局跳动。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现骨架屏（Skeleton）组件：内容加载前显示占位块，行数、形状与尺寸由使用处按最终布局传入；数据到达后替换为真实内容以避免布局跳动。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 22 空状态 -->
@@ -954,7 +930,7 @@
         <p class="where">列表为空、无搜索结果时，给用户一个友好引导。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现空状态（Empty State）组件：数据为空时显示说明文字与可选操作入口；区分「暂无数据」与「无匹配结果」两种情况并给出对应恢复方式，不使用与场景无关的通用图示。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现空状态（Empty State）组件：数据为空时显示说明文字与可选操作入口；区分「暂无数据」与「无匹配结果」两种情况并给出对应恢复方式，不使用与场景无关的通用图示。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 23 侧滑抽屉 -->
@@ -971,7 +947,7 @@
         <p class="where">筛选面板、购物车侧栏、设置面板。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现侧滑抽屉（Drawer）组件：从屏幕一侧滑入承载次要内容或操作，滑入方向与宽度可配置；支持点击遮罩与 Esc 键关闭，关闭时归还焦点，打开期间锁定背景滚动。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现侧滑抽屉（Drawer）组件：从屏幕一侧滑入承载次要内容或操作，滑入方向与宽度可配置；支持点击遮罩与 Esc 键关闭，关闭时归还焦点，打开期间锁定背景滚动。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 24 顶部导航栏 -->
@@ -988,7 +964,7 @@
         <p class="where">每个页面顶部都有的"站点头部"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现顶部导航栏（Navbar）组件：接收导航项渲染横向入口并高亮当前所在页，站点名称与品牌区可配置；窄屏收起为可展开菜单，展开后支持键盘操作。导航项由使用处传入。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现顶部导航栏（Navbar）组件：接收导航项渲染横向入口并高亮当前所在页，站点名称与品牌区可配置；窄屏收起为可展开菜单，展开后支持键盘操作。导航项由使用处传入。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 25 侧边栏 -->
@@ -1008,7 +984,7 @@
         <p class="where">后台管理系统、设置页的"左侧菜单导航"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现侧边栏（Sidebar）组件：接收菜单项渲染竖向导航，支持分组与高亮当前项；可整体收起为图标栏，收起后各项仍可识别，键盘可操作，窄屏下收起为可唤出的菜单。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现侧边栏（Sidebar）组件：接收菜单项渲染竖向导航，支持分组与高亮当前项；可整体收起为图标栏，收起后各项仍可识别，键盘可操作，窄屏下收起为可唤出的菜单。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 26 标签页 -->
@@ -1028,7 +1004,7 @@
         <p class="where">设置页分"基础/高级"，产品页分"详情/评价"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现标签页（Tabs）组件：接收标签与对应面板内容，同一时刻只显示一个面板；高亮当前标签，支持点击与键盘左右方向键切换，切换过程中各面板内部状态不丢失。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现标签页（Tabs）组件：接收标签与对应面板内容，同一时刻只显示一个面板；高亮当前标签，支持点击与键盘左右方向键切换，切换过程中各面板内部状态不丢失。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 27 折叠面板 -->
@@ -1048,7 +1024,7 @@
         <p class="where">FAQ、帮助文档、层层展开的设置项。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现折叠面板（Accordion）组件：接收条目列表，点击标题展开对应内容，再次点击收起；是否允许多项同时展开可配置，箭头方向随展开状态变化，键盘可操作。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现折叠面板（Accordion）组件：接收条目列表，点击标题展开对应内容，再次点击收起；是否允许多项同时展开可配置，箭头方向随展开状态变化，键盘可操作。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 28 面包屑 -->
@@ -1065,7 +1041,7 @@
         <p class="where">层级深的页面，让用户知道"我在哪"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现面包屑导航（Breadcrumb）组件：按层级渲染当前路径，除末级外均可点击返回上级；末级为当前页不可点击，层级过多时中间部分可省略并提供展开查看。路径由使用处传入。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现面包屑导航（Breadcrumb）组件：按层级渲染当前路径，除末级外均可点击返回上级；末级为当前页不可点击，层级过多时中间部分可省略并提供展开查看。路径由使用处传入。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 29 分页 -->
@@ -1082,7 +1058,7 @@
         <p class="where">搜索结果、商品列表有几十上百条时。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现分页（Pagination）组件：接收总条数与每页条数计算页数，渲染上一页、页码与下一页；高亮当前页，首页与末页分别禁用对应方向按钮，页码较多时折叠中间部分。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现分页（Pagination）组件：接收总条数与每页条数计算页数，渲染上一页、页码与下一页；高亮当前页，首页与末页分别禁用对应方向按钮，页码较多时折叠中间部分。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- c-steps -->
@@ -1103,7 +1079,7 @@
         <p class="where">注册、下单结账、开导向导等多步流程。和数字输入框（Stepper）完全是两个东西。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现步骤条（Steps）组件：接收步骤名称与当前进度，已完成、进行中、未开始三种状态区分显示；是否允许点击回看已完成步骤可配置，未到达步骤不可跳转，窄屏时改为纵向排列。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现步骤条（Steps）组件：接收步骤名称与当前进度，已完成、进行中、未开始三种状态区分显示；是否允许点击回看已完成步骤可配置，未到达步骤不可跳转，窄屏时改为纵向排列。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
     <!-- c-footer -->
     <article class="cmp" id="c-footer" data-cat="nav" data-name="页脚 Footer 页面底部 底栏 版权 尾部">
@@ -1126,7 +1102,7 @@
         <p class="where">和顶部导航栏对称：头部管"去哪"，页脚管"次要链接与合规信息"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现页脚（Footer）组件：接收分组链接渲染多列次要导航，附版权信息；链接项由使用处传入，未提供地址的项只显示文字不渲染为链接；窄屏时堆叠为单列并保持分组顺序。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现页脚（Footer）组件：接收分组链接渲染多列次要导航，附版权信息；链接项由使用处传入，未提供地址的项只显示文字不渲染为链接；窄屏时堆叠为单列并保持分组顺序。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 30 下拉菜单 -->
@@ -1151,7 +1127,7 @@
         <p class="where">右上角"更多操作"、用户头像菜单、右键菜单。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现下拉菜单（Dropdown Menu）组件：点击触发元素后弹出操作列表，选择某项后触发使用处传入的动作并关闭；支持点击外部与 Esc 键关闭，键盘可上下移动选择，无可用操作时不显示触发入口。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现下拉菜单（Dropdown Menu）组件：点击触发元素后弹出操作列表，选择某项后触发使用处传入的动作并关闭；支持点击外部与 Esc 键关闭，键盘可上下移动选择，无可用操作时不显示触发入口。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 31 标签 / 徽章 -->
@@ -1173,7 +1149,7 @@
         <p class="where">文章分类、订单状态、版本号。"打标"用。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现标签（Badge）组件：以文字与配色表示状态或分类，类型样式与尺寸可配置；状态或分类变化时文字与颜色同步更新，一条数据对应一个标签。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现标签（Badge）组件：以文字与配色表示状态或分类，类型样式与尺寸可配置；状态或分类变化时文字与颜色同步更新，一条数据对应一个标签。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 32 可删除标签 -->
@@ -1194,7 +1170,7 @@
         <p class="where">筛选关键词、邮箱收件人标签、话题。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现可删除标签（Chip）组件：接收已选项列表逐项渲染，每项带删除操作；支持输入新增、拒绝重复项与数量上限，达到上限后禁用添加入口。新增与删除只更新组件当前值，是否保存由使用处决定。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现可删除标签（Chip）组件：接收已选项列表逐项渲染，每项带删除操作；支持输入新增、拒绝重复项与数量上限，达到上限后禁用添加入口。新增与删除只更新组件当前值，是否保存由使用处决定。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 33 表格 -->
@@ -1217,7 +1193,7 @@
         <p class="where">订单列表、人员名单、排行榜等"很多条结构相同的数据"。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现表格（Table）组件：接收数据数组渲染行列，列定义、宽度与对齐方式可配置；支持点击表头排序并显示方向箭头，排序逻辑由使用处提供（本地或服务端均可），列较多时横向滚动，数据为空时显示空状态。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现表格（Table）组件：接收数据数组渲染行列，列定义、宽度与对齐方式可配置；支持点击表头排序并显示方向箭头，排序逻辑由使用处提供（本地或服务端均可），列较多时横向滚动，数据为空时显示空状态。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 34 卡片 -->
@@ -1237,7 +1213,7 @@
         <p class="where">文章、商品、内容列表以"一张张卡片"呈现。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现卡片（Card）组件：承载标题、说明、媒体与操作入口的组合内容，是否可点击与页脚操作可配置；悬停有轻微反馈，内部文字超长时换行而不撑破卡片，多列排布由外层容器决定。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现卡片（Card）组件：承载标题、说明、媒体与操作入口的组合内容，是否可点击与页脚操作可配置；悬停有轻微反馈，内部文字超长时换行而不撑破卡片，多列排布由外层容器决定。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- c-carousel -->
@@ -1264,7 +1240,7 @@
         <p class="where">官网首页大图、商品详情顶部图集、活动宣传位。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现轮播图（Carousel）组件：接收图片列表，提供上一张、下一张与指示圆点切换；是否自动播放及间隔可配置，自动播放时悬停或触摸暂停，切换到末张后回到首张。仅一张图时不显示切换控件。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现轮播图（Carousel）组件：接收图片列表，提供上一张、下一张与指示圆点切换；是否自动播放及间隔可配置，自动播放时悬停或触摸暂停，切换到末张后回到首张。仅一张图时不显示切换控件。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
     <!-- c-badge-dot -->
     <article class="cmp" id="c-badge-dot" data-cat="display" data-name="通知角标 Badge Dot 红点 未读 消息 小红点 99+ 通知数字">
@@ -1283,7 +1259,7 @@
         <p class="where">导航消息图标、App 图标未读数、聊天列表。和"标签/徽章 Tag"不是一回事：那个是打分类标记，这个是挂角标提醒未读。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现通知角标（Badge Dot）组件：在入口元素角落显示未读状态，数字上限（超出显示 99+）或纯圆点形态可配置；数值由使用处传入，为零时隐藏。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现通知角标（Badge Dot）组件：在入口元素角落显示未读状态，数字上限（超出显示 99+）或纯圆点形态可配置；数值由使用处传入，为零时隐藏。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
     <!-- c-timeline -->
     <article class="cmp" id="c-timeline" data-cat="display" data-name="时间线 Timeline 物流 跟踪 动态 历程 进度记录 一条线">
@@ -1304,7 +1280,7 @@
         <p class="where">物流跟踪、操作历史、审批流转、版本动态。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现时间线（Timeline）组件：接收事件列表按时间顺序纵向排列，每项包含时间与描述；最新事件高亮，是否显示连线可配置，预计或未来事项与已发生事项区分标注。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现时间线（Timeline）组件：接收事件列表按时间顺序纵向排列，每项包含时间与描述；最新事件高亮，是否显示连线可配置，预计或未来事项与已发生事项区分标注。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
     <!-- c-kpi -->
     <article class="cmp" id="c-kpi" data-cat="display" data-name="统计卡片 KPI Card 指标卡 数据卡 大数字 仪表盘 dashboard 数据概览">
@@ -1323,7 +1299,7 @@
         <p class="where">数据看板、运营后台首页。"给我顶部放四个 KPI 卡"是后台需求的标配开场白。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现统计卡片（KPI Card）组件：接收指标名称、数值与口径说明渲染卡片，环比信息可选；仅在存在同口径对比数据时显示涨跌箭头，缺失数据时显示未接入提示而非零值。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现统计卡片（KPI Card）组件：接收指标名称、数值与口径说明渲染卡片，环比信息可选；仅在存在同口径对比数据时显示涨跌箭头，缺失数据时显示未接入提示而非零值。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 35 头像 -->
@@ -1340,7 +1316,7 @@
         <p class="where">用户列表、评论、个人中心顶部。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现头像（Avatar）组件：优先显示图片，地址缺失或加载失败时回退为姓名首字，同一用户的底色保持稳定；尺寸可配置，悬停或聚焦时显示姓名与角色。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现头像（Avatar）组件：优先显示图片，地址缺失或加载失败时回退为姓名首字，同一用户的底色保持稳定；尺寸可配置，悬停或聚焦时显示姓名与角色。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 36 文件上传 -->
@@ -1358,7 +1334,7 @@
         <p class="where">上传图片、附件、素材等。</p>
       </div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现上传区域（File Upload）组件：支持点击选择与拖拽放入，可接收的文件类型与大小上限可配置；校验不通过时不加入列表并说明具体原因，已选文件显示缩略图与移除操作。接入上传能力时以服务端成功响应为准，未接入时明确标注仅本地预览。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现上传区域（File Upload）组件：支持点击选择与拖拽放入，可接收的文件类型与大小上限可配置；校验不通过时不加入列表并说明具体原因，已选文件显示缩略图与移除操作。接入上传能力时以服务端成功响应为准，未接入时明确标注仅本地预览。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <article class="cmp" id="c-combobox" data-cat="input" data-name="自动补全 combobox autocomplete 输入建议 可搜索选项 城市">
@@ -1368,7 +1344,7 @@
       </div>
       <div class="cmp-foot"><ul class="pts"><li>输入文字后出现匹配建议</li><li>与只能从固定选项中挑选的 Select 不同</li></ul><p class="where">城市、人员、商品搜索。这里用原生 datalist 示意，不是完整的自定义 Combobox。</p></div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现自动补全（Combobox）组件：输入指定字符数后从候选项中筛选建议，支持上下键选择、回车填入与 Esc 关闭；无匹配时提示未找到，是否允许填入候选范围之外的值可配置。候选数据由使用处传入。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现自动补全（Combobox）组件：输入指定字符数后从候选项中筛选建议，支持上下键选择、回车填入与 Esc 关闭；无匹配时提示未找到，是否允许填入候选范围之外的值可配置。候选数据由使用处传入。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <article class="cmp" id="c-segmented" data-cat="input" data-name="分段控件 segmented control 单选切换 列表 网格">
@@ -1378,7 +1354,7 @@
       </div>
       <div class="cmp-foot"><ul class="pts"><li>在少数互斥选项间快速选一个</li><li>改变设置，不是切换不同内容面板</li></ul><p class="where">列表/网格视图、日/周/月视图；与 Tabs 的「换内容区」不同。</p></div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现分段控件（Segmented Control）组件：接收一组互斥选项渲染为并列切换项，当前选中项高亮；点击或键盘切换后更新选中值并通知使用处，不改变选项自身内容。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现分段控件（Segmented Control）组件：接收一组互斥选项渲染为并列切换项，当前选中项高亮；点击或键盘切换后更新选中值并通知使用处，不改变选项自身内容。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <article class="cmp" id="c-popover" data-cat="feedback" data-name="浮层 popover 非模态 提示卡 菜单 弹出层">
@@ -1388,7 +1364,7 @@
       </div>
       <div class="cmp-foot"><ul class="pts"><li>点击后出现，可放少量说明或操作</li><li>不锁住页面；不同于必须先处理的 Modal</li></ul><p class="where">筛选说明、头像信息卡、简短设置；比 Tooltip 承载更多内容。</p></div>
 
-      <details class="card-prompt"><summary>给 coding agent 的组件实现需求</summary><p class="prompt-text">实现浮层（Popover）组件：点击触发元素后在附近展开承载说明或轻量操作，不锁定页面滚动；支持点击外部与 Esc 键关闭，靠近视口边缘时自动调整方向避免被裁切。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制需求</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现浮层（Popover）组件：点击触发元素后在附近展开承载说明或轻量操作，不锁定页面滚动；支持点击外部与 Esc 键关闭，靠近视口边缘时自动调整方向避免被裁切。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
   </div>
@@ -1398,32 +1374,11 @@
     <p class="small">换个词试试，比如「弹窗」「上传」「分页」</p>
   </div>
 
-  <section class="scenarios" aria-labelledby="scenarios-title">
-    <h2 id="scenarios-title">从组件到可用流程</h2>
-    <p class="lead">下面三段是<b>示例流程</b>，用来看多个组件怎么串成完整任务。复制前请把页面、字段和动作替换成你自己项目的内容；它们不是现成需求，也不代表已接入后端。</p>
-    <div class="scenario-grid">
-      <article class="scenario"><h3>搜索与筛选<span class="ex-tag">示例流程 · 替换成你的项目</span></h3><p class="route">搜索框 → 筛选 → 结果列表 → 空状态</p>
-        <dl><dt>输入</dt><dd>关键词、状态筛选</dd><dt>动作</dt><dd>输入即筛选，清空后恢复全部</dd><dt>结果</dt><dd>列表与数量同步更新</dd><dt>异常</dt><dd>无匹配时显示空状态和清除筛选入口</dd></dl>
-        <pre class="prompt">做一个可搜索的任务列表：顶部放关键词输入框和状态筛选，输入后实时过滤列表并更新结果数量。没有匹配项时显示空状态和「清除筛选」按钮；清空条件后恢复全部。先用 8 条示例数据，不接后端。请让我实际测试搜索、筛选和空状态。</pre><button class="copy-prompt" type="button">复制给 coding agent</button>
-      </article>
-      <article class="scenario"><h3>注册表单<span class="ex-tag">示例流程 · 替换成你的项目</span></h3><p class="route">输入框 → 校验 → 提交中 → 成功/错误</p>
-        <dl><dt>输入</dt><dd>邮箱、密码</dd><dt>动作</dt><dd>提交前检查必填和邮箱格式</dd><dt>结果</dt><dd>提交中禁用按钮；完成后显示明确结果</dd><dt>异常</dt><dd>错误提示放在对应输入框旁，保留已填内容</dd></dl>
-        <pre class="prompt">做一个注册表单原型：邮箱和密码都有可见标签。空值和邮箱格式错误时在对应字段下方显示原因，不只弹 Toast；通过校验后展示短暂提交中状态，再明确提示「模拟注册成功，尚未创建真实账号」。提交中不能重复提交，失败时保留已填内容。不接真实账号系统。</pre><button class="copy-prompt" type="button">复制给 coding agent</button>
-      </article>
-      <article class="scenario"><h3>文件选择与预览<span class="ex-tag">示例流程 · 替换成你的项目</span></h3><p class="route">选择/拖入 → 校验 → 文件预览 → 确认上传</p>
-        <dl><dt>输入</dt><dd>一张图片文件</dd><dt>动作</dt><dd>检查类型与大小，再生成本地预览</dd><dt>结果</dt><dd>展示文件名和预览，允许重新选择</dd><dt>异常</dt><dd>格式或大小不符时解释原因，不声称已上传</dd></dl>
-        <pre class="prompt">做一个图片上传原型：支持点击选择或拖入，只接收 PNG/JPEG，大小不超过 5MB。选择后先显示文件名和本地预览，提供移除/重选；不合规时说明具体原因。只有接入真实服务并收到成功响应，才能显示「上传成功」；当前原型只演示本地选择和预览。</pre><button class="copy-prompt" type="button">复制给 coding agent</button>
-      </article>
-    </div>
-    <div class="state-lab">
-      <div><h3>状态实测：一个表单，不只一个正常画面</h3><p>先空着提交，观察字段旁的错误；再填测试字符提交，观察按钮禁用、提交中与模拟结果。这个演示不会发出请求，也不会创建账号。</p><ul><li>默认：可填写，按钮可点</li><li>错误：告诉用户哪个字段、为什么不对</li><li>进行中：阻止重复提交</li><li>结果：明确标注为本地模拟，而非真实注册成功</li></ul></div>
-      <form class="sample-form" id="sample-register" novalidate><p class="demo-note">仅本地演示，请勿输入真实密码。</p><label>邮箱<input name="email" type="email" autocomplete="off" placeholder="name@example.com"></label><span class="err" role="alert" data-error="email"></span><label>密码（至少 8 位）<input name="password" type="password" autocomplete="off" placeholder="仅输入测试字符"></label><span class="err" role="alert" data-error="password"></span><button type="submit">模拟提交</button><span role="status" aria-live="polite"></span></form>
-    </div>
-  </section>
+
 
 </main>
 
-<footer class="f">网页 UI 元素速查 · 47 个组件及可复制真实场景案例 · 3 个组合需求</footer>
+<footer class="f">网页 UI 元素速查 · 47 个组件及可复制实现需求</footer>
 
 <div class="modal-mask" id="modal">
   <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
@@ -1584,27 +1539,6 @@
   }
   document.querySelectorAll('.en[data-copy]').forEach(b=>b.addEventListener('click',()=>copyText(b.dataset.copy,b)));
   document.querySelectorAll('.copy-prompt').forEach(b=>b.addEventListener('click',()=>copyText(b.previousElementSibling.textContent,b.previousElementSibling)));
-
-  /* ---- 组合案例：本地表单状态演示，不发送网络请求 ---- */
-  const sampleForm=document.getElementById('sample-register');
-  sampleForm.addEventListener('submit',e=>{
-    e.preventDefault();
-    const email=sampleForm.elements.email.value.trim();
-    const password=sampleForm.elements.password.value;
-    const emailError=sampleForm.querySelector('[data-error="email"]');
-    const passwordError=sampleForm.querySelector('[data-error="password"]');
-    const status=sampleForm.querySelector('[role="status"]');
-    emailError.textContent=!email?'请输入邮箱':!sampleForm.elements.email.validity.valid?'请输入有效邮箱':'';
-    passwordError.textContent=!password?'请输入密码':password.length<8?'密码至少 8 位':'';
-    status.textContent='';
-    if(emailError.textContent||passwordError.textContent) return;
-    const button=sampleForm.querySelector('button[type="submit"]');
-    button.disabled=true;button.textContent='模拟提交中…';
-    setTimeout(()=>{
-      button.disabled=false;button.textContent='模拟提交';
-      status.textContent='模拟提交完成，未创建真实账号。';
-    },500);
-  });
 
   /* ---- 搜索 + 分类筛选 ---- */
   const q=document.getElementById('q');
