@@ -42,10 +42,11 @@ def site_navigation(section: str) -> str:
     links = (("全部速查", "../", "home"), ("UI 元素", "../ui/", "ui"), ("动效", "../motion/", "motion")) + tuple(
         (guide["name"], f"../{slug}/", slug) for slug, guide in GUIDES.items()
     ) + (("UI 与交互 Skills", "../skills/", "skills"),)
-    items = "".join(
-        f'<a href="{href}"{(" aria-current=\"page\"" if key == section else "")}>{label}</a>'
-        for label, href, key in links
-    )
+    parts = []
+    for label, href, key in links:
+        current = ' aria-current="page"' if key == section else ""
+        parts.append(f'<a href="{href}"{current}>{label}</a>')
+    items = "".join(parts)
     more = f'<details class="site-more"><summary>分类目录</summary><div class="site-more-menu">{items}</div></details>'
     skip_target = "skills-main" if section == "skills" else "flows-main" if section == "flows" else "guide-main" if section in GUIDES else "site-content"
     return (

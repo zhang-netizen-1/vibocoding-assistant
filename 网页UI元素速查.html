@@ -10,7 +10,7 @@
   :root{
     --bg:#0a0a0f; --bg2:#12121a; --bg3:#191924;
     --line:#22222e; --line2:#30303e;
-    --ink:#ededf3; --muted:#a2a2b0; --faint:#6d6d7d;
+    --ink:#ededf3; --muted:#a2a2b0; --faint:#666672;
     --acc:#6ee7b7; --acc-solid:#10b981; --acc-dim:rgba(16,185,129,.12);
     --radius:16px;
   }
@@ -174,7 +174,7 @@
   .car-dots{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:flex;gap:6px;}
   .car-dots button{width:12px;height:12px;border:0;border-radius:50%;background:rgba(0,0,0,.22);cursor:pointer;padding:0;}
   .car-dots button.on{background:#047857;}
-  .car-pause{position:absolute;top:7px;right:42px;border:0;border-radius:5px;background:rgba(255,255,255,.88);color:#374151;cursor:pointer;font-size:11px;padding:3px 6px;}
+  .car-pause{position:absolute;top:7px;right:42px;border:0;border-radius:5px;background:rgba(255,255,255,.88);color:#374151;cursor:pointer;font-size:11px;padding:3px 6px;}.car-pause::before{content:"";position:absolute;inset:-7px;}
   @media (prefers-reduced-motion:reduce){.car-pause{display:none;}}
 
   .steps{display:flex;width:300px;}
@@ -346,7 +346,7 @@
   .acc-item.open .acc-body{display:block;}
 
   .crumb{font-size:14px;color:#6b7280;}
-  .crumb a{color:#059669;text-decoration:none;}
+  .crumb a{color:#059669;text-decoration:none;position:relative;}.crumb a::before{content:"";position:absolute;inset:-7px -5px;}
   .crumb a:hover{text-decoration:underline;}
   .crumb .sep{margin:0 8px;color:#d1d5db;}
 
@@ -366,7 +366,7 @@
   .stepper input{width:56px;height:38px;border:none;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;text-align:center;font:inherit;font-size:14px;outline:none;}
 
   .stars{display:inline-flex;gap:4px;font-size:24px;}
-  .stars .st{color:#d1d5db;cursor:pointer;transition:color .12s;background:none;border:0;padding:0;font:inherit;}
+  .stars .st{color:#6b7280;cursor:pointer;transition:color .12s;background:none;border:0;padding:0;font:inherit;}
   .stars .st.on{color:#f59e0b;}
 
   .dropzone{border:2px dashed #cbd5e1;border-radius:12px;padding:22px 20px;text-align:center;color:#6b7280;font-size:13px;width:280px;transition:border-color .15s,background .15s;cursor:pointer;background:#fff;}
@@ -396,7 +396,7 @@
 
   .searchbox{display:flex;align-items:center;gap:8px;border:1px solid #e5e7eb;border-radius:999px;padding:8px 14px;width:260px;background:#fff;}
   .searchbox input{border:none;outline:none;font:inherit;font-size:14px;width:100%;min-width:0;color:#1a1d21;background:transparent;}
-  .searchbox button{border:0;background:none;padding:0;font:inherit;font-size:16px;cursor:pointer;flex:none;}
+  .searchbox button{border:0;background:none;padding:0;font:inherit;font-size:16px;cursor:pointer;flex:none;position:relative;}.searchbox button::before{content:"";position:absolute;inset:-9px;}
   .searchbox:focus-within{border-color:#059669;box-shadow:0 0 0 3px #d1fae5;}
 
   .dropdown{position:relative;display:inline-block;}
@@ -487,9 +487,9 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点击有反馈</span>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
-          <button class="btn btn-pri" onclick="toast('点击了主要按钮')">主要按钮</button>
-          <button class="btn btn-ghost" onclick="toast('这是次要按钮')">次要按钮</button>
-          <button class="btn btn-danger" onclick="toast('确认删除？')">危险按钮</button>
+          <button class="btn btn-pri" data-cmd="toast" data-arg="点击了主要按钮">主要按钮</button>
+          <button class="btn btn-ghost" data-cmd="toast" data-arg="这是次要按钮">次要按钮</button>
+          <button class="btn btn-danger" data-cmd="toast" data-arg="确认删除？">危险按钮</button>
         </div>
       </div>
       <div class="cmp-foot">
@@ -601,7 +601,7 @@
         <span class="cat">输入</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：点一下开/关</span>
-        <label class="switch"><input type="checkbox" aria-label="演示开关" checked onclick="toast(this.checked?'已开启':'已关闭')"><span class="slider"></span></label>
+        <label class="switch"><input type="checkbox" aria-label="演示开关" checked data-cmd="toastChecked" data-on="已开启" data-off="已关闭"><span class="slider"></span></label>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>像灯的开关，开/关两态</li><li>带动画过渡</li></ul>
@@ -619,8 +619,8 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：拖动调节</span>
         <div style="display:flex;align-items:center;gap:10px;">
-          <input type="range" min="0" max="100" value="40" aria-label="数值调节示例" style="width:190px" oninput="this.nextElementSibling.textContent=this.value+'%'">
-          <span style="font-size:13px;color:#6b7280">40%</span>
+          <input type="range" min="0" max="100" value="40" aria-label="数值调节示例" style="width:190px" data-cmd="rangeLabel">
+          <span style="font-size:13px;color:#5b6570">40%</span>
         </div>
       </div>
       <div class="cmp-foot">
@@ -639,9 +639,9 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点 + / − 或直接输入</span>
         <div class="stepper">
-          <button aria-label="减少数量" onclick="stepNum(-1)">−</button>
+          <button aria-label="减少数量" data-cmd="stepNum" data-arg="-1">−</button>
           <input id="num" type="number" value="2" min="0" aria-label="数量">
-          <button aria-label="增加数量" onclick="stepNum(1)">+</button>
+          <button aria-label="增加数量" data-cmd="stepNum" data-arg="1">+</button>
         </div>
       </div>
       <div class="cmp-foot">
@@ -696,7 +696,7 @@
         <span class="cat">输入</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：点击几颗星</span>
-        <div class="stars" id="stars" role="group" aria-label="星级评分"><button class="st" type="button" aria-label="1 星" aria-pressed="false">★</button><button class="st" type="button" aria-label="2 星" aria-pressed="false">★</button><button class="st" type="button" aria-label="3 星" aria-pressed="false">★</button><button class="st" type="button" aria-label="4 星" aria-pressed="false">★</button><button class="st" type="button" aria-label="5 星" aria-pressed="false">★</button></div>
+        <div class="stars" id="stars" role="group" aria-label="星级评分"><button class="st" type="button" aria-label="评 1 星" aria-pressed="false">★</button><button class="st" type="button" aria-label="评 2 星" aria-pressed="false">★</button><button class="st" type="button" aria-label="评 3 星" aria-pressed="false">★</button><button class="st" type="button" aria-label="评 4 星" aria-pressed="false">★</button><button class="st" type="button" aria-label="评 5 星" aria-pressed="false">★</button></div>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>点星打分</li><li>好评商品/服务常用</li></ul>
@@ -713,7 +713,7 @@
         <span class="cat">输入</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：输入后回车</span>
-        <div class="searchbox"><button type="button" aria-label="搜索" onclick="demoSearch(this)">🔍</button><input type="text" aria-label="搜索词" placeholder="搜索…" onkeydown="if(event.key==='Enter'){event.preventDefault();demoSearch(this)}"></div>
+        <div class="searchbox"><button type="button" aria-label="搜索" data-cmd="demoSearch">🔍</button><input type="text" aria-label="搜索词" placeholder="搜索…" data-cmd="searchEnter"></div>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>圆角、带放大镜图标</li><li>回车或点图标触发搜索</li></ul>
@@ -730,7 +730,7 @@
         <span class="cat">输入</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：点按钮，或直接按 ⌘K / Ctrl+K</span>
-        <button class="btn btn-pri" onclick="openCmdk()">唤起命令面板 ⌘K</button>
+        <button class="btn btn-pri" data-cmd="openCmdk">唤起命令面板 ⌘K</button>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>按快捷键弹出的搜索框，输入即过滤</li><li>↑↓ 选择、回车执行，不碰鼠标</li></ul>
@@ -747,11 +747,11 @@
         <span class="cat">输入</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：本地模拟，不会创建账号</span>
-        <div style="display:flex;flex-direction:column;gap:10px;">
+        <form class="demo-form" style="display:flex;flex-direction:column;gap:10px;">
           <input class="i" type="text" aria-label="演示用户名" placeholder="用户名">
           <input class="i" type="password" aria-label="演示密码" placeholder="密码">
-          <button class="btn btn-pri" style="width:230px" onclick="demoRegister()">模拟注册</button>
-        </div>
+          <button class="btn btn-pri" style="width:230px" data-cmd="demoRegister">模拟注册</button>
+        </form>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>把 N 个输入控件组织成一"张表"</li><li>带标签 label + 提交按钮</li></ul>
@@ -785,7 +785,7 @@
         <span class="cat">反馈</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：点按钮弹出</span>
-        <button class="btn btn-pri" onclick="openModal()">打开弹窗</button>
+        <button class="btn btn-pri" data-cmd="openModal">打开弹窗</button>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>盖在页面上的小窗</li><li>必须处理掉才能继续</li></ul>
@@ -802,7 +802,7 @@
         <span class="cat">反馈</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：点按钮触发，看右上角</span>
-        <button class="btn btn-ghost" onclick="toast('这是一条提示 ✔')">触发 Toast</button>
+        <button class="btn btn-ghost" data-cmd="toast" data-arg="这是一条提示 ✔">触发 Toast</button>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>角落冒出来、几秒后消失</li><li>不打断当前操作</li></ul>
@@ -922,7 +922,7 @@
         <div class="empty">
           <div class="ic">📭</div>
           <p>还没有任何项目</p>
-          <button class="btn btn-pri" onclick="toast('去创建 ✓')">立即创建</button>
+          <button class="btn btn-pri" data-cmd="toast" data-arg="去创建 ✓">立即创建</button>
         </div>
       </div>
       <div class="cmp-foot">
@@ -940,7 +940,7 @@
         <span class="cat">反馈</span>
       </div>
       <div class="canvas"><span class="ctl">试一试：点按钮，从右侧滑出</span>
-        <button class="btn btn-pri" onclick="openDrawer()">打开抽屉</button>
+        <button class="btn btn-pri" data-cmd="openDrawer">打开抽屉</button>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>从屏幕一侧滑进来</li><li>像弹窗但"贴边"</li></ul>
@@ -995,7 +995,7 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点击切换</span>
         <div>
-          <div class="tabs" role="tablist" aria-label="产品信息"><button type="button" class="tab active" role="tab" id="tab-intro" aria-controls="tp" aria-selected="true" tabindex="0" onclick="switchTab(this,0)">简介</button><button type="button" class="tab" role="tab" id="tab-reviews" aria-controls="tp" aria-selected="false" tabindex="-1" onclick="switchTab(this,1)">评价</button></div>
+          <div class="tabs" role="tablist" aria-label="产品信息"><button type="button" class="tab active" role="tab" id="tab-intro" aria-controls="tp" aria-selected="true" tabindex="0" data-cmd="switchTab" data-arg="0">简介</button><button type="button" class="tab" role="tab" id="tab-reviews" aria-controls="tp" aria-selected="false" tabindex="-1" data-cmd="switchTab" data-arg="1">评价</button></div>
           <div class="tab-panel" id="tp" role="tabpanel" aria-labelledby="tab-intro" tabindex="0">这是「简介」的内容区域。</div>
         </div>
       </div>
@@ -1015,8 +1015,8 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点击展开</span>
         <div class="acc">
-          <div class="acc-item"><button type="button" class="acc-head" aria-expanded="false" aria-controls="acc-a" onclick="toggleAcc(this)">什么是 vibe coding？ <span class="arr" aria-hidden="true">▾</span></button><div class="acc-body" id="acc-a" hidden>用自然语言描述目标，让 AI 帮你实现；你负责明确需求并验收结果。</div></div>
-          <div class="acc-item"><button type="button" class="acc-head" aria-expanded="false" aria-controls="acc-b" onclick="toggleAcc(this)">需要会编程吗？ <span class="arr" aria-hidden="true">▾</span></button><div class="acc-body" id="acc-b" hidden>不一定，但理解输入、输出和异常情况，才能判断做出来的东西是否可用。</div></div>
+          <div class="acc-item"><button type="button" class="acc-head" aria-expanded="false" aria-controls="acc-a" data-cmd="toggleAcc">什么是 vibe coding？ <span class="arr" aria-hidden="true">▾</span></button><div class="acc-body" id="acc-a" hidden>用自然语言描述目标，让 AI 帮你实现；你负责明确需求并验收结果。</div></div>
+          <div class="acc-item"><button type="button" class="acc-head" aria-expanded="false" aria-controls="acc-b" data-cmd="toggleAcc">需要会编程吗？ <span class="arr" aria-hidden="true">▾</span></button><div class="acc-body" id="acc-b" hidden>不一定，但理解输入、输出和异常情况，才能判断做出来的东西是否可用。</div></div>
         </div>
       </div>
       <div class="cmp-foot">
@@ -1034,7 +1034,7 @@
         <span class="cat">导航</span>
       </div>
       <div class="canvas"><span class="ctl">层级提示</span>
-        <div class="crumb"><a href="#" onclick="return false">首页</a><span class="sep">/</span><a href="#" onclick="return false">商品</a><span class="sep">/</span><span>iPhone</span></div>
+        <div class="crumb"><a href="#" data-cmd="prevent">首页</a><span class="sep">/</span><a href="#" data-cmd="prevent">商品</a><span class="sep">/</span><span>iPhone</span></div>
       </div>
       <div class="cmp-foot">
         <ul class="pts"><li>显示当前所处层级</li><li>可点击回上级</li></ul>
@@ -1069,9 +1069,9 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点任意步骤跳到那里</span>
         <div class="steps" id="stepsBox">
-          <button class="step done" type="button" onclick="setStep(0)" aria-current="false"><span class="dot">1</span><span class="lbl">填信息</span></button>
-          <button class="step cur" type="button" onclick="setStep(1)" aria-current="step"><span class="dot">2</span><span class="lbl">验证邮箱</span></button>
-          <button class="step" type="button" onclick="setStep(2)" aria-current="false"><span class="dot">3</span><span class="lbl">完成</span></button>
+          <button class="step done" type="button" data-cmd="setStep" data-arg="0" aria-current="false"><span class="dot">1</span><span class="lbl">填信息</span></button>
+          <button class="step cur" type="button" data-cmd="setStep" data-arg="1" aria-current="step"><span class="dot">2</span><span class="lbl">验证邮箱</span></button>
+          <button class="step" type="button" data-cmd="setStep" data-arg="2" aria-current="false"><span class="dot">3</span><span class="lbl">完成</span></button>
         </div>
       </div>
       <div class="cmp-foot">
@@ -1113,12 +1113,12 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点按钮</span>
         <div class="dropdown" id="dd">
-          <button class="btn btn-ghost" onclick="toggleDD(event)">更多操作 ▾</button>
+          <button class="btn btn-ghost" data-cmd="toggleDD">更多操作 ▾</button>
           <div class="dd-menu">
-            <div onclick="pickDD(this)">编辑</div>
-            <div onclick="pickDD(this)">复制</div>
+            <div data-cmd="pickDD">编辑</div>
+            <div data-cmd="pickDD">复制</div>
             <div class="divider"></div>
-            <div onclick="pickDD(this)">删除</div>
+            <div data-cmd="pickDD">删除</div>
           </div>
         </div>
       </div>
@@ -1160,9 +1160,9 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点 × 删除</span>
         <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-          <span class="chip">vue <button aria-label="移除 vue 标签" onclick="this.parentNode.remove()">×</button></span>
-          <span class="chip">html <button aria-label="移除 html 标签" onclick="this.parentNode.remove()">×</button></span>
-          <span class="chip">css <button aria-label="移除 css 标签" onclick="this.parentNode.remove()">×</button></span>
+          <span class="chip">vue <button aria-label="移除 vue 标签" data-cmd="removeParent">×</button></span>
+          <span class="chip">html <button aria-label="移除 html 标签" data-cmd="removeParent">×</button></span>
+          <span class="chip">css <button aria-label="移除 css 标签" data-cmd="removeParent">×</button></span>
         </div>
       </div>
       <div class="cmp-foot">
@@ -1360,7 +1360,7 @@
     <article class="cmp" id="c-popover" data-cat="feedback" data-name="浮层 popover 非模态 提示卡 菜单 弹出层">
       <div class="cmp-head"><div class="cmp-t"><h2>浮层</h2><button class="en" data-copy="Popover" title="点击复制">Popover</button></div><span class="cat">反馈</span></div>
       <div class="canvas"><span class="ctl">试一试：点开，再点外面关闭</span>
-        <div class="popover-demo"><button type="button" class="btn btn-ghost" id="popover-trigger" aria-expanded="false" aria-controls="popover-box" onclick="toggleInfoPopover(event)">查看说明</button><div class="popover-box" id="popover-box" hidden><strong>更多说明</strong><p>这是附着在按钮附近的小浮层。打开后仍能操作页面其他区域。</p></div></div>
+        <div class="popover-demo"><button type="button" class="btn btn-ghost" id="popover-trigger" aria-expanded="false" aria-controls="popover-box" data-cmd="toggleInfoPopover">查看说明</button><div class="popover-box" id="popover-box" hidden><strong>更多说明</strong><p>这是附着在按钮附近的小浮层。打开后仍能操作页面其他区域。</p></div></div>
       </div>
       <div class="cmp-foot"><ul class="pts"><li>点击后出现，可放少量说明或操作</li><li>不锁住页面；不同于必须先处理的 Modal</li></ul><p class="where">筛选说明、头像信息卡、简短设置；比 Tooltip 承载更多内容。</p></div>
 
@@ -1385,13 +1385,13 @@
     <h3 id="modal-title">确认操作</h3>
     <p id="modal-desc">你确定要执行这个操作吗？这是一个模态弹窗（Modal）。</p>
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
-      <button class="btn btn-pri" onclick="closeModal();toast('确定 ✓')">确定</button>
+      <button class="btn btn-ghost" data-cmd="closeModal">取消</button>
+      <button class="btn btn-pri" data-cmd="closeModal" data-arg="确定 ✓">确定</button>
     </div>
   </div>
 </div>
 <div class="toast-wrap" id="toasts" role="status" aria-live="polite"></div>
-<div class="cmdk-mask" id="cmdk" role="dialog" aria-modal="true" aria-label="快速跳转到组件" onclick="if(event.target===this)closeCmdk()">
+<div class="cmdk-mask" id="cmdk" role="dialog" aria-modal="true" aria-label="快速跳转到组件" data-cmd="closeCmdkSelf">
   <div class="cmdk">
     <input id="cmdkInput" type="text" aria-label="搜索组件并跳转" placeholder="输入组件名，回车跳转…">
     <div class="cmdk-list" id="cmdkList"></div>
@@ -1399,9 +1399,9 @@
   </div>
 </div>
 
-<div class="drawer-mask" id="dmask" onclick="closeDrawer()"></div>
+<div class="drawer-mask" id="dmask" data-cmd="closeDrawer"></div>
 <div class="drawer-panel" id="dpanel">
-  <div class="drawer-head">筛选面板 <button aria-label="关闭筛选面板" onclick="closeDrawer()">×</button></div>
+  <div class="drawer-head">筛选面板 <button aria-label="关闭筛选面板" data-cmd="closeDrawer">×</button></div>
   <div class="drawer-body">这是一个从右侧滑出的抽屉（Drawer），常用于筛选或侧边设置面板。</div>
 </div>
 
@@ -1508,7 +1508,7 @@
   });
   function toggleDD(e){ e.stopPropagation(); document.getElementById('dd').classList.toggle('open'); }
   function pickDD(el){ toast('点击了「'+el.textContent.trim()+'」'); document.getElementById('dd').classList.remove('open'); }
-  document.addEventListener('click',()=>document.getElementById('dd').classList.remove('open'));
+  document.addEventListener('click',(e)=>{ if(e.target.closest('[data-cmd]'))return; document.getElementById('dd').classList.remove('open'); });
   function closePopover(){
     document.getElementById('popover-box').hidden=true;
     document.getElementById('popover-trigger').setAttribute('aria-expanded','false');
@@ -1662,6 +1662,48 @@
   cmdk.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();cmdkInput.focus();}});
   cmdk.addEventListener('click',e=>{ if(e.target===cmdk) closeCmdk(); });
 
+</script>
+
+<script>
+/* 演示交互统一委托：data-cmd 替代内联 on*=，便于 CSP 与维护。 */
+(function(){
+  function onCmd(e){
+    var el = e.target.closest('[data-cmd]');
+    if(!el) return;
+    var arg = el.dataset.arg;
+    switch(el.dataset.cmd){
+      case 'openDrawer': openDrawer(); break;
+      case 'closeDrawer': closeDrawer(); break;
+      case 'openModal': openModal(); break;
+      case 'closeModal': closeModal(); if(arg) toast(arg); break;
+      case 'openCmdk': openCmdk(); break;
+      case 'closeCmdkSelf': if(e.target===el) closeCmdk(); break;
+      case 'demoSearch': demoSearch(el); break;
+      case 'demoRegister': demoRegister(); break;
+      case 'pickDD': pickDD(el); break;
+      case 'toggleDD': toggleDD(e); break;
+      case 'toggleAcc': toggleAcc(el); break;
+      case 'toggleInfoPopover': toggleInfoPopover(e); break;
+      case 'setStep': setStep(+arg); break;
+      case 'stepNum': stepNum(+arg); break;
+      case 'switchTab': switchTab(el, +arg); break;
+      case 'removeParent': el.parentNode.remove(); break;
+      case 'prevent': e.preventDefault(); break;
+      case 'toast': toast(arg); break;
+      case 'toastChecked': toast(el.checked ? el.dataset.on : el.dataset.off); break;
+    }
+  }
+  document.addEventListener('click', onCmd);
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Enter' && e.target.matches('[data-cmd="searchEnter"]')){ e.preventDefault(); demoSearch(e.target); }
+  });
+  document.addEventListener('input', function(e){
+    if(e.target.matches('[data-cmd="rangeLabel"]')) e.target.nextElementSibling.textContent = e.target.value + '%';
+  });
+  document.addEventListener('submit', function(e){
+    if(e.target.matches('.demo-form')) e.preventDefault();
+  });
+})();
 </script>
 </body>
 </html>

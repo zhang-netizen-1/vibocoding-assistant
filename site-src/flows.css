@@ -40,3 +40,7 @@
 @media(max-width:1040px) { .flow-card { grid-template-columns:1fr; } .flow-card-prompt { border-top:1px solid #e4e6ee; } }
 @media(max-width:760px) { .flows-intro { align-items:flex-start; flex-direction:column; padding:23px; } .flow-lab { grid-template-columns:1fr; gap:24px; padding:26px; } }
 @media(max-width:520px) { .flow-card-main, .flow-card-prompt { padding:24px; } .flow-card-heading { display:block; } .flow-card h2 { margin-top:9px; } .flow-prompt-heading { display:block; } .flow-prompt-heading small { display:block; margin-top:3px; } .flow-lab { padding:23px; } .flow-form { padding:20px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; transition-delay: 0ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }
+}

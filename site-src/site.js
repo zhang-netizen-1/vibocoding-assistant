@@ -59,9 +59,14 @@
         scrollHint.textContent = '左右滑动查看更多 →';
         scrollHint.hidden = true;
         sidebarHeading.append(scrollHint);
+        let hintDismissed = false;
         const syncScrollHint = () => {
-          scrollHint.hidden = categoryChips.scrollWidth <= categoryChips.clientWidth + 1;
+          scrollHint.hidden = hintDismissed || categoryChips.scrollWidth <= categoryChips.clientWidth + 1;
         };
+        categoryChips.addEventListener('scroll', () => {
+          hintDismissed = true;
+          scrollHint.hidden = true;
+        }, { once: true, passive: true });
         requestAnimationFrame(syncScrollHint);
         window.addEventListener('resize', syncScrollHint);
       }

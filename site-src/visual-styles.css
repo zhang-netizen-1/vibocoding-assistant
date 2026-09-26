@@ -171,7 +171,7 @@
   .style-copy p { max-width: 165px; font-size: 10px; }
   .style-art { height: 145px; }
   .style-art-shape { transform: scale(.75); transform-origin: 20% 20%; }
-  .style-art small { font-size: 7px; }
+  .style-art small { font-size: 9px; }
   .style-detail-card { margin-top: 14px; }
   .style-brutalist .style-page, .style-brutalist .style-detail { padding: 12px 13px 9px; }
 }
@@ -187,4 +187,8 @@
     grid-column: auto;
     width: 100%;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; transition-delay: 0ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }
 }

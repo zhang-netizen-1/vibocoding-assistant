@@ -28,3 +28,7 @@
 .skills-footnote { margin:66px 0 0; padding-top:22px; color:var(--skill-muted); border-top:1px solid var(--skill-line); font-size:13px; line-height:1.7; }
 @media (max-width:780px) { .skills-page { padding:0 18px 70px; }.skills-hero { min-height:0; padding:50px 0 38px; }.skill-grid { grid-template-columns:1fr; }.skill-section { margin-top:48px; } }
 @media (max-width:540px) { .skills-hero { display:block; }.skills-hero-count { margin-top:25px; }.skills-hero-count strong { font-size:53px; }.skills-hero-lead { font-size:15px; }.skills-note { display:block; padding:17px; }.skills-note p { margin-top:7px; }.skills-toolbar { flex-wrap:wrap; }.skills-toolbar label { width:100%; }.skills-toolbar input { width:100%; order:2; }.skills-toolbar span { order:1; }.skill-card dl { grid-template-columns:1fr; }.skill-card-source { flex-wrap:wrap; }.skill-card-body,.skill-card-source { padding-inline:17px; }.skill-card-top { padding-inline:17px; }.skill-install { padding-inline:17px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; transition-delay: 0ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; }
+}

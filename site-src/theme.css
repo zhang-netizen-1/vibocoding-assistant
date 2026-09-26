@@ -41,6 +41,10 @@ body.site-guide, body.site-skills, body.site-reference { margin: 0; }
 .site-nav-links a[aria-current="page"], .site-more-menu a[aria-current="page"] { color: #fff; background: var(--ds-ink); }
 .site-nav a:focus-visible, .site-more summary:focus-visible { outline: 2px solid var(--ds-ink); outline-offset: 3px; box-shadow: 0 0 0 5px var(--ds-lime); }
 
+/* Pressed feedback: the independent `scale` property composes with transform-based
+   controls (e.g. translate-centered play buttons) instead of overriding them. */
+button:active { scale: .97; }
+
 /* Main work area */
 .site-home > main, .site-guide > main, .site-skills > main { background: var(--ds-canvas); }
 .site-guide > main, .site-skills > main { display: flow-root; }
@@ -245,7 +249,7 @@ body.site-reference { --paper: var(--ds-canvas); background: var(--ds-shell); }
   .site-nav-inner { min-height: 100%; height: auto; padding: 27px 17px 23px; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0; }
   .site-brand { padding: 0 9px; gap: 11px; }
   .site-nav-links { display: flex; flex-direction: column; align-items: stretch; gap: 4px; margin-top: 44px; }
-  .site-nav-section { display: block; margin: 0 15px 9px; color: #777984; font: 700 11px/1.4 "Avenir Next", "PingFang SC", sans-serif; letter-spacing: .09em; }
+  .site-nav-section { display: block; margin: 0 15px 9px; color: #5d6a7c; font: 700 11px/1.4 "Avenir Next", "PingFang SC", sans-serif; letter-spacing: .09em; }
   .site-nav-links > a { padding: 12px 16px; border-radius: 999px; font-size: 14px; }
   .site-more { display: none; }
   .site-home > main, .site-guide > main, .site-skills > main { min-height: calc(100dvh - 40px); margin: 20px 20px 0 0; border-radius: var(--ds-radius-shell); }
