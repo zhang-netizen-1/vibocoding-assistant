@@ -436,6 +436,132 @@
     .flow-context{align-items:flex-start;flex-direction:column;}
     .grid{grid-template-columns:1fr;}
   }
+  /* ============ 新增组件演示（实现规范批次） ============ */
+  .pw-demo{display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
+  .pw-demo[data-level="0"] .pw-meter i{background:#e2e5ea;}
+  .pw-meter{display:flex;gap:4px;width:230px;}
+  .pw-meter i{height:5px;flex:1;border-radius:99px;background:#e2e5ea;transition:background .15s;}
+  .pw-demo[data-level="1"] .pw-meter i:nth-child(-n+1){background:#e11d48;}
+  .pw-demo[data-level="2"] .pw-meter i:nth-child(-n+2){background:#f59e0b;}
+  .pw-demo[data-level="3"] .pw-meter i:nth-child(-n+3){background:#10b981;}
+  .pw-demo[data-level="4"] .pw-meter i{background:#059669;}
+  .pw-hint{margin:0;font-size:12px;color:#6b7280;}
+  .pw-demo[data-level="1"] .pw-hint{color:#e11d48;}
+
+  .taginput-demo{display:flex;flex-wrap:wrap;gap:6px;align-items:center;width:250px;padding:7px 9px;background:#fff;border:1px solid #e5e7eb;border-radius:9px;}
+  .taginput-demo:focus-within{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.12);}
+  .tagchip{display:inline-flex;align-items:center;gap:5px;background:#e7f8f0;border:1px solid #b5e6d2;color:#0f6b4f;border-radius:999px;padding:2px 5px 2px 9px;font-size:12.5px;}
+  .tagchip .tagx{width:16px;height:16px;border:0;border-radius:50%;background:#c9ede0;color:#0f6b4f;font-size:11px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0;}
+  .tagchip .tagx:hover{background:#0f6b4f;color:#fff;}
+  .taginput{border:0;outline:none;flex:1;min-width:70px;font:inherit;font-size:13.5px;background:none;color:#1a1d21;}
+  .taghint,.ie-hint,.otp-hint,.tblhint{margin:0;font-size:11.5px;color:#8a8f98;}
+
+  .otp-demo{display:flex;flex-direction:column;align-items:center;gap:7px;}
+  .otp-row{display:flex;gap:6px;}
+  .otp-row input{width:38px;height:46px;text-align:center;font-size:20px;font-weight:700;border:1px solid #d6dae0;border-radius:9px;outline:none;background:#fff;color:#1a1d21;padding:0;}
+  .otp-row input:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.14);}
+
+  .floatfield{position:relative;display:inline-block;margin-top:8px;}
+  .floatfield .fflabel{position:absolute;left:13px;top:11px;color:#8a8f98;pointer-events:none;transition:all .14s ease;font-size:14px;background:transparent;padding:0 4px;border-radius:4px;}
+  .floatfield input:focus + .fflabel,.floatfield input:not(:placeholder-shown) + .fflabel{top:-8px;font-size:11px;color:#0f766e;background:#fafafc;font-weight:600;}
+
+  .inline-edit-demo{text-align:center;}
+  .ie-text{margin:0 auto;font-size:15.5px;font-weight:650;color:#1a1d21;border-bottom:1px dashed #b9c0c9;cursor:text;display:inline-block;padding:2px 5px;border-radius:4px;}
+  .ie-text:hover,.ie-text:focus-visible{background:#eefcf5;}
+  .ie-input{font:inherit;font-size:15.5px;font-weight:650;padding:3px 7px;border:1px solid #10b981;border-radius:6px;outline:none;width:250px;color:#1a1d21;background:#fff;box-shadow:0 0 0 3px rgba(16,185,129,.14);text-align:center;}
+
+  .hold-demo{display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .holdbtn{position:relative;overflow:hidden;border:1px solid #fca5a5;background:#fff;color:#b91c1c;font:inherit;font-size:13.5px;font-weight:650;padding:10px 18px;border-radius:9px;cursor:pointer;user-select:none;touch-action:none;}
+  .holdfill{position:absolute;inset:0;width:0%;background:#fee2e2;}
+  .holdbtn.completed{border-color:#10b981;color:#0f766e;}
+  .holdbtn.completed .holdfill{width:100%;background:#d1fae5;}
+  .holdlabel{position:relative;}
+  .hold-alt{padding:6px 12px;font-size:12px;}
+
+  .splitbtn-demo{display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;}
+  .splitbtn{display:inline-flex;}
+  .split-main{border:1px solid #10b981;background:#10b981;color:#fff;font:inherit;font-size:14px;padding:9px 16px;border-radius:9px 0 0 9px;cursor:pointer;}
+  .split-main:hover{background:#0ea371;}
+  .split-caret{border:1px solid #10b981;border-left:1px solid rgba(255,255,255,.35);background:#10b981;color:#fff;font-size:10px;padding:9px 10px;border-radius:0 9px 9px 0;cursor:pointer;}
+  .split-caret:hover{background:#0ea371;}
+  .split-caret[aria-expanded="true"]{background:#0b7c5c;border-color:#0b7c5c;}
+  .split-menu{position:absolute;top:calc(100% + 5px);min-width:150px;background:#fff;border:1px solid #e2e5ea;border-radius:9px;box-shadow:0 12px 26px rgba(15,25,40,.16);padding:5px;display:flex;flex-direction:column;z-index:20;}
+  .split-menu button{border:0;background:none;text-align:left;font:inherit;font-size:12.5px;padding:6px 9px;border-radius:6px;cursor:pointer;color:#1f2937;}
+  .split-menu button:hover,.split-menu button:focus-visible{background:#e9fbf3;color:#0f766e;}
+
+  .fab-demo{position:relative;display:flex;flex-direction:column;align-items:flex-end;gap:10px;width:200px;min-height:128px;justify-content:flex-end;padding:6px;}
+  .fab-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+  .fab-mini-wrap{display:flex;align-items:center;gap:7px;}
+  .fab-label{font-size:11.5px;color:#374151;background:#fff;border:1px solid #e2e5ea;border-radius:7px;padding:2px 8px;}
+  .fab-mini{width:36px;height:36px;border-radius:50%;border:1px solid #d7dbe0;background:#fff;color:#0f6b4f;font-size:14px;cursor:pointer;box-shadow:0 3px 8px rgba(15,40,30,.12);}
+  .fab-mini:hover{background:#e9fbf3;}
+  .fab{width:52px;height:52px;border-radius:50%;border:0;background:#10b981;color:#fff;font-size:24px;cursor:pointer;box-shadow:0 8px 18px rgba(16,185,129,.4);transition:transform .2s;line-height:1;}
+  .fab:hover{background:#0ea371;}
+  .fab.open{transform:rotate(45deg);}
+
+  .mega-demo{width:272px;}
+  .mega-bar{display:flex;gap:4px;background:#fff;border:1px solid #e2e5ea;border-radius:9px;padding:5px;}
+  .mega-item{border:0;background:none;font:inherit;font-size:13px;padding:6px 10px;border-radius:7px;cursor:pointer;color:#374151;}
+  .mega-item:hover{background:#f1f5f4;}
+  .mega-item[aria-expanded="true"]{background:#e9fbf3;color:#0f766e;}
+  .mega-panel{margin-top:6px;background:#fff;border:1px solid #e2e5ea;border-radius:10px;box-shadow:0 12px 26px rgba(15,40,30,.12);padding:12px;display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:12px;animation:mega-in .16s ease;}
+  @keyframes mega-in{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:none;}}
+  .mega-col{display:flex;flex-direction:column;gap:5px;align-items:flex-start;}
+  .mega-col strong{font-size:11px;color:#94a3ab;letter-spacing:.04em;}
+  .mega-link{border:0;background:none;text-align:left;font:inherit;font-size:12.5px;color:#1f2937;padding:3px 6px;border-radius:6px;cursor:pointer;}
+  .mega-link:hover{background:#eefcf5;color:#0f766e;}
+  .mega-feature{background:linear-gradient(150deg,#e9fbf3,#f2f8ff);border-radius:9px;padding:9px;font-size:11.5px;color:#475569;display:flex;flex-direction:column;gap:3px;}
+
+  .ctxzone{width:250px;height:104px;border:1.5px dashed #c9d1d9;border-radius:10px;display:grid;place-items:center;font-size:12.5px;color:#6b7280;background:#fff;position:relative;user-select:none;-webkit-user-select:none;}
+  .ctxmenu{position:absolute;z-index:30;min-width:132px;background:#fff;border:1px solid #e2e5ea;border-radius:9px;box-shadow:0 12px 26px rgba(15,25,40,.16);padding:5px;display:flex;flex-direction:column;}
+  .ctxmenu button{border:0;background:none;text-align:left;font:inherit;font-size:12.5px;padding:6px 9px;border-radius:6px;cursor:pointer;color:#1f2937;}
+  .ctxmenu button:hover,.ctxmenu button:focus-visible{background:#e9fbf3;color:#0f766e;}
+  .ctxmenu .danger{color:#dc2626;}
+  .ctxmenu .danger:hover,.ctxmenu .danger:focus-visible{background:#fee2e2;color:#b91c1c;}
+
+  .viewsw-demo{display:flex;flex-direction:column;gap:9px;align-items:center;}
+  .segmini{display:inline-flex;background:#eef0f3;border-radius:9px;padding:3px;}
+  .segb{border:0;background:none;font:inherit;font-size:12.5px;padding:5px 13px;border-radius:7px;cursor:pointer;color:#5b6470;}
+  .segb.on{background:#fff;color:#0f766e;font-weight:650;box-shadow:0 1px 4px rgba(15,40,30,.14);}
+  .viewsw-body{width:252px;min-height:100px;}
+  .viewsw-body[data-view="grid"]{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+  .viewsw-body[data-view="list"]{display:flex;flex-direction:column;gap:5px;}
+  .vitem{background:#fff;border:1px solid #e2e5ea;border-radius:8px;padding:8px 6px;font-size:11.5px;color:#4b5563;display:flex;justify-content:center;gap:6px;align-items:baseline;}
+  .vitem b{font-size:12px;color:#1f2937;}
+  .vitem small{color:#9aa1a9;}
+  .viewsw-body[data-view="list"] .vitem{justify-content:space-between;padding:7px 10px;}
+
+  table.demo-tbl{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;color:#374151;}
+  table.demo-tbl th,table.demo-tbl td{padding:6px 9px;border-bottom:1px solid #eef0f3;text-align:left;white-space:nowrap;background:#fff;}
+  table.demo-tbl thead th{font-weight:650;color:#111827;}
+  table.demo-tbl tbody tr:last-child th,table.demo-tbl tbody tr:last-child td{border-bottom:0;}
+  .tblfix-demo{width:264px;max-height:148px;overflow:auto;border:1px solid #e2e5ea;border-radius:9px;background:#fff;}
+  .tblfix-demo thead th{position:sticky;top:0;z-index:2;box-shadow:0 1px 0 #e2e5ea;}
+  .tblfix-demo .fixcol{position:sticky;left:0;z-index:1;box-shadow:1px 0 0 #e2e5ea;}
+  .tblfix-demo thead .fixcol{z-index:3;}
+
+  .tblcol-wrap{width:262px;overflow:hidden;border:1px solid #e2e5ea;border-radius:9px;background:#fff;}
+  .demo-th{position:relative;}
+  .colgrip{position:absolute;right:-4px;top:0;bottom:0;width:8px;cursor:col-resize;touch-action:none;}
+  .colgrip::after{content:'';position:absolute;right:3px;top:22%;bottom:22%;width:2px;background:#dfe3e8;border-radius:2px;}
+  .colgrip:hover::after,.colgrip.on::after{background:#10b981;}
+  .colmenu{display:flex;gap:14px;}
+
+  .tblre-wrap{width:262px;border:1px solid #e2e5ea;border-radius:9px;background:#fff;overflow:hidden;}
+  .tblre-wrap th{cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;}
+  .tblre-wrap th.col-dragging{cursor:grabbing;color:#0f766e;background:#e9fbf3;position:relative;z-index:2;box-shadow:0 0 0 1px #10b981 inset;}
+  .drag-dot{font-style:normal;font-size:10px;color:#b3bac2;margin-left:4px;}
+
+  .tbledit-wrap{width:262px;border:1px solid #e2e5ea;border-radius:9px;background:#fff;overflow:hidden;}
+  .edittarget{cursor:text;}
+  .edittarget:hover{background:#f2fbf7;}
+  .cell-input{width:100%;border:1px solid #10b981;border-radius:5px;font:inherit;font-size:12px;padding:3px 5px;outline:none;box-sizing:border-box;background:#fff;color:#1a1d21;box-shadow:0 0 0 2px rgba(16,185,129,.14);}
+
+  @media(prefers-reduced-motion:reduce){
+    .mega-panel{animation:none;}
+    .fab{transition:none;}
+  }
+
 </style>
 </head>
 <body>
@@ -490,14 +616,15 @@
           <button class="btn btn-pri" data-cmd="toast" data-arg="点击了主要按钮">主要按钮</button>
           <button class="btn btn-ghost" data-cmd="toast" data-arg="这是次要按钮">次要按钮</button>
           <button class="btn btn-danger" data-cmd="toast" data-arg="确认删除？">危险按钮</button>
+          <button class="btn btn-ghost" id="copyDemoBtn">复制链接</button>
         </div>
       </div>
       <div class="cmp-foot">
-        <ul class="pts"><li>能被点击、触发一个动作</li><li>最常见的交互元素</li></ul>
+        <ul class="pts"><li>能被点击、触发一个动作</li><li>最常见的交互元素</li><li>复制类操作给成功反馈</li></ul>
         <p class="where">提交、保存、跳转、删除等"做一个动作"。</p>
       </div>
 
-      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现可复用的按钮（Button）组件：支持主要、次要、危险三种用途样式，以及悬停、聚焦、禁用、加载状态；按钮文字与点击行为可配置，禁用或加载中不可重复触发。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现可复用的按钮（Button）组件：支持主要、次要、危险三种用途样式，以及悬停、聚焦、禁用、加载状态；按钮文字与点击行为可配置，禁用或加载中不可重复触发；复制类操作完成后按钮短暂显示成功状态再恢复。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 02 输入框 -->
@@ -506,15 +633,21 @@
         <div class="cmp-t"><h2>输入框</h2><button class="en" data-copy="Input / Text Field" title="点击复制">Input / Text Field</button></div>
         <span class="cat">输入</span>
       </div>
-      <div class="canvas"><span class="ctl">试一试：聚焦有高亮</span>
-        <input class="i" type="text" aria-label="姓名" placeholder="请输入你的名字…">
+      <div class="canvas"><span class="ctl">试一试：聚焦高亮；下方标签会浮动</span>
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:center;">
+          <input class="i" type="text" aria-label="姓名" placeholder="请输入你的名字…">
+          <label class="floatfield">
+            <input class="i" type="text" placeholder=" " aria-label="邮箱">
+            <span class="fflabel">邮箱（浮动标签）</span>
+          </label>
+        </div>
       </div>
       <div class="cmp-foot">
-        <ul class="pts"><li>让用户填一句/短文本</li><li>带占位提示文字</li></ul>
+        <ul class="pts"><li>让用户填一句/短文本</li><li>标签可浮动，节省空间</li></ul>
         <p class="where">填用户名、搜索词、邮箱等"一句话"的内容。</p>
       </div>
 
-      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现输入框（Input）组件：支持标签、占位提示、帮助文字与错误提示；有默认、聚焦、禁用、错误状态；必填与长度规则可配置，失焦时校验并在字段下方说明具体原因。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现输入框（Input）组件：支持标签（常驻或浮动两种形态，浮动标签在聚焦或已有内容时上浮缩小到边框上）、占位提示、帮助文字与错误提示；有默认、聚焦、禁用、错误状态；必填与长度规则可配置，失焦时校验并在字段下方说明具体原因。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 03 文本域 -->
@@ -523,11 +656,14 @@
         <div class="cmp-t"><h2>文本域</h2><button class="en" data-copy="Textarea" title="点击复制">Textarea</button></div>
         <span class="cat">输入</span>
       </div>
-      <div class="canvas"><span class="ctl">试一试：多行输入，可拖高</span>
-        <textarea class="i" aria-label="备注" placeholder="写点备注…"></textarea>
+      <div class="canvas"><span class="ctl">试一试：多行输入，右下角计字数</span>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <textarea class="i" id="taCount" aria-label="备注" placeholder="写点备注…（最多 80 字）"></textarea>
+          <span id="taCountNum" aria-live="polite" style="font-size:11px;color:#8a8f98;align-self:flex-end;">0 / 80</span>
+        </div>
       </div>
       <div class="cmp-foot">
-        <ul class="pts"><li>让用户填多行长文本</li><li>可以拖动右下角变高</li></ul>
+        <ul class="pts"><li>让用户填多行长文本</li><li>实时显示字数与上限</li></ul>
         <p class="where">填写备注、简介、评论、一段话。</p>
       </div>
 
@@ -559,19 +695,22 @@
         <div class="cmp-t"><h2>复选框</h2><button class="en" data-copy="Checkbox" title="点击复制">Checkbox</button></div>
         <span class="cat">输入</span>
       </div>
-      <div class="canvas"><span class="ctl">试一试：可多选</span>
+      <div class="canvas"><span class="ctl">试一试：勾选子项，看父级半选</span>
         <div style="display:flex;flex-direction:column;gap:6px;">
-          <label class="check"><input type="checkbox" checked> 接收通知</label>
-          <label class="check"><input type="checkbox"> 订阅邮件</label>
-          <label class="check"><input type="checkbox"> 记住登录</label>
+          <label class="check"><input type="checkbox" id="ckAll"> 全部开启（父级）</label>
+          <div style="display:flex;flex-direction:column;gap:6px;padding-left:22px;">
+            <label class="check"><input type="checkbox" class="ck-child" checked> 接收通知</label>
+            <label class="check"><input type="checkbox" class="ck-child"> 订阅邮件</label>
+            <label class="check"><input type="checkbox" class="ck-child"> 记住登录</label>
+          </div>
         </div>
       </div>
       <div class="cmp-foot">
-        <ul class="pts"><li>可勾选多个</li><li>勾了=选中，再勾=取消</li></ul>
+        <ul class="pts"><li>可勾选多个</li><li>勾了=选中，再勾=取消</li><li>父级支持半选状态</li></ul>
         <p class="where">可多选的项，如"勾选你感兴趣的话题"。</p>
       </div>
 
-      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现复选框（Checkbox）组件：接收选项列表渲染一组可独立勾选的项，每一项可单独禁用；有选中、未选中、聚焦与禁用状态，点击标签文字也可切换。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现复选框（Checkbox）组件：接收选项列表渲染一组可独立勾选的项，每一项可单独禁用；有选中、未选中、半选（部分子项选中时父级显示半选态，可一键全选或清空）、聚焦与禁用状态，点击标签文字也可切换。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 06 单选按钮 -->
@@ -1367,6 +1506,359 @@
       <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现浮层（Popover）组件：点击触发元素后在附近展开承载说明或轻量操作，不锁定页面滚动；支持点击外部与 Esc 键关闭，靠近视口边缘时自动调整方向避免被裁切。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
+  <!-- 48 密码强度 -->
+    <article class="cmp" id="c-password-strength" data-cat="input" data-name="密码强度 password strength 强度 弱中强 注册 表单">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>密码强度</h2><button class="en" data-copy="Password Strength" title="点击复制">Password Strength</button></div>
+        <span class="cat">输入</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：输入密码看强度变化</span>
+        <div class="pw-demo" data-level="0">
+          <input class="i" type="password" id="pwInput" aria-label="设置密码" placeholder="设置密码…" autocomplete="new-password">
+          <div class="pw-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <p class="pw-hint" role="status">至少 8 位，混合字母、数字与符号。</p>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>输入时实时评估强度</li><li>给改进建议，不只打分</li></ul>
+        <p class="where">注册、修改密码时，帮用户设出更安全的密码。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现密码强度提示：输入时实时评估长度与字符组成，用分段进度条和文字说明当前强度与改进方向；至少分弱、中、强三档，颜色之外始终配文字说明；强度只作引导不阻止提交。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 49 标签输入 -->
+    <article class="cmp" id="c-tag-input" data-cat="input" data-name="标签输入 tag input 标签 chip 添加 删除">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>标签输入</h2><button class="en" data-copy="Tag Input" title="点击复制">Tag Input</button></div>
+        <span class="cat">输入</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：输入后回车添加标签</span>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+          <div class="taginput-demo" id="tagBox">
+            <span class="tagchip"><span>界面</span><button type="button" class="tagx" aria-label="删除标签：界面">×</button></span>
+            <input class="taginput" id="tagInput" type="text" aria-label="添加标签" placeholder="输入后回车添加">
+          </div>
+          <p class="taghint">回车或逗号添加；退格删除最后一个。</p>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>输入内容变成可删标签</li><li>常与自动补全候选配合</li></ul>
+        <p class="where">填收件人、话题、技能等"一个一个添加"的内容。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现标签输入（Tag Input）组件：输入后回车或逗号生成可删除的标签，退格删除最后一个；有重复检测、点击 × 删除与完整键盘操作；标签数据可配置，可配合自动补全候选项。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 50 验证码输入 -->
+    <article class="cmp" id="c-otp" data-cat="input" data-name="验证码输入 otp 验证码 短信 跳格 粘贴">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>验证码输入</h2><button class="en" data-copy="OTP Input" title="点击复制">OTP Input</button></div>
+        <span class="cat">输入</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：连续输入，自动跳格</span>
+        <div class="otp-demo">
+          <div class="otp-row" id="otpRow" role="group" aria-label="请输入 6 位验证码">
+            <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" aria-label="第 1 位"><input type="text" maxlength="1" inputmode="numeric" aria-label="第 2 位"><input type="text" maxlength="1" inputmode="numeric" aria-label="第 3 位"><input type="text" maxlength="1" inputmode="numeric" aria-label="第 4 位"><input type="text" maxlength="1" inputmode="numeric" aria-label="第 5 位"><input type="text" maxlength="1" inputmode="numeric" aria-label="第 6 位">
+          </div>
+          <p class="otp-hint" role="status">输入自动前进；支持整段粘贴。</p>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>一位一格，自动跳格</li><li>支持整段粘贴分配</li></ul>
+        <p class="where">短信/邮箱验证码、两步验证的第二步。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现验证码输入（OTP Input）组件：渲染固定数量的单字符输入框，输入后自动前进一格，退格回到上一格；支持整段粘贴自动分配，全部填完触发提交回调并防止重复提交；提供清空与重新发送入口，数字键盘优先。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 51 原地编辑 -->
+    <article class="cmp" id="c-inline-edit" data-cat="input" data-name="原地编辑 inline edit 就地编辑 点击编辑 标题">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>原地编辑</h2><button class="en" data-copy="Inline Edit" title="点击复制">Inline Edit</button></div>
+        <span class="cat">输入</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：点击文字直接改</span>
+        <div class="inline-edit-demo">
+          <p class="ie-text" id="ieText" tabindex="0" role="button" aria-label="点击编辑这段文字">点击这段文字，原地修改标题</p>
+          <p class="ie-hint">Enter 保存，Esc 取消。</p>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>文字原地变输入框</li><li>不弹窗、不跳页</li></ul>
+        <p class="where">改标题、清单项、表格单元格这类"一小段文字"。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现原地编辑（Inline Edit）：默认以文本展示，点击或键盘激活后原位切换为输入框，Enter 或失焦保存、Esc 取消恢复原值；空内容不保存并给出提示；编辑切换时布局不跳动。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 52 长按确认 -->
+    <article class="cmp" id="c-hold-confirm" data-cat="input" data-name="长按确认 hold to confirm 按住 高风险 危险操作">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>长按确认</h2><button class="en" data-copy="Hold to Confirm" title="点击复制">Hold to Confirm</button></div>
+        <span class="cat">输入</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：按住不放约 1 秒</span>
+        <div class="hold-demo">
+          <button class="holdbtn" id="holdBtn"><span class="holdfill" aria-hidden="true"></span><span class="holdlabel">按住 1 秒，删除草稿</span></button>
+          <p class="ie-hint">提前松开自动取消；键盘按住 Enter 同样有效。</p>
+          <button class="btn btn-ghost hold-alt" data-cmd="toast" data-arg="已通过普通按钮删除（演示）">普通确认按钮（等价入口）</button>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>按住才执行高风险操作</li><li>必须保留普通确认入口</li></ul>
+        <p class="where">删除、退出、支付这类"不可逆"的操作。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现长按确认按钮：按住约一秒后执行高风险操作，按钮内以进度填充表示剩余时间，提前松开取消并提示未完成；同时提供普通点击确认的等价入口，键盘按住 Enter 触发同样效果。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 53 分裂按钮 -->
+    <article class="cmp" id="c-split-button" data-cat="input" data-name="分裂按钮 split button 默认动作 更多选项 导出">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>分裂按钮</h2><button class="en" data-copy="Split Button" title="点击复制">Split Button</button></div>
+        <span class="cat">输入</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：主区直接导出，箭头看更多</span>
+        <div class="splitbtn-demo">
+          <div class="splitbtn">
+            <button class="split-main" data-cmd="toast" data-arg="已导出 PNG（演示）">导出</button>
+            <button class="split-caret" id="splitCaret" aria-haspopup="menu" aria-expanded="false" aria-label="更多导出选项">▼</button>
+          </div>
+          <div class="split-menu" id="splitMenu" role="menu" hidden>
+            <button type="button" role="menuitem" class="split-pick">导出为 PNG</button>
+            <button type="button" role="menuitem" class="split-pick">导出为 SVG</button>
+            <button type="button" role="menuitem" class="split-pick">复制到剪贴板</button>
+          </div>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>左边执行默认动作</li><li>箭头展开更多同类动作</li></ul>
+        <p class="where">导出、发送、保存这类"有一个最常用选项"的操作。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现分裂按钮（Split Button）：主区域执行默认动作，右侧箭头展开相关动作菜单；默认动作可记忆用户上次选择，菜单支持键盘方向键、Enter 与 Esc，主动作与菜单动作都可配置。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 54 悬浮按钮 -->
+    <article class="cmp" id="c-fab" data-cat="nav" data-name="悬浮按钮 fab floating action button 快捷操作 速度拨盘">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>悬浮按钮</h2><button class="en" data-copy="Floating Action Button" title="点击复制">Floating Action Button</button></div>
+        <span class="cat">导航</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：点击 ＋ 展开快捷操作</span>
+        <div class="fab-demo">
+          <div class="fab-actions" id="fabActions" hidden>
+            <span class="fab-mini-wrap"><span class="fab-label">新建文档</span><button type="button" class="fab-mini" data-cmd="toast" data-arg="新建文档（演示）" aria-label="新建文档">✎</button></span>
+            <span class="fab-mini-wrap"><span class="fab-label">上传图片</span><button type="button" class="fab-mini" data-cmd="toast" data-arg="上传图片（演示）" aria-label="上传图片">↑</button></span>
+            <span class="fab-mini-wrap"><span class="fab-label">新建清单</span><button type="button" class="fab-mini" data-cmd="toast" data-arg="新建清单（演示）" aria-label="新建清单">☰</button></span>
+          </div>
+          <button class="fab" id="fabBtn" aria-expanded="false" aria-label="打开快捷操作">＋</button>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>常驻角落的主操作</li><li>展开一组快捷动作</li></ul>
+        <p class="where">移动端和工具页里"随时要新建点什么"。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现悬浮动作按钮（FAB）：固定在视口角落，点击展开一组快捷操作，展开时主按钮旋转为关闭态，再次点击或按 Esc 收起；每个操作有文字标签，键盘可到达；出现与收起不遮挡正文，移动端避让底部安全区。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 55 大型菜单 -->
+    <article class="cmp" id="c-mega-menu" data-cat="nav" data-name="大型菜单 mega menu 导航 分组 多列 面板">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>大型菜单</h2><button class="en" data-copy="Mega Menu" title="点击复制">Mega Menu</button></div>
+        <span class="cat">导航</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：点击「产品」展开面板</span>
+        <div class="mega-demo">
+          <nav class="mega-bar" aria-label="大型菜单演示">
+            <button class="mega-item" id="megaTrigger" aria-expanded="false" aria-haspopup="true">产品 ▾</button>
+            <button class="mega-item" data-cmd="toast" data-arg="定价（演示链接）">定价</button>
+            <button class="mega-item" data-cmd="toast" data-arg="文档（演示链接）">文档</button>
+          </nav>
+          <div class="mega-panel" id="megaPanel">
+            <div class="mega-col"><strong>功能</strong><button type="button" class="mega-link" data-cmd="toast" data-arg="功能总览（演示链接）">功能总览</button><button type="button" class="mega-link" data-cmd="toast" data-arg="自动化（演示链接）">自动化</button><button type="button" class="mega-link" data-cmd="toast" data-arg="协作（演示链接）">协作</button></div>
+            <div class="mega-col"><strong>场景</strong><button type="button" class="mega-link" data-cmd="toast" data-arg="产品设计（演示链接）">产品设计</button><button type="button" class="mega-link" data-cmd="toast" data-arg="市场运营（演示链接）">市场运营</button><button type="button" class="mega-link" data-cmd="toast" data-arg="工程研发（演示链接）">工程研发</button></div>
+            <div class="mega-feature"><strong style="font-size:12px;color:#0f766e;">本月更新</strong><span>「实现规范」分区上线，帮 AI 做对动效。</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>一排导航展开一大块面板</li><li>多列分组，可放推荐位</li></ul>
+        <p class="where">栏目多的官网顶部导航，一屏看全所有入口。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现大型菜单（Mega Menu）：一级导航项展开多列分组面板，可含分组标题、链接与一块推荐位；面板对齐内容区宽度，出现时不推移页面内容；点击、悬停（带意图延迟防误触）与键盘都能开关，Esc 关闭并把焦点还给触发项。浮层定位遵守不出视口与碰撞检测规则。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 56 右键菜单 -->
+    <article class="cmp" id="c-context-menu" data-cat="nav" data-name="右键菜单 context menu 上下文菜单 长按 光标位置">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>右键菜单</h2><button class="en" data-copy="Context Menu" title="点击复制">Context Menu</button></div>
+        <span class="cat">导航</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：在虚线框内右键或长按</span>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+          <div class="ctxzone" id="ctxZone" tabindex="0" aria-label="演示区域：右键、长按或按 Enter 打开上下文菜单">在这里右键 / 长按 / Enter</div>
+          <p class="ie-hint">菜单出现在光标位置；Esc 或点击外部关闭。</p>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>在光标位置打开</li><li>触屏用长按替代</li></ul>
+        <p class="where">文件、卡片、画布这类"对当前对象做操作"的场景。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现自定义右键菜单：在目标区域右键时于光标位置打开，靠近边缘自动调整不出视口；菜单项可按对象配置，Esc、点击外部或选择后关闭；触屏用长按替代右键，键盘提供 Shift+F10 或可见按钮入口，菜单项支持方向键导航。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 57 视图切换 -->
+    <article class="cmp" id="c-view-switch" data-cat="display" data-name="视图切换 grid list 网格 列表 预览 代码 segmented">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>视图切换</h2><button class="en" data-copy="View Switch" title="点击复制">View Switch</button></div>
+        <span class="cat">展示</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：网格和列表两种排布</span>
+        <div class="viewsw-demo">
+          <div class="segmini" role="group" aria-label="切换视图">
+            <button type="button" class="segb on" data-view="grid" aria-pressed="true">网格</button>
+            <button type="button" class="segb" data-view="list" aria-pressed="false">列表</button>
+          </div>
+          <div class="viewsw-body" id="viewBody" data-view="grid">
+            <span class="vitem"><b>项目 A</b><small>12 项</small></span><span class="vitem"><b>项目 B</b><small>7 项</small></span><span class="vitem"><b>项目 C</b><small>21 项</small></span><span class="vitem"><b>项目 D</b><small>3 项</small></span><span class="vitem"><b>项目 E</b><small>9 项</small></span><span class="vitem"><b>项目 F</b><small>15 项</small></span>
+          </div>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>同一批数据两种排布</li><li>只切换视图，不重新加载</li></ul>
+        <p class="where">文件列表、商品列表；也适用于"预览 / 代码"切换。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现视图切换控件：分段按钮在网格与列表两种视图间切换，只切换排布不重新请求数据，选中态有清楚的高亮指示；切换后保持滚动位置与选中状态；同一模式适用于预览/代码等成对视图的切换。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 58 表格固定表头与固定列 -->
+    <article class="cmp" id="c-table-fixed" data-cat="display" data-name="表格固定 固定表头 固定列 sticky 表格 吸顶 吸左">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>表格固定表头与固定列</h2><button class="en" data-copy="Sticky Header & Column" title="点击复制">Sticky Header &amp; Column</button></div>
+        <span class="cat">展示</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：上下、左右都能滚动</span>
+        <div class="tblfix-demo" tabindex="0" aria-label="表格演示：表头吸顶，第一列吸左，可双向滚动">
+          <table class="demo-tbl">
+            <thead><tr><th class="fixcol">区域</th><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th></tr></thead>
+            <tbody>
+              <tr><th class="fixcol" scope="row">华东</th><td>32</td><td>41</td><td>28</td><td>36</td><td>44</td></tr>
+              <tr><th class="fixcol" scope="row">华南</th><td>27</td><td>30</td><td>35</td><td>31</td><td>29</td></tr>
+              <tr><th class="fixcol" scope="row">华北</th><td>18</td><td>22</td><td>26</td><td>24</td><td>30</td></tr>
+              <tr><th class="fixcol" scope="row">西南</th><td>14</td><td>17</td><td>15</td><td>20</td><td>23</td></tr>
+              <tr><th class="fixcol" scope="row">东北</th><td>9</td><td>11</td><td>13</td><td>10</td><td>16</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>上下滚动表头不动</li><li>左右滚动首列不动</li></ul>
+        <p class="where">列多行也多的数据表，滚动时仍知道"看的是哪格"。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现表格固定表头与固定列：容器内滚动时表头吸顶、第一列吸左，两层固定同时生效、互不遮挡；固定列带边界阴影提示可横向滚动；窄屏退化为可横滚的普通表格且保留行头。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 59 列宽拖拽与列显隐 -->
+    <article class="cmp" id="c-table-columns" data-cat="display" data-name="列宽 拖拽 列显隐 表格 列 隐藏 调宽">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>列宽拖拽与列显隐</h2><button class="en" data-copy="Column Resize & Visibility" title="点击复制">Column Resize &amp; Visibility</button></div>
+        <span class="cat">展示</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：拖表头右缘调宽，勾选控显隐</span>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <div class="tblcol-wrap">
+            <table class="demo-tbl" id="colTbl" style="table-layout:fixed;width:100%;">
+              <thead><tr>
+                <th class="demo-th" style="width:40%;">名称<span class="colgrip" role="separator" aria-label="拖动调整名称列宽" aria-orientation="vertical"></span></th>
+                <th class="demo-th" style="width:32%;">状态<span class="colgrip" role="separator" aria-label="拖动调整状态列宽" aria-orientation="vertical"></span></th>
+                <th class="demo-th">负责人</th>
+              </tr></thead>
+              <tbody>
+                <tr><td>首页改版</td><td>进行中</td><td>小林</td></tr>
+                <tr><td>支付联调</td><td>待开始</td><td>阿哲</td></tr>
+                <tr><td>动效规范</td><td>已完成</td><td>志光</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="colmenu">
+            <label class="check"><input type="checkbox" data-col="0" checked> 名称</label>
+            <label class="check"><input type="checkbox" data-col="1" checked> 状态</label>
+            <label class="check"><input type="checkbox" data-col="2" checked> 负责人</label>
+          </div>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>拖表头边界调列宽</li><li>勾选控制列显示隐藏</li></ul>
+        <p class="where">后台数据表，让每个人按自己的关注点看表。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现表格列宽拖拽与列显隐：表头边界可拖动调整列宽并有最小宽度限制；列设置菜单中的复选项控制各列显示隐藏，隐藏后表格布局不被破坏；用户偏好可在本地保留，提供恢复默认入口。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 60 拖动列排序 -->
+    <article class="cmp" id="c-table-reorder" data-cat="display" data-name="拖动列排序 列顺序 表头拖拽 换位 表格">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>拖动列排序</h2><button class="en" data-copy="Column Reorder" title="点击复制">Column Reorder</button></div>
+        <span class="cat">展示</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：按住表头左右拖动换位</span>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div class="tblre-wrap">
+            <table class="demo-tbl" id="reTbl">
+              <thead><tr><th aria-label="名称列，按住拖动可换位">名称<i class="drag-dot" aria-hidden="true">⠿</i></th><th aria-label="负责人列，按住拖动可换位">负责人<i class="drag-dot" aria-hidden="true">⠿</i></th><th aria-label="截止日期列，按住拖动可换位">截止<i class="drag-dot" aria-hidden="true">⠿</i></th></tr></thead>
+              <tbody>
+                <tr><td>首页改版</td><td>小林</td><td>09-30</td></tr>
+                <tr><td>支付联调</td><td>阿哲</td><td>10-14</td></tr>
+                <tr><td>动效规范</td><td>志光</td><td>09-27</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="ie-hint">拖动中源列高亮；松手落位。</p>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>按住表头左右拖</li><li>越过相邻列实时换位</li></ul>
+        <p class="where">看板和数据表，把最重要的列拖到自己顺手的位置。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现表头拖动调整列序：按住表头左右拖动，越过相邻列时实时换位，松手落位并保持整列数据对应；拖动中源列高亮、光标为抓取态；提供左移、右移的键盘等价操作；列顺序可在本地保留。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 61 单元格编辑 -->
+    <article class="cmp" id="c-table-edit" data-cat="display" data-name="单元格编辑 表格编辑 双击 原地编辑 表格 inline">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>单元格编辑</h2><button class="en" data-copy="Inline Cell Edit" title="点击复制">Inline Cell Edit</button></div>
+        <span class="cat">展示</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：双击单元格直接改</span>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div class="tbledit-wrap">
+            <table class="demo-tbl">
+              <tbody>
+                <tr><td class="edittarget" tabindex="0" aria-label="双击或回车编辑：首页改版">首页改版</td><td class="edittarget" tabindex="0" aria-label="双击或回车编辑：进行中">进行中</td></tr>
+                <tr><td class="edittarget" tabindex="0" aria-label="双击或回车编辑：支付联调">支付联调</td><td class="edittarget" tabindex="0" aria-label="双击或回车编辑：待开始">待开始</td></tr>
+                <tr><td class="edittarget" tabindex="0" aria-label="双击或回车编辑：动效规范">动效规范</td><td class="edittarget" tabindex="0" aria-label="双击或回车编辑：已完成">已完成</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="ie-hint">Enter 保存，Esc 取消。</p>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>双击单元格变输入框</li><li>不打开整行编辑表单</li></ul>
+        <p class="where">改表格里的名字、状态、备注这类"一个格子"。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现表格单元格原地编辑：双击或回车把单元格切换为输入框，Enter 或失焦保存、Esc 取消恢复原值；校验失败不保存并提示原因；Tab 在单元格间移动，编辑态布局不跳动，保存后本地数据同步更新。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
   </div>
 
   <div class="none" id="none" hidden>
@@ -1378,7 +1870,7 @@
 
 </main>
 
-<footer class="f">网页 UI 元素速查 · 47 个组件及可复制实现需求</footer>
+<footer class="f">网页 UI 元素速查 · 61 个组件及可复制实现需求</footer>
 
 <div class="modal-mask" id="modal">
   <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
@@ -1661,6 +2153,401 @@
   });
   cmdk.addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();cmdkInput.focus();}});
   cmdk.addEventListener('click',e=>{ if(e.target===cmdk) closeCmdk(); });
+
+  /* ---- 密码强度 ---- */
+  (function(){
+    const pw=document.getElementById('pwInput');
+    if(!pw) return;
+    const demo=pw.closest('.pw-demo'), hint=demo.querySelector('.pw-hint');
+    const hints=['至少 8 位，混合字母、数字与符号。','强度：弱 —— 再加些长度，或混合字母与数字。','强度：中 —— 建议再混入符号。','强度：强，可以放心使用。','强度：很强，非常稳。'];
+    pw.addEventListener('input',()=>{
+      const v=pw.value;
+      let score=0;
+      if(v.length>=8)score++;
+      if(/[a-zA-Z]/.test(v)&&/[0-9]/.test(v))score++;
+      if(/[^a-zA-Z0-9]/.test(v))score++;
+      if(score===3&&v.length>=12)score++;
+      demo.dataset.level=String(score);
+      hint.textContent=hints[score];
+    });
+  })();
+
+  /* ---- 标签输入 ---- */
+  (function(){
+    const input=document.getElementById('tagInput');
+    if(!input) return;
+    const box=document.getElementById('tagBox');
+    function addTag(raw){
+      const v=raw.trim().replace(/,+$/,'');
+      if(!v) return;
+      if([...box.querySelectorAll('.tagchip > span')].some(s=>s.textContent===v)){ toast('标签已存在'); return; }
+      const chip=document.createElement('span'); chip.className='tagchip';
+      const label=document.createElement('span'); label.textContent=v;
+      const x=document.createElement('button'); x.type='button'; x.className='tagx'; x.textContent='×'; x.setAttribute('aria-label','删除标签：'+v);
+      x.addEventListener('click',()=>chip.remove());
+      chip.append(label,x);
+      box.insertBefore(chip,input);
+      input.value='';
+    }
+    box.querySelectorAll('.tagx').forEach(x=>x.addEventListener('click',e=>e.target.closest('.tagchip').remove()));
+    input.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===','){ e.preventDefault(); addTag(input.value); }
+      else if(e.key==='Backspace'&&!input.value){
+        const chips=box.querySelectorAll('.tagchip');
+        if(chips.length) chips[chips.length-1].remove();
+      }
+    });
+    input.addEventListener('blur',()=>addTag(input.value));
+  })();
+
+  /* ---- 验证码输入 ---- */
+  (function(){
+    const row=document.getElementById('otpRow');
+    if(!row) return;
+    const inputs=[...row.querySelectorAll('input')], hint=row.parentNode.querySelector('.otp-hint');
+    function done(){ if(inputs.every(i=>i.value)){ toast('验证码已填完（演示，未提交）'); hint.textContent='已填完，可提交。'; } }
+    inputs.forEach((cell,i)=>{
+      cell.addEventListener('input',()=>{
+        cell.value=cell.value.replace(/\D/g,'').slice(-1);
+        if(cell.value&&i<inputs.length-1) inputs[i+1].focus();
+        done();
+      });
+      cell.addEventListener('keydown',e=>{
+        if(e.key==='Backspace'&&!cell.value&&i>0){ inputs[i-1].focus(); inputs[i-1].value=''; hint.textContent='输入自动前进；支持整段粘贴。'; e.preventDefault(); }
+        if(e.key==='ArrowLeft'&&i>0){ inputs[i-1].focus(); e.preventDefault(); }
+        if(e.key==='ArrowRight'&&i<inputs.length-1){ inputs[i+1].focus(); e.preventDefault(); }
+      });
+      cell.addEventListener('paste',e=>{
+        const text=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');
+        if(text.length<2) return;
+        e.preventDefault();
+        inputs.forEach((c,j)=>{ c.value=text[j]||''; });
+        inputs[Math.min(text.length,inputs.length-1)].focus();
+        done();
+      });
+    });
+  })();
+
+  /* ---- 原地编辑 ---- */
+  (function(){
+    const text=document.getElementById('ieText');
+    if(!text) return;
+    let editing=false;
+    function start(){
+      if(editing) return;
+      editing=true;
+      const original=text.textContent;
+      const input=document.createElement('input');
+      input.className='ie-input'; input.type='text'; input.value=original;
+      input.setAttribute('aria-label','编辑文字');
+      text.replaceWith(input); input.focus(); input.select();
+      function save(){ editing=false; text.textContent=input.value.trim()||original; input.replaceWith(text); }
+      function cancel(){ editing=false; input.replaceWith(text); }
+      input.addEventListener('keydown',e=>{
+        if(e.key==='Enter'){ e.preventDefault(); save(); }
+        else if(e.key==='Escape'){ e.preventDefault(); cancel(); }
+      });
+      input.addEventListener('blur',save);
+    }
+    text.addEventListener('click',start);
+    text.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); start(); } });
+  })();
+
+  /* ---- 长按确认 ---- */
+  (function(){
+    const btn=document.getElementById('holdBtn');
+    if(!btn) return;
+    const fill=btn.querySelector('.holdfill'), label=btn.querySelector('.holdlabel');
+    const originalLabel=label.textContent, DURATION=900;
+    let timer=null, startAt=0;
+    function tick(){
+      const p=Math.min(1,(performance.now()-startAt)/DURATION);
+      fill.style.width=(p*100)+'%';
+      if(p>=1){ stop(); complete(); }
+    }
+    function start(){
+      if(timer) return;
+      btn.classList.remove('completed');
+      startAt=performance.now();
+      timer=setInterval(tick,40);
+    }
+    function stop(){
+      clearInterval(timer); timer=null;
+      fill.style.width='0%';
+    }
+    function complete(){
+      btn.classList.add('completed');
+      label.textContent='已删除（演示）';
+      toast('草稿已删除（演示）');
+      setTimeout(()=>{ btn.classList.remove('completed'); label.textContent=originalLabel; },1400);
+    }
+    function cancel(){
+      if(!timer) return;
+      stop();
+      label.textContent='已取消，请按住不放';
+      setTimeout(()=>{ label.textContent=originalLabel; },1200);
+    }
+    btn.addEventListener('pointerdown',e=>{ if(e.button===0||e.pointerType!=='mouse') start(); });
+    btn.addEventListener('pointerup',cancel);
+    btn.addEventListener('pointerleave',cancel);
+    btn.addEventListener('pointercancel',cancel);
+    btn.addEventListener('contextmenu',e=>e.preventDefault());
+    btn.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&!e.repeat){ e.preventDefault(); start(); } });
+    btn.addEventListener('keyup',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cancel(); } });
+  })();
+
+  /* ---- 分裂按钮 ---- */
+  (function(){
+    const caret=document.getElementById('splitCaret');
+    if(!caret) return;
+    const menu=document.getElementById('splitMenu');
+    function close(){ menu.hidden=true; caret.setAttribute('aria-expanded','false'); }
+    caret.addEventListener('click',()=>{
+      menu.hidden=!menu.hidden;
+      caret.setAttribute('aria-expanded',String(!menu.hidden));
+      if(!menu.hidden) menu.querySelector('button').focus();
+    });
+    menu.querySelectorAll('.split-pick').forEach(b=>b.addEventListener('click',()=>{ toast(b.textContent+'（演示）'); close(); caret.focus(); }));
+    document.addEventListener('click',e=>{ if(!e.target.closest('.splitbtn-demo')) close(); });
+    menu.addEventListener('keydown',e=>{ if(e.key==='Escape'){ close(); caret.focus(); } });
+  })();
+
+  /* ---- 悬浮按钮 ---- */
+  (function(){
+    const fab=document.getElementById('fabBtn');
+    if(!fab) return;
+    const actions=document.getElementById('fabActions');
+    fab.addEventListener('click',()=>{
+      const open=actions.hidden;
+      actions.hidden=!open;
+      fab.classList.toggle('open',open);
+      fab.setAttribute('aria-expanded',String(open));
+      fab.setAttribute('aria-label',open?'关闭快捷操作':'打开快捷操作');
+    });
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape'&&actions.hidden===false){ actions.hidden=true; fab.classList.remove('open'); fab.setAttribute('aria-expanded','false'); fab.focus(); }
+    });
+  })();
+
+  /* ---- 大型菜单 ---- */
+  (function(){
+    const trigger=document.getElementById('megaTrigger');
+    if(!trigger) return;
+    const panel=document.getElementById('megaPanel');
+    let closeTimer=null;
+    function open(){ clearTimeout(closeTimer); panel.hidden=false; trigger.setAttribute('aria-expanded','true'); }
+    function close(){ panel.hidden=true; trigger.setAttribute('aria-expanded','false'); }
+    trigger.addEventListener('click',()=>{ panel.hidden?open():close(); });
+    trigger.addEventListener('keydown',e=>{
+      if(e.key==='ArrowDown'||e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); panel.querySelector('button').focus(); }
+      if(e.key==='Escape') close();
+    });
+    panel.addEventListener('keydown',e=>{
+      if(e.key==='Escape'){ close(); trigger.focus(); }
+    });
+    document.addEventListener('click',e=>{ if(!e.target.closest('.mega-demo')) close(); });
+  })();
+
+  /* ---- 右键菜单 ---- */
+  (function(){
+    const zone=document.getElementById('ctxZone');
+    if(!zone) return;
+    const menu=document.createElement('div');
+    menu.className='ctxmenu'; menu.hidden=true; menu.setAttribute('role','menu'); menu.setAttribute('aria-label','对象操作');
+    [['重命名',false],['复制',false],['删除',true]].forEach(([name,danger])=>{
+      const b=document.createElement('button');
+      b.type='button'; b.setAttribute('role','menuitem'); b.textContent=name;
+      if(danger) b.className='danger';
+      b.addEventListener('click',()=>{ toast(name+'（演示）'); hide(); });
+      menu.appendChild(b);
+    });
+    zone.appendChild(menu);
+    function show(x,y){
+      menu.hidden=false;
+      const zw=zone.clientWidth, zh=zone.clientHeight, mw=menu.offsetWidth, mh=menu.offsetHeight;
+      menu.style.left=Math.max(4,Math.min(x,zw-mw-4))+'px';
+      menu.style.top=Math.max(4,Math.min(y,zh-mh-4))+'px';
+      menu.querySelector('button').focus();
+    }
+    function hide(){ menu.hidden=true; }
+    let pressTimer=null;
+    zone.addEventListener('contextmenu',e=>{
+      e.preventDefault();
+      const rect=zone.getBoundingClientRect();
+      show(e.clientX-rect.left,e.clientY-rect.top);
+    });
+    zone.addEventListener('pointerdown',e=>{
+      if(e.pointerType==='mouse') return;
+      const rect=zone.getBoundingClientRect();
+      pressTimer=setTimeout(()=>show(e.clientX-rect.left,e.clientY-rect.top),550);
+    });
+    ['pointerup','pointermove','pointercancel'].forEach(t=>zone.addEventListener(t,()=>{ clearTimeout(pressTimer); }));
+    zone.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); show(zone.clientWidth/2-60,zone.clientHeight/2-40); }
+    });
+    menu.addEventListener('keydown',e=>{
+      const items=[...menu.querySelectorAll('button')], i=items.indexOf(document.activeElement);
+      if(e.key==='Escape'){ hide(); zone.focus(); }
+      if(e.key==='ArrowDown'){ e.preventDefault(); items[(i+1)%items.length].focus(); }
+      if(e.key==='ArrowUp'){ e.preventDefault(); items[(i-1+items.length)%items.length].focus(); }
+    });
+    document.addEventListener('click',e=>{ if(!e.target.closest('.ctxzone')) hide(); });
+  })();
+
+  /* ---- 视图切换 ---- */
+  (function(){
+    const body=document.getElementById('viewBody');
+    if(!body) return;
+    const buttons=[...document.querySelectorAll('.segb')];
+    buttons.forEach(b=>b.addEventListener('click',()=>{
+      buttons.forEach(x=>{ const on=x===b; x.classList.toggle('on',on); x.setAttribute('aria-pressed',String(on)); });
+      body.dataset.view=b.dataset.view;
+    }));
+  })();
+
+  /* ---- 表格列宽拖拽与列显隐 ---- */
+  (function(){
+    const tbl=document.getElementById('colTbl');
+    if(!tbl) return;
+    const ths=[...tbl.tHead.rows[0].cells];
+    ths.forEach((th,i)=>{
+      const grip=th.querySelector('.colgrip');
+      if(!grip) return;
+      grip.addEventListener('pointerdown',e=>{
+        e.preventDefault();
+        grip.setPointerCapture(e.pointerId);
+        grip.classList.add('on');
+        const startX=e.clientX, startW=th.offsetWidth;
+        function move(ev){
+          const w=Math.max(56,startW+(ev.clientX-startX));
+          th.style.width=w+'px';
+        }
+        function up(){ grip.classList.remove('on'); grip.removeEventListener('pointermove',move); grip.removeEventListener('pointerup',up); grip.removeEventListener('pointercancel',up); }
+        grip.addEventListener('pointermove',move);
+        grip.addEventListener('pointerup',up);
+        grip.addEventListener('pointercancel',up);
+      });
+    });
+    document.querySelectorAll('.colmenu input[data-col]').forEach(cb=>{
+      cb.addEventListener('change',()=>{
+        const idx=Number(cb.dataset.col), visible=cb.checked;
+        [...tbl.rows].forEach(row=>{ row.cells[idx].style.display=visible?'':'none'; });
+      });
+    });
+  })();
+
+  /* ---- 拖动列排序 ---- */
+  (function(){
+    const tbl=document.getElementById('reTbl');
+    if(!tbl) return;
+    let drag=null;
+    function moveCol(from,to){
+      const rows=[...tbl.rows];
+      if(to<0||to>=rows[0].cells.length||from===to) return;
+      rows.forEach(row=>{
+        const cells=row.cells, c=cells[from], ref=cells[to];
+        if(to>from) row.insertBefore(c,ref.nextElementSibling);
+        else row.insertBefore(c,ref);
+      });
+    }
+    [...tbl.tHead.rows[0].cells].forEach((th,i)=>{
+      th.addEventListener('pointerdown',e=>{
+        if(e.button!==0) return;
+        drag={th,i,startX:e.clientX,dx:0};
+        th.setPointerCapture(e.pointerId);
+        th.classList.add('col-dragging');
+        e.preventDefault();
+      });
+    });
+    tbl.addEventListener('pointermove',e=>{
+      if(!drag) return;
+      drag.dx=e.clientX-drag.startX;
+      drag.th.style.transform=`translateX(${drag.dx}px)`;
+      const w=drag.th.offsetWidth;
+      if(drag.dx>w/2){ moveCol(drag.i,drag.i+1); drag.i+=1; drag.startX+=w; drag.th.style.transform=''; }
+      else if(drag.dx<-w/2){ moveCol(drag.i,drag.i-1); drag.i-=1; drag.startX-=w; drag.th.style.transform=''; }
+    });
+    function endDrag(){
+      if(!drag) return;
+      drag.th.style.transform='';
+      drag.th.classList.remove('col-dragging');
+      toast('列顺序已调整（演示）');
+      drag=null;
+    }
+    tbl.addEventListener('pointerup',endDrag);
+    tbl.addEventListener('pointercancel',endDrag);
+  })();
+
+  /* ---- 单元格编辑 ---- */
+  (function(){
+    document.querySelectorAll('.edittarget').forEach(cell=>{
+      let editing=false;
+      function start(){
+        if(editing) return;
+        editing=true;
+        const original=cell.textContent;
+        const input=document.createElement('input');
+        input.className='cell-input'; input.type='text'; input.value=original;
+        input.setAttribute('aria-label','编辑单元格');
+        cell.textContent=''; cell.appendChild(input);
+        input.focus(); input.select();
+        function save(){
+          editing=false;
+          const v=input.value.trim();
+          cell.textContent=v||original;
+          cell.setAttribute('aria-label','双击或回车编辑：'+(v||original));
+          if(!v) toast('内容不能为空，已恢复原值');
+        }
+        function cancel(){ editing=false; cell.textContent=original; }
+        input.addEventListener('keydown',e=>{
+          if(e.key==='Enter'){ e.preventDefault(); input.blur(); }
+          else if(e.key==='Escape'){ e.preventDefault(); input.removeEventListener('blur',save); cancel(); cell.focus(); }
+        });
+        input.addEventListener('blur',save);
+      }
+      cell.addEventListener('dblclick',start);
+      cell.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); start(); } });
+    });
+  })();
+
+  /* ---- 复选框：父级全选与半选 ---- */
+  (function(){
+    const all=document.getElementById('ckAll');
+    if(!all) return;
+    const kids=[...document.querySelectorAll('.ck-child')];
+    function sync(){
+      const n=kids.filter(k=>k.checked).length;
+      all.checked=n===kids.length;
+      all.indeterminate=n>0&&n<kids.length;
+    }
+    all.addEventListener('change',()=>{ kids.forEach(k=>k.checked=all.checked); sync(); });
+    kids.forEach(k=>k.addEventListener('change',sync));
+    sync();
+  })();
+
+  /* ---- 按钮：复制成功反馈 ---- */
+  (function(){
+    const btn=document.getElementById('copyDemoBtn');
+    if(!btn) return;
+    const original=btn.textContent;
+    btn.addEventListener('click',()=>{
+      btn.textContent='✓ 已复制';
+      btn.disabled=true;
+      setTimeout(()=>{ btn.textContent=original; btn.disabled=false; },1200);
+    });
+  })();
+
+  /* ---- 文本域：字数统计 ---- */
+  (function(){
+    const ta=document.getElementById('taCount');
+    if(!ta) return;
+    const num=document.getElementById('taCountNum'), MAX=80;
+    ta.addEventListener('input',()=>{
+      if(ta.value.length>MAX){ ta.value=ta.value.slice(0,MAX); toast('最多 80 字'); }
+      num.textContent=ta.value.length+' / '+MAX;
+      num.style.color=(MAX-ta.value.length)<=10?'#e11d48':'';
+    });
+  })();
 
 </script>
 

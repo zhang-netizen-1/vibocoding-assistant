@@ -63,14 +63,14 @@ class SiteBuildTest(unittest.TestCase):
         self.assertIn("./motion/", home.links)
         self.assertIn("./flows/", home.links)
         home_html = (DIST / "index.html").read_text(encoding="utf-8")
-        self.assertIn("<strong>152</strong><span>个可查条目", home_html)
+        self.assertIn("<strong>166</strong><span>个可查条目", home_html)
         self.assertIn('id="global-search"', home_html)
         self.assertEqual(home_html.count('<a class="directory-card'), 8)
         self.assertNotIn('class="home-demo"', home_html)
-        self.assertEqual((DIST / "ui" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制组件实现提示词</summary>"), 47)
+        self.assertEqual((DIST / "ui" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制组件实现提示词</summary>"), 61)
         self.assertEqual((DIST / "motion" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制动效实现提示词</summary>"), 65)
         for section, original, prefix, expected_count in (
-            ("ui", "网页UI元素速查.html", "c-", 47),
+            ("ui", "网页UI元素速查.html", "c-", 61),
             ("motion", "动效速查.html", "e-", 65),
         ):
             built = parse(DIST / section / "index.html")
@@ -157,13 +157,13 @@ class SiteBuildTest(unittest.TestCase):
         match = re.search(r'<script type="application/json" id="home-search-index">(.*?)</script>', home, re.S)
         self.assertIsNotNone(match)
         entries = json.loads(match.group(1))
-        self.assertEqual(len(entries), 152)
-        self.assertEqual(len({entry["href"] for entry in entries}), 152)
+        self.assertEqual(len(entries), 166)
+        self.assertEqual(len({entry["href"] for entry in entries}), 166)
         counts = {category: sum(entry["category"] == category for entry in entries) for category in {entry["category"] for entry in entries}}
-        self.assertEqual(counts["UI 元素"], 47)
+        self.assertEqual(counts["UI 元素"], 61)
         self.assertEqual(counts["动效"], 65)
         self.assertEqual(counts["UI 与交互 Skills"], 10)
-        self.assertEqual(sorted(counts.values()), [6, 6, 6, 6, 6, 10, 47, 65])
+        self.assertEqual(sorted(counts.values()), [6, 6, 6, 6, 6, 10, 61, 65])
         page_ids = {}
         for entry in entries:
             route, anchor = entry["href"].removeprefix("./").split("/#", 1)

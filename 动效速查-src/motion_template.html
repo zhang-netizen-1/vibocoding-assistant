@@ -85,12 +85,13 @@ __EXTRA_CSS__
 const reduce=matchMedia('(prefers-reduced-motion: reduce)');
 const coarse=matchMedia('(pointer: coarse)');
 const cards=[...document.querySelectorAll('.effect-card')];
+const specItems=[...document.querySelectorAll('[data-spec-item]')];
 const q=document.getElementById('q');
 const chips=[...document.querySelectorAll('.chip')];
 const count=document.getElementById('count');
 let filter='all',timerToast;
 function toast(text){const el=document.getElementById('toast');el.textContent=text;el.classList.add('show');clearTimeout(timerToast);timerToast=setTimeout(()=>el.classList.remove('show'),1800)}
-function apply(){let visible=0;const query=q.value.trim().toLowerCase();cards.forEach(card=>{const show=(filter==='all'||card.dataset.cat===filter)&&(!query||card.dataset.name.toLowerCase().includes(query));card.hidden=!show;if(show)visible++});document.querySelectorAll('.category-section').forEach(section=>{section.hidden=![...section.querySelectorAll('.effect-card')].some(c=>!c.hidden)});count.textContent=visible+' / '+cards.length+' 种效果';document.getElementById('empty').hidden=visible>0}
+function apply(){let visible=0,specVisible=0;const query=q.value.trim().toLowerCase();cards.forEach(card=>{const show=(filter==='all'||card.dataset.cat===filter)&&(!query||card.dataset.name.toLowerCase().includes(query));card.hidden=!show;if(show)visible++});specItems.forEach(item=>{const show=(filter==='all'||filter==='spec')&&(!query||item.dataset.name.toLowerCase().includes(query));item.hidden=!show;if(show)specVisible++});document.querySelectorAll('.category-section').forEach(section=>{if(section.dataset.cat==='spec'){section.hidden=specVisible===0;return}const any=[...section.querySelectorAll('.effect-card')].some(c=>!c.hidden);section.hidden=filter==='spec'?true:!any});count.textContent=filter==='spec'?specVisible+' 组规范':visible+' / '+cards.length+' 种效果';document.getElementById('empty').hidden=visible+specVisible>0}
 q.addEventListener('input',apply);chips.forEach(ch=>ch.addEventListener('click',()=>{filter=ch.dataset.filter;chips.forEach(x=>{const selected=x===ch;x.classList.toggle('active',selected);x.setAttribute('aria-pressed',String(selected))});apply()}));apply();
 let activeDialog=null,inerted=[];
 function openDialog(layer){if(activeDialog)return;layer.hidden=false;let child=layer;while(child!==document.body){for(const sibling of child.parentElement.children){if(sibling!==child&&!sibling.inert){sibling.inert=true;inerted.push(sibling)}}child=child.parentElement}activeDialog=layer;layer.querySelector('[data-action=close]').focus()}

@@ -33,8 +33,8 @@ def asset_version(name: str) -> str:
     return hashlib.sha256((SITE_SOURCE / name).read_bytes()).hexdigest()[:8]
 
 PAGES = (
-    ("ui", ROOT / "网页UI元素速查.html", "UI 元素", "47 个可交互网页 UI 元素示例。看形态与状态，复制清楚的组件实现需求。", 'class="cmp"', 47),
-    ("motion", ROOT / "动效速查.html", "动效", "65 种可交互页面与 App 动效。看触发和变化，复制清楚的动效实现需求。", 'class="effect-card"', 65),
+    ("ui", ROOT / "网页UI元素速查.html", "UI 元素", "61 个可交互网页 UI 元素示例。看形态与状态，复制清楚的组件实现需求。", 'class="cmp"', 61),
+    ("motion", ROOT / "动效速查.html", "动效", "65 种可交互动效，附实现规范分区。看触发和变化，复制清楚的动效实现需求。", 'class="effect-card"', 65),
 )
 
 
@@ -139,7 +139,7 @@ def build() -> None:
     expected = sorted((MARKER, "index.html", "ui/index.html", "motion/index.html", "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html", "assets/site.css", "assets/theme.css", "assets/site.js", "assets/home.css", "assets/home.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/flows.css", "assets/flows.js", "assets/favicon.svg", "skills/index.html", "flows/index.html", *(f"{slug}/index.html" for slug in GUIDES)))
     if files != expected:
         raise RuntimeError(f"Unexpected build files: {files}")
-    print("Built site: 10 pages, 152 entries, curated static output")
+    print("Built site: 10 pages, 166 entries + 动效实现规范, curated static output")
 
 
 if __name__ == "__main__":

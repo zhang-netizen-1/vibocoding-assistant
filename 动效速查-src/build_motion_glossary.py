@@ -1,6 +1,7 @@
 from pathlib import Path
 import html, json, math
 from extra_demos import DEMOS
+from motion_spec import render_spec_section, SPEC_CHIP
 
 SOURCE=Path(__file__).resolve().parent
 ROOT=SOURCE.parent
@@ -110,12 +111,13 @@ def card(e):
       <details class="card-prompt"><summary>查看并复制动效实现提示词</summary><p class="prompt-text">{esc(prompt)}</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>'''
 
-chips='<button class="chip active" data-filter="all" aria-pressed="true" type="button">全部</button>'+''.join(f'<button class="chip" data-filter="{key}" aria-pressed="false" type="button">{name}</button>' for key,(name,_) in CATS.items())
+chips='<button class="chip active" data-filter="all" aria-pressed="true" type="button">全部</button>'+''.join(f'<button class="chip" data-filter="{key}" aria-pressed="false" type="button">{name}</button>' for key,(name,_) in CATS.items())+SPEC_CHIP
 sections=[]
 for key,(name,description) in CATS.items():
     items=[e for e in entries if e[1]==key]
     assert items
     sections.append(f'<section class="category-section" id="section-{key}" data-cat="{key}"><div class="section-head"><div><h2>{name}</h2><p>{description}</p></div><span class="section-count">{len(items)} 种效果</span></div><div class="grid">'+''.join(card(e) for e in items)+'</div></section>')
+sections.append(render_spec_section())
 source=(SOURCE/'motion_template.html').read_text(encoding='utf-8')
 assert all(source.count(token)==1 for token in ('__CHIPS__','__SECTIONS__','__EXTRA_CSS__','__EXTRA_JS__'))
 output=(source.replace('__CHIPS__',chips).replace('__SECTIONS__','\n'.join(sections))
