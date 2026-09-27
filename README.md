@@ -2,6 +2,8 @@
 
 面向 Vibe Coding 初学者的界面速查网站。收录 UI 元素、动效、布局与响应式、视觉风格、交互规则、页面类型、数据可视化及 UI 与交互 Skills 八类，共 152 个可查条目。
 
+**在线访问：**[打开 vibocoding助手](https://zhang-netizen-1.github.io/vibocoding-assistant/)
+
 **核心用法：找到想要的界面效果，查看示例，展开条目中的「查看并复制实现提示词」，点击「复制提示词」，直接粘贴给正在处理你项目的 coding agent。** 提示词描述了实现目标、交互与验收要点；需要时再补充你的业务内容。Skills 类提供的是可复制的 **Codex 安装提示词**，用途与界面实现提示词不同。
 
 ## 网站截图
@@ -45,6 +47,8 @@ python3 -m http.server 4173 --directory dist
 ```
 
 在浏览器打开 `http://localhost:4173/`。构建结果位于 `dist/`，可以交给静态网站托管服务。发布时以 `dist/` 为根目录，不要把整个工作区作为网站根目录。
+
+`main` 分支更新后，GitHub Actions 会运行检查、构建 `dist/` 并自动发布到 GitHub Pages。
 
 ## 内容维护
 
