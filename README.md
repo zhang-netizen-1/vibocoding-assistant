@@ -1,6 +1,6 @@
 # vibocoding助手
 
-面向 Vibe Coding 初学者的界面速查网站。收录 UI 元素、动效、布局与响应式、视觉风格、交互规则、页面类型、数据可视化及 UI 与交互 Skills 八类，共 177 个可查条目；动效页另附「实现规范」分区（动效参数、浮层定位、z-index 层级、触发方式词汇等），不计入条目总数。
+面向 Vibe Coding 初学者的界面速查网站。收录 UI 元素、动效、布局与响应式、视觉风格、交互规则、页面类型、数据可视化及 UI 与交互 Skills 八类，共 184 个可查条目；动效页另附「实现规范」分区（动效参数、浮层定位、z-index 层级、触发方式词汇等），不计入条目总数。
 
 **在线访问：**[打开 vibocoding助手](https://zhang-netizen-1.github.io/vibocoding-assistant/)
 

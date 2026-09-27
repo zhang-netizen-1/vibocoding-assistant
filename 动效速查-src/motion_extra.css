@@ -179,7 +179,7 @@
 .magnet-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 26px}
 .magnet-btn{min-width:150px;min-height:48px;border:0;border-radius:0;background:var(--accent-dark);color:#171715;font:700 15px var(--font-sans);cursor:pointer;transition:transform .3s cubic-bezier(.2,.9,.3,1.25)}
 .magnet-label{display:inline-block;transition:transform .3s cubic-bezier(.2,.9,.3,1.25)}
-.magnet-note{font-size:11px;color:var(--faint)}
+.magnet-note{font-size:11px;color:var(--muted)}
 /* 悬停预览 */
 .hvp-stage{position:relative;display:flex;justify-content:center;padding:34px 20px}
 .hvp-link{color:var(--accent);font-size:15px;font-weight:650;border-bottom:1px dashed rgba(237,70,45,.5);cursor:pointer}
@@ -193,7 +193,7 @@
 .hact-media{height:88px;display:grid;place-items:center;background:linear-gradient(140deg,#3a3a36,#232320);color:var(--muted);font-size:12px;letter-spacing:.1em}
 .hact-meta{display:flex;justify-content:space-between;align-items:center;padding:10px 12px}
 .hact-meta b{color:var(--text);font-size:13px}
-.hact-meta span{color:var(--faint);font-size:11px}
+.hact-meta span{color:var(--muted);font-size:11px}
 .hact-bar{position:absolute;right:8px;bottom:44px;display:flex;gap:5px;opacity:0;transform:translateY(7px);transition:opacity .18s,transform .18s}
 .hact-card:hover .hact-bar,.hact-card:focus-within .hact-bar{opacity:1;transform:none}
 .hact-bar button{border:0;border-radius:0;background:var(--accent-dark);color:#171715;font-size:11px;font-weight:650;padding:5px 9px;cursor:pointer}
@@ -221,10 +221,10 @@
 .cf-ring:after{content:"查看";position:absolute;inset:0;display:grid;place-items:center;color:#ff8a70;font-size:10px;opacity:0;transition:opacity .15s}
 .cf-ring.big:after{opacity:1}
 .cf-target{position:absolute;right:26px;top:34px;padding:13px 17px;background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:12px}
-.cf-hint{position:absolute;left:16px;bottom:12px;color:var(--faint);font-size:11px}
+.cf-hint{position:absolute;left:16px;bottom:12px;color:var(--muted);font-size:11px}
 /* 光标拖尾 */
 .trail-stage{position:relative;width:100%;height:170px;background:var(--panel2);border:1px solid var(--line);overflow:hidden;cursor:crosshair}
-.trail-hint{position:absolute;inset:0;display:grid;place-items:center;color:var(--faint);font-size:11px;pointer-events:none}
+.trail-hint{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:11px;pointer-events:none}
 .trail-dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--accent);translate:-50% -50%;pointer-events:none;animation:trail-fade .55s ease forwards}
 @keyframes trail-fade{to{transform:scale(.1);opacity:0}}
 /* 鼠标跟随眼睛 */
@@ -232,7 +232,7 @@
 .eye{position:relative;width:62px;height:62px;border-radius:50%;background:#f2f0ea;border:2px solid var(--line2);display:flex;align-items:center;justify-content:center}
 .eye i{width:22px;height:22px;border-radius:50%;background:#171715;transition:transform .06s linear}
 .eyes-stage .eye:nth-child(2) i{transition-delay:.02s}
-.eyes-note{font-size:11px;color:var(--faint)}
+.eyes-note{font-size:11px;color:var(--muted)}
 /* 3D 物体跟随 */
 .obj-stage{display:grid;place-items:center;height:190px;perspective:700px}
 .obj-card{width:150px;height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:linear-gradient(150deg,#2b2b27,#1d1d1a);border:1px solid var(--line2);border-radius:0;box-shadow:10px 12px 0 rgba(237,70,45,.25);transition:transform .25s ease;transform-style:preserve-3d}
@@ -252,8 +252,14 @@
 .seq-scroll[data-frame="3"] .seq-box{transform:rotateY(180deg)}
 .seq-scroll[data-frame="4"] .seq-box{transform:rotateY(240deg)}
 .seq-scroll[data-frame="5"] .seq-box{transform:rotateY(300deg)}
-.seq-caption{margin-top:6px;font-size:11px;color:var(--faint);font-family:var(--font-mono)}
+.seq-caption{margin-top:6px;font-size:11px;color:var(--muted);font-family:var(--font-mono)}
 @media(prefers-reduced-motion:reduce){
   .magnet-btn,.magnet-label,.obj-card,.seq-box,.morph-word span{transition:none}
   .hvp-pop{transition:opacity .01s}
 }
+
+/* 滚动隐藏页头 */
+.hidehead-scroll .hh-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#fff;border-bottom:1px solid #e2e5ea;color:#1a1d21;font-size:12px;font-weight:650;transition:transform .22s ease}
+.hidehead-scroll .hh-head button{border:0;background:var(--accent-dark);color:#171715;font-size:10px;font-weight:650;padding:3px 8px;cursor:pointer}
+.hidehead-scroll.scrolldown .hh-head{transform:translateY(-102%)}
+.hidehead-scroll .hh-content{padding:14px 12px;color:#5b6470;font-size:11px;text-align:center}

@@ -6,7 +6,7 @@ from motion_spec import render_spec_section, SPEC_CHIP
 SOURCE=Path(__file__).resolve().parent
 ROOT=SOURCE.parent
 entries=json.loads((SOURCE/'motion_entries.json').read_text(encoding='utf-8'))
-assert len(entries)==76 and len({e[0] for e in entries})==76
+assert len(entries)==77 and len({e[0] for e in entries})==77
 assert {e[0] for e in entries if e[0].startswith('extra-')}==set(DEMOS)
 
 CATS={
@@ -43,6 +43,7 @@ def demo(kind):
     if kind=='view-stagger':
         return '<div class="stagger-box"><span class="stagger-kicker">NEW / 2026</span><strong>让想法，<br>逐步成形。</strong><span>从第一行标题开始，层层展开。</span><i>开始探索 <b>↗</b></i></div>'
     if kind=='scroll-scroll-zoom': return '<div class="mini-scroll zoom-scroll" tabindex="0" aria-label="可滚动的缩放演示"><div class="scroll-top">向下滚动 ↓</div><div class="scroll-spacer"></div><div class="zoom-target"><strong>产品图</strong><span>随滚动放大</span></div><div class="scroll-spacer end"></div></div><div class="scroll-meter"><i></i></div>'
+    if kind=='scroll-hide-header': return '<div class="mini-scroll hidehead-scroll" tabindex="0" aria-label="滚动方向演示：向下滚页头收起，向上滚立即回来"><div class="hh-head">页头导航<button type="button">操作</button></div><div class="scroll-spacer"></div><div class="hh-content">向下滚动：页头收起<br>向上滚动：立即回来</div><div class="scroll-spacer end"></div></div><div class="scroll-meter"><i></i></div>'
     if kind.startswith('scroll-'):
         body={
          'scroll-reveal':'<div class="scroll-target reveal-target">进入视口才显现</div>',

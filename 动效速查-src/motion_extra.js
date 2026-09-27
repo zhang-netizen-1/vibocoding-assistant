@@ -491,3 +491,14 @@ document.querySelectorAll('.seq-scroll').forEach(scroller=>{
   }
   scroller.addEventListener('scroll',frame,{passive:true});frame();
 });
+
+/* 滚动隐藏页头 */
+document.querySelectorAll('.hidehead-scroll').forEach(scroller=>{
+  let lastTop=scroller.scrollTop;
+  scroller.addEventListener('scroll',()=>{
+    const delta=scroller.scrollTop-lastTop;
+    if(delta>2)scroller.classList.add('scrolldown');
+    else if(delta<-2)scroller.classList.remove('scrolldown');
+    lastTop=scroller.scrollTop;
+  },{passive:true});
+});

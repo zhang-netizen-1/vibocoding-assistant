@@ -562,6 +562,55 @@
     .fab{transition:none;}
   }
 
+
+  /* ===== P1 新增演示 ===== */
+  .states-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:300px}
+  .st-btn.pr{transform:scale(.96);background:#e2e5ea}
+  .st-btn.sel{background:#ed462d;border-color:#c73a24;color:#fff}
+  .st-btn.dis{opacity:.45;cursor:not-allowed}
+  .st-btn.ro{border-style:dashed;background:transparent;color:#8a8f98;cursor:default}
+  .st-btn.ld{color:#6b7280;cursor:progress}
+  .st-spin{display:inline-block;width:11px;height:11px;border:2px solid #cbd0d6;border-top-color:#6b7280;border-radius:50%;margin-right:5px;vertical-align:-2px;animation:st-rot .8s linear infinite}
+  @keyframes st-rot{to{transform:rotate(360deg)}}
+  .st-btn.suc{border-color:#16a34a;color:#15803d;background:#f0fdf4}
+  .st-btn.err{border-color:#dc2626;color:#dc2626;background:#fef2f2}
+  .st-btn.warn{border-color:#d97706;color:#b45309;background:#fffbeb}
+  .inf-demo{width:250px;height:132px;overflow-y:auto;background:#fff;border:1px solid #e2e5ea;padding:7px;scrollbar-width:thin}
+  .inf-item{padding:7px 9px;border-bottom:1px solid #eef0f3;font-size:12px;color:#374151;background:#fff}
+  .inf-status{text-align:center;font-size:11px;color:#96948b;padding:6px 0 2px}
+  .lm-list{display:flex;flex-direction:column;gap:5px;width:230px}
+  .lm-list .inf-item{border:1px solid #eef0f3}
+  .lm-btn{border:1px solid #ed462d;background:#fff;color:#c73a24;font:650 12.5px var(--font-sans);padding:7px 18px;cursor:pointer}
+  .lm-btn[disabled]{border-color:#e2e5ea;color:#9aa1a9;cursor:default;background:#f6f7f8}
+  .btt-demo{position:relative;width:250px}
+  .btt-page{height:140px;overflow-y:auto;background:#fff;border:1px solid #e2e5ea;padding:10px 12px;font-size:12px;color:#4b5563;scrollbar-width:thin}
+  .btt-page p{margin:0 0 22px}
+  .btt-btn{position:absolute;right:10px;bottom:12px;width:34px;height:34px;border:0;background:#ed462d;color:#fff;font-size:16px;cursor:pointer;box-shadow:0 4px 10px rgba(60,20,10,.25)}
+  .btt-btn:hover{background:#ff5b41}
+  .cond-demo{width:262px;display:flex;flex-direction:column;gap:9px}
+  .cond-choice{display:flex;gap:16px}
+  .cond-steps{list-style:none;margin:0;padding:0;display:flex;gap:6px}
+  .cond-steps li{font-size:12px;color:#6b7280;border:1px solid #e2e5ea;padding:5px 10px;background:#fff}
+  .cond-steps li.cur{border-color:#ed462d;color:#c73a24;font-weight:650}
+  .cond-note{margin:0;font-size:11px;color:#ff8a70}
+  .adv-demo{width:262px;display:flex;flex-direction:column;gap:9px}
+  .adv-demo .i{width:100%}
+  .adv-toggle{align-self:flex-start;border:0;background:none;color:#ff8a70;font:650 12.5px var(--font-sans);cursor:pointer;padding:2px 0}
+  .adv-body{display:flex;flex-direction:column;gap:8px}
+  .ctxo-demo{width:262px;display:flex;flex-direction:column;gap:9px;align-items:flex-start}
+  .ctxo-demo > .check{color:#1a1d21;background:#fff;border:1px solid #e2e5ea;padding:6px 12px}
+  .ctxo-demo > .check input[type=checkbox]{accent-color:#ed462d;width:15px;height:15px;margin:0}
+  .ctxo-body{display:flex;flex-direction:column;gap:8px;width:100%;padding:9px;border:1px dashed #d8d2c8;background:#faf8f4}
+  .adv-body:not([hidden]),.ctxo-body:not([hidden]),.cond-steps li[data-extra]:not([hidden]){animation:fade-in-slide .22s ease}
+  @keyframes fade-in-slide{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+  .states-grid{width:320px}
+  .st-btn{white-space:nowrap}
+  .cond-choice{display:flex;gap:16px;align-items:center}
+  .cond-choice .check{color:#1a1d21;font-size:13.5px;background:#fff;border:1px solid #e2e5ea;padding:6px 12px}
+  .cond-choice input[type=radio]{accent-color:#ed462d;width:15px;height:15px;margin:0}
+  @media(prefers-reduced-motion:reduce){.st-spin{animation:none}.adv-body:not([hidden]),.ctxo-body:not([hidden]),.cond-steps li[data-extra]:not([hidden]){animation:none}}
+
 </style>
 </head>
 <body>
@@ -931,7 +980,7 @@
         <p class="where">确认删除、填写一次性信息、重要提示。通常带"确定/取消"。</p>
       </div>
 
-      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现模态弹窗（Modal）组件：打开时显示遮罩并锁定背景滚动，支持取消按钮、Esc 键与点击遮罩三种关闭方式；确认后执行传入的动作，关闭时把焦点归还触发元素，重复点击不叠加。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现模态弹窗（Modal）组件：打开时显示遮罩并锁定背景滚动，支持取消按钮、Esc 键与点击遮罩三种关闭方式；确认后执行传入的动作，关闭时把焦点归还触发元素，重复点击不叠加；出现与关闭按相反顺序播放动画。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 17 Toast -->
@@ -948,29 +997,37 @@
         <p class="where">保存成功、操作反馈这类"轻提示"。</p>
       </div>
 
-      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现轻提示（Toast）组件：接收提示内容与类型，出现后延时自动消失，多条按时间顺序堆叠；成功、失败、警告使用不同样式区分，提示不遮挡主要操作区域。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现轻提示（Toast）组件：接收提示内容与类型，出现后延时自动消失，多条按时间顺序堆叠；成功、失败、警告使用不同样式区分，提示不遮挡主要操作区域；连续操作时更新同一条提示，关键错误不能只闪一下，要保留继续处理的入口。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- c-states -->
-    <article class="cmp" id="c-states" data-cat="feedback" data-name="交互三态 Hover / Focus / Active 悬停 聚焦 按下 状态 选中态 样式状态">
+    <article class="cmp" id="c-states" data-cat="feedback" data-name="组件状态 component states 交互三态 十二态 default hover active focus selected disabled readonly loading success error warning 状态">
       <div class="cmp-head">
-        <div class="cmp-t"><h2>交互三态</h2><button class="en" data-copy="Hover / Focus / Active" title="点击复制">Hover / Focus / Active</button></div>
+        <div class="cmp-t"><h2>组件状态</h2><button class="en" data-copy="Component States" title="点击复制">Component States</button></div>
         <span class="cat">反馈</span>
       </div>
-      <div class="canvas"><span class="ctl">同一个按钮的四种样子（固定展示）</span>
-        <div class="states-row">
+      <div class="canvas"><span class="ctl">一个按钮的 12 种状态（固定展示）</span>
+        <div class="states-grid">
           <div class="st-cell"><button class="st-btn">默认</button><div class="st-lbl">default</div></div>
           <div class="st-cell"><button class="st-btn hv">悬停</button><div class="st-lbl">:hover</div></div>
-          <div class="st-cell"><button class="st-btn fc">聚焦</button><div class="st-lbl">:focus</div></div>
           <div class="st-cell"><button class="st-btn ac">按下</button><div class="st-lbl">:active</div></div>
+          <div class="st-cell"><button class="st-btn pr">长按</button><div class="st-lbl">pressed</div></div>
+          <div class="st-cell"><button class="st-btn fc">聚焦</button><div class="st-lbl">:focus</div></div>
+          <div class="st-cell"><button class="st-btn sel">✓ 选中</button><div class="st-lbl">selected</div></div>
+          <div class="st-cell"><button class="st-btn dis" disabled>禁用</button><div class="st-lbl">:disabled</div></div>
+          <div class="st-cell"><button class="st-btn ro">只读</button><div class="st-lbl">readonly</div></div>
+          <div class="st-cell"><button class="st-btn ld"><i class="st-spin" aria-hidden="true"></i>加载中</button><div class="st-lbl">loading</div></div>
+          <div class="st-cell"><button class="st-btn suc">✓ 成功</button><div class="st-lbl">success</div></div>
+          <div class="st-cell"><button class="st-btn err">! 错误</button><div class="st-lbl">error</div></div>
+          <div class="st-cell"><button class="st-btn warn">! 警告</button><div class="st-lbl">warning</div></div>
         </div>
       </div>
       <div class="cmp-foot">
-        <ul class="pts"><li>鼠标放上去的样子 = hover 态</li><li>点击/键盘聚焦 = focus 态，按下的瞬间 = active 态</li><li>"点过的项留下样式" = 用 .active 类自己标</li></ul>
-        <p class="where">不是组件，是三个天天用的词。对 agent 说"悬停变亮""当前选中项高亮"，对应的就是它们。</p>
+        <ul class="pts"><li>12 种状态都要有明确视觉</li><li>不只靠颜色，配图标或文字</li><li>禁用 ≠ 只读，可区分</li></ul>
+        <p class="where">任何可交互控件的"状态清单"，交给 agent 前先对着它查一遍。</p>
       </div>
 
-      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">为项目中的可交互控件统一补齐交互状态：默认清楚可点，鼠标悬停有视觉反馈，键盘聚焦有明显外框，按下有瞬时反馈，不可用时明确置灰。同一控件随条件在各状态间切换。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现组件状态（Component States）完整清单：默认、悬停、按下、长按、键盘聚焦、选中、禁用、只读、加载中、成功、错误、警告各态都有明确视觉；状态不只靠颜色区分，同步图标或文字；禁用与只读可区分，加载态防止重复操作；同一控件随条件在各状态间平滑切换。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 18 Tooltip -->
@@ -1086,7 +1143,7 @@
         <p class="where">筛选面板、购物车侧栏、设置面板。</p>
       </div>
 
-      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现侧滑抽屉（Drawer）组件：从屏幕一侧滑入承载次要内容或操作，滑入方向与宽度可配置；支持点击遮罩与 Esc 键关闭，关闭时归还焦点，打开期间锁定背景滚动。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现侧滑抽屉（Drawer）组件：从屏幕一侧滑入承载次要内容或操作，滑入方向与宽度可配置；支持点击遮罩与 Esc 键关闭，关闭时归还焦点，打开期间锁定背景滚动；从哪一侧进入就从哪一侧收起，不要换方向。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 24 顶部导航栏 -->
@@ -1143,7 +1200,7 @@
         <p class="where">设置页分"基础/高级"，产品页分"详情/评价"。</p>
       </div>
 
-      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现标签页（Tabs）组件：接收标签与对应面板内容，同一时刻只显示一个面板；高亮当前标签，支持点击与键盘左右方向键切换，切换过程中各面板内部状态不丢失。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现标签页（Tabs）组件：接收标签与对应面板内容，同一时刻只显示一个面板；高亮当前标签，支持点击与键盘左右方向键切换，切换过程中各面板内部状态不丢失；选中指示器先滑到位，内容再切换，容器高度平稳调整避免页面跳动。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 27 折叠面板 -->
@@ -1379,7 +1436,7 @@
         <p class="where">官网首页大图、商品详情顶部图集、活动宣传位。</p>
       </div>
 
-      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现轮播图（Carousel）组件：接收图片列表，提供上一张、下一张与指示圆点切换；是否自动播放及间隔可配置，自动播放时悬停或触摸暂停，切换到末张后回到首张。仅一张图时不显示切换控件。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现轮播图（Carousel）组件：接收图片列表，提供上一张、下一张与指示圆点切换；是否自动播放及间隔可配置，自动播放时悬停或触摸暂停，切换到末张后回到首张。仅一张图时不显示切换控件；切换期间取消未完成的动画，快速点击不叠加。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
     <!-- c-badge-dot -->
     <article class="cmp" id="c-badge-dot" data-cat="display" data-name="通知角标 Badge Dot 红点 未读 消息 小红点 99+ 通知数字">
@@ -1857,6 +1914,143 @@
       </div>
 
       <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现表格单元格原地编辑：双击或回车把单元格切换为输入框，Enter 或失焦保存、Esc 取消恢复原值；校验失败不保存并提示原因；Tab 在单元格间移动，编辑态布局不跳动，保存后本地数据同步更新。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 62 无限滚动 -->
+    <article class="cmp" id="c-infinite-scroll" data-cat="display" data-name="无限滚动 infinite scroll 自动加载 信息流 触底">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>无限滚动</h2><button class="en" data-copy="Infinite Scroll" title="点击复制">Infinite Scroll</button></div>
+        <span class="cat">展示</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：滚到底自动加载</span>
+        <div class="inf-demo" id="infList" tabindex="0" aria-label="无限滚动演示列表，滚动到底自动加载">
+          <div class="inf-item">信息条目 1</div><div class="inf-item">信息条目 2</div><div class="inf-item">信息条目 3</div>
+          <div class="inf-status" id="infStatus" role="status">下滑自动加载…</div>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>接近底部自动加载</li><li>末尾要有明确结束提示</li></ul>
+        <p class="where">信息流、图片墙这类"刷不完"的内容。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现无限滚动列表：接近底部（预留缓冲距离）时自动加载下一页，加载中显示占位指示；加载失败提供重试入口；到达末尾显示明确的结束提示而非无限转圈；保留滚动位置，返回页面时不重置。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 63 加载更多 -->
+    <article class="cmp" id="c-load-more" data-cat="display" data-name="加载更多 load more 分页按钮 追加 列表">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>加载更多</h2><button class="en" data-copy="Load More" title="点击复制">Load More</button></div>
+        <span class="cat">展示</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：点击加载，直到没有更多</span>
+        <div style="display:flex;flex-direction:column;gap:7px;align-items:center;">
+          <div class="lm-list" id="lmList"><div class="inf-item">条目 A</div><div class="inf-item">条目 B</div></div>
+          <button class="lm-btn" id="lmBtn" type="button">加载更多</button>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>用户主动点按钮加载</li><li>加载完变为"没有更多"</li></ul>
+        <p class="where">搜索结果、商品列表这类"需要明确分页感"的内容。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现加载更多按钮：点击后按钮进入加载态并追加下一页内容，新内容紧接列表尾部不跳动；全部加载完后按钮变为「没有更多」并禁用；与无限滚动二选一，不要同时使用。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 64 返回顶部 -->
+    <article class="cmp" id="c-back-to-top" data-cat="nav" data-name="返回顶部 back to top 回到顶部 悬浮 滚动">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>返回顶部</h2><button class="en" data-copy="Back to Top" title="点击复制">Back to Top</button></div>
+        <span class="cat">导航</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：下滑内容，↑ 出现后点击</span>
+        <div class="btt-demo">
+          <div class="btt-page" id="bttPage" tabindex="0" aria-label="可滚动的演示页面">
+            <p>页面内容第一屏。</p><p>继续下滑……</p><p>更多内容。</p><p>更多内容。</p><p>更多内容。</p><p>页面底部。</p>
+          </div>
+          <button class="btt-btn" id="bttBtn" type="button" aria-label="返回顶部" hidden>↑</button>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>滚过一屏才出现</li><li>点击平滑回顶部</li></ul>
+        <p class="where">长文章、长列表的角落，给读完的人一条捷径。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现返回顶部按钮：页面滚动超过一屏后出现在角落，点击平滑回到顶部，到达后按钮消失；滚回顶部附近时隐藏；按钮不遮挡正文与移动端底部操作，键盘可聚焦触发。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 65 条件步骤 -->
+    <article class="cmp" id="c-conditional-step" data-cat="input" data-name="条件步骤 conditional step 动态步骤 表单 按需出现">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>条件步骤</h2><button class="en" data-copy="Conditional Step" title="点击复制">Conditional Step</button></div>
+        <span class="cat">输入</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：选「企业开户」，多出一步</span>
+        <div class="cond-demo">
+          <div class="cond-choice" role="radiogroup" aria-label="账户类型">
+            <label class="check"><input type="radio" name="acct" value="personal" checked> 个人</label>
+            <label class="check"><input type="radio" name="acct" value="company"> 企业</label>
+          </div>
+          <ol class="cond-steps" id="condSteps">
+            <li class="cur">选择类型</li>
+            <li data-extra hidden>企业认证</li>
+            <li>填写资料</li>
+          </ol>
+          <p class="cond-note" id="condNote" role="status" hidden>已追加「企业认证」一步；改回个人会同步收起。</p>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>按上一步选择出现后续步骤</li><li>改回选择会同步收起</li></ul>
+        <p class="where">开户、申请表单里"不同用户走不同路径"。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现条件步骤：根据用户上一步的选择动态显示后续步骤或字段，出现与收起有平滑高度过渡；被隐藏步骤的必填校验同步取消，重新显示后恢复；默认路径保持最短，条件逻辑可配置。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 66 高级设置 -->
+    <article class="cmp" id="c-advanced-settings" data-cat="input" data-name="高级设置 advanced settings 折叠 低频 披露">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>高级设置</h2><button class="en" data-copy="Advanced Settings" title="点击复制">Advanced Settings</button></div>
+        <span class="cat">输入</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：展开高级设置</span>
+        <div class="adv-demo">
+          <input class="i" type="text" aria-label="接口地址" placeholder="接口地址（基础项）">
+          <button class="adv-toggle" id="advToggle" type="button" aria-expanded="false" aria-controls="advBody">高级设置 ▾</button>
+          <div class="adv-body" id="advBody" hidden>
+            <input class="i" type="text" aria-label="超时时间" placeholder="超时时间（ms）">
+            <input class="i" type="text" aria-label="自定义请求头" placeholder="自定义请求头">
+          </div>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>低频项默认收起</li><li>展开不跳动、状态保留</li></ul>
+        <p class="where">配置页、表单里"大多数人不用碰"的选项。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现高级设置折叠：基础项默认可见，低频高级项收起在「高级设置」披露块内，展开收起有平滑高度过渡不跳动；展开状态在提交前后保留；高级项出错时自动展开并定位到错误字段。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 67 上下文选项 -->
+    <article class="cmp" id="c-context-options" data-cat="input" data-name="上下文选项 contextual options 条件显示 关联字段 设置">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>上下文选项</h2><button class="en" data-copy="Contextual Options" title="点击复制">Contextual Options</button></div>
+        <span class="cat">输入</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：勾选「需要发票」</span>
+        <div class="ctxo-demo">
+          <label class="check"><input type="checkbox" id="ctxoCheck"> 需要发票</label>
+          <div class="ctxo-body" id="ctxoBody" hidden>
+            <input class="i" type="text" aria-label="发票抬头" placeholder="发票抬头">
+            <label class="check"><input type="checkbox"> 电子发票</label>
+          </div>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>勾选后才出现相关选项组</li><li>不相关的选项始终隐藏</li></ul>
+        <p class="where">结算页、设置页里"选了才需要填"的关联内容。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现上下文选项：勾选或切换某个设置后，仅显示与之相关的后续选项组，不相关的始终隐藏；显示隐藏有平滑过渡，说明文字同步出现；隐藏时不参与校验与提交。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
   </div>
@@ -2547,6 +2741,93 @@
       num.textContent=ta.value.length+' / '+MAX;
       num.style.color=(MAX-ta.value.length)<=10?'#e11d48':'';
     });
+  })();
+
+
+  /* ---- 无限滚动 ---- */
+  (function(){
+    const list=document.getElementById('infList');
+    if(!list) return;
+    const status=document.getElementById('infStatus');
+    let page=0,loading=false,done=false;
+    list.addEventListener('scroll',()=>{
+      if(loading||done) return;
+      if(list.scrollTop+list.clientHeight<list.scrollHeight-24) return;
+      loading=true;status.textContent='正在加载…';
+      setTimeout(()=>{
+        page++;
+        for(let i=1;i<=3;i++){
+          const d=document.createElement('div');d.className='inf-item';
+          d.textContent='信息条目 '+(page*3+i);
+          list.insertBefore(d,status);
+        }
+        loading=false;
+        if(page>=2){done=true;status.textContent='已经到底了';}
+        else status.textContent='下滑自动加载…';
+      },450);
+    });
+  })();
+
+  /* ---- 加载更多 ---- */
+  (function(){
+    const btn=document.getElementById('lmBtn');
+    if(!btn) return;
+    const list=document.getElementById('lmList');
+    let round=0;
+    btn.addEventListener('click',()=>{
+      if(btn.disabled) return;
+      btn.disabled=true;btn.textContent='正在加载…';
+      setTimeout(()=>{
+        round++;
+        ['条目 C'+round,'条目 D'+round,'条目 E'+round].forEach(t=>{
+          const d=document.createElement('div');d.className='inf-item';d.textContent=t;list.appendChild(d);
+        });
+        if(round>=2){btn.textContent='没有更多了';btn.disabled=true;}
+        else{btn.disabled=false;btn.textContent='加载更多';}
+      },500);
+    });
+  })();
+
+  /* ---- 返回顶部 ---- */
+  (function(){
+    const page=document.getElementById('bttPage');
+    if(!page) return;
+    const btn=document.getElementById('bttBtn');
+    page.addEventListener('scroll',()=>{btn.hidden=page.scrollTop<60;});
+    btn.addEventListener('click',()=>{page.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});});
+  })();
+
+  /* ---- 条件步骤 ---- */
+  (function(){
+    const radios=document.querySelectorAll('input[name="acct"]');
+    if(!radios.length) return;
+    const extra=document.querySelector('#condSteps li[data-extra]');
+    const note=document.getElementById('condNote');
+    radios.forEach(r=>r.addEventListener('change',()=>{
+      const company=document.querySelector('input[name="acct"]:checked').value==='company';
+      extra.hidden=!company;
+      note.hidden=!company;
+    }));
+  })();
+
+  /* ---- 高级设置 ---- */
+  (function(){
+    const t=document.getElementById('advToggle');
+    if(!t) return;
+    const body=document.getElementById('advBody');
+    t.addEventListener('click',()=>{
+      body.hidden=!body.hidden;
+      t.setAttribute('aria-expanded',String(!body.hidden));
+      t.textContent=body.hidden?'高级设置 ▸':'高级设置 ▴';
+    });
+  })();
+
+  /* ---- 上下文选项 ---- */
+  (function(){
+    const ck=document.getElementById('ctxoCheck');
+    if(!ck) return;
+    const body=document.getElementById('ctxoBody');
+    ck.addEventListener('change',()=>{body.hidden=!ck.checked;});
   })();
 
 </script>
