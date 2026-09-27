@@ -63,15 +63,15 @@ class SiteBuildTest(unittest.TestCase):
         self.assertIn("./motion/", home.links)
         self.assertIn("./flows/", home.links)
         home_html = (DIST / "index.html").read_text(encoding="utf-8")
-        self.assertIn("<strong>184</strong><span>个可查条目", home_html)
+        self.assertIn("<strong>189</strong><span>个可查条目", home_html)
         self.assertIn('id="global-search"', home_html)
         self.assertEqual(home_html.count('<a class="directory-card'), 8)
         self.assertNotIn('class="home-demo"', home_html)
-        self.assertEqual((DIST / "ui" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制组件实现提示词</summary>"), 67)
-        self.assertEqual((DIST / "motion" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制动效实现提示词</summary>"), 77)
+        self.assertEqual((DIST / "ui" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制组件实现提示词</summary>"), 70)
+        self.assertEqual((DIST / "motion" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制动效实现提示词</summary>"), 79)
         for section, original, prefix, expected_count in (
-            ("ui", "网页UI元素速查.html", "c-", 67),
-            ("motion", "动效速查.html", "e-", 77),
+            ("ui", "网页UI元素速查.html", "c-", 70),
+            ("motion", "动效速查.html", "e-", 79),
         ):
             built = parse(DIST / section / "index.html")
             source = parse(ROOT / original)
@@ -157,13 +157,13 @@ class SiteBuildTest(unittest.TestCase):
         match = re.search(r'<script type="application/json" id="home-search-index">(.*?)</script>', home, re.S)
         self.assertIsNotNone(match)
         entries = json.loads(match.group(1))
-        self.assertEqual(len(entries), 184)
-        self.assertEqual(len({entry["href"] for entry in entries}), 184)
+        self.assertEqual(len(entries), 189)
+        self.assertEqual(len({entry["href"] for entry in entries}), 189)
         counts = {category: sum(entry["category"] == category for entry in entries) for category in {entry["category"] for entry in entries}}
-        self.assertEqual(counts["UI 元素"], 67)
-        self.assertEqual(counts["动效"], 77)
+        self.assertEqual(counts["UI 元素"], 70)
+        self.assertEqual(counts["动效"], 79)
         self.assertEqual(counts["UI 与交互 Skills"], 10)
-        self.assertEqual(sorted(counts.values()), [6, 6, 6, 6, 6, 10, 67, 77])
+        self.assertEqual(sorted(counts.values()), [6, 6, 6, 6, 6, 10, 70, 79])
         page_ids = {}
         for entry in entries:
             route, anchor = entry["href"].removeprefix("./").split("/#", 1)

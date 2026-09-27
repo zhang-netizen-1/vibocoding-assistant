@@ -77,6 +77,6 @@ def build_search_index(ui_html, motion_html, guides, guide_module, skills):
         entries.append({"title": skill["title"], "category": "UI 与交互 Skills",
                         "description": skill["summary"], "href": f"./skills/#skill-{skill['slug']}",
                         "terms": " ".join((skill["slug"], skill["repo"], skill["use"], *skill["tags"]))})
-    if len(entries) != 184 or len({entry["href"] for entry in entries}) != 184:
-        raise ValueError("Search index must contain 184 unique destination entries")
+    if len(entries) != 189 or len({entry["href"] for entry in entries}) != 189:
+        raise ValueError("Search index must contain 189 unique destination entries")
     return entries

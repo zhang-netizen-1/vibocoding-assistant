@@ -611,6 +611,26 @@
   .cond-choice input[type=radio]{accent-color:#ed462d;width:15px;height:15px;margin:0}
   @media(prefers-reduced-motion:reduce){.st-spin{animation:none}.adv-body:not([hidden]),.ctxo-body:not([hidden]),.cond-steps li[data-extra]:not([hidden]){animation:none}}
 
+
+  /* 自动保存 */
+  .as-demo{width:260px;display:flex;flex-direction:column;gap:7px}
+  .as-demo .i{width:100%;height:64px}
+  .as-status{align-self:flex-end;font-size:11px;color:var(--muted);font-family:var(--font-mono)}
+  .as-status.saving{color:#c73a24}
+  .as-status.saved{color:#15803d}
+  /* 虚拟列表 */
+  .vl-demo{width:260px;display:flex;flex-direction:column;gap:6px}
+  .vl-list{height:136px;overflow-y:auto;background:#fff;border:1px solid #e2e5ea;position:relative;scrollbar-width:thin}
+  .vl-row{height:26px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:11.5px;color:#374151;border-bottom:1px solid #f0f2f4;position:absolute;left:0;right:0}
+  .vl-stat{margin:0;font-size:11px;color:var(--muted);font-family:var(--font-mono)}
+  /* 整卡可点击 */
+  .clk-card{position:relative;width:250px;padding:13px 14px 40px;background:#fff;border:1px solid #e2e5ea;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+  .clk-card:hover{border-color:#ed462d;box-shadow:0 4px 12px rgba(60,20,10,.12)}
+  .clk-card b{display:block;color:#1a1d21;font-size:14px}
+  .clk-meta{display:block;margin-top:3px;font-size:11px;color:#8a8f98}
+  .clk-share{position:absolute;right:10px;bottom:9px;border:1px solid #e2e5ea;background:#f6f7f8;color:#4b5563;font-size:11px;padding:4px 9px;cursor:pointer}
+  .clk-share:hover{border-color:#ed462d;color:#c73a24}
+
 </style>
 </head>
 <body>
@@ -980,7 +1000,7 @@
         <p class="where">确认删除、填写一次性信息、重要提示。通常带"确定/取消"。</p>
       </div>
 
-      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现模态弹窗（Modal）组件：打开时显示遮罩并锁定背景滚动，支持取消按钮、Esc 键与点击遮罩三种关闭方式；确认后执行传入的动作，关闭时把焦点归还触发元素，重复点击不叠加；出现与关闭按相反顺序播放动画。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现模态弹窗（Modal）组件：打开时显示遮罩并锁定背景滚动，支持取消按钮、Esc 键与点击遮罩三种关闭方式；确认后执行传入的动作，关闭时把焦点归还触发元素，重复点击不叠加；出现与关闭按相反顺序播放动画；多层叠放时按层级依次关闭。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
     <!-- 17 Toast -->
@@ -2053,6 +2073,67 @@
       <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现上下文选项：勾选或切换某个设置后，仅显示与之相关的后续选项组，不相关的始终隐藏；显示隐藏有平滑过渡，说明文字同步出现；隐藏时不参与校验与提交。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>
 
+  <!-- 68 自动保存 -->
+    <article class="cmp" id="c-auto-save" data-cat="input" data-name="自动保存 auto save 停顿保存 草稿 保存状态">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>自动保存</h2><button class="en" data-copy="Auto Save" title="点击复制">Auto Save</button></div>
+        <span class="cat">输入</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：停下的瞬间自动保存</span>
+        <div class="as-demo">
+          <textarea class="i" id="asInput" aria-label="笔记内容" placeholder="写点什么，停顿一下看保存状态…"></textarea>
+          <span class="as-status" id="asStatus" role="status">未保存</span>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>停顿后自动保存</li><li>状态文字随时可读</li></ul>
+        <p class="where">笔记、文档、设置项这类"不想让用户点保存"的场景。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现自动保存：输入停顿约一秒后自动保存，保存中与已保存状态用文字加图标实时显示；保存失败给出重试入口且不丢失内容；连续输入只排一次保存，不频繁请求。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 69 虚拟列表 -->
+    <article class="cmp" id="c-virtual-list" data-cat="display" data-name="虚拟列表 virtual list 大列表 只渲染可视区 性能">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>虚拟列表</h2><button class="en" data-copy="Virtual List" title="点击复制">Virtual List</button></div>
+        <span class="cat">展示</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：1000 行只有可视区在渲染</span>
+        <div class="vl-demo">
+          <div class="vl-list" id="vlList" tabindex="0" aria-label="虚拟列表演示，共一千行"></div>
+          <p class="vl-stat" id="vlStat" role="status"></p>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>万级数据也流畅滚动</li><li>只渲染可视区附近的行</li></ul>
+        <p class="where">长日志、大表格这类"一次渲染会卡死"的列表。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现虚拟列表：超长列表只渲染可视区附近少量行，滚动时按位置复用节点并保持滚动条长度与位置真实；行高固定或可测量；搜索定位与键盘滚动可用。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
+  <!-- 70 整卡可点击 -->
+    <article class="cmp" id="c-card-link" data-cat="display" data-name="整卡可点击 card link 卡片链接 内部按钮 独立 点击">
+      <div class="cmp-head">
+        <div class="cmp-t"><h2>整卡可点击</h2><button class="en" data-copy="Card Link" title="点击复制">Card Link</button></div>
+        <span class="cat">展示</span>
+      </div>
+      <div class="canvas"><span class="ctl">试一试：点卡片开详情，点分享不打开</span>
+        <div class="clk-card" data-cmd="toast" data-arg="打开详情（演示）" role="link" tabindex="0" aria-label="打开项目详情">
+          <b>增长设计稿 v2</b>
+          <span class="clk-meta">更新于今天</span>
+          <button class="clk-share" type="button" data-stop data-cmd="toast" data-arg="仅分享，未打开详情（演示）">↗ 分享</button>
+        </div>
+      </div>
+      <div class="cmp-foot">
+        <ul class="pts"><li>整卡就是一个大链接</li><li>内部按钮独立、不冒泡</li></ul>
+        <p class="where">卡片只有一个主要去向时，让整张卡都可点。</p>
+      </div>
+
+      <details class="card-prompt"><summary>查看并复制组件实现提示词</summary><p class="prompt-text">实现整卡可点击：整张卡片作为一个链接打开主要去向，卡内二级按钮独立工作不触发卡片跳转；用语义化链接或按钮实现保证键盘可达，整卡悬停有轻微反馈；避免卡内嵌套多个链接造成混乱。沿用项目现有设计规范。</p><button class="copy-prompt" type="button">复制提示词</button></details>
+    </article>
+
   </div>
 
   <div class="none" id="none" hidden>
@@ -2828,6 +2909,61 @@
     if(!ck) return;
     const body=document.getElementById('ctxoBody');
     ck.addEventListener('change',()=>{body.hidden=!ck.checked;});
+  })();
+
+
+  /* ---- 自动保存 ---- */
+  (function(){
+    const ta=document.getElementById('asInput');
+    if(!ta) return;
+    const st=document.getElementById('asStatus');
+    let timer=null;
+    ta.addEventListener('input',()=>{
+      st.textContent='正在编辑…';st.className='as-status';
+      clearTimeout(timer);
+      timer=setTimeout(()=>{
+        if(!ta.value.trim()){st.textContent='未保存';st.className='as-status';return;}
+        st.textContent='保存中…';st.className='as-status saving';
+        setTimeout(()=>{st.textContent='已保存 ✓';st.className='as-status saved';},400);
+      },700);
+    });
+  })();
+
+  /* ---- 虚拟列表 ---- */
+  (function(){
+    const list=document.getElementById('vlList');
+    if(!list) return;
+    const stat=document.getElementById('vlStat');
+    const TOTAL=1000,ROW=26;
+    list.style.height='136px';
+    const spacer=document.createElement('div');
+    spacer.style.height=TOTAL*ROW+'px';
+    list.appendChild(spacer);
+    function render(){
+      const first=Math.max(0,Math.floor(list.scrollTop/ROW)-3);
+      const visible=Math.ceil(list.clientHeight/ROW)+6;
+      list.querySelectorAll('.vl-row').forEach(r=>r.remove());
+      for(let i=first;i<Math.min(TOTAL,first+visible);i++){
+        const row=document.createElement('div');row.className='vl-row';
+        row.style.top=i*ROW+'px';
+        row.innerHTML='<span>日志行 '+(i+1)+'</span><span>info</span>';
+        list.appendChild(row);
+      }
+      stat.textContent='共 '+TOTAL+' 行 · 当前渲染 '+visible+' 行';
+    }
+    list.addEventListener('scroll',render,{passive:true});
+    render();
+  })();
+
+  /* ---- 整卡可点击 ---- */
+  (function(){
+    const card=document.querySelector('.clk-card');
+    if(!card) return;
+    card.addEventListener('keydown',e=>{
+      if(e.key!=='Enter') return;
+      if(e.target.closest('.clk-share')){toast('仅分享，未打开详情（演示）');return;}
+      toast('打开详情（演示）');
+    });
   })();
 
 </script>

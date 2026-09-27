@@ -502,3 +502,19 @@ document.querySelectorAll('.hidehead-scroll').forEach(scroller=>{
     lastTop=scroller.scrollTop;
   },{passive:true});
 });
+
+/* 点击涟漪 */
+document.querySelectorAll('.ripple-btn').forEach(btn=>{
+  btn.addEventListener('click',e=>{
+    if(reduce.matches)return;
+    const ink=btn.querySelector('.ripple-ink'),r=btn.getBoundingClientRect();
+    const d=document.createElement('i');
+    d.style.left=(e.clientX-r.left)+'px';d.style.top=(e.clientY-r.top)+'px';
+    ink.appendChild(d);
+    d.addEventListener('animationend',()=>d.remove());
+  });
+});
+/* 下划线展开：当前页切换 */
+document.querySelectorAll('.uline-nav .uline').forEach(a=>a.addEventListener('click',()=>{
+  document.querySelectorAll('.uline-nav .uline').forEach(x=>x.classList.toggle('on',x===a));
+}));

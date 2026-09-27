@@ -215,7 +215,7 @@
 /* 自定义光标跟随 */
 .cf-stage{position:relative;width:100%;height:170px;background:var(--panel2);border:1px solid var(--line);cursor:none;overflow:hidden}
 .cf-dot,.cf-ring{position:absolute;left:0;top:0;pointer-events:none;border-radius:50%;translate:-50% -50%}
-.cf-dot{width:7px;height:7px;background:var(--accent);transition:opacity .2s}
+.cf-dot{width:9px;height:9px;background:#fff;mix-blend-mode:difference;transition:opacity .2s}
 .cf-ring{width:30px;height:30px;border:1.5px solid rgba(237,70,45,.65);transition:width .2s,height .2s,border-color .2s,background .2s,translate .05s}
 .cf-ring.big{width:52px;height:52px;background:rgba(237,70,45,.14);border-color:var(--accent)}
 .cf-ring:after{content:"查看";position:absolute;inset:0;display:grid;place-items:center;color:#ff8a70;font-size:10px;opacity:0;transition:opacity .15s}
@@ -263,3 +263,17 @@
 .hidehead-scroll .hh-head button{border:0;background:var(--accent-dark);color:#171715;font-size:10px;font-weight:650;padding:3px 8px;cursor:pointer}
 .hidehead-scroll.scrolldown .hh-head{transform:translateY(-102%)}
 .hidehead-scroll .hh-content{padding:14px 12px;color:#5b6470;font-size:11px;text-align:center}
+
+/* 点击涟漪 */
+.stage .ripple-btn,.stage button.ripple-btn{position:relative;overflow:hidden;min-width:160px;min-height:48px;border:0;border-radius:0;background:var(--accent-dark)!important;color:#171715!important;font:700 15px var(--font-sans);cursor:pointer}
+.ripple-ink{position:absolute;inset:0;pointer-events:none}
+.ripple-ink i{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);translate:-50% -50%;animation:ripple-grow .55s ease-out forwards}
+@keyframes ripple-grow{from{width:8px;height:8px;opacity:1}to{width:220px;height:220px;opacity:0}}
+/* 下划线展开 */
+.uline-stage{display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px 0}
+.uline-nav{display:flex;gap:26px}
+.uline{position:relative;color:#1a1d21;font-size:15px;text-decoration:none;padding:4px 2px;cursor:pointer}
+.uline:after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:100% 50%;transition:transform .25s ease}
+.uline:hover:after,.uline:focus-visible:after{transform:scaleX(1);transform-origin:0 50%}
+.uline.on:after{transform:scaleX(1);transform-origin:0 50%}
+.uline-note{margin:0;color:#5b6470;font-size:11px}
