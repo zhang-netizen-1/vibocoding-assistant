@@ -6,7 +6,7 @@ from motion_spec import render_spec_section, SPEC_CHIP
 SOURCE=Path(__file__).resolve().parent
 ROOT=SOURCE.parent
 entries=json.loads((SOURCE/'motion_entries.json').read_text(encoding='utf-8'))
-assert len(entries)==65 and len({e[0] for e in entries})==65
+assert len(entries)==76 and len({e[0] for e in entries})==76
 assert {e[0] for e in entries if e[0].startswith('extra-')}==set(DEMOS)
 
 CATS={
@@ -16,6 +16,7 @@ CATS={
 'text':('文字与图形','让信息本身被逐步看见'),
 'media':('图片与媒介','视觉内容进场、切换与对照'),
 'component':('组件与微交互','按钮、卡片和控件对操作的回应'),
+'cursor':('指针与光标','读取光标位置、方向与速度的跟随类动效'),
 'overlay':('导航与浮层','层级如何打开、退出和返回'),
 'data':('数据与状态','内容更新与操作结果如何被理解'),
 'mobile':('移动与手势','让拖动、松手和边界都有反馈')
@@ -41,6 +42,7 @@ def demo(kind):
         return '<div class="shared-box"><span class="shared-origin-label">概览卡片</span><span class="shared-destination-label">详情面板</span><button class="shared-chip" type="button" data-action="toggle" aria-expanded="false"><span class="shared-art" aria-hidden="true"></span><strong>展开详情 ↗</strong><span>同一内容，跨位置衔接</span></button></div>'
     if kind=='view-stagger':
         return '<div class="stagger-box"><span class="stagger-kicker">NEW / 2026</span><strong>让想法，<br>逐步成形。</strong><span>从第一行标题开始，层层展开。</span><i>开始探索 <b>↗</b></i></div>'
+    if kind=='scroll-scroll-zoom': return '<div class="mini-scroll zoom-scroll" tabindex="0" aria-label="可滚动的缩放演示"><div class="scroll-top">向下滚动 ↓</div><div class="scroll-spacer"></div><div class="zoom-target"><strong>产品图</strong><span>随滚动放大</span></div><div class="scroll-spacer end"></div></div><div class="scroll-meter"><i></i></div>'
     if kind.startswith('scroll-'):
         body={
          'scroll-reveal':'<div class="scroll-target reveal-target">进入视口才显现</div>',
@@ -91,11 +93,21 @@ def demo(kind):
     if kind=='mobile-pull': return '<div class="phone-demo pull-zone" data-drag="pull" data-refresh-count="0" tabindex="0" aria-label="可滚动的下拉刷新演示"><span class="pull-indicator">到顶下拉刷新</span><div class="pull-result" role="status">列表版本 0</div><div>列表项一</div><div>列表项二</div><div>列表项三</div><div>列表项四</div><div>列表项五</div></div>'
     if kind=='mobile-rubber': return '<div class="phone-demo rubber-zone" data-drag="rubber" tabindex="0"><div class="rubber-item">沿水平方向拖动我</div><small>松手回到合法边界</small></div>'
     if kind=='mobile-pager': return f'<div class="phone-demo pager" data-drag="pager"><div class="pager-track"><div>01</div><div>02</div><div>03</div></div></div><div class="pager-actions">{btn("上一页","prev")}{btn("下一页","next")}</div>'
+    if kind=='component-magnetic': return '<div class="magnet-wrap"><button class="magnet-btn" type="button"><span class="magnet-label">立即开始</span></button><span class="magnet-note">移动鼠标靠近按钮</span></div>'
+    if kind=='component-hover-preview': return '<div class="hvp-stage"><span class="hvp-link" tabindex="0">悬停查看《动效设计手册》</span><span class="hvp-pop" role="tooltip"><b>动效设计手册</b><i>128 页 · 在线预览</i></span></div>'
+    if kind=='component-hover-action': return '<div class="hact-card"><div class="hact-media">封面</div><div class="hact-meta"><b>项目封面</b><span>2026-09</span></div><div class="hact-bar"><button type="button">编辑</button><button type="button">复制</button><button type="button">删除</button></div></div>'
+    if kind=='text-text-morph': return '<div class="morph-stage"><span class="morph-fix">我们帮你</span><span class="morph-word"><span class="mw-cur">快速设计</span><span class="mw-next" aria-hidden="true"></span></span></div>'
+    if kind=='data-input-shake': return '<div class="shake-demo"><input class="i shake-input" type="text" aria-label="邮箱" placeholder="name@example.com"><button class="shake-go" type="button">提交</button><p class="shake-err" role="status" hidden>请填写有效的邮箱地址</p></div>'
+    if kind=='cursor-cursor-follower': return '<div class="cf-stage"><span class="cf-dot" aria-hidden="true"></span><span class="cf-ring" aria-hidden="true"></span><span class="cf-target" tabindex="0">作品缩略图</span><span class="cf-hint">移动鼠标：圆点跟随，环延迟跟进</span></div>'
+    if kind=='cursor-cursor-trail': return '<div class="trail-stage"><span class="trail-hint">在区域内移动鼠标，留下拖尾</span></div>'
+    if kind=='cursor-cursor-eyes': return '<div class="eyes-stage"><div class="eye"><i></i></div><div class="eye"><i></i></div><span class="eyes-note">瞳孔跟随光标 · 离开回中央</span></div>'
+    if kind=='cursor-object-follow': return '<div class="obj-stage"><div class="obj-card" tabindex="0"><strong>产品模型</strong><span>移动鼠标旋转视角</span></div></div>'
+    if kind=='media-image-sequence': return '<div class="mini-scroll seq-scroll" tabindex="0" aria-label="滚动切换产品旋转帧"><div class="scroll-top">向下滚动 ↓</div><div class="scroll-spacer"></div><div class="seq-box" data-frame="0"><i class="seq-mark" aria-hidden="true"></i><span>产品</span></div><div class="seq-caption" role="status">旋转 0°</div><div class="scroll-spacer end"></div></div><div class="scroll-meter"><i></i></div>'
     if kind in DEMOS: return DEMOS[kind]
     raise ValueError(kind)
 
-loop={'background-aurora','background-wave','background-particles','background-fluid','data-skeleton'}
-replay={'view-curtain','view-stagger','text-stagger','text-mask','text-typewriter','text-scramble','text-draw','media-wipe','media-blur','media-glitch','data-count','data-bars','data-success'}
+loop={'background-aurora','background-wave','background-particles','background-fluid','data-skeleton','text-text-morph'}
+replay={'view-curtain','view-stagger','text-stagger','text-mask','text-typewriter','text-scramble','text-draw','media-wipe','media-blur','media-glitch','data-count','data-bars','data-success','data-input-shake'}
 scroll={x[0] for x in entries if x[1]=='scroll' and not x[0].startswith('extra-')}
 
 def card(e):

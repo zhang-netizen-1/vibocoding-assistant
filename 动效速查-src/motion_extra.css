@@ -173,3 +173,87 @@
 .spec-prompt{margin-top:13px;border-top:1px solid var(--line);padding:0}
 .spec-prompt summary{padding:10px 0}
 @media(max-width:700px){.spec-group{padding:0 13px 13px}.spec-table{min-width:480px}}
+
+/* ===== P0-2 新增动效演示 ===== */
+/* 磁吸按钮 */
+.magnet-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 26px}
+.magnet-btn{min-width:150px;min-height:48px;border:0;border-radius:0;background:var(--accent-dark);color:#171715;font:700 15px var(--font-sans);cursor:pointer;transition:transform .3s cubic-bezier(.2,.9,.3,1.25)}
+.magnet-label{display:inline-block;transition:transform .3s cubic-bezier(.2,.9,.3,1.25)}
+.magnet-note{font-size:11px;color:var(--faint)}
+/* 悬停预览 */
+.hvp-stage{position:relative;display:flex;justify-content:center;padding:34px 20px}
+.hvp-link{color:var(--accent);font-size:15px;font-weight:650;border-bottom:1px dashed rgba(237,70,45,.5);cursor:pointer}
+.hvp-pop{position:absolute;top:76px;right:10px;z-index:3;width:172px;padding:11px;background:var(--panel2);border:1px solid var(--line);border-radius:0;opacity:0;transform:translateY(8px);transition:opacity .22s ease .3s,transform .22s ease .3s;pointer-events:none}
+.hvp-link:hover+.hvp-pop,.hvp-link:focus-visible+.hvp-pop{opacity:1;transform:none}
+.hvp-pop b{display:block;margin-bottom:5px;color:var(--text);font-size:13px}
+.hvp-pop i{font-style:normal;color:var(--muted);font-size:11px}
+.hvp-pop:before{content:"";position:absolute;left:18px;right:18px;top:0;height:34px;background:linear-gradient(135deg,#ed462d55,#232320);border-bottom:1px solid var(--line)}
+/* 悬停操作栏 */
+.hact-card{position:relative;width:212px;border:1px solid var(--line);border-radius:0;background:var(--panel2);overflow:hidden}
+.hact-media{height:88px;display:grid;place-items:center;background:linear-gradient(140deg,#3a3a36,#232320);color:var(--muted);font-size:12px;letter-spacing:.1em}
+.hact-meta{display:flex;justify-content:space-between;align-items:center;padding:10px 12px}
+.hact-meta b{color:var(--text);font-size:13px}
+.hact-meta span{color:var(--faint);font-size:11px}
+.hact-bar{position:absolute;right:8px;bottom:44px;display:flex;gap:5px;opacity:0;transform:translateY(7px);transition:opacity .18s,transform .18s}
+.hact-card:hover .hact-bar,.hact-card:focus-within .hact-bar{opacity:1;transform:none}
+.hact-bar button{border:0;border-radius:0;background:var(--accent-dark);color:#171715;font-size:11px;font-weight:650;padding:5px 9px;cursor:pointer}
+.hact-bar button:hover{background:var(--accent)}
+/* 文字变形 */
+.morph-stage{display:flex;align-items:baseline;gap:10px;font-size:23px;font-weight:750;color:var(--text)}
+.morph-word{position:relative;display:inline-block;height:1.35em;min-width:4.4em;transition:width .3s ease}
+.morph-word span{position:absolute;left:0;top:0;white-space:nowrap;color:var(--accent);transition:opacity .3s,filter .3s,transform .3s}
+.morph-word .mw-next{opacity:0;filter:blur(6px);transform:translateY(6px)}
+.morph-word.morphing .mw-cur{opacity:0;filter:blur(6px);transform:translateY(-6px)}
+.morph-word.morphing .mw-next{opacity:1;filter:blur(0);transform:none}
+/* 错误抖动 */
+.shake-demo{display:flex;flex-direction:column;align-items:center;gap:9px;width:min(250px,100%)}
+.shake-demo .shake-input{width:100%}
+.shake-go{border:0;border-radius:0;background:var(--accent-dark);color:#171715;font:700 13px var(--font-sans);padding:9px 22px;cursor:pointer}
+.shake-err{margin:0;color:#ff8a70;font-size:12px}
+@keyframes shake-x{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.run .shake-input,.shake-input.shake{animation:shake-x .38s ease}
+/* 自定义光标跟随 */
+.cf-stage{position:relative;width:100%;height:170px;background:var(--panel2);border:1px solid var(--line);cursor:none;overflow:hidden}
+.cf-dot,.cf-ring{position:absolute;left:0;top:0;pointer-events:none;border-radius:50%;translate:-50% -50%}
+.cf-dot{width:7px;height:7px;background:var(--accent);transition:opacity .2s}
+.cf-ring{width:30px;height:30px;border:1.5px solid rgba(237,70,45,.65);transition:width .2s,height .2s,border-color .2s,background .2s,translate .05s}
+.cf-ring.big{width:52px;height:52px;background:rgba(237,70,45,.14);border-color:var(--accent)}
+.cf-ring:after{content:"查看";position:absolute;inset:0;display:grid;place-items:center;color:#ff8a70;font-size:10px;opacity:0;transition:opacity .15s}
+.cf-ring.big:after{opacity:1}
+.cf-target{position:absolute;right:26px;top:34px;padding:13px 17px;background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:12px}
+.cf-hint{position:absolute;left:16px;bottom:12px;color:var(--faint);font-size:11px}
+/* 光标拖尾 */
+.trail-stage{position:relative;width:100%;height:170px;background:var(--panel2);border:1px solid var(--line);overflow:hidden;cursor:crosshair}
+.trail-hint{position:absolute;inset:0;display:grid;place-items:center;color:var(--faint);font-size:11px;pointer-events:none}
+.trail-dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--accent);translate:-50% -50%;pointer-events:none;animation:trail-fade .55s ease forwards}
+@keyframes trail-fade{to{transform:scale(.1);opacity:0}}
+/* 鼠标跟随眼睛 */
+.eyes-stage{display:flex;align-items:center;gap:16px;padding:26px 20px 18px;flex-direction:column}
+.eye{position:relative;width:62px;height:62px;border-radius:50%;background:#f2f0ea;border:2px solid var(--line2);display:flex;align-items:center;justify-content:center}
+.eye i{width:22px;height:22px;border-radius:50%;background:#171715;transition:transform .06s linear}
+.eyes-stage .eye:nth-child(2) i{transition-delay:.02s}
+.eyes-note{font-size:11px;color:var(--faint)}
+/* 3D 物体跟随 */
+.obj-stage{display:grid;place-items:center;height:190px;perspective:700px}
+.obj-card{width:150px;height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:linear-gradient(150deg,#2b2b27,#1d1d1a);border:1px solid var(--line2);border-radius:0;box-shadow:10px 12px 0 rgba(237,70,45,.25);transition:transform .25s ease;transform-style:preserve-3d}
+.obj-card strong{color:var(--text);font-size:15px;transform:translateZ(24px)}
+.obj-card span{color:var(--muted);font-size:11px;transform:translateZ(12px)}
+/* 滚动缩放 */
+.zoom-target{margin:0 auto;width:150px;height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:linear-gradient(150deg,#ed462d,#7a2416);border-radius:0;color:#fff;transform:scale(calc(.55 + var(--p)*.45));transform-origin:center;box-shadow:0 12px 26px rgba(0,0,0,.35)}
+.zoom-target strong{font-size:16px}
+.zoom-target span{font-size:10px;opacity:.8}
+/* 图片序列 */
+.seq-scroll{perspective:560px}
+.seq-box{position:relative;margin:0 auto;width:132px;height:96px;display:grid;place-items:center;background:linear-gradient(150deg,#ed462d,#7a2416);color:#fff;font-weight:700;transition:transform .22s ease;transform-style:preserve-3d}
+.seq-box .seq-mark{position:absolute;right:-1px;top:10px;width:3px;height:20px;background:#ffd9d0}
+.seq-scroll[data-frame="0"] .seq-box{transform:rotateY(0deg)}
+.seq-scroll[data-frame="1"] .seq-box{transform:rotateY(60deg)}
+.seq-scroll[data-frame="2"] .seq-box{transform:rotateY(120deg)}
+.seq-scroll[data-frame="3"] .seq-box{transform:rotateY(180deg)}
+.seq-scroll[data-frame="4"] .seq-box{transform:rotateY(240deg)}
+.seq-scroll[data-frame="5"] .seq-box{transform:rotateY(300deg)}
+.seq-caption{margin-top:6px;font-size:11px;color:var(--faint);font-family:var(--font-mono)}
+@media(prefers-reduced-motion:reduce){
+  .magnet-btn,.magnet-label,.obj-card,.seq-box,.morph-word span{transition:none}
+  .hvp-pop{transition:opacity .01s}
+}

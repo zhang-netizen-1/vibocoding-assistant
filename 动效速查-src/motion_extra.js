@@ -379,3 +379,115 @@
     selectTab(tabs[next], true);
   });
 })();
+
+/* ===== P0-2 新增动效演示 ===== */
+const coarsePointer=matchMedia('(pointer: coarse)');
+/* 磁吸按钮 */
+document.querySelectorAll('.magnet-wrap').forEach(wrap=>{
+  const btn=wrap.querySelector('.magnet-btn'),label=wrap.querySelector('.magnet-label');
+  wrap.addEventListener('pointermove',e=>{
+    if(coarsePointer.matches||reduce.matches)return;
+    const r=btn.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+    const dx=(e.clientX-cx)/r.width,dy=(e.clientY-cy)/r.height;
+    btn.style.transform=`translate(${dx*14}px,${dy*12}px)`;
+    label.style.transform=`translate(${dx*5}px,${dy*4}px)`;
+  });
+  wrap.addEventListener('pointerleave',()=>{btn.style.transform='';label.style.transform='';});
+});
+/* 悬停操作栏键盘可达（focus-within 已由 CSS 处理） */
+/* 文字变形（定时轮换，尊重暂停与减少动态） */
+document.querySelectorAll('.morph-stage').forEach(stage=>{
+  const word=stage.querySelector('.morph-word'),cur=word.querySelector('.mw-cur'),next=word.querySelector('.mw-next');
+  const words=['快速设计','稳定开发','顺畅部署'];let idx=0,switching=false;
+  function paused(){return document.hidden||stage.closest('.effect-card').classList.contains('is-paused')||document.getElementById('pauseAll').getAttribute('aria-pressed')==='true'}
+  setInterval(()=>{
+    if(reduce.matches||paused()||switching)return;
+    switching=true;
+    idx=(idx+1)%words.length;
+    next.textContent=words[idx];
+    word.style.width=next.offsetWidth+'px';
+    word.classList.add('morphing');
+    setTimeout(()=>{
+      cur.textContent=words[idx];
+      word.classList.remove('morphing');
+      switching=false;
+    },320);
+  },2300);
+});
+/* 错误抖动 */
+document.querySelectorAll('.shake-demo').forEach(demo=>{
+  const input=demo.querySelector('.shake-input'),go=demo.querySelector('.shake-go'),err=demo.querySelector('.shake-err');
+  go.addEventListener('click',()=>{
+    const valid=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+    if(valid){err.hidden=true;input.classList.remove('shake');toast('提交成功（演示）');return;}
+    if(reduce.matches){err.hidden=false;return;}
+    input.classList.remove('shake');void input.offsetWidth;input.classList.add('shake');
+    err.hidden=false;
+  });
+  input.addEventListener('animationend',()=>input.classList.remove('shake'));
+});
+/* 自定义光标跟随 */
+document.querySelectorAll('.cf-stage').forEach(stage=>{
+  const dot=stage.querySelector('.cf-dot'),ring=stage.querySelector('.cf-ring'),target=stage.querySelector('.cf-target');
+  if(coarsePointer.matches){stage.style.cursor='auto';dot.style.display='none';ring.style.display='none';return;}
+  stage.addEventListener('pointermove',e=>{
+    const r=stage.getBoundingClientRect();
+    dot.style.transform=`translate(${e.clientX-r.left}px,${e.clientY-r.top}px)`;
+    ring.style.translate=`${e.clientX-r.left}px ${e.clientY-r.top}px`;
+  });
+  target.addEventListener('pointerenter',()=>ring.classList.add('big'));
+  target.addEventListener('pointerleave',()=>ring.classList.remove('big'));
+  stage.addEventListener('pointerleave',()=>{dot.style.opacity='0';ring.style.opacity='0';});
+  stage.addEventListener('pointerenter',()=>{dot.style.opacity='1';ring.style.opacity='1';});
+});
+/* 光标拖尾 */
+document.querySelectorAll('.trail-stage').forEach(stage=>{
+  let last=0;
+  stage.addEventListener('pointermove',e=>{
+    if(coarsePointer.matches||reduce.matches)return;
+    const now=performance.now();
+    if(now-last<26)return;last=now;
+    const r=stage.getBoundingClientRect();
+    if(stage.querySelectorAll('.trail-dot').length>26)return;
+    const d=document.createElement('span');d.className='trail-dot';
+    d.style.left=(e.clientX-r.left)+'px';d.style.top=(e.clientY-r.top)+'px';
+    d.addEventListener('animationend',()=>d.remove());
+    stage.appendChild(d);
+  });
+});
+/* 鼠标跟随眼睛 */
+document.querySelectorAll('.eyes-stage').forEach(stage=>{
+  const pupils=[...stage.querySelectorAll('.eye i')];
+  stage.addEventListener('pointermove',e=>{
+    if(coarsePointer.matches)return;
+    pupils.forEach(p=>{
+      const eye=p.parentElement,r=eye.getBoundingClientRect();
+      const cx=r.left+r.width/2,cy=r.top+r.height/2;
+      const ang=Math.atan2(e.clientY-cy,e.clientX-cx),dist=Math.min(13,Math.hypot(e.clientX-cx,e.clientY-cy)/6);
+      p.style.transform=`translate(${Math.cos(ang)*dist}px,${Math.sin(ang)*dist}px)`;
+    });
+  });
+  stage.addEventListener('pointerleave',()=>pupils.forEach(p=>p.style.transform=''));
+});
+/* 3D 物体跟随 */
+document.querySelectorAll('.obj-stage').forEach(stage=>{
+  const card=stage.querySelector('.obj-card');
+  stage.addEventListener('pointermove',e=>{
+    if(coarsePointer.matches||reduce.matches)return;
+    const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`rotateX(${(-y*16).toFixed(2)}deg) rotateY(${(x*18).toFixed(2)}deg)`;
+  });
+  stage.addEventListener('pointerleave',()=>card.style.transform='');
+});
+/* 图片序列：滚动进度映射到帧 */
+document.querySelectorAll('.seq-scroll').forEach(scroller=>{
+  const box=scroller.querySelector('.seq-box'),cap=scroller.querySelector('.seq-caption');
+  function frame(){
+    const total=scroller.scrollHeight-scroller.clientHeight;
+    const p=total?Math.max(0,Math.min(1,scroller.scrollTop/total)):0;
+    const f=Math.round(p*5);
+    scroller.dataset.frame=f;
+    cap.textContent=`旋转 ${f*60}°`;
+  }
+  scroller.addEventListener('scroll',frame,{passive:true});frame();
+});
