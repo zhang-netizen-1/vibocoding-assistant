@@ -35,7 +35,6 @@
 
 > 实现可复用的按钮（Button）组件：支持主要、次要、危险三种用途样式，以及悬停、聚焦、禁用、加载状态；按钮文字与点击行为可配置，禁用或加载中不可重复触发。沿用项目现有设计规范。
 
-`/flows/` 是补充阅读页，展示搜索与筛选、注册表单、文件选择与预览三组组合流程；它不计入八类条目总数。
 
 ## 本地构建与预览
 
@@ -57,8 +56,7 @@ python3 -m http.server 4173 --directory dist
 - 首页与共用导航：编辑 `site-src/index.html`、`site-src/home.css`、`site-src/home.js` 和 `site-src/site.css`。跨类别索引由 `site-src/search_index.py` 从条目源生成；全站视觉变量和覆盖规则集中在 `site-src/theme.css`，修改前先对照 `docs/design-system.md`。
 - 其他五类速查：在 `site-src/guide_pages.py` 中维护内容和 HTML，在 `site-src/guides.css`、`site-src/guides.js` 中维护共用视觉和示例交互；视觉风格的六套风格样式在 `site-src/visual-styles.css`。
 - UI 与交互 Skills：在 `site-src/skill_catalog.py` 中维护条目和安装提示词，在 `site-src/skills.css`、`site-src/skills.js` 中维护页面样式与交互。
-- 组合流程：在 `site-src/flow_pages.py` 中维护案例和提示词，在 `site-src/flows.css`、`site-src/flows.js` 中维护页面样式、复制和本地表单演示。
-- 站点输出：`scripts/build_site.py` 使用明确的文件清单构建首页、七类速查页、Skills 页、组合流程页、两个跨页转场演示页及共用资源；同目录中的其他文件不会进入 `dist/`。
+- 站点输出：`scripts/build_site.py` 使用明确的文件清单构建首页、七类速查页、Skills 页、两个跨页转场演示页及共用资源；同目录中的其他文件不会进入 `dist/`。
 
 运行构建检查：
 

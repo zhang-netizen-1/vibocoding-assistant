@@ -53,15 +53,13 @@ class SiteBuildTest(unittest.TestCase):
         self.assertEqual(files, {
             ".generated-site", "index.html", "ui/index.html", "motion/index.html",
             "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html",
-            "layout/index.html", "visual/index.html", "interaction/index.html", "pages/index.html", "data/index.html", "skills/index.html", "flows/index.html",
-            "assets/site.css", "assets/theme.css", "assets/site.js", "assets/home.css", "assets/home.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/flows.css", "assets/flows.js", "assets/favicon.svg",
+            "layout/index.html", "visual/index.html", "interaction/index.html", "pages/index.html", "data/index.html", "skills/index.html", "assets/site.css", "assets/theme.css", "assets/site.js", "assets/home.css", "assets/home.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg",
         })
 
     def test_site_routes_and_all_cards(self):
         home = parse(DIST / "index.html")
         self.assertIn("./ui/", home.links)
         self.assertIn("./motion/", home.links)
-        self.assertIn("./flows/", home.links)
         home_html = (DIST / "index.html").read_text(encoding="utf-8")
         self.assertIn("<strong>189</strong><span>个可查条目", home_html)
         self.assertIn('id="global-search"', home_html)
@@ -85,14 +83,7 @@ class SiteBuildTest(unittest.TestCase):
             self.assertIn("site-content", built.ids)
         ui_html = (DIST / "ui" / "index.html").read_text(encoding="utf-8")
         self.assertNotIn('class="scenarios"', ui_html)
-        self.assertIn('class="flow-context"', ui_html)
-        self.assertIn('href="../flows/">查看组合流程示例', ui_html)
-        flows_html = (DIST / "flows" / "index.html").read_text(encoding="utf-8")
-        self.assertEqual(flows_html.count('class="flow-card"'), 3)
-        self.assertIn('id="sample-register"', flows_html)
-        self.assertIn('id="flows-main"', flows_html)
-        self.assertIn('<a href="../ui/">UI 元素</a> / COMPOSED FLOWS', flows_html)
-        for page_path in (DIST / "index.html", *(DIST / section / "index.html" for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills", "flows"))):
+        for page_path in (DIST / "index.html", *(DIST / section / "index.html" for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills"))):
             page = page_path.read_text(encoding="utf-8")
             self.assertNotIn('>组合流程</a>', page)
 
@@ -145,10 +136,7 @@ class SiteBuildTest(unittest.TestCase):
         self.assertRegex(skills_page, r'href="../assets/skills\.css\?v=[0-9a-f]{8}"')
         self.assertIn('aria-current="page">Skills', skills_page)
         self.assertIn('id="skill-copy-status" class="site-announcement" role="status"', skills_page)
-        flows_page = (DIST / "flows" / "index.html").read_text(encoding="utf-8")
-        self.assertRegex(flows_page, r'src="../assets/flows\.js\?v=[0-9a-f]{8}"')
-        self.assertRegex(flows_page, r'href="../assets/flows\.css\?v=[0-9a-f]{8}"')
-        for page_path in (DIST / "index.html", *(DIST / section / "index.html" for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills", "flows"))):
+        for page_path in (DIST / "index.html", *(DIST / section / "index.html" for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills"))):
             page = page_path.read_text(encoding="utf-8")
             self.assertRegex(page, r'assets/theme\.css\?v=[0-9a-f]{8}')
 
