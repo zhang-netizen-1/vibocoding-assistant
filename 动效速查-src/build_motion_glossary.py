@@ -132,6 +132,7 @@ for key,(name,description) in CATS.items():
     items=[e for e in entries if e[1]==key]
     assert items
     sections.append(f'<section class="category-section" id="section-{key}" data-cat="{key}"><div class="section-head"><div><h2>{name}</h2><p>{description}</p></div><span class="section-count">{len(items)} 种效果</span></div><div class="grid">'+''.join(card(e) for e in items)+'</div></section>')
+sections.append('<div class="grid"><article class="grow-card"><strong>这张清单还在生长</strong><p>提案你想看的效果，或直接贡献一个条目。</p><a href="https://github.com/zhang-netizen-1/vibocoding-assistant" target="_blank" rel="noopener">去 GitHub 提案 ↗</a></article></div>')
 sections.append(render_spec_section())
 source=(SOURCE/'motion_template.html').read_text(encoding='utf-8')
 assert all(source.count(token)==1 for token in ('__CHIPS__','__SECTIONS__','__EXTRA_CSS__','__EXTRA_JS__'))

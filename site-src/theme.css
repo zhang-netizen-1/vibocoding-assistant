@@ -222,7 +222,7 @@ body.site-reference { --paper: var(--ds-canvas); background: var(--ds-shell); }
 .site-reference .flow-context a:hover { background: var(--ds-lime-hover); }
 .site-reference .ref-tools button { color: var(--ds-ink); border: 0; border-radius: 0; }
 .site-reference .cmp, .site-reference .effect-card { border: 1px solid var(--ds-line); border-radius: 0; box-shadow: none; }
-.site-reference .cmp:hover, .site-reference .effect-card:hover { border-color: #4a4a44; box-shadow: none; }
+
 .site-reference .cmp-head, .site-reference .card-head { padding: 22px 24px 18px; }
 .site-reference .cmp-t .en, .site-reference .english { display: inline-flex; align-items: center; min-height: 44px; padding-inline: 4px; }
 .site-reference .cat, .site-reference .tag { color: #ff6a4a; background: rgba(237,70,45,.12); border-radius: 0; padding: 5px 10px; }
@@ -246,6 +246,26 @@ body.site-reference { --paper: var(--ds-canvas); background: var(--ds-shell); }
 .site-reference .site-card-tools a, .site-reference .site-card-tools button { color: #96948b; }
 .site-reference .site-card-tools a, .site-reference .site-card-tools button { display: inline-flex; align-items: center; min-height: 44px; }
 .site-reference .section-head h2 { color: var(--ds-ink); }
+
+/* 卡片 hover 反馈 */
+.site-reference .cmp, .site-reference .effect-card, .guide-card, .skill-card { transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.site-reference .cmp:hover, .site-reference .effect-card:hover, .guide-card:hover, .skill-card:hover { transform: translateY(-2px); border-color: rgba(237,70,45,.55); box-shadow: 0 12px 28px rgba(0,0,0,.4); }
+/* 组尾生长卡 */
+.grow-card { display: flex; flex-direction: column; justify-content: center; gap: 8px; min-height: 150px; padding: 26px 28px; border: 1px dashed rgba(237,70,45,.45); background: rgba(237,70,45,.05); }
+.grow-card strong { color: var(--ds-ink); font-size: 15px; }
+.grow-card p { margin: 0; color: var(--ds-muted); font-size: 12.5px; line-height: 1.7; }
+.grow-card a { color: var(--ds-lime); font-weight: 650; text-decoration: none; }
+.grow-card a:hover { text-decoration: underline; }
+
+/* 滚动进度线 + 返回顶部 */
+.site-progress { position: fixed; top: 0; left: 0; z-index: 300; height: 2px; width: 0; background: var(--ds-lime); }
+.site-top-btn { position: fixed; right: 22px; bottom: 22px; z-index: 200; width: 42px; height: 42px; border: 0; border-radius: 0; background: var(--ds-lime); color: #171715; font: 700 16px/1 var(--font-sans); cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,.4); }
+.site-top-btn:hover { background: var(--ds-lime-hover); }
+.site-top-btn[hidden] { display: none; }
+/* 页脚附注 */
+.site-home-footer .foot-note { color: var(--ds-muted); font-size: 12px; }
+/* 演示舞台微光泽 */
+.site-reference .stage:before, .site-reference .canvas:before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(560px 180px at 72% 0%, rgba(237,70,45,.05), transparent 70%); }
 
 /* Keyboard and motion system */
 .site-home a:focus-visible, .site-home button:focus-visible, .site-home input:focus-visible,

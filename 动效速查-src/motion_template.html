@@ -79,7 +79,7 @@ __EXTRA_CSS__
 <body>
 <header class="topbar"><div class="top-inner"><div class="top-main"><div class="brand"><span class="brand-mark" aria-hidden="true"></span><div><h1>页面 / 网站 / App 动效速查</h1><small>vibe coding · 看效果，复制实现需求</small></div></div><label class="search"><span class="sr-only">搜索动效</span><input id="q" placeholder="搜索：视差 / 粒子 / 卡片 / 滑动…" autocomplete="off"><kbd>/</kbd></label></div><div class="nav-row"><nav class="chips" aria-label="动效分类">__CHIPS__</nav><span class="count" id="count"></span></div></div></header>
 <main class="wrap"><div class="intro"><strong>看效果，抄需求</strong><div><p>在演示区点击、悬停、拖动或滚动，辨认实际动起来的样子。下方的需求只描述这个效果的触发、变化与边界，可直接复制给当前项目的 coding agent，不预设业务页面或数据。这里收录常用效果，不是穷尽清单。</p><span class="formula">怎么读：动在哪里 → 什么触发 → 看到什么变化 → 如何复位 / 跨端降级。</span><div class="intro-actions"><button id="pauseAll" type="button" aria-pressed="false">暂停循环演示</button><span>滚动类在卡片内滚动；触屏操作可用鼠标拖动模拟。</span></div></div></div>
-<div id="catalogue">__SECTIONS__</div><div id="empty" class="empty" hidden>没有匹配的动效。试试换个名称或分类。</div><footer class="footer">演示用抽象内容，只帮助辨认运动方式；复制需求时不带演示文字与虚构业务。部分高级视觉效果以轻量可运行版本展示，并非 WebGL 或原生 App 的技术复刻。</footer></main>
+<div id="catalogue">__SECTIONS__</div><div id="empty" class="empty" hidden>没有匹配的动效。试试换个名称或分类。</div><footer class="site-home-footer"><div><strong>vibocoding助手</strong><span>让界面的表达更准确。</span></div><span class="foot-note">演示仅为辨认运动方式，不含虚构业务；部分高级视觉效果以轻量可运行版本展示。</span><a href="../">回到首页 ↑</a></footer></main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 const reduce=matchMedia('(prefers-reduced-motion: reduce)');

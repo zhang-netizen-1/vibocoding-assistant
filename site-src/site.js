@@ -168,3 +168,37 @@
   window.addEventListener('hashchange', revealLinkedCard);
   if (location.hash) requestAnimationFrame(revealLinkedCard);
 })();
+
+/* 滚动进度线 + 返回顶部（全内容页） */
+(function(){
+  const bar=document.createElement('div');bar.className='site-progress';document.body.appendChild(bar);
+  const btn=document.createElement('button');btn.type='button';btn.className='site-top-btn';
+  btn.textContent='↑';btn.setAttribute('aria-label','返回顶部');btn.hidden=true;
+  document.body.appendChild(btn);
+  function upd(){
+    const max=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+    bar.style.width=(max>0?(document.documentElement.scrollTop/max)*100:0)+'%';
+    btn.hidden=document.documentElement.scrollTop<600;
+  }
+  addEventListener('scroll',upd,{passive:true});upd();
+  btn.addEventListener('click',()=>{
+    scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  });
+})();
+
+/* 滚动进度线 + 返回顶部（全内容页） */
+(function(){
+  const bar=document.createElement('div');bar.className='site-progress';document.body.appendChild(bar);
+  const btn=document.createElement('button');btn.type='button';btn.className='site-top-btn';
+  btn.textContent='↑';btn.setAttribute('aria-label','返回顶部');btn.hidden=true;
+  document.body.appendChild(btn);
+  function upd(){
+    const max=document.documentElement.scrollHeight-document.documentElement.clientHeight;
+    bar.style.width=(max>0?(document.documentElement.scrollTop/max)*100:0)+'%';
+    btn.hidden=document.documentElement.scrollTop<600;
+  }
+  addEventListener('scroll',upd,{passive:true});upd();
+  btn.addEventListener('click',()=>{
+    scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  });
+})();
