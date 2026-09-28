@@ -8,9 +8,9 @@
 
 ## 网站截图
 
-**全部速查：**跨类别搜索名称，或从目录进入对应分类。
+**首页：**按类别浏览，或直接搜索；每个条目都配可复制的实现提示词，复制给 Coding Agent 即可实现对应效果。
 
-![全部速查首页，展示跨类别搜索与八类目录](docs/screenshots/home.png)
+![首页：搜索、八类目录与复制提示词入口](docs/screenshots/home.png)
 
 **动效条目：**先操作真实演示，确认效果，再展开提示词并一键复制。例如「交叉淡化」条目会说明切换时旧内容与新内容如何衔接。
 
@@ -54,7 +54,7 @@ python3 -m http.server 4173 --directory dist
 
 - UI 元素：编辑 `网页UI元素速查.html`。
 - 动效：编辑 `动效速查-src/motion_entries.json` 和 `动效速查-src/motion_template.html`；新增演示分别在 `动效速查-src/extra_demos.py`、`动效速查-src/motion_extra.css`、`动效速查-src/motion_extra.js`。「实现规范」分区的内容与结构在 `动效速查-src/motion_spec.py`。构建脚本会先重新生成 `动效速查.html`。
-- 全部速查与共用导航：编辑 `site-src/index.html`、`site-src/home.css`、`site-src/home.js` 和 `site-src/site.css`。跨类别索引由 `site-src/search_index.py` 从条目源生成；全站视觉变量和覆盖规则集中在 `site-src/theme.css`，修改前先对照 `docs/design-system.md`。
+- 首页与共用导航：编辑 `site-src/index.html`、`site-src/home.css`、`site-src/home.js` 和 `site-src/site.css`。跨类别索引由 `site-src/search_index.py` 从条目源生成；全站视觉变量和覆盖规则集中在 `site-src/theme.css`，修改前先对照 `docs/design-system.md`。
 - 其他五类速查：在 `site-src/guide_pages.py` 中维护内容和 HTML，在 `site-src/guides.css`、`site-src/guides.js` 中维护共用视觉和示例交互；视觉风格的六套风格样式在 `site-src/visual-styles.css`。
 - UI 与交互 Skills：在 `site-src/skill_catalog.py` 中维护条目和安装提示词，在 `site-src/skills.css`、`site-src/skills.js` 中维护页面样式与交互。
 - 组合流程：在 `site-src/flow_pages.py` 中维护案例和提示词，在 `site-src/flows.css`、`site-src/flows.js` 中维护页面样式、复制和本地表单演示。

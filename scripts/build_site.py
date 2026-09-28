@@ -39,7 +39,7 @@ PAGES = (
 
 
 def site_navigation(section: str) -> str:
-    links = (("全部速查", "../", "home"), ("UI 元素", "../ui/", "ui"), ("动效", "../motion/", "motion")) + tuple(
+    links = (("首页", "../", "home"), ("UI 元素", "../ui/", "ui"), ("动效", "../motion/", "motion")) + tuple(
         (guide["name"], f"../{slug}/", slug) for slug, guide in GUIDES.items()
     ) + (("UI 与交互 Skills", "../skills/", "skills"),)
     parts = []
@@ -52,7 +52,7 @@ def site_navigation(section: str) -> str:
     return (
         f'<a class="site-skip" href="#{skip_target}">跳到主要内容</a>'
         '<nav class="site-nav" aria-label="网站导航"><div class="site-nav-inner">'
-        '<a class="site-brand" href="../" aria-label="vibocoding助手全部速查">'
+        '<a class="site-brand" href="../" aria-label="vibocoding助手首页">'
         '<span class="site-brand-icon" aria-hidden="true"><i></i><i></i><i></i></span>'
         '<span>vibocoding助手<small>INTERFACE FIELD GUIDE</small></span></a>'
         f'<div class="site-nav-links"><span class="site-nav-section">浏览目录</span>{items}{more}</div></div></nav>'
