@@ -64,7 +64,3 @@
 @media (max-width: 600px) { .directory-header { display: block; padding: 28px 23px; } .directory-stat { width: fit-content; margin-top: 22px; } .directory-result-list { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .directory-content { padding: 13px 14px 44px; } .directory-header h1 { font-size: 35px; } .directory-intro { font-size: 14px; } .directory-search { margin-top: 13px; padding: 23px 20px; } .directory-search-top > span, .directory-search-field kbd { display: none; } .directory-search-field { padding-inline: 12px; } .directory-search-field input { font-size: 14px; } .directory-grid { grid-template-columns: 1fr; gap: 11px; } .directory-card { min-height: 0; padding: 19px 20px 0; } .directory-card > strong { margin-top: 13px; } .directory-card > p { margin-bottom: 13px; } .directory-secondary { align-items: flex-start; flex-direction: column; } }
 @media (prefers-reduced-motion: reduce) { .directory-card { transition: none; } }
-
-/* rig 式分隔条 */
-.directory-ticker { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; padding: 12px 2px; border-block: 1px solid var(--ds-line); color: var(--ds-lime); font: 11px/1.6 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: .18em; }
-.directory-ticker i { font-style: normal; color: var(--ds-muted); }
