@@ -175,9 +175,6 @@ body.site-guide[data-guide] { --guide-accent: var(--ds-ink); --guide-wash: var(-
 .skills-hero-count { align-items: center; padding: 13px 18px; border-radius: 0; background: var(--ds-lime); }
 .skills-hero-count strong { color: var(--ds-ink); font-family: var(--font-sans); }
 .skills-hero-count span { color: #3d4630; }
-.skills-note { grid-template-columns: 165px 1fr; margin-top: 20px; padding: 24px 28px; color: #171715; background: var(--ds-lime); border: 0; border-radius: 0; }
-.skills-note strong { color: #171715; }
-.skills-note p { color: #4a3f38; }
 .skills-toolbar { margin-top: 38px; }
 .skills-toolbar input { min-height: 50px; border: 0; border-radius: 0; padding-inline: 20px; }
 .skills-toolbar span, .skill-section-title small { color: var(--ds-muted); }
@@ -312,8 +309,6 @@ body.site-reference { --paper: var(--ds-canvas); background: var(--ds-shell); }
   .guide-hero, .skills-hero { padding: 26px 21px; }
   .guide-hero-count, .skills-hero-count { width: fit-content; margin-top: 23px; }
   .guide-card-head { padding: 19px; }
-  .skills-note { display: block; padding: 22px; }
-  .skills-note p { margin-top: 9px; }
   .site-reference .tb-in, .site-reference .top-inner { margin: 12px 12px 0; padding: 28px 21px; }
   .site-reference .ref-layout { padding-inline: 15px; }
   .site-reference .cmp-head, .site-reference .card-head, .site-reference .cmp-foot, .site-reference .card-note, .site-reference .demo-tools, .site-reference .card-prompt, .site-reference .site-card-tools { padding-left: 18px; padding-right: 18px; }
