@@ -259,16 +259,15 @@ body.site-reference { --paper: var(--ds-canvas); background: var(--ds-shell); }
 }
 
 @media (min-width: 1180px) {
-  body.site-home, body.site-guide, body.site-skills, body.site-reference { padding-left: 288px; }
-  .site-nav { position: fixed; left: 20px; top: 20px; width: 248px; height: calc(100dvh - 40px); overflow-y: auto; background: var(--ds-surface); border: 1px solid var(--ds-line); border-radius: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
-  .site-nav-inner { min-height: 100%; height: auto; padding: 27px 17px 23px; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0; }
-  .site-brand { padding: 0 9px; gap: 11px; }
-  .site-nav-links { display: flex; flex-direction: column; align-items: stretch; gap: 4px; margin-top: 44px; }
-  .site-nav-section { display: block; margin: 0 15px 9px; color: var(--ds-muted); font: 700 11px/1.4 var(--font-mono); letter-spacing: .09em; }
-  .site-nav-links > a { padding: 12px 16px; border-radius: 0; font-size: 14px; }
+  .site-nav { position: sticky; top: 0; z-index: 100; width: auto; height: 64px; overflow: visible; background: var(--ds-surface); border: 0; border-bottom: 1px solid var(--ds-line); box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .site-nav-inner { height: 64px; padding: 0 32px; flex-direction: row; align-items: center; justify-content: space-between; gap: 24px; max-width: var(--ds-content-max); margin: 0 auto; }
+  .site-brand { padding: 0; gap: 11px; }
+  .site-nav-links { display: flex; flex-direction: row; align-items: center; gap: 2px; margin-top: 0; }
+  .site-nav-section { display: none; }
+  .site-nav-links > a { padding: 9px 14px; border-radius: 0; font-size: 14px; }
   .site-more { display: none; }
-  .site-home > main, .site-guide > main, .site-skills > main { min-height: calc(100dvh - 40px); margin: 20px 20px 0 0; border-radius: var(--ds-radius-shell); }
-  .site-home-footer { padding-left: 40px; padding-right: 40px; }
+  .site-home > main, .site-guide > main, .site-skills > main { min-height: 0; margin: 0; border-radius: 0; }
+  .site-reference .ref-layout { padding-top: 28px; }
 }
 
 @media (max-width: 1179px) {
