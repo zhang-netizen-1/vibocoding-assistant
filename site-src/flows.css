@@ -36,7 +36,7 @@
 .flow-form-field input[aria-invalid="true"] { border-color:#c8413b; background:#fffafa; }
 .flow-error { min-height:17px; color:#ba382f; font-size:12px; line-height:1.4; }
 .flow-form button:disabled { opacity:.64; cursor:wait; }
-.flow-form-status { min-height:20px; margin:0; color:#23553f; font-size:13px; line-height:1.5; }
+.flow-form-status { min-height:20px; margin:0; color:#1F6B47; font-size:13px; line-height:1.5; }
 @media(max-width:1040px) { .flow-card { grid-template-columns:1fr; } .flow-card-prompt { border-top:1px solid #e4e6ee; } }
 @media(max-width:760px) { .flows-intro { align-items:flex-start; flex-direction:column; padding:23px; } .flow-lab { grid-template-columns:1fr; gap:24px; padding:26px; } }
 @media(max-width:520px) { .flow-card-main, .flow-card-prompt { padding:24px; } .flow-card-heading { display:block; } .flow-card h2 { margin-top:9px; } .flow-prompt-heading { display:block; } .flow-prompt-heading small { display:block; margin-top:3px; } .flow-lab { padding:23px; } .flow-form { padding:20px; } }
