@@ -217,7 +217,7 @@ body.site-reference[data-section="motion"] { --acc: #ff6a4a; --acc-solid: #ed462
 .site-reference .card-note { padding: 8px 20px 18px; min-height: 0; color: #96948b; font-size: 14px; line-height: 1.65; }
 .site-reference .card-prompt { margin-top: auto; border-top: 1px solid #e5e8ec; background: #fbfbfa; padding: 0 20px; }
 .site-reference .card-prompt summary { min-height: 45px; padding: 11px 0; color: var(--acc-solid); font-size: 13px; }
-.site-reference .card-prompt .prompt-text { padding: 13px; color: #323a46; background: #f2f4f7; border: 1px solid #dce1e6; font-size: 13px; }
+.site-reference .card-prompt .prompt-text { padding: 13px; color: #f2f0ea; background: #232320; border: 1px solid #2e2e2a; font-size: 13px; }
 .site-reference .card-prompt .copy-prompt { min-height: 36px; padding: 8px 12px; color: #1d1d1a; background: var(--acc-solid); font-size: 12px; }
 .site-reference .card-prompt .copy-prompt:hover { background: var(--accent-dark); }
 .site-reference .site-card-tools { display: flex; align-items: center; gap: 18px; padding: 9px 20px 12px; border-top: 1px solid #e5e8ec; font: 12px/1.4 "PingFang SC","Noto Sans CJK SC",sans-serif; }
