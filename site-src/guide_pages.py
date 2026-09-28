@@ -238,7 +238,7 @@ def render_card(section, entry):
       <div class="guide-card-controls" role="group" aria-label="{title}预览状态"><button type="button" data-mode="0" aria-pressed="true">{labels[0]}</button><button type="button" data-mode="1" aria-pressed="false">{labels[1]}</button></div>
       <p class="guide-card-description">{escape(entry["description"])}</p>
       <dl class="guide-card-advice"><div><dt>适合</dt><dd>{escape(entry["fit"])}</dd></div><div><dt>避免</dt><dd>{escape(entry["avoid"])}</dd></div></dl>
-      <details class="guide-card-prompt"><summary>查看并复制实现提示词</summary><div class="guide-prompt-text">{escape(prompt)}</div><button type="button" class="guide-copy">复制提示词</button></details>
+      <details class="guide-card-prompt" open><summary>查看并复制实现提示词</summary><div class="guide-prompt-text">{escape(prompt)}</div><button type="button" class="guide-copy">复制提示词</button></details>
       <div class="guide-card-footer"><a href="#g-{section}-{entry["demo"]}" aria-label="定位到{title}"># 直达此条</a><button type="button" class="guide-copy-link" aria-label="复制{title}的链接">复制链接</button></div>
     </article>'''
 

@@ -123,7 +123,7 @@ def card(e):
       <div class="stage {'dark-stage' if cat=='background' else ''}" data-effect="{esc(kind)}"><span class="stage-label">{esc(trigger)}</span><span class="stage-live" aria-hidden="true"><i></i> LIVE DEMO</span>{backdrop}{demo(kind)}<span class="stage-signature" aria-hidden="true">{esc(cat.upper())} / MOTION STUDY</span></div>
       <div class="demo-tools">{tools}<span class="preview-label">真实交互演示</span></div>
       <div class="card-note">{esc(description)}</div>
-      <details class="card-prompt"><summary>查看并复制动效实现提示词</summary><p class="prompt-text">{esc(prompt)}</p><button class="copy-prompt" type="button">复制提示词</button></details>
+      <details class="card-prompt" open><summary>查看并复制动效实现提示词</summary><p class="prompt-text">{esc(prompt)}</p><button class="copy-prompt" type="button">复制提示词</button></details>
     </article>'''
 
 chips='<button class="chip active" data-filter="all" aria-pressed="true" type="button">全部</button>'+''.join(f'<button class="chip" data-filter="{key}" aria-pressed="false" type="button">{name}</button>' for key,(name,_) in CATS.items())+SPEC_CHIP

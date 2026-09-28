@@ -81,7 +81,7 @@ def render_card(entry, number):
         <div class="skill-tags" aria-label="能力标签">{tags}</div>
       </div>
       <div class="skill-card-source"><a href="{escape(source, quote=True)}" target="_blank" rel="noopener noreferrer">查看 GitHub 上的 SKILL.md ↗</a><span>已核对 · {VERIFIED_DATE}</span></div>
-      <details class="skill-install"><summary>查看并复制 Skill 安装提示词</summary><div class="skill-install-text">{escape(install_prompt(entry))}</div><button type="button" class="skill-copy">复制安装提示词</button></details>
+      <details class="skill-install" open><summary>查看并复制 Skill 安装提示词</summary><div class="skill-install-text">{escape(install_prompt(entry))}</div><button type="button" class="skill-copy">复制安装提示词</button></details>
     </article>'''
 
 

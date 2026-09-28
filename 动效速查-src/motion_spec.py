@@ -27,7 +27,7 @@ def _table(headers, rows):
 
 def _prompt(text):
     return (
-        '<details class="card-prompt spec-prompt"><summary>查看并复制实现规范提示词</summary>'
+        '<details class="card-prompt spec-prompt" open><summary>查看并复制实现规范提示词</summary>'
         f'<p class="prompt-text">{_esc(text)}</p>'
         '<button class="copy-prompt" type="button">复制提示词</button></details>'
     )
