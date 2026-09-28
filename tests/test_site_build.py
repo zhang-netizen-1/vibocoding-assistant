@@ -143,7 +143,7 @@ class SiteBuildTest(unittest.TestCase):
         skills_page = (DIST / "skills" / "index.html").read_text(encoding="utf-8")
         self.assertRegex(skills_page, r'src="../assets/skills\.js\?v=[0-9a-f]{8}"')
         self.assertRegex(skills_page, r'href="../assets/skills\.css\?v=[0-9a-f]{8}"')
-        self.assertIn('aria-current="page">UI 与交互 Skills', skills_page)
+        self.assertIn('aria-current="page">Skills', skills_page)
         self.assertIn('id="skill-copy-status" class="site-announcement" role="status"', skills_page)
         flows_page = (DIST / "flows" / "index.html").read_text(encoding="utf-8")
         self.assertRegex(flows_page, r'src="../assets/flows\.js\?v=[0-9a-f]{8}"')

@@ -41,7 +41,7 @@ PAGES = (
 def site_navigation(section: str) -> str:
     links = (("首页", "../", "home"), ("UI 元素", "../ui/", "ui"), ("动效", "../motion/", "motion")) + tuple(
         (guide["name"], f"../{slug}/", slug) for slug, guide in GUIDES.items()
-    ) + (("UI 与交互 Skills", "../skills/", "skills"),)
+    ) + (("Skills", "../skills/", "skills"),)
     parts = []
     for label, href, key in links:
         current = ' aria-current="page"' if key == section else ""
