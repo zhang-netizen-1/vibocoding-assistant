@@ -3,7 +3,6 @@
   const input = document.getElementById('global-search');
   const results = document.getElementById('search-results');
   const categories = document.getElementById('directory-categories');
-  const secondary = document.querySelector('.directory-secondary');
   const list = document.getElementById('result-list');
   const count = document.getElementById('result-count');
   const empty = document.getElementById('result-empty');
@@ -50,7 +49,6 @@
     const searching = Boolean(query);
     results.hidden = !searching;
     categories.hidden = searching;
-    secondary.hidden = searching;
     if (!searching) {
       list.replaceChildren();
       count.textContent = '';

@@ -81,6 +81,9 @@ class SiteBuildTest(unittest.TestCase):
             self.assertIn("../ui/", built.links)
             self.assertIn("../motion/", built.links)
             self.assertIn("site-content", built.ids)
+        home_js = (DIST / "assets" / "home.js").read_text(encoding="utf-8")
+        self.assertNotIn("directory-secondary", home_js)
+        self.assertNotIn("directory-secondary", home_html)
         ui_html = (DIST / "ui" / "index.html").read_text(encoding="utf-8")
         self.assertNotIn('class="scenarios"', ui_html)
         for page_path in (DIST / "index.html", *(DIST / section / "index.html" for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills"))):
