@@ -211,7 +211,7 @@ def detail(e, entries, tax):
     if e['acceptance']:
         items = ''.join(f'<li><p id="criterion-{i}">{escape(text)}</p>{copy_button("criterion-"+str(i), "复制这条")}</li>' for i,text in enumerate(e['acceptance']))
         criteria = f'<details class="criteria" id="acceptance"><summary>验收要求（{len(e["acceptance"])} 条）</summary><ol>{items}</ol></details>'
-    bench = f'<a class="bench-badge" href="{relative(page,"bench/"+e["bench"]["slug"]+"/")}">查看测评 →</a>' if 'bench' in e else ''
+    bench = f'<a class="bench-badge" href="{relative(page,"bench/"+e["bench"]["slug"]+"/")}">{escape(" · ".join(agent.title() + " " + str(score) for agent,score in e["bench"]["totals"].items()))} · 测评结果 →</a>' if 'bench' in e else ''
     bench_line = f'<p class="bench-line">提示词测评：{bench}</p>' if bench else ''
     prompt_new = f'<details class="entry-section new-section"><summary>提示词 · 新做一个</summary><pre class="prompt-text" id="new-prompt">{escape(e["prompt_new"])}</pre>{copy_button("new-prompt")}</details>' if e.get('prompt_new') else ''
     use_card = f'<aside class="use-card" aria-labelledby="use-card-title"><h2 id="use-card-title">使用卡</h2>{copy_button("copy-prompt",primary=True)}{criteria}<div class="use-actions">{copy_button("entry-english","复制英文名")}<button class="copy-btn" data-copy-link>复制本页链接</button></div>{bench}</aside>'

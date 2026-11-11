@@ -35,6 +35,8 @@ class RedesignJavaScriptTest(unittest.TestCase):
             result=subprocess.run(['node',str(ROOT/'site-src/redesign/demo-smoke.cjs'),str(fixture)],cwd=ROOT,text=True,capture_output=True)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
         self.assertIn('189',result.stdout)
+        self.assertIn('Command palette: 70 real candidates',result.stdout)
+        self.assertIn('Motion modal: local sibling inert',result.stdout)
 
     def test_real_index_matching_ranking_and_near_names(self):
         code = r'''
@@ -116,3 +118,15 @@ for(const old of ['ui','motion','layout','visual','interaction','pages','data','
 console.log('Redirect scripts passed '+checked+' hashes');'''
         result=subprocess.run(['node','-e',code],cwd=ROOT,text=True,capture_output=True)
         self.assertEqual(result.returncode,0,result.stderr)
+
+    def test_preview_first_frames_and_long_running_action_guards(self):
+        runtime=(ROOT/'site-src/redesign/demo-runtime.js').read_text()
+        site=(ROOT/'site-src/redesign/site.js').read_text()
+        self.assertIn('particlePreview(false)',runtime)
+        self.assertIn('primeVirtualList()',runtime)
+        self.assertIn('.tblfix-demo',runtime)
+        self.assertIn('scrollLeft',runtime)
+        self.assertIn('.extra-magnifier-art',runtime)
+        self.assertIn("scope.dataset.demoKey === 'text-text-morph' ? 3000 : 2400",site)
+        self.assertIn('clearResources()',runtime)
+        self.assertIn('body.cloneNode(true)',runtime)

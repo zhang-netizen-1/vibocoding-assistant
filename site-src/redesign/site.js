@@ -149,7 +149,8 @@
     activeCard = card; card.classList.add('playing'); card.querySelector('.play-button').setAttribute('aria-pressed','true');
     const scope = card.querySelector('.demo-scope'); controller = window.VibeDemos.init(scope); controller.preview();
     // A full original action runs once; restart only while hover/focus is held.
-    cardTimer = setTimeout(() => { const replay = activeCard === card && !once; stopAllCards(); if (replay) playCard(card); },2400);
+    const duration = scope.dataset.demoKey === 'text-text-morph' ? 3000 : 2400;
+    cardTimer = setTimeout(() => { const replay = activeCard === card && !once; stopAllCards(); if (replay) playCard(card); },duration);
   }
   window.VibeDemos.mountAll();
   $$('.gallery-card').forEach(card => {

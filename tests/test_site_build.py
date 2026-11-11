@@ -31,9 +31,14 @@ class PageParser(HTMLParser):
         self.references = []
         self.images = []
         self.demo_links = []
+        self.commands = []
 
     def handle_starttag(self, tag, attrs):
         attributes = dict(attrs)
+        if attributes.get("data-demo-commands"):
+            commands=json.loads(attributes["data-demo-commands"])
+            self.commands.extend(commands)
+            self.references.extend(command["href"] for command in commands)
         self.references.extend(attributes[key] for key in ("href", "src", "data-demo-css", "data-state-css") if attributes.get(key))
         if tag == "img":
             self.images.append(attributes)
@@ -77,9 +82,11 @@ class SiteBuildTest(unittest.TestCase):
             self.assertTrue(path.is_file(), path)
             page = path.read_text(encoding="utf-8")
             self.assertNotRegex(page.lower(), "dsh")
-            self.assertIn('aria-current="page">测评结果</a>', page)
+            self.assertIn('class="header"',page)
+            self.assertNotIn('assets/theme.css',page)
+            self.assertNotIn('INTERFACE FIELD GUIDE',page)
             parsed = parse(path)
-            self.assertIn("site-content", parsed.ids)
+            self.assertIn("main", parsed.ids)
             for ref in parsed.references:
                 url = urlsplit(ref)
                 if url.scheme or url.netloc:
@@ -117,7 +124,11 @@ class SiteBuildTest(unittest.TestCase):
         rounds = [json.loads((source / f"round{rnd}-results.json").read_text(encoding="utf-8")) for rnd in (1, 2)]
         for slug in ("button", "crossfade", "grid"):
             page = (DIST / "bench" / slug / "index.html").read_text(encoding="utf-8")
-            self.assertIn(f'href="../{narrative["entries"][slug]["site_link"]}">查看速查条目', page)
+            destination={"button":"../../components/button/","crossfade":"../../interactions/view-crossfade/","grid":"../../basics/grid/"}[slug]
+            self.assertIn(f'href="{destination}">回到条目复制提示词',page)
+            entry=narrative["entries"][slug]
+            conclusion=entry["stability"]["heading"] if "stability" in entry else entry["fixes"][0]["fixed"]
+            self.assertIn(escape(conclusion),page)
             tbody = re.search(r'<tbody>(.*?)</tbody>', page, re.S).group(1)
             score_rows = re.findall(r'<tr>(.*?)</tr>', tbody, re.S)
             self.assertEqual(len(score_rows), 8)
@@ -274,6 +285,9 @@ class SiteBuildTest(unittest.TestCase):
             self.assertNotIn('提示词写法',html)
             for group in column['groups']:
                 self.assertIn('id="group-'+group['slug']+'"',html)
+        command_page=parse(DIST/'components/cmdk/index.html')
+        self.assertEqual(len(command_page.commands),70)
+        self.assertEqual(len({item['href'] for item in command_page.commands}),70)
         for entry in entries:
             middle='skills/' if entry['column']=='ai' else ''
             path=DIST/entry['column']/middle/entry['slug']/'index.html'
@@ -289,6 +303,30 @@ class SiteBuildTest(unittest.TestCase):
                 self.assertFalse(item['href'].startswith('/'))
                 if target.is_dir():target/='index.html'
                 self.assertTrue(target.is_file(),(path,item['href']))
+
+    def test_bench_new_shell_backlinks_and_pruned_assets(self):
+        entries=json.loads((ROOT/'build/entries.json').read_text())
+        scores=json.loads((ROOT/'site-src/bench/data/round2-results.json').read_text())['scores']
+        for entry in entries:
+            if 'bench' not in entry:continue
+            slug=entry['bench']['slug']
+            middle='skills/' if entry['column']=='ai' else ''
+            page=DIST/entry['column']/middle/entry['slug']/'index.html'
+            detail=(DIST/'bench'/slug/'index.html').read_text()
+            self.assertIn('回到条目复制提示词',detail)
+            self.assertIn('../../'+entry['column']+'/'+entry['slug']+'/',parse(DIST/'bench'/slug/'index.html').links)
+            self.assertIn('../../bench/'+slug+'/',parse(page).links)
+            self.assertEqual(entry['bench']['totals'],{agent:scores[slug][agent]['total'] for agent in ('codex','hermes')})
+            for agent,score in entry['bench']['totals'].items():
+                self.assertIn(agent.title()+' '+str(score),page.read_text())
+        for page in (DIST/'bench').glob('*/index.html'):
+            html=page.read_text()
+            self.assertNotRegex(html,r'assets/(?:theme|site|guides)\.(?:css|js)')
+            self.assertIn('assets/redesign/tokens.css',html)
+            self.assertIn('id="search-dialog"',html)
+        for name in ('theme.css','site.css','site.js','home.css','home.js','guides.css','guides.js','visual-styles.css','skills.css','skills.js'):
+            self.assertFalse((DIST/'assets'/name).exists(),name)
+            self.assertTrue((ROOT/'site-src'/name).is_file(),name)
 
     def test_component_motion_mapping_links_both_directions(self):
         spec=importlib.util.spec_from_file_location('mapping_templates',ROOT/'site-src/redesign/templates.py')

@@ -92,3 +92,21 @@ git diff --check
 - 原 `motion/motion-demo-gallery.html` 和 `motion/motion-demo-detail.html` 保持字节一致，bench 地址保留。
 - 原旧页哈希测试按结构变化改为冻结锚点覆盖、目标页面 / 锚点存在和 Node 执行跳转脚本测试。未知 hash 包含对象原型属性名，避免错误命中。
 - 构建与完整 unittest 28 项通过；浏览器真实地址替换与历史记录行为留给第 13 步。
+
+### 第 12 步 · 测评页与 README
+
+- 测评总览与三份详情复用新网站外框、浅色 token、本地系统字体和共用搜索。详情顶部结论直接选取现有 `fixes[].fixed` 或 `stability.heading`，保留原文；原表格、逐项证据、提示词、图片、原始演示和运行用时均未改写。
+- 增加「回到条目复制提示词」，条目测评徽标使用既有第二轮真实分数并链接对应报告。README 仅更新五层栏目 / 187 描述、目录数量及旧地址示例。
+- 构建产物移除已无页面引用的 `theme.css`、旧 `site.css/site.js`、`home.css/home.js`、`guides.css/guides.js`、`visual-styles.css`、`skills.css/skills.js`。这些源文件继续保留，演示所需样式由第 7 步独立来源包提供。
+- 收尾源码审查修正了粒子与虚拟列表的静态首帧、固定表格双轴滚动、放大镜原 pointermove 自动预览、文字变形 3000ms 完整切换、右键菜单键盘预览。命令面板恢复原 70 个 UI 名称候选及过滤 / 键盘操作，目标链接指向新地址。动效弹层恢复 ShadowRoot 内的背景 inert 和 Tab 循环。
+- Node 模型执行 189 份来源初始化，并对命令面板打开 / 搜索 / 方向键 / Enter / Escape / 无结果、弹层 inert / Tab / Shift+Tab / Escape 执行定向事件断言。该模型不包含浏览器布局、CSS 计算或原生焦点算法。
+- 构建、完整 unittest 30 项、JavaScript 语法和 `git diff --check` 通过。所有 350 个冻结旧锚点都有有效目标；187 条目复制源与原提示词 / 既有验收内容一致。
+
+## 本轮交付与最终验证边界
+
+- 每步顺序补丁为 `build/phase1-steps/07.patch` 至 `12.patch`，相对于上一步；新增文件包含在对应补丁中。
+- 每步改动内容存于 `build/phase1-steps/snapshots/07/` 至 `snapshots/12/`，另有 `07-snapshot.json` 至 `12-snapshot.json` 和最终内容快照 `final-7to12.json`。每步构建 / 测试日志为 `NN-validation.log`。
+- 主人运行 `bash build/phase1-steps/commit-steps-7to12.sh`。脚本先检查分支、起始 HEAD、空暂存区、工作区文件与快照和交付文件哈希，重新构建 / 测试后依次 `git apply --cached` 并提交六步。`--check-only` 仅执行完整预检。
+- 本轮按指定工作目录与 `phase1-redesign` 实施，Git HEAD 保持 `b351d44`。提交由主人执行。
+- 与计划的差异为单一映射中的实际关联数量保留为 1–7，卡片第 7 个关联收在「更多动效」；跨文档 iframe 的原生转场无法可靠慢放，对应慢放按钮禁用。演示采用 Shadow DOM 物理作用域，来源资源按需加载。
+- 第 13 步继续由主人执行。未启动任何浏览器，未验证三种宽度真实渲染、整页溢出、浏览器控制台、系统剪贴板、真实键盘焦点、触屏手势和减弱动态环境。自动化结果覆盖生成结构、数据、相对链接、来源初始化和所列 Node 事件，视觉与真实浏览器行为仍待验收。

@@ -64,7 +64,7 @@ def format_time(seconds):
 
 def overview(narrative, rounds):
     hero = (
-        '<header class="bench-hero"><p class="bench-kicker">BENCHMARK / 测评结果</p>'
+        '<header class="bench-hero">'
         f'<h1>{escape(narrative["title"])}</h1><p class="bench-lead">{escape(narrative["lead"])}</p></header>'
     )
     lesson = section("主结论", f'<p class="bench-lesson">{escape(narrative["main_lesson"])}</p>' + bullet_list(narrative["lesson_points"]))
@@ -127,13 +127,14 @@ def prompt_html(text, highlight=False):
     return escape(text)
 
 
-def detail(slug, narrative, rounds, data_dir):
+def detail(slug, narrative, rounds, data_dir, return_href):
     entry = narrative["entries"][slug]
+    conclusion = entry["stability"]["heading"] if "stability" in entry else entry["fixes"][0]["fixed"]
     hero = (
         '<header class="bench-hero"><div class="bench-page-links"><a href="../">← 返回测评总览</a>'
-        f'<a href="../{escape(entry["site_link"])}">查看速查条目 →</a></div>'
-        f'<p class="bench-kicker">BENCHMARK / 测评详情</p><h1>{escape(entry["name"])}</h1>'
-        f'<p class="bench-lead">{escape(entry["rounds_note"])}</p></header>'
+        f'<a class="btn-primary" href="{escape(return_href)}">回到条目复制提示词 →</a></div>'
+        f'<h1>{escape(entry["name"])}</h1>'
+        f'<p class="bench-conclusion">{escape(conclusion)}</p><p class="bench-lead">{escape(entry["rounds_note"])}</p></header>'
     )
     prompts = "".join(
         f'<h3>第 {rnd} 轮提示词</h3><pre>{prompt_html((data_dir / f"round{rnd}-{slug}-prompt.txt").read_text(encoding="utf-8"), rnd == 2)}</pre>' for rnd in (1, 2)
@@ -162,31 +163,26 @@ def detail(slug, narrative, rounds, data_dir):
     )
 
 
-def document(title, content, nav_html, prefix, asset_version):
-    styles = "".join(f'<link rel="stylesheet" href="{prefix}assets/{name}?v={asset_version(name)}">' for name in ("site.css", "guides.css", "theme.css", "bench.css"))
-    return f'''<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="{escape(title)}：Codex 与 Hermes 两轮实现的分数、提示词、证据及原始演示。">
-<title>{escape(title)} · vibocoding助手</title><link rel="icon" href="{prefix}assets/favicon.svg" type="image/svg+xml">{styles}
-<script defer src="{prefix}assets/site.js?v={asset_version("site.js")}"></script></head>
-<body class="site-bench">{nav_html}<main id="site-content" class="bench-page">{content}</main>
-<footer class="site-home-footer"><strong>vibocoding助手</strong><a href="{prefix}">回到首页 ↑</a></footer></body></html>'''
 
-
-def build(output, source, nav_html, asset_version):
+def build(output, source, entries, taxonomy, templates):
     source = Path(source)
     data_dir = source / "data"
     narrative = read_json(data_dir / "narrative.json")
     rounds = [load_round(data_dir / f"round{rnd}-results.json") for rnd in (1, 2)]
     destination = Path(output) / "bench"
     destination.mkdir()
-    (destination / "index.html").write_text(document(narrative["title"], overview(narrative, rounds), nav_html, "../", asset_version), encoding="utf-8")
+    def document(page, title, body):
+        content = templates.shell(page, title, '<div class="bench-page">' + body + '</div>', entries, taxonomy)
+        css = templates.relative(page, "assets/bench.css")
+        return content.replace("</head>", f'<link rel="stylesheet" href="{css}"></head>')
+    (destination / "index.html").write_text(document("bench/index.html", narrative["title"], overview(narrative, rounds)), encoding="utf-8")
     for slug in ENTRIES:
         folder = destination / slug
         folder.mkdir()
-        content = detail(slug, narrative, rounds, data_dir)
-        nested_nav = nav_html.replace('href="../', 'href="../../')
-        (folder / "index.html").write_text(document(narrative["entries"][slug]["name"] + " · 测评结果", content, nested_nav, "../../", asset_version), encoding="utf-8")
+        entry = next(item for item in entries if item.get("bench", {}).get("slug") == slug)
+        return_href = templates.relative(f"bench/{slug}/index.html", templates.entry_destination(entry))
+        content = detail(slug, narrative, rounds, data_dir, return_href)
+        (folder / "index.html").write_text(document(f"bench/{slug}/index.html", narrative["entries"][slug]["name"] + " · 测评结果", content), encoding="utf-8")
     images = destination / "assets" / "img"
     images.mkdir(parents=True)
     for path in (source / "img").glob("*.jpg"):

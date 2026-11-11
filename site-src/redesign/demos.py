@@ -6,6 +6,8 @@ source accent colours are adapted. No original page-level search/navigation runs
 from html import escape
 from functools import lru_cache
 import importlib.util
+import json
+import posixpath
 from pathlib import Path
 import re
 
@@ -70,10 +72,22 @@ def _ui_script(source):
     script = script[:start] + script[end:]
     start = script.index('/* ---- 命令面板')
     end = script.index('/* ---- 密码强度')
-    script = script[:start] + '''
-    function openCmdk(){const panel=document.getElementById('cmdk');if(panel){panel.classList.add('show');document.getElementById('cmdkInput')?.focus();}}
-    function closeCmdk(){document.getElementById('cmdk')?.classList.remove('show');}
-    ''' + script[end:]
+    panel = script[start:end]
+    panel = panel.replace(
+        "const cmds=cards.map(el=>({name:el.querySelector('h2').textContent, keys:(el.dataset.name||'').toLowerCase(), el:el}));",
+        "const cmds=cmdk?JSON.parse(cmdk.dataset.demoCommands||'[]'):[];"
+    )
+    jump_start = panel.index('  function jumpTo(el){')
+    jump_end = panel.index('  function renderCmdk(q){')
+    # Preserve the source's candidates, filtering, selection and focus handling.
+    # Only page-local scrolling becomes navigation to the unified entry URL.
+    panel = panel[:jump_start] + "  function jumpTo(command){location.assign(command.href);}" + panel[jump_end:]
+    panel = panel.replace('catName[c.el.dataset.cat]', 'catName[c.cat]')
+    panel = panel.replace('jumpTo(c.el)', 'jumpTo(c)').replace('jumpTo(filtered[sel].el)', 'jumpTo(filtered[sel])')
+    panel = panel.replace("if(!cmdk.classList.contains('show'))return;", "if(!cmdk||!cmdk.classList.contains('show'))return;")
+    panel = panel.replace('cmdkInput.addEventListener(', 'cmdkInput?.addEventListener(').replace('cmdk.addEventListener(', 'cmdk?.addEventListener(')
+    cat_names = re.search(r'const catName=\{[^;]+;', source)[0]
+    script = script[:start] + cat_names + '\n' + panel + script[end:]
     # Single-example pages omit every unrelated input/overlay; guard each legacy
     # initialization, rather than constructing dummy nodes or swallowing errors.
     script = re.sub(r"(document\.(?:getElementById|querySelector)\([^\n]+?\))\.addEventListener", r'\1?.addEventListener', script)
@@ -111,9 +125,9 @@ def _motion_script(source):
     script = script.replace('el.setPointerCapture(e.pointerId)', 'e.isTrusted&&el.setPointerCapture(e.pointerId)').replace('chip.setPointerCapture(event.pointerId)', 'event.isTrusted&&chip.setPointerCapture(event.pointerId)')
     return '''const reduce=matchMedia('(prefers-reduced-motion: reduce)'),coarse=matchMedia('(pointer: coarse)');
 let activeDialog=null,inerted=[];
-function openDialog(layer){if(!layer||activeDialog)return;layer.hidden=false;activeDialog=layer;layer.querySelector('[data-action=close]')?.focus();}
+function openDialog(layer){if(!layer||activeDialog)return;layer.hidden=false;let child=layer;while(child!==document.body){for(const sibling of child.parentElement.children){if(sibling!==child&&!sibling.inert){sibling.inert=true;inerted.push(sibling)}}child=child.parentElement}activeDialog=layer;layer.querySelector('[data-action=close]')?.focus();}
 ''' + script + '''
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activeDialog)closeLayer(activeDialog);const menu=e.target.closest('.menu-items[role=menu]');if(menu&&['ArrowUp','ArrowDown','Home','End'].includes(e.key)){e.preventDefault();const items=[...menu.querySelectorAll('[role=menuitem]')],i=items.indexOf(document.activeElement);items[e.key==='Home'?0:e.key==='End'?items.length-1:(i+(e.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}});
+document.addEventListener('keydown',e=>{if(activeDialog){if(e.key==='Escape'){e.preventDefault();closeLayer(activeDialog);return}if(e.key==='Tab'){const focusables=[...activeDialog.querySelectorAll('button:not([disabled]),[tabindex]:not([tabindex="-1"])')];if(focusables.length){e.preventDefault();const index=focusables.indexOf(document.activeElement),next=(index+(e.shiftKey?-1:1)+focusables.length)%focusables.length;focusables[next].focus()}return}}const menu=e.target.closest('.menu-items[role=menu]');if(menu&&['ArrowUp','ArrowDown','Home','End'].includes(e.key)){e.preventDefault();const items=[...menu.querySelectorAll('[role=menuitem]')],i=items.indexOf(document.activeElement);items[e.key==='Home'?0:e.key==='End'?items.length-1:(i+(e.key==='ArrowDown'?1:-1)+items.length)%items.length]?.focus();}});
 return {replay};
 '''
 
@@ -162,6 +176,29 @@ def _ui_inventory():
 
 
 @lru_cache(maxsize=1)
+def _ui_commands():
+    """All 70 original UI names/keywords, with taxonomy-owned destinations."""
+    from entries import Document
+    source = (ROOT / '网页UI元素速查.html').read_text()
+    taxonomy = json.loads((ROOT / 'site-src/taxonomy.json').read_text())
+    commands = []
+    for card in Document(source).root.find_all('article', 'cmp'):
+        anchor = taxonomy['merges'].get(card.attrs['id'], card.attrs['id'])
+        destination = taxonomy['anchors'][anchor]
+        commands.append(dict(name=card.one('h2').text(), keys=card.attrs.get('data-name', '').lower(),
+                             cat=card.attrs.get('data-cat', ''),
+                             destination=destination['column'] + '/' + destination['slug'] + '/'))
+    return commands
+
+
+def _cmdk_metadata(prefix):
+    commands = [{**{key:value for key,value in item.items() if key != 'destination'},
+                 'href':posixpath.normpath(prefix + '../../' + item['destination']) + '/'}
+                for item in _ui_commands()]
+    return escape(json.dumps(commands, ensure_ascii=False, separators=(',', ':')), quote=True)
+
+
+@lru_cache(maxsize=1)
 def _classification():
     spec = importlib.util.spec_from_file_location('demo_source_audit', ROOT / 'scripts/audit_demos.py')
     module = importlib.util.module_from_spec(spec)
@@ -193,7 +230,11 @@ def markup(demo, prefix, interactive=False):
         overlays = _ui_inventory()[1]
         for trigger, ids in [('openModal', ('modal',)), ('openDrawer', ('dmask','dpanel')), ('openCmdk', ('cmdk',))]:
             if f'data-cmd="{trigger}"' in content:
-                extra += ''.join(overlays[identifier] for identifier in ids)
+                for identifier in ids:
+                    overlay = overlays[identifier]
+                    if identifier == 'cmdk':
+                        overlay = overlay.replace('id="cmdk"', 'id="cmdk" data-demo-commands="' + _cmdk_metadata(prefix) + '"', 1)
+                    extra += overlay
         cls = 'cmp'
     elif kind == 'motion':
         cls = 'effect-card'
@@ -244,8 +285,8 @@ def _assets():
     }
     for page in ('motion-demo-gallery', 'motion-demo-detail'):
         original = (ROOT / (page + '.html')).read_text()
-        result[page + '.css'] = _palette(_styles(original))
-        result[page + '.html'] = re.sub(r'<style[^>]*>.*?</style>', f'<link rel="stylesheet" href="{page}.css">', original, flags=re.S)
+        result[page + '.css'] = _palette(_styles(original)) + '\n:root{--demo-primary:#6D28D9}a{color:var(--demo-primary)}a:focus-visible{outline-color:var(--demo-primary)}\n'
+        result[page + '.html'] = re.sub(r'<style[^>]*>.*?</style>', f'<link rel="stylesheet" href="{page}.css"><link rel="icon" href="../favicon.svg" type="image/svg+xml">', original, flags=re.S)
     return result
 
 

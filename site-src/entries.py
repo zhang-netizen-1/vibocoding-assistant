@@ -148,6 +148,7 @@ def load_entries():
     if set(raw) != set(tax['anchors']):
         raise ValueError('Taxonomy must cover exactly every source anchor')
     bench = json.loads((SOURCE / 'bench/data/narrative.json').read_text(encoding='utf-8'))['entries']
+    scores = json.loads((SOURCE / 'bench/data/round2-results.json').read_text(encoding='utf-8'))['scores']
     result = []
     for anchor, item in raw.items():
         if anchor in tax['merges']:
@@ -162,7 +163,7 @@ def load_entries():
                 entry['terms'] += ' ' + raw[old]['terms']
         for slug, report in bench.items():
             if report['site_link'].split('#')[-1] == anchor:
-                entry['bench'] = dict(slug=slug)
+                entry['bench'] = dict(slug=slug, totals={agent:scores[slug][agent]['total'] for agent in ('codex','hermes')})
         result.append(entry)
     validate(result, tax)
     return result

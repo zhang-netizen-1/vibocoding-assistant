@@ -55,3 +55,34 @@ for(const row of data.demos){
  }catch(error){errors.push(row.anchor+': '+error.stack);}
 }
 if(errors.length){console.error(errors.join('\n'));process.exit(1);}console.log('Initialized '+total+' original demos in a Node DOM model; no browser or visual claim.');
+
+const assert=require('node:assert/strict');
+function interactiveModel(anchor) {
+ const row=data.demos.find(row=>row.anchor===anchor),body=make(row.node),root=new Element('root');root.append(body);
+ let focused=body;const delegates=new Map(),navigated=[];
+ context.location={assign:url=>navigated.push(url)};
+ Element.prototype.focus=function(){focused=this;};
+ const doc={body,querySelector:s=>root.querySelector(s),querySelectorAll:s=>root.querySelectorAll(s),getElementById:id=>root.querySelector('#'+id),createElement:t=>new Element(t),addEventListener:(type,fn)=>{const a=delegates.get(type)||[];a.push(fn);delegates.set(type,a);},get activeElement(){return focused;},hidden:false};
+ let id=0;const schedule=()=>++id,env={scope:{dataset:{demoSection:row.section}},document:doc,window:{},performance,toast(){},matchMedia:()=>({matches:false,addEventListener(){}}),setTimeout:schedule,setInterval:schedule,requestAnimationFrame:schedule,clearTimeout(){},clearInterval(){},cancelAnimationFrame(){},animate:(el,k,o)=>el.animate(k,o)};
+ installers.get(row.kind)(env);
+ function fire(target,type,properties={}){const event={target,currentTarget:target,preventDefault(){},stopPropagation(){},...properties};for(const fn of target.listeners.get(type)||[])fn(event);for(const fn of delegates.get(type)||[])fn(event);}
+ return {root,body,doc,fire,navigated,get focused(){return focused;}};
+}
+const cmd=interactiveModel('c-cmdk'),panel=cmd.doc.getElementById('cmdk'),input=cmd.doc.getElementById('cmdkInput'),list=cmd.doc.getElementById('cmdkList');
+assert.equal(JSON.parse(panel.dataset.demoCommands).length,70);
+cmd.fire(cmd.root.querySelector('[data-cmd="openCmdk"]'),'click');
+assert(panel.classList.contains('show'));assert.equal(list.querySelectorAll('.cmdk-item').length,8);assert.equal(cmd.focused,input);
+cmd.fire(input,'keydown',{key:'ArrowDown'});assert(list.querySelectorAll('.cmdk-item')[1].classList.contains('sel'));
+cmd.fire(input,'keydown',{key:'ArrowUp'});assert(list.querySelectorAll('.cmdk-item')[0].classList.contains('sel'));
+input.value='stepper';cmd.fire(input,'input');assert.equal(list.querySelectorAll('.cmdk-item').length,1);assert(list.textContent.includes(JSON.parse(panel.dataset.demoCommands).find(command=>command.keys.includes('stepper')).name));
+cmd.fire(input,'keydown',{key:'Enter'});assert.equal(cmd.navigated.at(-1),'../../components/stepper/');assert(!panel.classList.contains('show'));
+cmd.fire(cmd.root.querySelector('[data-cmd="openCmdk"]'),'click');input.value='__no_existing_source_name__';cmd.fire(input,'input');assert.equal(list.querySelectorAll('.cmdk-item').length,0);assert.equal(list.querySelector('.cmdk-empty').textContent,'没有匹配的组件');
+const count=cmd.navigated.length;cmd.fire(input,'keydown',{key:'Enter'});assert.equal(cmd.navigated.length,count);cmd.fire(input,'keydown',{key:'Escape'});assert(!panel.classList.contains('show'));
+console.log('Command palette: 70 real candidates; open/filter/arrows/Enter/Escape/no-match passed.');
+const modal=interactiveModel('e-overlay-modal'),open=modal.root.querySelector('[data-action="open"]'),shade=modal.root.querySelector('.overlay-shade');
+modal.fire(open,'click');assert.equal(shade.hidden,false);assert.equal(open.inert,true);
+const focusables=shade.querySelectorAll('button:not([disabled]),[tabindex]:not([tabindex="-1"])');assert(focusables.length>0);
+focusables.at(-1).focus();modal.fire(focusables.at(-1),'keydown',{key:'Tab',shiftKey:false});assert.equal(modal.focused,focusables[0]);
+modal.fire(focusables[0],'keydown',{key:'Tab',shiftKey:true});assert.equal(modal.focused,focusables.at(-1));
+modal.fire(focusables.at(-1),'keydown',{key:'Escape'});assert.equal(shade.hidden,true);assert.equal(open.inert,false);
+console.log('Motion modal: local sibling inert; Tab/Shift+Tab loop; Escape/restore passed.');

@@ -83,10 +83,31 @@
       shadow.querySelectorAll('iframe').forEach(frame => {frame.dataset.initialSrc ||= frame.getAttribute('src');});
       // No cross-page navigation is performed by a component mock-up.
       shadow.addEventListener('click', preventExampleNavigation);
+      primeVirtualList();
+      particlePreview(false);
       fitGallery();
-      link.addEventListener('load',fitGallery,{once:true});
+      link.addEventListener('load',()=>{if(!shadow.contains(link))return;if(!scope.hasAttribute('data-demo-playing'))primeVirtualList();fitGallery();},{once:true});
       const miniStage=scope.closest('.mini-stage');
       if(miniStage&&typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>{if(!scope.isConnected){observer.disconnect();return;}fitGallery();});observer.observe(miniStage);cleanup.push(()=>observer.disconnect());}
+    }
+    function primeVirtualList() {
+      if (!shadow.querySelector('#vlList') || !installers.has(scope.dataset.demoKind)) return;
+      // The source computes its real rows from the current CSS viewport. Run
+      // that initializer once, then discard every listener and scheduled task.
+      // Rebuild from the source template so stylesheet-load priming cannot add
+      // a second spacer or retain rows calculated before dimensions settled.
+      const original = template.content.querySelector('.demo-root');
+      if (!original) return;
+      const fresh = original.cloneNode(true);
+      body.replaceWith(fresh);body = fresh;
+      const retainedCleanup = cleanup.splice(0);
+      activate();
+      const still = body.cloneNode(true);
+      still.setAttribute('data-demo-primed','');
+      clearResources();
+      cleanup.push(...retainedCleanup);
+      body.replaceWith(still);body = still;
+      scope.removeAttribute('data-demo-playing');
     }
     function fitGallery() {
       const stage=scope.closest('.mini-stage');
@@ -104,6 +125,7 @@
     }
     function activate() {
       if (implementation) return implementation;
+      if(body?.hasAttribute('data-demo-primed')){const fresh=template.content.querySelector('.demo-root').cloneNode(true),style=body.getAttribute('style');if(style)fresh.setAttribute('style',style);body.replaceWith(fresh);body=fresh;}
       dead = false; lifetime = new AbortController();
       const installer = installers.get(scope.dataset.demoKind);
       implementation = installer ? (installer({scope,document: localDocument,window: localWindow,matchMedia,
@@ -124,38 +146,39 @@
         clientX:r.left+r.width*x,clientY:r.top+r.height*y,pointerId:97}));
     }
     function scrollPreview() {
-      const scroller = shadow.querySelector('.mini-scroll,.seq-scroll,.hidehead-scroll,.extra-header-scroll,.extra-section-scroll,.extra-highlight-scroll,.extra-snap-scroll,#bttPage,#infList,#vlList,.mini-layout');
+      const scroller = shadow.querySelector('.mini-scroll,.seq-scroll,.hidehead-scroll,.extra-header-scroll,.extra-section-scroll,.extra-highlight-scroll,.extra-snap-scroll,.tblfix-demo,#bttPage,#infList,#vlList,.mini-layout');
       if (!scroller) return false;
-      const start = virtualNow(), distance = Math.max(100, scroller.scrollHeight-scroller.clientHeight);
-      function tick(now) {const p=Math.min(1,(now-start)/1050);scroller.scrollTop=distance*p;scroller.dispatchEvent(new Event('scroll'));if(p<1)requestAnimationFrame(tick);}
+      const start = virtualNow(), distance = Math.max(100, scroller.scrollHeight-scroller.clientHeight), horizontal = Math.max(0, scroller.scrollWidth-scroller.clientWidth);
+      function tick(now) {const p=Math.min(1,(now-start)/1050);scroller.scrollTop=distance*p;scroller.scrollLeft=horizontal*p;scroller.dispatchEvent(new Event('scroll'));if(p<1)requestAnimationFrame(tick);}
       requestAnimationFrame(tick);return true;
     }
     function previewPointers() {
-      if(scope.dataset.demoCategory!=='依赖鼠标指针')return false;
-      const target = shadow.querySelector('.micro-card,.cursor-wave,.magnet-wrap,.cf-stage,.trail-stage,.eyes-stage,.obj-stage,.extra-magnifier-art');
+      const magnifier = shadow.querySelector('.extra-magnifier-art');
+      if(scope.dataset.demoCategory!=='依赖鼠标指针'&&!magnifier)return false;
+      const target = magnifier || shadow.querySelector('.micro-card,.cursor-wave,.magnet-wrap,.cf-stage,.trail-stage,.eyes-stage,.obj-stage,.extra-magnifier-art');
       if (!target) return false;
-      // Pointer-only examples receive a deliberate virtual pointer path. Coarse
-      // devices keep the source's own guard and receive an honest fallback.
+      // Replay the source's pointer listeners along a local virtual path.
+      // Preview's matchMedia facade permits this path on coarse devices.
       pointer(target, 'pointerenter', .25, .45);
       let step = 0;
       function move() {pointer(target,'pointermove',.5+Math.sin(step/7)*.3,.5+Math.cos(step/7)*.23);if((step+=playbackSpeed)<45)requestAnimationFrame(move);}
       requestAnimationFrame(move);return true;
     }
-    function particlePreview() {
+    function particlePreview(loop=true) {
       const canvas = shadow.querySelector('.particles canvas,canvas.particle-canvas,canvas');
       if (!canvas) return false;
       const context = canvas.getContext('2d');if (!context) return false;
       const dots=Array.from({length:32},(_,i)=>({x:(i*71%616)+2,y:(i*53%256)+2,vx:(i%5-2)*.14,vy:(i%3-1)*.17,r:(i%3)+1}));
       const color=getComputedStyle(scope).getPropertyValue('--demo-primary').trim()||'#6D28D9';
-      function draw() {context.clearRect(0,0,canvas.width,canvas.height);context.fillStyle=color;dots.forEach(d=>{context.beginPath();context.arc(d.x,d.y,d.r,0,Math.PI*2);context.fill();d.x=(d.x+d.vx*playbackSpeed+620)%620;d.y=(d.y+d.vy*playbackSpeed+260)%260;});if(!nativeWindow.matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame(draw);}
+      function draw() {context.clearRect(0,0,canvas.width,canvas.height);context.fillStyle=color;dots.forEach(d=>{context.beginPath();context.arc(d.x,d.y,d.r,0,Math.PI*2);context.fill();d.x=(d.x+d.vx*playbackSpeed+620)%620;d.y=(d.y+d.vy*playbackSpeed+260)%260;});if(loop&&!nativeWindow.matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame(draw);}
       draw();return true;
     }
     function preview(speed=1) {
       if (activePreview && activePreview !== controller) activePreview.reset();
       reset();activePreview=controller;playbackSpeed=speed===.25?.25:1;playbackStart=performance.now();
-      if (scope.dataset.demoStatic === 'true') {toast('静态参考；请查看条目说明。');return false;}
-      if (nativeWindow.matchMedia('(prefers-reduced-motion: reduce)').matches) {if(!scope.hasAttribute('data-interactive')){toast('已按系统设置减少动态；可进入条目查看演示状态。');return false;}toast('已切换演示状态；系统减少动态设置仍然生效。');}
-      if(playbackSpeed!==1&&shadow.querySelector('iframe')){toast('此演示使用浏览器原生跨页转场；慢放不可用。');return false;}
+      if (scope.dataset.demoStatic === 'true') return false;
+      if (nativeWindow.matchMedia('(prefers-reduced-motion: reduce)').matches&&!scope.hasAttribute('data-interactive')) return false;
+      if(playbackSpeed!==1&&shadow.querySelector('iframe')) return false;
       previewMode=true;
       const source=activate();
       if (source.preview) {source.preview();requestAnimationFrame(applyPlayback);return true;}
@@ -181,12 +204,10 @@
         return true;
       }
       const edit=shadow.querySelector('#ieText,.edittarget,.ctxzone');
-      if(edit){edit.dispatchEvent(new KeyboardEvent('keydown',{bubbles:true,key:'Enter'}));return true;}
+      if(edit){const key=edit.matches('.ctxzone')?'ContextMenu':'Enter';edit.dispatchEvent(new KeyboardEvent('keydown',{bubbles:true,key}));return true;}
       const frame=shadow.querySelector('iframe');
       if(frame){setTimeout(()=>{const link=frame.contentDocument?.querySelector('a');link?.click();},650);return true;}
-      // CSS-only examples already run their source hover/keyframe rules. A
-      // static reference reports its nature rather than implying a new effect.
-      if (!stage && !shadow.querySelector('button,[data-cmd]')) toast('静态参考；请查看条目说明。');
+      // CSS-only examples already run their source hover/keyframe rules.
       return true;
     }
     function restore(){reset();previewMode=false;playbackSpeed=1;playbackStart=performance.now();activate();particlePreview();}

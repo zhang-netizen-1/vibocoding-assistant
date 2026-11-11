@@ -1,6 +1,6 @@
 # vibocoding助手
 
-面向 Vibe Coding 初学者的界面速查网站。收录 UI 元素、动效、布局与响应式、视觉风格、交互规则、页面类型、数据可视化及 UI 与交互 Skills 八类，共 189 个可查条目；动效页另附「实现规范」分区（动效参数、浮层定位、z-index 层级、触发方式词汇等），不计入条目总数。
+面向 Vibe Coding 初学者的界面速查网站。收录设计基础、组件、交互与动效、页面与场景及 AI 实现五类，共 187 个可查条目；动效页另附「实现规范」分区（动效参数、浮层定位、z-index 层级、触发方式词汇等），不计入条目总数。
 
 **在线访问：**[打开 vibocoding助手](https://zhang-netizen-1.github.io/vibocoding-assistant/)
 
@@ -10,7 +10,7 @@
 
 **首页：**按类别浏览，或直接搜索；每个条目都配可复制的实现提示词，复制给 Coding Agent 即可实现对应效果。
 
-![首页：搜索、八类目录与复制提示词入口](docs/screenshots/home.png)
+![首页：搜索、五层目录与复制提示词入口](docs/screenshots/home.png)
 
 **动效条目：**先操作真实演示，确认效果；提示词默认展开，一键复制。例如「交叉淡化」条目会说明切换时旧内容与新内容如何衔接。
 
@@ -65,4 +65,4 @@ python3 -m http.server 4173 --directory dist
 python3 -m unittest discover -s tests -p 'test_site_build.py'
 ```
 
-每个条目保留稳定的 HTML 锚点。例如 `/ui/#c-button`、`/motion/#e-view-crossfade` 和 `/layout/#g-layout-grid`。站点在卡片下方提供直达与复制链接操作。
+每个条目保留稳定的 HTML 锚点。例如 `components/button/`、`interactions/view-crossfade/` 和 `basics/grid/`。站点在卡片下方提供直达与复制链接操作。

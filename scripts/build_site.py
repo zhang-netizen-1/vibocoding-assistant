@@ -39,7 +39,7 @@ REDESIGN = importlib.util.module_from_spec(REDESIGN_SPEC)
 REDESIGN_SPEC.loader.exec_module(REDESIGN)
 import redirects
 
-LEGACY_ASSETS = ("site.css", "theme.css", "site.js", "home.css", "home.js", "guides.css", "guides.js", "visual-styles.css", "skills.css", "skills.js", "favicon.svg", "bench.css")
+LEGACY_ASSETS = ("favicon.svg", "bench.css")
 
 
 def expected_build_files(entries):
@@ -130,7 +130,7 @@ def build() -> None:
     redirects.build(OUTPUT, entries, ENTRY_ADAPTER.taxonomy(), ENTRY_ADAPTER)
     for name in ("motion-demo-gallery.html", "motion-demo-detail.html"):
         shutil.copy2(ROOT / name, OUTPUT / "motion" / name)
-    BENCH_MODULE.build(OUTPUT, SITE_SOURCE / "bench", site_navigation("bench"), asset_version)
+    BENCH_MODULE.build(OUTPUT, SITE_SOURCE / "bench", entries, ENTRY_ADAPTER.taxonomy(), REDESIGN)
     REDESIGN.build(OUTPUT, entries, ENTRY_ADAPTER.taxonomy())
     files = {str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*") if path.is_file()}
     expected = expected_build_files(entries)
