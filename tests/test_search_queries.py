@@ -26,7 +26,7 @@ class SearchQueriesTest(unittest.TestCase):
         for missed in report['missed']:
             print(f"未命中查询「{missed['query']}」，期望 {missed['expected']}，前 3 条为 {missed['top3']}。")
         self.assertEqual(report['total'], 50)
-        self.assertGreaterEqual(report['hit_rate'], 0.9, self.result.stdout)
+        self.assertEqual(report['hits'], 50, self.result.stdout)
         self.assertEqual(report['mandatory_missed'], [], self.result.stdout)
         self.assertEqual(self.result.returncode, 0, self.result.stderr + self.result.stdout)
 

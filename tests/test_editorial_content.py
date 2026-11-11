@@ -1,5 +1,7 @@
 """Editorial overlay validation, without touching original source content."""
 import copy
+from collections import Counter
+import re
 import importlib.util
 from pathlib import Path
 import unittest
@@ -172,17 +174,50 @@ class InteractionsContentTest(unittest.TestCase):
                 self.assertTrue(2 <= len(fields.get('params', [])) <= 4)
         MODULE.apply_content(raw, content)
 
-    def test_motion_content_has_duration_interrupt_and_reduced_motion_criteria(self):
+    def test_motion_content_has_timing_and_specific_reduced_motion_alternative(self):
         content = MODULE.load_content()
         for entry in MODULE.load_entries(content={}, strict=False):
             if entry['column'] != 'interactions' or entry['demo']['kind'] != 'motion':
                 continue
             with self.subTest(slug=entry['slug']):
-                criteria = ' '.join(content.get('interactions/' + entry['slug'], {}).get('acceptance', []))
-                for term in ('ms', '平滑', 'transform', 'opacity', 'prefers-reduced-motion'):
-                    self.assertIn(term, criteria)
-                self.assertRegex(criteria, '打断|连续|连点|重复')
-                self.assertRegex(criteria, '叠影|跳帧')
+                criteria = content['interactions/' + entry['slug']]['acceptance']
+                self.assertTrue(any('ms' in text and '平滑曲线' in text
+                                    and '不用分段直线拼接' in text for text in criteria))
+                reduced = [text for text in criteria if 'prefers-reduced-motion' in text]
+                self.assertEqual(len(reduced), 1)
+                self.assertNotIn('直接显示目标状态', reduced[0])
+                self.assertNotIn('跟手部分', ' '.join(criteria))
+
+    def test_interactions_and_ai_have_three_globally_unique_sentences(self):
+        content = MODULE.load_content()
+        def sentences(fields):
+            return [sentence.strip() for text in fields['acceptance']
+                    for sentence in re.split(r'[。！？]+', text) if sentence.strip()]
+        counts = Counter(sentence for fields in content.values() for sentence in sentences(fields))
+        for key, fields in content.items():
+            if key.split('/')[0] not in ('interactions', 'ai'):
+                continue
+            with self.subTest(key=key):
+                self.assertTrue(4 <= len(fields['acceptance']) <= 6)
+                unique = {sentence for sentence in sentences(fields) if counts[sentence] == 1}
+                self.assertGreaterEqual(len(unique), 3, f'{key}: only {len(unique)} unique sentences')
+                if key.startswith('interactions/'):
+                    # Exclude timing/easing and reduced-motion boilerplate even when uniquely worded.
+                    specific = [text for text in fields['acceptance']
+                                if 'prefers-reduced-motion' not in text and '平滑曲线' not in text]
+                    self.assertGreaterEqual(sum(counts[sentence] == 1
+                                                for sentence in sentences({'acceptance': specific})), 3)
+                if key.startswith('ai/'):
+                    # An installation sentence containing a skill name is not a usage result.
+                    results = [text for text in fields['acceptance'] if not text.startswith('安装完成后')]
+                    result_sentences = sentences({'acceptance': results})
+                    self.assertGreaterEqual(sum(counts[sentence] == 1 for sentence in result_sentences), 3)
+
+    def test_no_acceptance_sentence_occurs_more_than_ten_times_sitewide(self):
+        counts = Counter(sentence.strip() for fields in MODULE.load_content().values()
+                         for text in fields['acceptance'] for sentence in re.split(r'[。！？]+', text)
+                         if sentence.strip())
+        self.assertEqual({text: count for text, count in counts.items() if count > 10}, {})
 
 
 class StrictContentTest(unittest.TestCase):
