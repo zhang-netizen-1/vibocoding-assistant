@@ -90,7 +90,10 @@ class SiteBuildTest(unittest.TestCase):
                     target /= "index.html"
                 self.assertTrue(target.is_file(), (path, ref))
                 if url.fragment:
-                    self.assertIn(unquote(url.fragment), parse(target).ids, (path, ref))
+                    target_html=target.read_text()
+                    redirects=re.search(r'id="redirect-map">(.*?)</script>',target_html,re.S)
+                    destinations=json.loads(redirects[1]) if redirects else parse(target).ids
+                    self.assertIn(unquote(url.fragment),destinations,(path,ref))
             for img in parsed.images:
                 self.assertTrue(img.get("alt"))
                 self.assertEqual(img.get("loading"), "lazy")
@@ -101,16 +104,10 @@ class SiteBuildTest(unittest.TestCase):
                     self.assertEqual(link.get("target"), "_blank")
                     self.assertIn("noopener", link.get("rel", "").split())
         self.assertEqual(image_count, 14)
-        for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills"):
-            self.assertIn("../bench/", parse(DIST / section / "index.html").links)
-        self.assertIn("./bench/", parse(DIST / "index.html").links)
-        for section, slug in (("ui", "button"), ("motion", "crossfade"), ("layout", "grid")):
-            page = (DIST / section / "index.html").read_text(encoding="utf-8")
-            self.assertIn(f'href="../bench/{slug}/">测评结果 →</a>', page)
-            self.assertEqual(page.count("测评结果 →</a>"), 1)
-            anchor = {"button": "c-button", "crossfade": "e-view-crossfade", "grid": "g-layout-grid"}[slug]
-            card = re.search(rf'<article[^>]*id="{anchor}".*?</article>', page, re.S).group()
-            self.assertIn(f'href="../bench/{slug}/">测评结果 →</a>', card)
+        self.assertIn('./bench/',parse(DIST/'index.html').links)
+        for column,slug,report in (('components','button','button'),('interactions','view-crossfade','crossfade'),('basics','grid','grid')):
+            page=DIST/column/slug/'index.html'
+            self.assertIn('../../bench/'+report+'/',parse(page).links)
 
     def test_bench_preserves_source_prompts_evidence_and_totals(self):
         source = ROOT / "site-src" / "bench" / "data"
@@ -165,95 +162,37 @@ class SiteBuildTest(unittest.TestCase):
             self.assertEqual(path.read_bytes(), (DIST / "bench" / path.relative_to(source)).read_bytes())
 
     def test_site_routes_and_all_cards(self):
-        home = parse(DIST / "index.html")
-        self.assertIn("./components/", home.links)
-        self.assertIn("./interactions/#group-view", home.links)
-        home_html = (DIST / "index.html").read_text(encoding="utf-8")
-        entries = json.loads((ROOT / "build/entries.json").read_text())
-        self.assertIn(f"{len(entries)} 个界面效果", home_html)
-        self.assertIn('id="search-dialog"', home_html)
-        self.assertEqual(home_html.count('<article class="layer"'), len({e["column"] for e in entries}))
-        self.assertNotIn('class="home-demo"', home_html)
-        self.assertEqual((DIST / "ui" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制组件实现提示词</summary>"), 70)
-        self.assertEqual((DIST / "motion" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制动效实现提示词</summary>"), 79)
-        for section, original, prefix, expected_count in (
-            ("ui", "网页UI元素速查.html", "c-", 70),
-            ("motion", "动效速查.html", "e-", 79),
-        ):
-            built = parse(DIST / section / "index.html")
-            source = parse(ROOT / original)
-            self.assertEqual(len(built.cards), expected_count)
-            self.assertEqual(set(built.cards), set(source.cards))
-            self.assertEqual(len(set(built.cards)), expected_count)
-            self.assertTrue(all(card.startswith(prefix) for card in built.cards))
-            self.assertIn("../", built.links)
-            self.assertIn("../ui/", built.links)
-            self.assertIn("../motion/", built.links)
-            self.assertIn("site-content", built.ids)
-        home_js = (DIST / "assets" / "home.js").read_text(encoding="utf-8")
-        self.assertNotIn("directory-secondary", home_js)
-        self.assertNotIn("directory-secondary", home_html)
-        ui_html = (DIST / "ui" / "index.html").read_text(encoding="utf-8")
-        self.assertNotIn('class="scenarios"', ui_html)
-        for page_path in (DIST / "index.html", *(DIST / section / "index.html" for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills"))):
-            page = page_path.read_text(encoding="utf-8")
-            self.assertNotIn('>组合流程</a>', page)
-
-        for section in ("layout", "visual", "interaction", "pages", "data"):
-            built = parse(DIST / section / "index.html")
-            self.assertEqual(len(built.cards), 6, section)
-            self.assertEqual((DIST / section / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制实现提示词</summary>"), 6, section)
-            self.assertEqual(len(set(built.cards)), 6, section)
-            self.assertTrue(all(card.startswith(f"g-{section}-") for card in built.cards))
-            if section == "data":
-                self.assertIn("./line/", parse(DIST / "components/index.html").links)
-            else:
-                self.assertIn({"layout":"./basics/","visual":"./basics/","interaction":"./interactions/","pages":"./scenarios/"}[section], home.links)
-            self.assertIn("guide-main", built.ids)
-            self.assertIn("../", built.links)
-        visual_html = (DIST / "visual" / "index.html").read_text(encoding="utf-8")
-        self.assertIn("极简主义", visual_html)
-        self.assertIn("玻璃拟态", visual_html)
-        self.assertIn("新粗野主义", visual_html)
-        self.assertIn('id="g-visual-type"', visual_html)
-        self.assertNotIn('<h3>字体层级</h3>', visual_html)
-        skills = parse(DIST / "skills" / "index.html")
-        self.assertEqual(len(skills.cards), 10)
-        self.assertEqual((DIST / "skills" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制 Skill 安装提示词</summary>"), 10)
-        self.assertEqual(len(set(skills.cards)), 10)
-        self.assertTrue(all(card.startswith("skill-") for card in skills.cards))
-        self.assertIn("./ai/", home.links)
-        self.assertIn("skills-main", skills.ids)
-        self.assertIn("../", skills.links)
+        home=parse(DIST/'index.html')
+        entries=json.loads((ROOT/'build/entries.json').read_text())
+        self.assertIn(f'{len(entries)} 个界面效果',(DIST/'index.html').read_text())
+        for column in ('basics','components','interactions','scenarios','ai'):
+            self.assertIn('./'+column+'/',home.links)
+        self.assertEqual((DIST/'index.html').read_text().count('<article class="layer"'),5)
+        frozen=json.loads((ROOT/'tests/fixtures/old_anchors.json').read_text())
+        for section,original,prefix,expected in (('ui','网页UI元素速查.html','c-',70),('motion','动效速查.html','e-',79)):
+            # Source cardinality remains frozen while public routes redirect.
+            cards=parse(ROOT/original).cards
+            self.assertEqual(len(cards),expected)
+            self.assertEqual(len(set(cards)),expected)
+            self.assertTrue(all(card.startswith(prefix) for card in cards))
+            self.assertEqual(len([e for e in frozen['entries'] if e['old_path']==f'/{section}/']),expected)
+        for section in ('layout','visual','interaction','pages','data'):
+            self.assertEqual(len([e for e in frozen['entries'] if e['old_path']==f'/{section}/']),6)
+        self.assertEqual(len([e for e in frozen['entries'] if e['old_path']=='/skills/']),10)
 
     def test_site_scripts_and_metadata(self):
-        home = (DIST / "index.html").read_text(encoding="utf-8")
-        self.assertRegex(home, r'src="\./assets/redesign/site\.js\?v=[0-9a-f]{8}"')
-        self.assertRegex(home, r'href="\./assets/redesign/tokens\.css\?v=[0-9a-f]{8}"')
-        for section in ("ui", "motion"):
-            page = (DIST / section / "index.html").read_text(encoding="utf-8")
-            self.assertIn('name="description"', page)
-            self.assertRegex(page, r'src="../assets/site\.js\?v=[0-9a-f]{8}"')
-            self.assertRegex(page, r'href="../assets/site\.css\?v=[0-9a-f]{8}"')
-            self.assertIn('class="site-nav"', page)
-            self.assertIn('class="site-skip"', page)
-            self.assertIn('class="site-reference-workspace"', page)
-        for section in ("layout", "visual", "interaction", "pages", "data"):
-            page = (DIST / section / "index.html").read_text(encoding="utf-8")
-            self.assertRegex(page, r'src="../assets/guides\.js\?v=[0-9a-f]{8}"')
-            self.assertRegex(page, r'href="../assets/guides\.css\?v=[0-9a-f]{8}"')
-            self.assertIn('class="site-skip"', page)
-            self.assertIn('id="guide-copy-status" class="site-announcement" role="status"', page)
-            if section == "visual":
-                self.assertRegex(page, r'href="../assets/visual-styles\.css\?v=[0-9a-f]{8}"')
-        skills_page = (DIST / "skills" / "index.html").read_text(encoding="utf-8")
-        self.assertRegex(skills_page, r'src="../assets/skills\.js\?v=[0-9a-f]{8}"')
-        self.assertRegex(skills_page, r'href="../assets/skills\.css\?v=[0-9a-f]{8}"')
-        self.assertIn('aria-current="page">Skills', skills_page)
-        self.assertIn('id="skill-copy-status" class="site-announcement" role="status"', skills_page)
-        for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills"):
-            page = (DIST / section / "index.html").read_text(encoding="utf-8")
-            self.assertRegex(page, r'assets/theme\.css\?v=[0-9a-f]{8}')
+        home=(DIST/'index.html').read_text()
+        self.assertRegex(home,r'src="\./assets/redesign/site\.js\?v=[0-9a-f]{8}"')
+        self.assertRegex(home,r'href="\./assets/redesign/tokens\.css\?v=[0-9a-f]{8}"')
+        for section in ('ui','motion','layout','visual','interaction','pages','data','skills'):
+            page=(DIST/section/'index.html').read_text()
+            self.assertIn('<noscript>',page)
+            self.assertIn('http-equiv="refresh"',page)
+            self.assertIn('location.replace(',page)
+            self.assertIn('decodeURIComponent(anchor)',page)
+            self.assertNotIn('site-reference-workspace',page)
+            self.assertNotIn('assets/theme.css',page)
+            self.assertIn('rel="icon"',page)
 
     def test_global_search_index_matches_real_anchors(self):
         home = (DIST / "index.html").read_text(encoding="utf-8")
@@ -388,18 +327,35 @@ class SiteBuildTest(unittest.TestCase):
         for page in (DIST/'components').glob('*/index.html'):
             self.assertEqual('class="state-picker"' in page.read_text(),page.parent.name in states.STATES)
 
-    def test_old_pages_unchanged_during_first_group(self):
-        import hashlib
-        hashes = json.loads((ROOT / "tests/fixtures/legacy_page_hashes.json").read_text())
-        for name, expected in hashes.items():
-            self.assertEqual(hashlib.sha256((DIST / name).read_bytes()).hexdigest(), expected, name)
+    def test_old_addresses_redirect_all_frozen_entries_and_auxiliary_anchors(self):
+        frozen=json.loads((ROOT/'tests/fixtures/old_anchors.json').read_text())
+        mappings={}
+        for old in ('ui','motion','layout','visual','interaction','pages','data','skills'):
+            html=(DIST/old/'index.html').read_text()
+            mappings[old]=json.loads(re.search(r'id="redirect-map">(.*?)</script>',html,re.S)[1])
+        for item in frozen['entries']+frozen['non_entries']:
+            old=item['old_path'].strip('/')
+            self.assertIn(item['anchor'],mappings[old],item)
+            href=mappings[old][item['anchor']]
+            self.assertFalse(href.startswith('/'))
+            url=urlsplit(href)
+            target=(DIST/old/url.path).resolve()
+            if target.is_dir():target/='index.html'
+            self.assertTrue(target.is_file(),(item,href))
+            if url.fragment:self.assertIn(url.fragment,parse(target).ids,(item,href))
+        self.assertEqual(mappings['motion']['e-extra-submit-flow'],'../interactions/submit/')
+        self.assertEqual(mappings['interaction']['g-interaction-submit'],'../interactions/submit/')
+        self.assertEqual(mappings['motion']['e-extra-delete-undo'],'../interactions/undo/')
+        self.assertEqual(mappings['interaction']['g-interaction-undo'],'../interactions/undo/')
+        for name in ('motion-demo-gallery.html','motion-demo-detail.html'):
+            self.assertEqual((DIST/'motion'/name).read_bytes(),(ROOT/name).read_bytes())
 
     def test_guide_prompts_are_actionable_and_unique(self):
         prompts = {}
         for section, guide in GUIDE_MODULE.GUIDES.items():
             page = (DIST / section / "index.html").read_text(encoding="utf-8")
-            self.assertEqual(page.count('class="guide-prompt-text"'), 6)
-            self.assertEqual(page.count('class="guide-copy"'), 6)
+            self.assertIn('id="redirect-map"',page)
+            self.assertEqual(len(GUIDE_MODULE.all_items(guide)),6)
             self.assertNotIn('data-copy=', page)
             for entry in GUIDE_MODULE.all_items(guide):
                 prompt = GUIDE_MODULE.build_prompt(section, entry)
@@ -421,9 +377,9 @@ class SiteBuildTest(unittest.TestCase):
         entries = SKILL_MODULE.all_skills()
         self.assertEqual(len(entries), 10)
         self.assertEqual(len({entry["slug"] for entry in entries}), 10)
-        page = (DIST / "skills" / "index.html").read_text(encoding="utf-8")
-        self.assertEqual(page.count('class="skill-install-text"'), 10)
-        self.assertEqual(page.count('class="skill-copy"'), 10)
+        page = ''.join(path.read_text() for path in (DIST/'ai/skills').glob('*/index.html'))
+        self.assertEqual(page.count('id="entry-prompt"'),10)
+        self.assertEqual(page.count('data-copy-source="copy-prompt"'),20)
         for entry in entries:
             source = f'https://github.com/{entry["repo"]}/blob/main/{entry["path"]}/SKILL.md'
             self.assertIn(source, page)

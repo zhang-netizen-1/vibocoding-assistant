@@ -37,6 +37,8 @@ ENTRY_MODULE.loader.exec_module(ENTRY_ADAPTER)
 REDESIGN_SPEC = importlib.util.spec_from_file_location("redesign_templates", SITE_SOURCE / "redesign/templates.py")
 REDESIGN = importlib.util.module_from_spec(REDESIGN_SPEC)
 REDESIGN_SPEC.loader.exec_module(REDESIGN)
+import redirects
+
 LEGACY_ASSETS = ("site.css", "theme.css", "site.js", "home.css", "home.js", "guides.css", "guides.js", "visual-styles.css", "skills.css", "skills.js", "favicon.svg", "bench.css")
 
 
@@ -123,26 +125,11 @@ def build() -> None:
     assets.mkdir()
     for name in LEGACY_ASSETS:
         shutil.copy2(SITE_SOURCE / name, assets / name)
-    for section, path, label, description, card_class, expected_cards in PAGES:
-        destination = OUTPUT / section
-        destination.mkdir()
-        html = wrap_reference(path.read_text(encoding="utf-8"), section, description, card_class, expected_cards)
-        (destination / "index.html").write_text(html, encoding="utf-8")
-        if section == "motion":
-            for name in ("motion-demo-gallery.html", "motion-demo-detail.html"):
-                shutil.copy2(ROOT / name, destination / name)
-        print(f"Built {label}: {destination / 'index.html'}")
-    for slug, guide in GUIDES.items():
-        destination = OUTPUT / slug
-        destination.mkdir()
-        html = GUIDE_MODULE.render_guide_page(slug, site_navigation(slug), asset_version("site.css"), asset_version("guides.css"), asset_version("visual-styles.css"), asset_version("theme.css"), asset_version("guides.js"))
-        (destination / "index.html").write_text(html, encoding="utf-8")
-        print(f"Built {guide['name']}: {destination / 'index.html'}")
-    skill_destination = OUTPUT / "skills"
-    skill_destination.mkdir()
-    skill_html = SKILL_MODULE.render_page(site_navigation("skills"), asset_version("site.css"), asset_version("skills.css"), asset_version("theme.css"), asset_version("skills.js"))
-    (skill_destination / "index.html").write_text(skill_html, encoding="utf-8")
-    print(f"Built UI 与交互 Skills: {skill_destination / 'index.html'}")
+    for old in redirects.DEFAULTS:
+        (OUTPUT / old).mkdir()
+    redirects.build(OUTPUT, entries, ENTRY_ADAPTER.taxonomy(), ENTRY_ADAPTER)
+    for name in ("motion-demo-gallery.html", "motion-demo-detail.html"):
+        shutil.copy2(ROOT / name, OUTPUT / "motion" / name)
     BENCH_MODULE.build(OUTPUT, SITE_SOURCE / "bench", site_navigation("bench"), asset_version)
     REDESIGN.build(OUTPUT, entries, ENTRY_ADAPTER.taxonomy())
     files = {str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*") if path.is_file()}
@@ -150,7 +137,7 @@ def build() -> None:
     if files != expected:
         raise RuntimeError(f"Unexpected build files: missing={expected-files}, extra={files-expected}")
     page_count = sum(name.endswith(".html") and "/demos/" not in name for name in files)
-    print(f"Built site: {page_count} pages, {len(entries)} unified entries; legacy pages preserved")
+    print(f"Built site: {page_count} pages, {len(entries)} unified entries; legacy addresses redirected")
 
 
 if __name__ == "__main__":

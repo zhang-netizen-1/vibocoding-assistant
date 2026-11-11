@@ -98,3 +98,21 @@ console.log('Search matching and ranking passed');
             self.assertIn(entry['prompt'],row['prompt'])
             for criterion in entry['acceptance']:self.assertIn(criterion,row['prompt'])
             if entry.get('prompt_secondary'):self.assertIn(entry['prompt_secondary'],row['prompt'])
+
+    def test_redirect_scripts_execute_for_every_frozen_hash(self):
+        code=r'''const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+let checked=0;
+for(const old of ['ui','motion','layout','visual','interaction','pages','data','skills']){
+ const html=fs.readFileSync('dist/'+old+'/index.html','utf8');
+ const text=html.match(/id="redirect-map">(.*?)<\/script>/s)[1];
+ const mapping=JSON.parse(text),script=html.match(/<script>(.*?)<\/script>/s)[1];
+ const fallback=html.match(/content="0;url=([^"]+)"/)[1];
+ for(const [anchor,target] of [...Object.entries(mapping),['',fallback],['unknown',fallback],['toString',fallback],['constructor',fallback],['__proto__',fallback],['%invalid',fallback]]){
+  let actual;
+  vm.runInNewContext(script,{document:{getElementById(){return {textContent:text}}},location:{hash:anchor?'#'+encodeURIComponent(anchor):'',replace(value){actual=value}}});
+  assert.equal(actual,target,old+'#'+anchor);checked++;
+ }
+}
+console.log('Redirect scripts passed '+checked+' hashes');'''
+        result=subprocess.run(['node','-e',code],cwd=ROOT,text=True,capture_output=True)
+        self.assertEqual(result.returncode,0,result.stderr)
