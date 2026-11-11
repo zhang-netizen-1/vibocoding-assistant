@@ -1,0 +1,1595 @@
+{
+  "entries": [
+    {
+      "old_path": "/ui/",
+      "anchor": "c-button",
+      "title": "按钮"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-input",
+      "title": "输入框"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-textarea",
+      "title": "文本域"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-select",
+      "title": "下拉框"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-checkbox",
+      "title": "复选框"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-radio",
+      "title": "单选按钮"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-switch",
+      "title": "开关"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-slider",
+      "title": "滑动条"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-stepper",
+      "title": "数字输入框"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-date",
+      "title": "日期选择器"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-color",
+      "title": "颜色选择器"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-rating",
+      "title": "星级评分"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-search",
+      "title": "搜索框"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-cmdk",
+      "title": "命令面板"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-form",
+      "title": "表单"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-progress",
+      "title": "进度条"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-modal",
+      "title": "模态弹窗"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-toast",
+      "title": "Toast / 通知"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-states",
+      "title": "组件状态"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-tooltip",
+      "title": "悬停提示框"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-alert",
+      "title": "提示横幅"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-loader",
+      "title": "加载中"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-skeleton",
+      "title": "骨架屏"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-empty",
+      "title": "空状态"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-drawer",
+      "title": "侧滑抽屉"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-navbar",
+      "title": "顶部导航栏"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-sidebar",
+      "title": "侧边栏"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-tabs",
+      "title": "标签页"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-accordion",
+      "title": "折叠面板"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-breadcrumb",
+      "title": "面包屑导航"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-pagination",
+      "title": "分页"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-steps",
+      "title": "步骤条"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-footer",
+      "title": "页脚"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-dropdown",
+      "title": "下拉菜单"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-badge",
+      "title": "标签 / 徽章"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-chip",
+      "title": "标签（可删除）"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-table",
+      "title": "表格"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-card",
+      "title": "卡片"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-carousel",
+      "title": "轮播图"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-badge-dot",
+      "title": "通知角标"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-timeline",
+      "title": "时间线"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-kpi",
+      "title": "统计卡片"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-avatar",
+      "title": "头像"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-upload",
+      "title": "上传区域"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-combobox",
+      "title": "自动补全"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-segmented",
+      "title": "分段控件"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-popover",
+      "title": "浮层"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-password-strength",
+      "title": "密码强度"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-tag-input",
+      "title": "标签输入"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-otp",
+      "title": "验证码输入"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-inline-edit",
+      "title": "原地编辑"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-hold-confirm",
+      "title": "长按确认"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-split-button",
+      "title": "分裂按钮"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-fab",
+      "title": "悬浮按钮"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-mega-menu",
+      "title": "大型菜单"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-context-menu",
+      "title": "右键菜单"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-view-switch",
+      "title": "视图切换"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-table-fixed",
+      "title": "表格固定表头与固定列"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-table-columns",
+      "title": "列宽拖拽与列显隐"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-table-reorder",
+      "title": "拖动列排序"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-table-edit",
+      "title": "单元格编辑"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-infinite-scroll",
+      "title": "无限滚动"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-load-more",
+      "title": "加载更多"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-back-to-top",
+      "title": "返回顶部"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-conditional-step",
+      "title": "条件步骤"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-advanced-settings",
+      "title": "高级设置"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-context-options",
+      "title": "上下文选项"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-auto-save",
+      "title": "自动保存"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-virtual-list",
+      "title": "虚拟列表"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "c-card-link",
+      "title": "整卡可点击"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-view-crossfade",
+      "title": "交叉淡化"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-view-slide",
+      "title": "方向滑移"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-view-curtain",
+      "title": "幕布揭示"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-view-shared",
+      "title": "共享元素过渡"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-view-stagger",
+      "title": "分层依次进场"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-cross-page",
+      "title": "跨页图片连续转场"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-scroll-reveal",
+      "title": "滚动显现"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-scroll-parallax",
+      "title": "多层视差"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-scroll-pin",
+      "title": "钉住叙事"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-scroll-horizontal",
+      "title": "横向滚动旅程"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-scroll-progress",
+      "title": "阅读进度反馈"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-shrink-header",
+      "title": "滚动压缩页头"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-section-nav",
+      "title": "章节导航随读定位"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-snap-sections",
+      "title": "章节吸附停靠"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-scroll-scroll-zoom",
+      "title": "滚动缩放"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-scroll-hide-header",
+      "title": "滚动隐藏页头"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-background-aurora",
+      "title": "极光渐变"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-background-wave",
+      "title": "波浪矩阵"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-background-particles",
+      "title": "漂浮粒子"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-background-cursorwave",
+      "title": "鼠标波纹网格"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-background-fluid",
+      "title": "流动色带"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-text-stagger",
+      "title": "逐字错峰"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-text-mask",
+      "title": "逐行遮罩揭示"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-text-typewriter",
+      "title": "打字机"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-text-scramble",
+      "title": "乱码解码"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-text-draw",
+      "title": "路径描画"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-odometer",
+      "title": "数字滚轮翻牌"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-scroll-highlight",
+      "title": "段落文字随滚动高亮"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-text-text-morph",
+      "title": "文字变形"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-media-wipe",
+      "title": "图片遮罩揭示"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-media-carousel",
+      "title": "轮播滑移"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-media-blur",
+      "title": "模糊到清晰"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-media-compare",
+      "title": "前后对比擦除"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-media-glitch",
+      "title": "故障闪切"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-image-magnifier",
+      "title": "图片局部放大镜"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-timeline-preview",
+      "title": "时间轴拖动预览"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-media-image-sequence",
+      "title": "图片序列滚动"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-lift",
+      "title": "卡片悬停上浮"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-tilt",
+      "title": "卡片跟手倾斜"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-spotlight",
+      "title": "卡片聚光跟随"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-flip",
+      "title": "翻面卡片"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-press",
+      "title": "按压回弹"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-switch",
+      "title": "开关滑动"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-morph",
+      "title": "按钮形态切换"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-accordion",
+      "title": "手风琴撑开与收拢"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-tab-indicator",
+      "title": "Tab 选中标记滑移"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-inline-expand",
+      "title": "卡片原位展开详情"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-magnetic",
+      "title": "磁吸按钮"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-hover-preview",
+      "title": "悬停预览"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-hover-action",
+      "title": "悬停操作栏"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-ripple",
+      "title": "点击涟漪"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-component-underline",
+      "title": "下划线展开"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-cursor-cursor-follower",
+      "title": "自定义光标跟随"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-cursor-cursor-trail",
+      "title": "光标拖尾"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-cursor-cursor-eyes",
+      "title": "鼠标跟随眼睛"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-cursor-object-follow",
+      "title": "3D 物体跟随"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-overlay-menu",
+      "title": "菜单展开"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-overlay-drawer",
+      "title": "抽屉滑入"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-overlay-modal",
+      "title": "弹窗弹入"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-overlay-tooltip",
+      "title": "提示浮现"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-overlay-sheet",
+      "title": "底部弹层上推"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-toast-stack",
+      "title": "通知堆叠进退场"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-data-count",
+      "title": "数字递增"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-data-skeleton",
+      "title": "骨架屏微光"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-data-bars",
+      "title": "图表生长"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-data-reorder",
+      "title": "列表平滑重排"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-data-success",
+      "title": "完成勾画"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-filter-grid",
+      "title": "筛选后平滑重组"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-delete-undo",
+      "title": "删除退出与撤销"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-submit-flow",
+      "title": "提交反馈状态链"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-chart-morph",
+      "title": "图表数据更新变形"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-skeleton-handoff",
+      "title": "骨架屏到内容接力"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-data-input-shake",
+      "title": "错误抖动"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-mobile-swipe",
+      "title": "滑动删除"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-mobile-drag",
+      "title": "拖拽排序"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-mobile-pull",
+      "title": "下拉刷新"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-mobile-rubber",
+      "title": "边界回弹"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-mobile-pager",
+      "title": "跟手翻页"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "e-extra-drop-snap",
+      "title": "拖放吸附与拒收"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "g-layout-grid",
+      "title": "响应式网格"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "g-layout-sidebar",
+      "title": "侧栏工作区"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "g-layout-split",
+      "title": "主次分栏"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "g-layout-container",
+      "title": "容器内适配"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "g-layout-density",
+      "title": "信息密度"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "g-layout-sticky",
+      "title": "吸顶阅读区"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-minimal",
+      "title": "极简主义"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-editorial",
+      "title": "编辑式排版"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-organic",
+      "title": "自然有机"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-glass",
+      "title": "玻璃拟态"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-brutalist",
+      "title": "新粗野主义"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-neumorphic",
+      "title": "新拟态"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "g-interaction-validation",
+      "title": "字段就地校验"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "g-interaction-submit",
+      "title": "提交状态链"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "g-interaction-undo",
+      "title": "撤销操作"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "g-interaction-bulk",
+      "title": "批量选择"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "g-interaction-optimistic",
+      "title": "乐观更新"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "g-interaction-focus",
+      "title": "键盘焦点"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "g-pages-landing",
+      "title": "落地页"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "g-pages-dashboard",
+      "title": "仪表盘"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "g-pages-list",
+      "title": "结果列表页"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "g-pages-detail",
+      "title": "详情页"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "g-pages-settings",
+      "title": "设置页"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "g-pages-wizard",
+      "title": "分步表单"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "g-data-line",
+      "title": "趋势折线"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "g-data-bar",
+      "title": "柱状对比"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "g-data-stacked",
+      "title": "构成堆叠"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "g-data-donut",
+      "title": "占比环图"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "g-data-heatmap",
+      "title": "热力矩阵"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "g-data-table",
+      "title": "可排序数据表"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-frontend-design",
+      "title": "前端视觉设计"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-ui-ux-pro-max",
+      "title": "UI/UX 设计检索"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-baseline-ui",
+      "title": "界面基础打磨"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-create-design-md",
+      "title": "提取设计规范"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-fixing-accessibility",
+      "title": "无障碍交互修复"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-fixing-motion-performance",
+      "title": "动效性能修复"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-vercel-react-view-transitions",
+      "title": "React 视图转场"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-web-design-guidelines",
+      "title": "Web 界面规范审计"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-webapp-testing",
+      "title": "真实浏览器测试"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-vercel-composition-patterns",
+      "title": "React 组件组合"
+    }
+  ],
+  "non_entries": [
+    {
+      "old_path": "/ui/",
+      "anchor": "q"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "chips"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "cnt"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "site-content"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "grid"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "copyDemoBtn"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "taCount"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "taCountNum"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "ckAll"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "num"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "#ed462d\""
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "stars"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "tab-intro"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "tab-reviews"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "tp"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "acc-a"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "acc-b"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "stepsBox"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "dd"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "carTrack"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "carPrev"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "carNext"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "carDots"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "carPause"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "dz"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "dz-text"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "filei"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "city-options"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "popover-trigger"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "popover-box"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "pwInput"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "tagBox"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "tagInput"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "otpRow"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "ieText"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "holdBtn"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "splitCaret"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "splitMenu"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "fabActions"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "fabBtn"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "megaTrigger"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "megaPanel"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "ctxZone"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "viewBody"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "colTbl"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "reTbl"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "infList"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "infStatus"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "lmList"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "lmBtn"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "bttPage"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "bttBtn"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "condSteps"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "condNote"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "advToggle"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "advBody"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "ctxoCheck"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "ctxoBody"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "asInput"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "asStatus"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "vlList"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "vlStat"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "none"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "modal"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "modal-title"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "modal-desc"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "toasts"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "cmdk"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "cmdkInput"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "cmdkList"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "dmask"
+    },
+    {
+      "old_path": "/ui/",
+      "anchor": "dpanel"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "q"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "count"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "site-content"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "pauseAll"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "catalogue"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-view"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-scroll"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-section-1"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-section-2"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-section-3"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-background"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-text"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-media"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-component"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-faq-a"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-faq-b"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-faq-c"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-tab-overview"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-tab-activity"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-tab-settings"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-tab-panel"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-cursor"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-overlay"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "tooltip-demo"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-data"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-submit-error"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-mobile"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "extra-drop-instruction"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "section-spec"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "spec-title"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "spec-structure"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "spec-feel"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "spec-tokens"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "spec-overlay"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "spec-layer"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "spec-triggers"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "spec-ux"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "spec-checklist"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "empty"
+    },
+    {
+      "old_path": "/motion/",
+      "anchor": "toast"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "guide-main"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "guide-search"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "guide-count"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "guide-copy-status"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "guide-sections"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "guide-empty"
+    },
+    {
+      "old_path": "/layout/",
+      "anchor": "guide-clear"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "guide-main"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "guide-search"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "guide-count"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "guide-copy-status"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-type"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-spacing"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-color"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-radius"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-elevation"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "g-visual-theme"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "guide-sections"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "guide-empty"
+    },
+    {
+      "old_path": "/visual/",
+      "anchor": "guide-clear"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "guide-main"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "guide-search"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "guide-count"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "guide-copy-status"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "guide-sections"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "guide-validation-message"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "guide-empty"
+    },
+    {
+      "old_path": "/interaction/",
+      "anchor": "guide-clear"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "guide-main"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "guide-search"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "guide-count"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "guide-copy-status"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "guide-sections"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "guide-empty"
+    },
+    {
+      "old_path": "/pages/",
+      "anchor": "guide-clear"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "guide-main"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "guide-search"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "guide-count"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "guide-copy-status"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "guide-sections"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "guide-empty"
+    },
+    {
+      "old_path": "/data/",
+      "anchor": "guide-clear"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skills-main"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-search"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-count"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-copy-status"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-sections"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-empty"
+    },
+    {
+      "old_path": "/skills/",
+      "anchor": "skill-clear"
+    }
+  ]
+}

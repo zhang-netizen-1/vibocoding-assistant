@@ -29,6 +29,31 @@ BENCH_MODULE = importlib.util.module_from_spec(BENCH_MODULE_SPEC)
 BENCH_MODULE_SPEC.loader.exec_module(BENCH_MODULE)
 
 
+ENTRY_MODULE = importlib.util.spec_from_file_location("entries", SITE_SOURCE / "entries.py")
+ENTRY_ADAPTER = importlib.util.module_from_spec(ENTRY_MODULE)
+ENTRY_MODULE.loader.exec_module(ENTRY_ADAPTER)
+
+
+REDESIGN_SPEC = importlib.util.spec_from_file_location("redesign_templates", SITE_SOURCE / "redesign/templates.py")
+REDESIGN = importlib.util.module_from_spec(REDESIGN_SPEC)
+REDESIGN_SPEC.loader.exec_module(REDESIGN)
+import redirects
+
+LEGACY_ASSETS = ("favicon.svg", "bench.css")
+
+
+def expected_build_files(entries):
+    bench = SITE_SOURCE / "bench"
+    files = {MARKER, "index.html", "skills/index.html", *(f"{section}/index.html" for section, *_ in PAGES), *(f"{slug}/index.html" for slug in GUIDES), *(f"assets/{name}" for name in LEGACY_ASSETS)}
+    files.update("motion/" + name for name in ("motion-demo-gallery.html", "motion-demo-detail.html"))
+    reports = json.loads((bench / "data/narrative.json").read_text())["entries"]
+    files.update({"bench/index.html", *(f"bench/{slug}/index.html" for slug in reports)})
+    files.update(f"bench/assets/img/{path.name}" for path in (bench/"img").glob("*.jpg"))
+    files.update(f"bench/{path.relative_to(bench)}" for path in (bench/"demos").rglob("*.html"))
+    files.update(REDESIGN.generated_files(entries))
+    return files
+
+
 def asset_version(name: str) -> str:
     return hashlib.sha256((SITE_SOURCE / name).read_bytes()).hexdigest()[:8]
 
@@ -94,49 +119,25 @@ def prepare_output() -> None:
 
 def build() -> None:
     subprocess.run([sys.executable, str(ROOT / "动效速查-src" / "build_motion_glossary.py")], check=True, cwd=ROOT)
+    entries = ENTRY_ADAPTER.write_entries()
     prepare_output()
-    home = (SITE_SOURCE / "index.html").read_text(encoding="utf-8")
-    search_entries = SEARCH_MODULE.build_search_index(
-        (ROOT / "网页UI元素速查.html").read_text(encoding="utf-8"),
-        (ROOT / "动效速查.html").read_text(encoding="utf-8"),
-        GUIDES, GUIDE_MODULE, SKILL_MODULE.all_skills(),
-    )
-    search_json = json.dumps(search_entries, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
-    home = home.replace("__SEARCH_INDEX__", search_json, 1)
-    for name in ("site.css", "theme.css", "home.css", "home.js"):
-        home = home.replace(f'./assets/{name}"', f'./assets/{name}?v={asset_version(name)}"')
-    (OUTPUT / "index.html").write_text(home, encoding="utf-8")
     assets = OUTPUT / "assets"
     assets.mkdir()
-    for name in ("site.css", "theme.css", "site.js", "home.css", "home.js", "guides.css", "guides.js", "visual-styles.css", "skills.css", "skills.js", "favicon.svg", "bench.css"):
+    for name in LEGACY_ASSETS:
         shutil.copy2(SITE_SOURCE / name, assets / name)
-    for section, path, label, description, card_class, expected_cards in PAGES:
-        destination = OUTPUT / section
-        destination.mkdir()
-        html = wrap_reference(path.read_text(encoding="utf-8"), section, description, card_class, expected_cards)
-        (destination / "index.html").write_text(html, encoding="utf-8")
-        if section == "motion":
-            for name in ("motion-demo-gallery.html", "motion-demo-detail.html"):
-                shutil.copy2(ROOT / name, destination / name)
-        print(f"Built {label}: {destination / 'index.html'}")
-    for slug, guide in GUIDES.items():
-        destination = OUTPUT / slug
-        destination.mkdir()
-        html = GUIDE_MODULE.render_guide_page(slug, site_navigation(slug), asset_version("site.css"), asset_version("guides.css"), asset_version("visual-styles.css"), asset_version("theme.css"), asset_version("guides.js"))
-        (destination / "index.html").write_text(html, encoding="utf-8")
-        print(f"Built {guide['name']}: {destination / 'index.html'}")
-    skill_destination = OUTPUT / "skills"
-    skill_destination.mkdir()
-    skill_html = SKILL_MODULE.render_page(site_navigation("skills"), asset_version("site.css"), asset_version("skills.css"), asset_version("theme.css"), asset_version("skills.js"))
-    (skill_destination / "index.html").write_text(skill_html, encoding="utf-8")
-    print(f"Built UI 与交互 Skills: {skill_destination / 'index.html'}")
-    BENCH_MODULE.build(OUTPUT, SITE_SOURCE / "bench", site_navigation("bench"), asset_version)
-    files = sorted(str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*") if path.is_file())
-    expected = sorted((MARKER, "index.html", "ui/index.html", "motion/index.html", "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html", "assets/site.css", "assets/theme.css", "assets/site.js", "assets/home.css", "assets/home.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg", "skills/index.html", *(f"{slug}/index.html" for slug in GUIDES)))
-    expected = sorted((*expected, "assets/bench.css", *(str(path.relative_to(OUTPUT)) for path in (OUTPUT / "bench").rglob("*") if path.is_file())))
+    for old in redirects.DEFAULTS:
+        (OUTPUT / old).mkdir()
+    redirects.build(OUTPUT, entries, ENTRY_ADAPTER.taxonomy(), ENTRY_ADAPTER)
+    for name in ("motion-demo-gallery.html", "motion-demo-detail.html"):
+        shutil.copy2(ROOT / name, OUTPUT / "motion" / name)
+    BENCH_MODULE.build(OUTPUT, SITE_SOURCE / "bench", entries, ENTRY_ADAPTER.taxonomy(), REDESIGN)
+    REDESIGN.build(OUTPUT, entries, ENTRY_ADAPTER.taxonomy())
+    files = {str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*") if path.is_file()}
+    expected = expected_build_files(entries)
     if files != expected:
-        raise RuntimeError(f"Unexpected build files: {files}")
-    print("Built site: 10 pages, 189 entries + 动效实现规范 + 测评结果 4 页, curated static output")
+        raise RuntimeError(f"Unexpected build files: missing={expected-files}, extra={files-expected}")
+    page_count = sum(name.endswith(".html") and "/demos/" not in name for name in files)
+    print(f"Built site: {page_count} pages, {len(entries)} unified entries; legacy addresses redirected")
 
 
 if __name__ == "__main__":

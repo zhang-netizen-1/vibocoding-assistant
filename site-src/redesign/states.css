@@ -1,0 +1,19 @@
+/* Shadow-local fixed states reuse the original demo selectors and tokens. */
+:host(.force-free) .canvas {pointer-events:auto}
+:host(.force-hover) .btn-pri {background:var(--demo-primary-hover)}
+:host(.force-hover) .btn-ghost {background:var(--demo-soft)}
+:host(.force-hover) .btn-danger {background:var(--demo-danger-hover)}
+:host(.force-pressed) .btn {transform:translateY(1px)}
+:host(.force-focus) :is(input.i,select.i,textarea.i) {border-color:var(--demo-primary);box-shadow:0 0 0 3px var(--demo-soft)}
+:host(.force-focus) .floatfield .fflabel {top:-8px;font-size:11px;background:var(--demo-white);color:var(--demo-primary)}
+:host(.force-focus) .canvas [data-simulated-focus] {outline:2px solid var(--demo-focus);outline-offset:2px}
+:host(.force-focus) .switch .slider {outline:2px solid var(--demo-focus);outline-offset:2px}
+:host(.force-focus) .searchbox {outline:2px solid var(--demo-focus);outline-offset:2px}
+:host(.force-selected) .check input {accent-color:var(--demo-primary)}
+:host(.force-unselected) .check input {accent-color:var(--demo-primary)}
+:host(.force-selected) .switch .slider {background:var(--demo-primary)}
+:host(.force-selected) .switch .slider::before {transform:translateX(20px)}
+:host(.force-unselected) .switch .slider {background:var(--demo-line)}
+:host(.force-unselected) .switch .slider::before {transform:translateX(0)}
+:host(.force-selected) .tab.active {border-color:var(--demo-primary)}
+:host(.force-unselected) .switch input {pointer-events:none}

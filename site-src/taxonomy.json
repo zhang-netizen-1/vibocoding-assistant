@@ -1,0 +1,1465 @@
+{
+  "columns": [
+    {
+      "slug": "basics",
+      "name": "设计基础",
+      "order": 1,
+      "expected": 12,
+      "groups": [
+        {
+          "slug": "tokens",
+          "name": "基础令牌",
+          "order": 1,
+          "expected": 0
+        },
+        {
+          "slug": "visual",
+          "name": "视觉风格",
+          "order": 2,
+          "expected": 6
+        },
+        {
+          "slug": "layout",
+          "name": "网格与断点",
+          "order": 3,
+          "expected": 6
+        }
+      ]
+    },
+    {
+      "slug": "components",
+      "name": "组件",
+      "order": 2,
+      "expected": 75,
+      "groups": [
+        {
+          "slug": "actions",
+          "name": "按钮与操作",
+          "order": 1,
+          "expected": 5
+        },
+        {
+          "slug": "forms",
+          "name": "表单与输入",
+          "order": 2,
+          "expected": 23
+        },
+        {
+          "slug": "feedback",
+          "name": "反馈与浮层",
+          "order": 3,
+          "expected": 11
+        },
+        {
+          "slug": "navigation",
+          "name": "导航与菜单",
+          "order": 4,
+          "expected": 12
+        },
+        {
+          "slug": "content",
+          "name": "内容展示",
+          "order": 5,
+          "expected": 10
+        },
+        {
+          "slug": "tables",
+          "name": "表格与列表",
+          "order": 6,
+          "expected": 9
+        },
+        {
+          "slug": "charts",
+          "name": "图表",
+          "order": 7,
+          "expected": 5
+        }
+      ]
+    },
+    {
+      "slug": "interactions",
+      "name": "交互与动效",
+      "order": 3,
+      "expected": 84,
+      "groups": [
+        {
+          "slug": "rules",
+          "name": "交互规则",
+          "order": 1,
+          "expected": 7
+        },
+        {
+          "slug": "view",
+          "name": "页面与视图",
+          "order": 2,
+          "expected": 6
+        },
+        {
+          "slug": "scroll",
+          "name": "滚动与空间",
+          "order": 3,
+          "expected": 10
+        },
+        {
+          "slug": "background",
+          "name": "背景与氛围",
+          "order": 4,
+          "expected": 5
+        },
+        {
+          "slug": "text",
+          "name": "文字与图形",
+          "order": 5,
+          "expected": 8
+        },
+        {
+          "slug": "media",
+          "name": "图片与媒介",
+          "order": 6,
+          "expected": 8
+        },
+        {
+          "slug": "component",
+          "name": "组件与微交互",
+          "order": 7,
+          "expected": 15
+        },
+        {
+          "slug": "cursor",
+          "name": "指针与光标",
+          "order": 8,
+          "expected": 4
+        },
+        {
+          "slug": "overlay",
+          "name": "导航与浮层",
+          "order": 9,
+          "expected": 6
+        },
+        {
+          "slug": "data",
+          "name": "数据与状态",
+          "order": 10,
+          "expected": 9
+        },
+        {
+          "slug": "mobile",
+          "name": "移动与手势",
+          "order": 11,
+          "expected": 6
+        }
+      ]
+    },
+    {
+      "slug": "scenarios",
+      "name": "页面与场景",
+      "order": 4,
+      "expected": 6,
+      "groups": [
+        {
+          "slug": "browse",
+          "name": "呈现与浏览",
+          "order": 1,
+          "expected": 3
+        },
+        {
+          "slug": "operate",
+          "name": "查看与操作",
+          "order": 2,
+          "expected": 3
+        }
+      ]
+    },
+    {
+      "slug": "ai",
+      "name": "AI 实现",
+      "order": 5,
+      "expected": 10,
+      "groups": [
+        {
+          "slug": "visual-systems",
+          "name": "AI 技能（Skills）· 视觉与设计系统",
+          "order": 1,
+          "expected": 4
+        },
+        {
+          "slug": "usability",
+          "name": "AI 技能（Skills）· 交互与可用性",
+          "order": 2,
+          "expected": 3
+        },
+        {
+          "slug": "auditing",
+          "name": "AI 技能（Skills）· 审计与验证",
+          "order": 3,
+          "expected": 3
+        }
+      ]
+    }
+  ],
+  "anchors": {
+    "c-button": {
+      "column": "components",
+      "group": "actions",
+      "slug": "button"
+    },
+    "c-split-button": {
+      "column": "components",
+      "group": "actions",
+      "slug": "split-button"
+    },
+    "c-hold-confirm": {
+      "column": "components",
+      "group": "actions",
+      "slug": "hold-confirm"
+    },
+    "c-fab": {
+      "column": "components",
+      "group": "actions",
+      "slug": "fab"
+    },
+    "c-back-to-top": {
+      "column": "components",
+      "group": "actions",
+      "slug": "back-to-top"
+    },
+    "c-input": {
+      "column": "components",
+      "group": "forms",
+      "slug": "input"
+    },
+    "c-textarea": {
+      "column": "components",
+      "group": "forms",
+      "slug": "textarea"
+    },
+    "c-select": {
+      "column": "components",
+      "group": "forms",
+      "slug": "select"
+    },
+    "c-checkbox": {
+      "column": "components",
+      "group": "forms",
+      "slug": "checkbox"
+    },
+    "c-radio": {
+      "column": "components",
+      "group": "forms",
+      "slug": "radio"
+    },
+    "c-switch": {
+      "column": "components",
+      "group": "forms",
+      "slug": "switch"
+    },
+    "c-slider": {
+      "column": "components",
+      "group": "forms",
+      "slug": "slider"
+    },
+    "c-stepper": {
+      "column": "components",
+      "group": "forms",
+      "slug": "stepper"
+    },
+    "c-date": {
+      "column": "components",
+      "group": "forms",
+      "slug": "date"
+    },
+    "c-color": {
+      "column": "components",
+      "group": "forms",
+      "slug": "color"
+    },
+    "c-rating": {
+      "column": "components",
+      "group": "forms",
+      "slug": "rating"
+    },
+    "c-search": {
+      "column": "components",
+      "group": "forms",
+      "slug": "search"
+    },
+    "c-combobox": {
+      "column": "components",
+      "group": "forms",
+      "slug": "combobox"
+    },
+    "c-segmented": {
+      "column": "components",
+      "group": "forms",
+      "slug": "segmented"
+    },
+    "c-password-strength": {
+      "column": "components",
+      "group": "forms",
+      "slug": "password-strength"
+    },
+    "c-tag-input": {
+      "column": "components",
+      "group": "forms",
+      "slug": "tag-input"
+    },
+    "c-otp": {
+      "column": "components",
+      "group": "forms",
+      "slug": "otp"
+    },
+    "c-upload": {
+      "column": "components",
+      "group": "forms",
+      "slug": "upload"
+    },
+    "c-form": {
+      "column": "components",
+      "group": "forms",
+      "slug": "form"
+    },
+    "c-inline-edit": {
+      "column": "components",
+      "group": "forms",
+      "slug": "inline-edit"
+    },
+    "c-conditional-step": {
+      "column": "components",
+      "group": "forms",
+      "slug": "conditional-step"
+    },
+    "c-advanced-settings": {
+      "column": "components",
+      "group": "forms",
+      "slug": "advanced-settings"
+    },
+    "c-context-options": {
+      "column": "components",
+      "group": "forms",
+      "slug": "context-options"
+    },
+    "c-progress": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "progress"
+    },
+    "c-modal": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "modal"
+    },
+    "c-toast": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "toast"
+    },
+    "c-states": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "states"
+    },
+    "c-tooltip": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "tooltip"
+    },
+    "c-alert": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "alert"
+    },
+    "c-loader": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "loader"
+    },
+    "c-skeleton": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "skeleton"
+    },
+    "c-empty": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "empty"
+    },
+    "c-drawer": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "drawer"
+    },
+    "c-popover": {
+      "column": "components",
+      "group": "feedback",
+      "slug": "popover"
+    },
+    "c-cmdk": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "cmdk"
+    },
+    "c-navbar": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "navbar"
+    },
+    "c-sidebar": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "sidebar"
+    },
+    "c-tabs": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "tabs"
+    },
+    "c-accordion": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "accordion"
+    },
+    "c-breadcrumb": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "breadcrumb"
+    },
+    "c-pagination": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "pagination"
+    },
+    "c-steps": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "steps"
+    },
+    "c-footer": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "footer"
+    },
+    "c-dropdown": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "dropdown"
+    },
+    "c-mega-menu": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "mega-menu"
+    },
+    "c-context-menu": {
+      "column": "components",
+      "group": "navigation",
+      "slug": "context-menu"
+    },
+    "c-badge": {
+      "column": "components",
+      "group": "content",
+      "slug": "badge"
+    },
+    "c-chip": {
+      "column": "components",
+      "group": "content",
+      "slug": "chip"
+    },
+    "c-card": {
+      "column": "components",
+      "group": "content",
+      "slug": "card"
+    },
+    "c-card-link": {
+      "column": "components",
+      "group": "content",
+      "slug": "card-link"
+    },
+    "c-carousel": {
+      "column": "components",
+      "group": "content",
+      "slug": "carousel"
+    },
+    "c-badge-dot": {
+      "column": "components",
+      "group": "content",
+      "slug": "badge-dot"
+    },
+    "c-timeline": {
+      "column": "components",
+      "group": "content",
+      "slug": "timeline"
+    },
+    "c-kpi": {
+      "column": "components",
+      "group": "content",
+      "slug": "kpi"
+    },
+    "c-avatar": {
+      "column": "components",
+      "group": "content",
+      "slug": "avatar"
+    },
+    "c-view-switch": {
+      "column": "components",
+      "group": "content",
+      "slug": "view-switch"
+    },
+    "c-table": {
+      "column": "components",
+      "group": "tables",
+      "slug": "table"
+    },
+    "c-table-fixed": {
+      "column": "components",
+      "group": "tables",
+      "slug": "table-fixed"
+    },
+    "c-table-columns": {
+      "column": "components",
+      "group": "tables",
+      "slug": "table-columns"
+    },
+    "c-table-reorder": {
+      "column": "components",
+      "group": "tables",
+      "slug": "table-reorder"
+    },
+    "c-table-edit": {
+      "column": "components",
+      "group": "tables",
+      "slug": "table-edit"
+    },
+    "c-infinite-scroll": {
+      "column": "components",
+      "group": "tables",
+      "slug": "infinite-scroll"
+    },
+    "c-load-more": {
+      "column": "components",
+      "group": "tables",
+      "slug": "load-more"
+    },
+    "c-virtual-list": {
+      "column": "components",
+      "group": "tables",
+      "slug": "virtual-list"
+    },
+    "c-auto-save": {
+      "column": "interactions",
+      "group": "rules",
+      "slug": "auto-save"
+    },
+    "e-view-crossfade": {
+      "column": "interactions",
+      "group": "view",
+      "slug": "view-crossfade"
+    },
+    "e-view-slide": {
+      "column": "interactions",
+      "group": "view",
+      "slug": "view-slide"
+    },
+    "e-view-curtain": {
+      "column": "interactions",
+      "group": "view",
+      "slug": "view-curtain"
+    },
+    "e-view-shared": {
+      "column": "interactions",
+      "group": "view",
+      "slug": "view-shared"
+    },
+    "e-view-stagger": {
+      "column": "interactions",
+      "group": "view",
+      "slug": "view-stagger"
+    },
+    "e-scroll-reveal": {
+      "column": "interactions",
+      "group": "scroll",
+      "slug": "scroll-reveal"
+    },
+    "e-scroll-parallax": {
+      "column": "interactions",
+      "group": "scroll",
+      "slug": "scroll-parallax"
+    },
+    "e-scroll-pin": {
+      "column": "interactions",
+      "group": "scroll",
+      "slug": "scroll-pin"
+    },
+    "e-scroll-horizontal": {
+      "column": "interactions",
+      "group": "scroll",
+      "slug": "scroll-horizontal"
+    },
+    "e-scroll-progress": {
+      "column": "interactions",
+      "group": "scroll",
+      "slug": "scroll-progress"
+    },
+    "e-background-aurora": {
+      "column": "interactions",
+      "group": "background",
+      "slug": "background-aurora"
+    },
+    "e-background-wave": {
+      "column": "interactions",
+      "group": "background",
+      "slug": "background-wave"
+    },
+    "e-background-particles": {
+      "column": "interactions",
+      "group": "background",
+      "slug": "background-particles"
+    },
+    "e-background-cursorwave": {
+      "column": "interactions",
+      "group": "background",
+      "slug": "background-cursorwave"
+    },
+    "e-background-fluid": {
+      "column": "interactions",
+      "group": "background",
+      "slug": "background-fluid"
+    },
+    "e-text-stagger": {
+      "column": "interactions",
+      "group": "text",
+      "slug": "text-stagger"
+    },
+    "e-text-mask": {
+      "column": "interactions",
+      "group": "text",
+      "slug": "text-mask"
+    },
+    "e-text-typewriter": {
+      "column": "interactions",
+      "group": "text",
+      "slug": "text-typewriter"
+    },
+    "e-text-scramble": {
+      "column": "interactions",
+      "group": "text",
+      "slug": "text-scramble"
+    },
+    "e-text-draw": {
+      "column": "interactions",
+      "group": "text",
+      "slug": "text-draw"
+    },
+    "e-media-wipe": {
+      "column": "interactions",
+      "group": "media",
+      "slug": "media-wipe"
+    },
+    "e-media-carousel": {
+      "column": "interactions",
+      "group": "media",
+      "slug": "media-carousel"
+    },
+    "e-media-blur": {
+      "column": "interactions",
+      "group": "media",
+      "slug": "media-blur"
+    },
+    "e-media-compare": {
+      "column": "interactions",
+      "group": "media",
+      "slug": "media-compare"
+    },
+    "e-media-glitch": {
+      "column": "interactions",
+      "group": "media",
+      "slug": "media-glitch"
+    },
+    "e-component-lift": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-lift"
+    },
+    "e-component-tilt": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-tilt"
+    },
+    "e-component-spotlight": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-spotlight"
+    },
+    "e-component-flip": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-flip"
+    },
+    "e-component-press": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-press"
+    },
+    "e-component-switch": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-switch"
+    },
+    "e-component-morph": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-morph"
+    },
+    "e-overlay-menu": {
+      "column": "interactions",
+      "group": "overlay",
+      "slug": "overlay-menu"
+    },
+    "e-overlay-drawer": {
+      "column": "interactions",
+      "group": "overlay",
+      "slug": "overlay-drawer"
+    },
+    "e-overlay-modal": {
+      "column": "interactions",
+      "group": "overlay",
+      "slug": "overlay-modal"
+    },
+    "e-overlay-tooltip": {
+      "column": "interactions",
+      "group": "overlay",
+      "slug": "overlay-tooltip"
+    },
+    "e-overlay-sheet": {
+      "column": "interactions",
+      "group": "overlay",
+      "slug": "overlay-sheet"
+    },
+    "e-data-count": {
+      "column": "interactions",
+      "group": "data",
+      "slug": "data-count"
+    },
+    "e-data-skeleton": {
+      "column": "interactions",
+      "group": "data",
+      "slug": "data-skeleton"
+    },
+    "e-data-bars": {
+      "column": "interactions",
+      "group": "data",
+      "slug": "data-bars"
+    },
+    "e-data-reorder": {
+      "column": "interactions",
+      "group": "data",
+      "slug": "data-reorder"
+    },
+    "e-data-success": {
+      "column": "interactions",
+      "group": "data",
+      "slug": "data-success"
+    },
+    "e-mobile-swipe": {
+      "column": "interactions",
+      "group": "mobile",
+      "slug": "mobile-swipe"
+    },
+    "e-mobile-drag": {
+      "column": "interactions",
+      "group": "mobile",
+      "slug": "mobile-drag"
+    },
+    "e-mobile-pull": {
+      "column": "interactions",
+      "group": "mobile",
+      "slug": "mobile-pull"
+    },
+    "e-mobile-rubber": {
+      "column": "interactions",
+      "group": "mobile",
+      "slug": "mobile-rubber"
+    },
+    "e-mobile-pager": {
+      "column": "interactions",
+      "group": "mobile",
+      "slug": "mobile-pager"
+    },
+    "e-extra-filter-grid": {
+      "column": "interactions",
+      "group": "data",
+      "slug": "filter-grid"
+    },
+    "e-extra-delete-undo": {
+      "column": "interactions",
+      "group": "rules",
+      "slug": "undo"
+    },
+    "e-extra-accordion": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "accordion"
+    },
+    "e-extra-submit-flow": {
+      "column": "interactions",
+      "group": "rules",
+      "slug": "submit"
+    },
+    "e-extra-toast-stack": {
+      "column": "interactions",
+      "group": "overlay",
+      "slug": "toast-stack"
+    },
+    "e-extra-tab-indicator": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "tab-indicator"
+    },
+    "e-extra-drop-snap": {
+      "column": "interactions",
+      "group": "mobile",
+      "slug": "drop-snap"
+    },
+    "e-extra-odometer": {
+      "column": "interactions",
+      "group": "text",
+      "slug": "odometer"
+    },
+    "e-extra-cross-page": {
+      "column": "interactions",
+      "group": "view",
+      "slug": "cross-page"
+    },
+    "e-extra-inline-expand": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "inline-expand"
+    },
+    "e-extra-shrink-header": {
+      "column": "interactions",
+      "group": "scroll",
+      "slug": "shrink-header"
+    },
+    "e-extra-section-nav": {
+      "column": "interactions",
+      "group": "scroll",
+      "slug": "section-nav"
+    },
+    "e-extra-scroll-highlight": {
+      "column": "interactions",
+      "group": "text",
+      "slug": "scroll-highlight"
+    },
+    "e-extra-snap-sections": {
+      "column": "interactions",
+      "group": "scroll",
+      "slug": "snap-sections"
+    },
+    "e-extra-image-magnifier": {
+      "column": "interactions",
+      "group": "media",
+      "slug": "image-magnifier"
+    },
+    "e-extra-timeline-preview": {
+      "column": "interactions",
+      "group": "media",
+      "slug": "timeline-preview"
+    },
+    "e-extra-chart-morph": {
+      "column": "interactions",
+      "group": "data",
+      "slug": "chart-morph"
+    },
+    "e-extra-skeleton-handoff": {
+      "column": "interactions",
+      "group": "data",
+      "slug": "skeleton-handoff"
+    },
+    "e-component-magnetic": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-magnetic"
+    },
+    "e-component-hover-preview": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-hover-preview"
+    },
+    "e-component-hover-action": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-hover-action"
+    },
+    "e-text-text-morph": {
+      "column": "interactions",
+      "group": "text",
+      "slug": "text-text-morph"
+    },
+    "e-scroll-scroll-zoom": {
+      "column": "interactions",
+      "group": "scroll",
+      "slug": "scroll-scroll-zoom"
+    },
+    "e-media-image-sequence": {
+      "column": "interactions",
+      "group": "media",
+      "slug": "media-image-sequence"
+    },
+    "e-data-input-shake": {
+      "column": "interactions",
+      "group": "data",
+      "slug": "data-input-shake"
+    },
+    "e-cursor-cursor-follower": {
+      "column": "interactions",
+      "group": "cursor",
+      "slug": "cursor-cursor-follower"
+    },
+    "e-cursor-cursor-trail": {
+      "column": "interactions",
+      "group": "cursor",
+      "slug": "cursor-cursor-trail"
+    },
+    "e-cursor-cursor-eyes": {
+      "column": "interactions",
+      "group": "cursor",
+      "slug": "cursor-cursor-eyes"
+    },
+    "e-cursor-object-follow": {
+      "column": "interactions",
+      "group": "cursor",
+      "slug": "cursor-object-follow"
+    },
+    "e-scroll-hide-header": {
+      "column": "interactions",
+      "group": "scroll",
+      "slug": "scroll-hide-header"
+    },
+    "e-component-ripple": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-ripple"
+    },
+    "e-component-underline": {
+      "column": "interactions",
+      "group": "component",
+      "slug": "component-underline"
+    },
+    "g-layout-grid": {
+      "column": "basics",
+      "group": "layout",
+      "slug": "grid"
+    },
+    "g-layout-sidebar": {
+      "column": "basics",
+      "group": "layout",
+      "slug": "sidebar"
+    },
+    "g-layout-split": {
+      "column": "basics",
+      "group": "layout",
+      "slug": "split"
+    },
+    "g-layout-container": {
+      "column": "basics",
+      "group": "layout",
+      "slug": "container"
+    },
+    "g-layout-density": {
+      "column": "basics",
+      "group": "layout",
+      "slug": "density"
+    },
+    "g-layout-sticky": {
+      "column": "basics",
+      "group": "layout",
+      "slug": "sticky"
+    },
+    "g-visual-minimal": {
+      "column": "basics",
+      "group": "visual",
+      "slug": "minimal"
+    },
+    "g-visual-editorial": {
+      "column": "basics",
+      "group": "visual",
+      "slug": "editorial"
+    },
+    "g-visual-organic": {
+      "column": "basics",
+      "group": "visual",
+      "slug": "organic"
+    },
+    "g-visual-glass": {
+      "column": "basics",
+      "group": "visual",
+      "slug": "glass"
+    },
+    "g-visual-brutalist": {
+      "column": "basics",
+      "group": "visual",
+      "slug": "brutalist"
+    },
+    "g-visual-neumorphic": {
+      "column": "basics",
+      "group": "visual",
+      "slug": "neumorphic"
+    },
+    "g-interaction-validation": {
+      "column": "interactions",
+      "group": "rules",
+      "slug": "validation"
+    },
+    "g-interaction-submit": {
+      "column": "interactions",
+      "group": "rules",
+      "slug": "submit"
+    },
+    "g-interaction-undo": {
+      "column": "interactions",
+      "group": "rules",
+      "slug": "undo"
+    },
+    "g-interaction-bulk": {
+      "column": "interactions",
+      "group": "rules",
+      "slug": "bulk"
+    },
+    "g-interaction-optimistic": {
+      "column": "interactions",
+      "group": "rules",
+      "slug": "optimistic"
+    },
+    "g-interaction-focus": {
+      "column": "interactions",
+      "group": "rules",
+      "slug": "focus"
+    },
+    "g-pages-landing": {
+      "column": "scenarios",
+      "group": "browse",
+      "slug": "landing"
+    },
+    "g-pages-dashboard": {
+      "column": "scenarios",
+      "group": "browse",
+      "slug": "dashboard"
+    },
+    "g-pages-list": {
+      "column": "scenarios",
+      "group": "browse",
+      "slug": "list"
+    },
+    "g-pages-detail": {
+      "column": "scenarios",
+      "group": "operate",
+      "slug": "detail"
+    },
+    "g-pages-settings": {
+      "column": "scenarios",
+      "group": "operate",
+      "slug": "settings"
+    },
+    "g-pages-wizard": {
+      "column": "scenarios",
+      "group": "operate",
+      "slug": "wizard"
+    },
+    "g-data-line": {
+      "column": "components",
+      "group": "charts",
+      "slug": "line"
+    },
+    "g-data-bar": {
+      "column": "components",
+      "group": "charts",
+      "slug": "bar"
+    },
+    "g-data-stacked": {
+      "column": "components",
+      "group": "charts",
+      "slug": "stacked"
+    },
+    "g-data-donut": {
+      "column": "components",
+      "group": "charts",
+      "slug": "donut"
+    },
+    "g-data-heatmap": {
+      "column": "components",
+      "group": "charts",
+      "slug": "heatmap"
+    },
+    "g-data-table": {
+      "column": "components",
+      "group": "tables",
+      "slug": "sortable-table"
+    },
+    "skill-frontend-design": {
+      "column": "ai",
+      "group": "visual-systems",
+      "slug": "frontend-design"
+    },
+    "skill-ui-ux-pro-max": {
+      "column": "ai",
+      "group": "visual-systems",
+      "slug": "ui-ux-pro-max"
+    },
+    "skill-baseline-ui": {
+      "column": "ai",
+      "group": "visual-systems",
+      "slug": "baseline-ui"
+    },
+    "skill-create-design-md": {
+      "column": "ai",
+      "group": "visual-systems",
+      "slug": "create-design-md"
+    },
+    "skill-fixing-accessibility": {
+      "column": "ai",
+      "group": "usability",
+      "slug": "fixing-accessibility"
+    },
+    "skill-fixing-motion-performance": {
+      "column": "ai",
+      "group": "usability",
+      "slug": "fixing-motion-performance"
+    },
+    "skill-vercel-react-view-transitions": {
+      "column": "ai",
+      "group": "usability",
+      "slug": "vercel-react-view-transitions"
+    },
+    "skill-web-design-guidelines": {
+      "column": "ai",
+      "group": "auditing",
+      "slug": "web-design-guidelines"
+    },
+    "skill-webapp-testing": {
+      "column": "ai",
+      "group": "auditing",
+      "slug": "webapp-testing"
+    },
+    "skill-vercel-composition-patterns": {
+      "column": "ai",
+      "group": "auditing",
+      "slug": "vercel-composition-patterns"
+    }
+  },
+  "merges": {
+    "e-extra-submit-flow": "g-interaction-submit",
+    "e-extra-delete-undo": "g-interaction-undo"
+  },
+  "component_motion": [
+    {
+      "component": "c-card",
+      "motion": "e-component-lift"
+    },
+    {
+      "component": "c-card",
+      "motion": "e-component-tilt"
+    },
+    {
+      "component": "c-card",
+      "motion": "e-component-spotlight"
+    },
+    {
+      "component": "c-card",
+      "motion": "e-component-flip"
+    },
+    {
+      "component": "c-card",
+      "motion": "e-extra-inline-expand"
+    },
+    {
+      "component": "c-card",
+      "motion": "e-component-hover-preview"
+    },
+    {
+      "component": "c-card",
+      "motion": "e-component-hover-action"
+    },
+    {
+      "component": "c-button",
+      "motion": "e-component-press"
+    },
+    {
+      "component": "c-button",
+      "motion": "e-component-morph"
+    },
+    {
+      "component": "c-button",
+      "motion": "e-component-magnetic"
+    },
+    {
+      "component": "c-button",
+      "motion": "e-component-ripple"
+    },
+    {
+      "component": "c-switch",
+      "motion": "e-component-switch"
+    },
+    {
+      "component": "c-accordion",
+      "motion": "e-extra-accordion"
+    },
+    {
+      "component": "c-tabs",
+      "motion": "e-extra-tab-indicator"
+    },
+    {
+      "component": "c-tabs",
+      "motion": "e-component-underline"
+    },
+    {
+      "component": "c-dropdown",
+      "motion": "e-overlay-menu"
+    },
+    {
+      "component": "c-mega-menu",
+      "motion": "e-overlay-menu"
+    },
+    {
+      "component": "c-drawer",
+      "motion": "e-overlay-drawer"
+    },
+    {
+      "component": "c-drawer",
+      "motion": "e-overlay-sheet"
+    },
+    {
+      "component": "c-modal",
+      "motion": "e-overlay-modal"
+    },
+    {
+      "component": "c-tooltip",
+      "motion": "e-overlay-tooltip"
+    },
+    {
+      "component": "c-popover",
+      "motion": "e-overlay-tooltip"
+    },
+    {
+      "component": "c-toast",
+      "motion": "e-extra-toast-stack"
+    },
+    {
+      "component": "c-carousel",
+      "motion": "e-media-carousel"
+    },
+    {
+      "component": "c-carousel",
+      "motion": "e-mobile-pager"
+    },
+    {
+      "component": "c-skeleton",
+      "motion": "e-data-skeleton"
+    },
+    {
+      "component": "c-skeleton",
+      "motion": "e-extra-skeleton-handoff"
+    },
+    {
+      "component": "c-kpi",
+      "motion": "e-data-count"
+    },
+    {
+      "component": "c-kpi",
+      "motion": "e-extra-odometer"
+    },
+    {
+      "component": "g-data-line",
+      "motion": "e-data-bars"
+    },
+    {
+      "component": "g-data-line",
+      "motion": "e-extra-chart-morph"
+    },
+    {
+      "component": "g-data-bar",
+      "motion": "e-data-bars"
+    },
+    {
+      "component": "g-data-bar",
+      "motion": "e-extra-chart-morph"
+    },
+    {
+      "component": "g-data-stacked",
+      "motion": "e-data-bars"
+    },
+    {
+      "component": "g-data-stacked",
+      "motion": "e-extra-chart-morph"
+    },
+    {
+      "component": "g-data-donut",
+      "motion": "e-data-bars"
+    },
+    {
+      "component": "g-data-donut",
+      "motion": "e-extra-chart-morph"
+    },
+    {
+      "component": "g-data-heatmap",
+      "motion": "e-data-bars"
+    },
+    {
+      "component": "g-data-heatmap",
+      "motion": "e-extra-chart-morph"
+    },
+    {
+      "component": "c-table",
+      "motion": "e-data-reorder"
+    },
+    {
+      "component": "c-table",
+      "motion": "e-extra-filter-grid"
+    },
+    {
+      "component": "c-table",
+      "motion": "e-mobile-drag"
+    },
+    {
+      "component": "c-table",
+      "motion": "e-mobile-swipe"
+    },
+    {
+      "component": "c-table-fixed",
+      "motion": "e-data-reorder"
+    },
+    {
+      "component": "c-table-fixed",
+      "motion": "e-extra-filter-grid"
+    },
+    {
+      "component": "c-table-fixed",
+      "motion": "e-mobile-drag"
+    },
+    {
+      "component": "c-table-fixed",
+      "motion": "e-mobile-swipe"
+    },
+    {
+      "component": "c-table-columns",
+      "motion": "e-data-reorder"
+    },
+    {
+      "component": "c-table-columns",
+      "motion": "e-extra-filter-grid"
+    },
+    {
+      "component": "c-table-columns",
+      "motion": "e-mobile-drag"
+    },
+    {
+      "component": "c-table-columns",
+      "motion": "e-mobile-swipe"
+    },
+    {
+      "component": "c-table-reorder",
+      "motion": "e-data-reorder"
+    },
+    {
+      "component": "c-table-reorder",
+      "motion": "e-extra-filter-grid"
+    },
+    {
+      "component": "c-table-reorder",
+      "motion": "e-mobile-drag"
+    },
+    {
+      "component": "c-table-reorder",
+      "motion": "e-mobile-swipe"
+    },
+    {
+      "component": "c-table-edit",
+      "motion": "e-data-reorder"
+    },
+    {
+      "component": "c-table-edit",
+      "motion": "e-extra-filter-grid"
+    },
+    {
+      "component": "c-table-edit",
+      "motion": "e-mobile-drag"
+    },
+    {
+      "component": "c-table-edit",
+      "motion": "e-mobile-swipe"
+    },
+    {
+      "component": "c-infinite-scroll",
+      "motion": "e-data-reorder"
+    },
+    {
+      "component": "c-infinite-scroll",
+      "motion": "e-extra-filter-grid"
+    },
+    {
+      "component": "c-infinite-scroll",
+      "motion": "e-mobile-drag"
+    },
+    {
+      "component": "c-infinite-scroll",
+      "motion": "e-mobile-swipe"
+    },
+    {
+      "component": "c-load-more",
+      "motion": "e-data-reorder"
+    },
+    {
+      "component": "c-load-more",
+      "motion": "e-extra-filter-grid"
+    },
+    {
+      "component": "c-load-more",
+      "motion": "e-mobile-drag"
+    },
+    {
+      "component": "c-load-more",
+      "motion": "e-mobile-swipe"
+    },
+    {
+      "component": "c-virtual-list",
+      "motion": "e-data-reorder"
+    },
+    {
+      "component": "c-virtual-list",
+      "motion": "e-extra-filter-grid"
+    },
+    {
+      "component": "c-virtual-list",
+      "motion": "e-mobile-drag"
+    },
+    {
+      "component": "c-virtual-list",
+      "motion": "e-mobile-swipe"
+    },
+    {
+      "component": "g-data-table",
+      "motion": "e-data-reorder"
+    },
+    {
+      "component": "g-data-table",
+      "motion": "e-extra-filter-grid"
+    },
+    {
+      "component": "g-data-table",
+      "motion": "e-mobile-drag"
+    },
+    {
+      "component": "g-data-table",
+      "motion": "e-mobile-swipe"
+    },
+    {
+      "component": "c-navbar",
+      "motion": "e-extra-shrink-header"
+    },
+    {
+      "component": "c-navbar",
+      "motion": "e-scroll-hide-header"
+    },
+    {
+      "component": "c-progress",
+      "motion": "e-scroll-progress"
+    }
+  ]
+}
