@@ -13,7 +13,7 @@ import demos
 import states
 
 ASSETS = ('tokens.css', 'base.css', 'site.css', 'site.js', 'search.js', 'states.css')
-EXAMPLES = ('悬停', '弹窗', 'Crossfade', '按钮')
+EXAMPLES = ('浮起来', '弹出来的小黑框', 'Crossfade', '点了会变的按钮')
 
 
 def entry_destination(entry):
@@ -149,7 +149,7 @@ def shell(page, title, body, entries, tax, entry=False):
     css += ''.join(asset_tag(name) for name in sorted(bundle_names) if name.endswith('.css'))
     js = ''.join(asset_tag(name) for name in ('demo-runtime.js', *sorted(name for name in bundle_names if name.endswith('.js') and name != 'demo-runtime.js'), 'search.js', 'site.js'))
     return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="查看界面效果的中英文名称与演示，复制原始实现提示词。"><title>{escape(title)} · Vibe Design 速查</title><link rel="icon" href="{relative(page, "assets/favicon.svg")}">{css}{js}</head><body{' class="entry-active"' if entry else ''}>{header(page,tax)}<main class="wrap view" id="main" tabindex="-1">{body}</main><footer class="wrap footer">Vibe Design 速查 · <a href="{relative(page,'bench/')}">测评结果</a></footer>
-<dialog class="overlay search-dialog" id="search-dialog" aria-label="搜索条目"><div class="search-top"><label class="sr" for="search-input">搜索中文名、英文名或已有词</label><input id="search-input" type="search" placeholder="搜索名称、英文名或你自己的说法" autocomplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="grid" aria-expanded="false" aria-describedby="search-help"><button class="close-button" data-close="search-dialog">关闭</button></div><div class="search-body" id="search-body"></div><p class="search-help" id="search-help">↑↓ 选择条目 · Enter 打开 · Tab 选择操作 · Esc 关闭</p></dialog><div class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></div><script type="application/json" id="redesign-search-index">{data}</script></body></html>'''
+<dialog class="overlay search-dialog" id="search-dialog" aria-label="搜索条目"><div class="search-top"><label class="sr" for="search-input">搜索中文名、英文名或已有词</label><input id="search-input" type="search" placeholder="用你自己的说法搜，比如：鼠标放上去浮起来" autocomplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="grid" aria-expanded="false" aria-describedby="search-help"><button class="close-button" data-close="search-dialog">关闭</button></div><div class="search-body" id="search-body"></div><p class="search-help" id="search-help">↑↓ 选择条目 · Enter 打开 · Tab 选择操作 · Esc 关闭</p></dialog><div class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></div><script type="application/json" id="redesign-search-index">{data}</script></body></html>'''
 
 
 def home(entries, tax):
@@ -160,7 +160,7 @@ def home(entries, tax):
     for c, description, anchor in zip(tax['columns'], descriptions, starts):
         start = next(e for e in entries if anchor in e['old_anchors'])
         layers.append(f'<article class="layer"><span class="number">{c["order"]:02d}</span><h3><a href="{relative(page,column_destination(c["slug"]))}">{c["name"]}</a></h3><span class="stat">{c["expected"]} 条</span><p>{description}</p><a class="start" href="{relative(page,entry_destination(start))}">推荐起点：{escape(start["zh"])} →</a></article>')
-    body = f'''<div class="hero"><h1>看见一个效果，叫出它的名字，拿到能粘进 AI 的提示词。</h1><p class="sub">{len(entries)} 个界面效果，附中英文名称、演示和可直接复制的提示词。</p><button class="home-search" data-search><span class="search-icon" aria-hidden="true"></span><span>用中文或英文名称搜，比如：悬停</span><kbd>/</kbd></button><div class="chips examples">{query_buttons()}</div></div><h2 class="section-head">从这里开始</h2><div class="layers">{''.join(layers)}</div><section class="method"><h2>怎么用</h2><ol class="steps"><li>找到效果</li><li>看演示</li><li>复制提示词</li><li>粘进 AI 并验收</li></ol></section>'''
+    body = f'''<div class="hero"><h1>看见一个效果，叫出它的名字，拿到能粘进 AI 的提示词。</h1><p class="sub">{len(entries)} 个界面效果，附中英文名称、演示和可直接复制的提示词。</p><button class="home-search" data-search><span class="search-icon" aria-hidden="true"></span><span>用你自己的说法搜，比如：鼠标放上去浮起来</span><kbd>/</kbd></button><div class="chips examples">{query_buttons()}</div></div><h2 class="section-head">从这里开始</h2><div class="layers">{''.join(layers)}</div><section class="method"><h2>怎么用</h2><ol class="steps"><li>找到效果</li><li>看演示</li><li>复制提示词</li><li>粘进 AI 并验收</li></ol></section>'''
     return shell(page, '首页', body, entries, tax)
 
 
