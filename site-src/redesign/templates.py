@@ -23,7 +23,7 @@ def entry_destination(entry):
 
 def generated_pages(entries):
     return ['index.html', *(f'{column}/index.html' for column in ('basics', 'components', 'interactions', 'scenarios', 'ai')),
-            *(entry_destination(e) + 'index.html' for e in entries), 'interactions/spec/index.html']
+            *(entry_destination(e) + 'index.html' for e in entries), 'interactions/spec/index.html', 'ai/prompt-writing/index.html']
 
 
 def generated_files(entries):
@@ -85,6 +85,7 @@ def header(page, tax):
         if slug == 'interactions':
             groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, "interactions/spec/")}">动效实现规范 <span class="count">不计条目</span></a></div>')
         if slug == 'ai':
+            groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, "ai/prompt-writing/")}">提示词写法 <span class="count">不计条目</span></a></div>')
             groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, "bench/")}">测评结果</a></div>')
         # No entry lists in either menu. Only the approved component intro.
         first = f'<p class="small menu-intro">先看：<a href="{relative(page, "components/states/")}">组件状态</a></p>' if slug == 'components' else ''
@@ -190,7 +191,7 @@ def column_page(slug, entries, tax):
         cards.sort(key=lambda e: order.index(e['id']) if e['id'] in order else len(order))
         content = '<div class="gallery">' + ''.join(gallery_card(e,page) for e in cards) + '</div>' if cards else '<p class="small">三期新增</p>'
         sections.append(f'<section class="group-section" id="group-{g["slug"]}"><h2>{g["name"]} <span class="count">{len(cards)}</span></h2>{content}</section>')
-    extra = f'<p class="entry-section"><a href="{relative(page, "bench/")}">测评结果 →</a></p>' if slug == 'ai' else ''
+    extra = f'<p class="entry-section"><a href="{relative(page, "ai/prompt-writing/")}">提示词写法 →</a> · <a href="{relative(page, "bench/")}">测评结果 →</a></p>' if slug == 'ai' else ''
     if slug == 'interactions':
         extra = f'<p class="entry-section"><a href="{relative(page, "interactions/spec/")}">动效实现规范 →</a></p>'
     descriptions = ['先建立颜色、排版和布局的共同语言。', '认识界面里可复用的基本单元，理解用途、状态与实现要求。', '写清操作规则、反馈过程和界面变化。', '把组件和规则组织成完整页面与操作场景。', '把需求交给 AI，用提示词、技能和测评辅助验收。']
@@ -254,6 +255,39 @@ def spec_page(entries, tax):
     return shell('interactions/spec/index.html', '动效实现规范', body, entries, tax)
 
 
+
+def prompt_writing_page(entries, tax):
+    page = 'ai/prompt-writing/index.html'
+    button = next(e for e in entries if e['column'] == 'components' and e['slug'] == 'button')
+    body = f'''<nav class="breadcrumbs" aria-label="面包屑"><a href="../../">首页</a><span>/</span><a href="../">AI 实现</a><span>/</span><span aria-current="page">提示词写法</span></nav>
+<h1>提示词写法</h1>
+<p class="lead">读懂条目结构，选择提示词版本，把可检查的要求一起交给 AI。</p>
+<section class="entry-section" id="component-structure"><h2>组件结构怎么读</h2>
+<p>结构怎么读：形态与变体 → 状态 → 可配置项 → 交互约束 → 沿用项目规范。</p>
+<p>这段结构沿用 UI 元素页顶部原文。页面位置、文案、数据和业务动作沿用项目上下文。</p>
+<p><a href="{relative(page, 'components/')}">查看组件条目 →</a></p></section>
+<section class="entry-section" id="motion-structure"><h2>动效描述的四层结构</h2>
+<p>依次说明技术工具（用什么实现）、触发方式（什么时候开始）、动效类型（画面具体怎么动）、UX 规则（反馈、焦点与减弱动态）。简单动效优先使用 CSS。</p>
+<p><a href="{relative(page, 'interactions/spec/#spec-structure')}">阅读动效实现规范中的四层结构 →</a></p>
+<h3>触发描述五步检查</h3>
+<ol><li>谁触发，明确对象与角色。</li><li>在什么条件下开始，明确时机与状态。</li><li>触发后使用什么动效，明确画面变化。</li><li>结束或离开后怎样恢复，明确还原路径。</li><li>键盘和触屏怎样替代，包含减弱动态降级。</li></ol>
+<p><a href="{relative(page, 'interactions/spec/#spec-checklist')}">阅读完整五步检查与原始模板 →</a></p></section>
+<section class="entry-section" id="acceptance-writing"><h2>把测评失分点写成验收要求</h2>
+<p>测评结论是写进去的稳定，没写的每次会变。按钮和网格补充验收要求后，两种工具都达到 16 分。交叉淡化原样重跑时，一次从 16 分降至 13 分，时长、缓动和连点问题此前都没有写成数字或判据。</p>
+<p>每条提示词保留 3–6 条验收要求，每条有数字或明确判据，例如正文对比度至少 4.5:1，或屏幕变宽时列数不能减少。优先写测评失分点、无障碍底线、不跳动与不溢出要求。</p>
+<p>加验收后，按钮测评的完成时长约 2 倍，网格变化不大。验收只保留容易出错的点。</p>
+<p><a href="{relative(page, 'bench/')}">查看两轮测评、原提示词与证据 →</a></p></section>
+<section class="entry-section" id="choose-version"><h2>两版怎么选</h2>
+<p>项目已有对应界面时，默认选「改现有页面」。先定位对应部分，再说明修改目标，沿用现有颜色、字体和间距，限定修改范围，附验收要求，最后列出改动文件与逐条验证结果。</p>
+<p>需要从头建立对应组件时选「新做一个」，补充页面位置、文案、数据和动作上下文，并沿用项目现有设计规范。两版复制时都会包含同一组验收要求和验证说明。</p></section>
+<section class="entry-section" id="button-example"><h2>完整例子 · 按钮</h2>
+<p>以下内容直接读取按钮条目的当前提示词与五条验收要求。</p>
+<p><a href="{relative(page, 'components/button/')}">打开按钮条目，查看演示、用途与参数 →</a></p>
+<h3>改现有页面</h3><pre class="prompt-text" id="button-edit-example">{escape(copy_payload(button))}</pre>{copy_button('button-edit-example')}
+<details class="entry-section"><summary>新做一个</summary><pre class="prompt-text" id="button-new-example">{escape(copy_payload(button, 'prompt_new'))}</pre>{copy_button('button-new-example', '复制这一版')}</details></section>'''
+    return shell(page, '提示词写法', body, entries, tax)
+
+
 def build(output, entries, tax):
     assets = output / 'assets/redesign'
     assets.mkdir(parents=True)
@@ -261,7 +295,7 @@ def build(output, entries, tax):
     contents.update(demos.assets(entries))
     for name, content in contents.items():
         (assets/name).write_text(content, encoding='utf-8')
-    pages = {'index.html':home(entries,tax), 'interactions/spec/index.html':spec_page(entries,tax)}
+    pages = {'index.html':home(entries,tax), 'interactions/spec/index.html':spec_page(entries,tax), 'ai/prompt-writing/index.html':prompt_writing_page(entries,tax)}
     pages.update({f'{column["slug"]}/index.html':column_page(column['slug'],entries,tax) for column in tax['columns']})
     pages.update({entry_destination(e) + 'index.html':detail(e,entries,tax) for e in entries})
     for name, html in pages.items():

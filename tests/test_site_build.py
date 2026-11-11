@@ -73,7 +73,7 @@ class SiteBuildTest(unittest.TestCase):
         spec.loader.exec_module(builder)
         entries = json.loads((ROOT / "build/entries.json").read_text())
         self.assertEqual(files, builder.expected_build_files(entries))
-        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 7 + len(entries))
+        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 8 + len(entries))
 
     def test_bench_pages_navigation_badges_and_local_references(self):
         paths = [DIST / "bench" / "index.html", *(DIST / "bench" / slug / "index.html" for slug in ("button", "crossfade", "grid"))]
@@ -287,7 +287,7 @@ class SiteBuildTest(unittest.TestCase):
             self.assertEqual(len(cards),column['expected'])
             self.assertEqual(doc.find_all('article','simple-card'),[])
             self.assertEqual(doc.find_all(cls='prompt-text'),[])
-            self.assertNotIn('提示词写法',html)
+            self.assertIn('提示词写法', html)
             for group in column['groups']:
                 self.assertIn('id="group-'+group['slug']+'"',html)
         command_page=parse(DIST/'components/cmdk/index.html')
