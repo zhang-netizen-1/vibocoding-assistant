@@ -144,7 +144,8 @@
       "菜单可用方向键移动、Enter 执行和 Esc 关闭，关闭后焦点返回箭头。",
       "主区与箭头点击区域各 ≥ 24×24px，手机各建议 44×44px。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "fab": {
     "aliases": [
@@ -786,7 +787,8 @@
       "390px 宽下正文和处理链接可换行，关闭入口不被长文挤出。",
       "错误及警告文字对比度 ≥ 4.5:1，提示出现不自动抢走焦点。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "loader": {
     "aliases": [
@@ -852,7 +854,8 @@
       "没有可执行操作时不渲染空按钮，现有入口可用键盘触发。",
       "390px 宽下说明及操作不产生页面横向滚动，文字对比度 ≥ 4.5:1。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "drawer": {
     "aliases": [
@@ -919,7 +922,8 @@
       "无匹配时显示明确提示，按 Enter 不执行上一轮高亮命令。",
       "中文输入法选字期间 Enter 不执行命令，普通输入框内输入快捷键字符不误开面板。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "navbar": {
     "aliases": [
@@ -938,7 +942,8 @@
       "窄屏菜单可用键盘打开、遍历和 Esc 关闭，关闭后焦点回到菜单按钮。",
       "导航地址来自传入数据，不出现无地址却可点击的占位链接。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "sidebar": {
     "aliases": [
@@ -957,7 +962,8 @@
       "390px 宽下导航可收起，正文不因侧栏被挤出视口。",
       "折叠与展开不丢失当前项，窄屏关闭后焦点回到唤出按钮。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "tabs": {
     "aliases": [
@@ -976,7 +982,8 @@
       "从含输入的面板切走再切回，输入内容和面板内滚动位置保留。",
       "快速切换 5 次只展示最后目标面板，不出现双层内容；开启减弱动态时直接切换。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "accordion": {
     "aliases": [
@@ -995,7 +1002,8 @@
       "收起内容不能被 Tab 聚焦，关闭含焦点的面板时焦点回到对应标题。",
       "开启减弱动态时直接展开收起，不播放高度或位移动画。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "breadcrumb": {
     "aliases": [
@@ -1014,7 +1022,8 @@
       "折叠中间层级后可用键盘展开，并访问被省略的全部上级。",
       "390px 宽下长名称可换行或省略后查看全文，不产生页面横向滚动。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "pagination": {
     "aliases": [
@@ -1056,7 +1065,8 @@
       "390px 宽下改为纵向或等效紧凑布局，完整步骤名可读取。",
       "修改当前进度后状态同步，步骤内容和指示器不出现不同步。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "footer": {
     "aliases": [
@@ -1075,7 +1085,8 @@
       "所有链接键盘可达，焦点环对比度 ≥ 3:1。",
       "正文不足一屏时页脚位置不覆盖正文，末尾内容不被固定操作条遮挡。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "dropdown": {
     "aliases": [
@@ -1094,7 +1105,8 @@
       "动作列表没有可用项时不显示触发入口。",
       "390px 宽及视口边缘打开时菜单不被裁切，长项名可完整读取。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "mega-menu": {
     "aliases": [
@@ -1136,7 +1148,8 @@
       "上下键可选择可用项，Esc 关闭后焦点回到目标对象或替代入口。",
       "390px 宽及视口四角打开时全部菜单项可达，未指定目标区域仍保留系统右键菜单。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "badge": {
     "aliases": [
@@ -1155,7 +1168,8 @@
       "没有动作的标签不可聚焦且不显示按钮语义。",
       "390px 宽下长标签不撑出容器，文字对比度 ≥ 4.5:1。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "chip": {
     "aliases": [
@@ -1174,7 +1188,8 @@
       "每个删除按钮包含对应标签名称，删除后焦点不落到页面背景。",
       "390px 宽下长标签可收缩或换行，删除入口不被挤出容器。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "card": {
     "aliases": [
@@ -1193,7 +1208,8 @@
       "静态卡片不显示可点击语义，有跳转或动作时才提供键盘入口。",
       "外层列数变化时内容顺序不变，卡片组件内部不写死所在网格列数。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "carousel": {
     "aliases": [
@@ -1213,7 +1229,8 @@
       "图片均有替代说明，当前序号可读取，控件可用键盘操作。",
       "开启减弱动态时停止自动播放并直接切图，不播放滑移。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "badge-dot": {
     "aliases": [
@@ -1232,7 +1249,8 @@
       "纯点也有未读说明，数字角标可被读取且不产生重复播报。",
       "390px 宽下角标不被入口容器裁切，不遮住图标关键部分。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "timeline": {
     "aliases": [
@@ -1251,7 +1269,8 @@
       "每个事件都有可读时间与说明，最新项除颜色外可通过文字或图标识别。",
       "390px 宽下长时间和说明换行，不与时间线标记重叠或横向溢出。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "kpi": {
     "aliases": [
@@ -1270,7 +1289,8 @@
       "指标名称、数值、单位和时间范围均可通过文字读取。",
       "长数字在 390px 宽下不撑出卡片，缩写时可查看原始完整数值。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "avatar": {
     "aliases": [
@@ -1289,7 +1309,8 @@
       "头像替代文字或相邻文字能识别用户，姓名与角色信息键盘可读取。",
       "图片与回退使用相同尺寸，加载失败或切换时不推动相邻内容。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "view-switch": {
     "aliases": [
@@ -1308,7 +1329,8 @@
       "当前视图具有选中说明，键盘可切换并获得相同结果。",
       "390px 宽下两种视图均不产生页面横向滚动，快速切换不叠加内容。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "card-link": {
     "aliases": [
@@ -1327,7 +1349,8 @@
       "不存在链接嵌套链接或链接包裹按钮的无效交互结构。",
       "Tab 顺序中主去向只出现一次，二级动作各有独立可读名称和焦点环。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "table": {
     "aliases": [
@@ -1346,7 +1369,8 @@
       "无数据时显示空状态，请求失败显示错误及重试，不伪装为空列表。",
       "390px 宽下仅表格容器横向滚动，页面本身没有横向滚动条。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "table-fixed": {
     "aliases": [
@@ -1365,7 +1389,8 @@
       "390px 宽下按配置退为容器内横滚，页面本身不横向溢出。",
       "排序或数据更新后固定表头仍与每列宽度和数据对齐。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "table-columns": {
     "aliases": [
@@ -1384,7 +1409,8 @@
       "刷新可恢复同一表格偏好，恢复默认后宽度与显隐均回到初始值。",
       "键盘可调整列宽并切换列显隐，至少保留一个可见数据列。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "table-reorder": {
     "aliases": [
@@ -1403,7 +1429,8 @@
       "左移与右移的键盘入口能得到与拖动相同的列序。",
       "刷新后恢复已保存列序，取消拖动或按 Esc 后恢复拖动前顺序。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "table-edit": {
     "aliases": [
@@ -1422,7 +1449,8 @@
       "编辑前后列宽与行高不变，其他单元格不跳动。",
       "行排序或刷新后保存响应仍更新原数据行，不误写相同屏幕位置的新行。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "infinite-scroll": {
     "aliases": [
@@ -1510,7 +1538,8 @@
       "相同排序值保留原有相对顺序，空值处理在升降序中遵循固定规则。",
       "390px 宽下只在表格容器内横滚，列名、单位及排序入口仍可读取。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "line": {
     "aliases": [
@@ -1529,7 +1558,8 @@
       "切换周期后图形、刻度、标题和文字摘要同步更新。",
       "390px 宽下刻度可读，图形不撑宽整页，键盘能访问对应数值或文字列表。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "bar": {
     "aliases": [
@@ -1548,7 +1578,8 @@
       "指标切换后数值、轴尺度、标题和摘要同步。",
       "390px 宽下类别名称可读取，必要滚动限于图表容器，整页不横向滚动。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "stacked": {
     "aliases": [
@@ -1567,7 +1598,8 @@
       "切换周期后图例、分段、总量与文字说明同步更新。",
       "零总量或缺失时显示明确状态，不生成除零比例或虚构分段。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "donut": {
     "aliases": [
@@ -1586,7 +1618,8 @@
       "总量为 0 时显示无占比数据，不输出 NaN、Infinity 或虚构满环。",
       "百分比舍入按固定规则分配尾差，切换周期后环图与列表同步。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   },
   "heatmap": {
     "aliases": [
@@ -1605,6 +1638,7 @@
       "每格可读名称包含行名、列名和数值或缺失状态，不能仅播报色值。",
       "390px 宽下行列标题仍可关联，必要滚动只发生在矩阵容器内。"
     ],
-    "reviewed": false
+    "reviewed": false,
+    "params": []
   }
 }

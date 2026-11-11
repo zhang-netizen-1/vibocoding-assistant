@@ -10,12 +10,11 @@ from html.parser import HTMLParser
 from pathlib import Path
 import importlib.util
 import json
-import os
 import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'site-src'
-STRICT_CONTENT = os.environ.get('STRICT_CONTENT', 'false').lower() in ('1', 'true', 'yes')
+STRICT_CONTENT = True
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'}
 
 
@@ -144,7 +143,7 @@ def source_entries():
                    source=dict(path='site-src/skill_catalog.py', old_path='/skills/'))
 
 
-def load_entries(content=None):
+def load_entries(content=None, *, strict=None):
     tax = taxonomy()
     raw = {item['anchor']: item for item in source_entries()}
     if set(raw) != set(tax['anchors']):
@@ -168,7 +167,7 @@ def load_entries(content=None):
                 entry['bench'] = dict(slug=slug, totals={agent:scores[slug][agent]['total'] for agent in ('codex','hermes')})
         result.append(entry)
     validate(result, tax)
-    return apply_content(result, load_content() if content is None else content)
+    return apply_content(result, load_content() if content is None else content, strict=strict)
 
 
 def validate(entries, tax):
@@ -218,7 +217,7 @@ def load_content():
 
 
 def apply_content(entries, content, strict=None):
-    """Validate only edited entries until all 187 entries are ready for strict mode."""
+    """Require complete content by default, with explicit opt-out for source fixtures."""
     import copy
     strict = STRICT_CONTENT if strict is None else strict
     by_key = {e['column'] + '/' + e['slug']: e for e in entries}
@@ -252,8 +251,14 @@ def apply_content(entries, content, strict=None):
             raise ValueError(f'{key}: acceptance contains forbidden wording')
         if not isinstance(fields.get('reviewed'), bool):
             raise ValueError(f'{key}: reviewed must be boolean')
-        if 'params' in fields and (not isinstance(fields['params'], list) or not all(isinstance(p, str) and p.strip() for p in fields['params'])):
-            raise ValueError(f'{key}: params must be a list of text')
+        if strict and 'params' not in fields:
+            raise ValueError(f'{key}: params must be present, with an empty list when unused')
+        if 'params' in fields:
+            params = fields['params']
+            if not isinstance(params, list) or not all(isinstance(p, str) and p.strip() for p in params):
+                raise ValueError(f'{key}: params must be a list of text')
+            if strict and params and not 2 <= len(params) <= 4:
+                raise ValueError(f'{key}: params must be empty or contain 2–4 items')
     result = copy.deepcopy(entries)
     for entry in result:
         fields = content.get(entry['column'] + '/' + entry['slug'])
