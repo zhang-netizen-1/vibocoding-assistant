@@ -58,7 +58,7 @@ const sample = [
  {zh:'别名',en:'Other',terms:'q',definition:''},
  {zh:'描述',en:'Other',terms:'',definition:'q'}
 ];
-assert.deepEqual(search.match(sample,'Q').map(row=>row.rank),[0,1,2,3]);
+assert.deepEqual(search.match(sample,'Q').map(row=>row.rank),[0,1,5,6]);
 assert.equal(search.normalize('Ｂｕｔｔｏｎ '),'button');
 console.log('Search matching and ranking passed');
 '''
@@ -95,8 +95,10 @@ console.log('Search matching and ranking passed');
         import re
         data=json.loads(re.search(r'id="redesign-search-index">(.*?)</script>',home,re.S)[1])
         original=json.loads((ROOT/'build/entries.json').read_text())
-        for row,entry in zip(data['entries'],original):
+        for row in data['entries']:
+            entry = next(e for e in original if e['zh'] == row['zh'] and e['en'] == row['en'])
             self.assertEqual(row['terms'],entry['terms'])
+            self.assertEqual(row['aliases'],entry.get('aliases',[]))
             self.assertIn(entry['prompt'],row['prompt'])
             for criterion in entry['acceptance']:self.assertIn(criterion,row['prompt'])
             if entry.get('prompt_secondary'):self.assertIn(entry['prompt_secondary'],row['prompt'])
@@ -130,3 +132,36 @@ console.log('Redirect scripts passed '+checked+' hashes');'''
         self.assertIn("scope.dataset.demoKey === 'text-text-morph' ? 3000 : 2400",site)
         self.assertIn('clearResources()',runtime)
         self.assertIn('body.cloneNode(true)',runtime)
+
+
+class AliasSearchTest(unittest.TestCase):
+    def test_all_seven_ranks_and_alias_labels_in_node(self):
+        code = r"""
+const assert = require('node:assert/strict');
+const search = require('./site-src/redesign/search.js');
+const rows = [
+ {zh:'末项', terms:'q'},
+ {zh:'解释', definition:'contains q'},
+ {zh:'口语包含', aliases:['prefix q suffix']},
+ {zh:'名称包含q'},
+ {zh:'英文包含', en:'prefix Q suffix'},
+ {zh:'口语', aliases:['q']},
+ {zh:'英文', en:'Other / Q'},
+ {zh:'q'}
+];
+const result = search.match(rows,' Q ');
+assert.deepEqual(result.map(row => row.rank), [0,1,2,3,3,4,5,6]);
+assert.equal(search.aliasLabel(result[2]), '也叫：q');
+assert.equal(search.aliasLabel(result[5]), '也叫：prefix q suffix');
+assert.equal(search.aliasLabel(result[0]), '');
+assert.equal(search.aliasLabel(result[1]), '');
+assert.equal(search.aliasLabel(search.match([{zh:'q',aliases:['q']}],'q')[0]),'');
+assert.equal(search.match([{zh:'a',en:'foo Q bar'}],'q')[0].rank,3);
+assert.equal(search.match([{zh:'a',en:'One / Two'}],'tWo')[0].rank,1);
+assert.deepEqual(search.match([{zh:'aq'},{zh:'bq'}],'q').map(row=>row.entry.zh),['aq','bq']);
+assert.equal(search.match(rows,'').length,0);
+"""
+        result = subprocess.run(['node','-e',code], cwd=ROOT, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        site = (ROOT/'site-src/redesign/site.js').read_text()
+        self.assertIn('escape(VibeSearch.aliasLabel(row))', site)

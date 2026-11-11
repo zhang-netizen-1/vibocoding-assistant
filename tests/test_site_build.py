@@ -224,7 +224,11 @@ class SiteBuildTest(unittest.TestCase):
             if url.fragment:
                 self.assertIn(url.fragment, parse(target).ids, entry["href"])
             self.assertTrue(entry["zh"])
-        self.assertEqual([e["prompt"] for e in entries], [e["prompt"] + ("\n\n" + e["prompt_secondary"] if e.get("prompt_secondary") else "") for e in unified])
+        for row in entries:
+            target = DIST / unquote(urlsplit(row['href']).path) / 'index.html'
+            payload = re.search(r'<pre class="sr" id="copy-prompt" hidden>(.*?)</pre>', target.read_text(), re.S)
+            self.assertEqual(row['prompt'], unescape(payload[1]))
+        self.assertEqual(list(dict.fromkeys(e['column'] for e in entries)), ['设计基础','组件','交互与动效','页面与场景','AI 实现'])
 
     def test_redesign_all_entries_and_local_routes(self):
         spec = importlib.util.spec_from_file_location('templates_test', ROOT/'site-src/redesign/templates.py')

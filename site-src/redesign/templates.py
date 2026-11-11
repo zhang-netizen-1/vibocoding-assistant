@@ -121,8 +121,10 @@ def motion_links(entry, page, entries, tax):
 
 def shell(page, title, body, entries, tax, entry=False):
     columns = {c['slug']: c for c in tax['columns']}
-    index = [dict(zh=e['zh'], en=e['en'], terms=e['terms'], definition=e['definition'], prompt=copy_payload(e),
-                  column=columns[e['column']]['name'], group=next(g['name'] for g in columns[e['column']]['groups'] if g['slug'] == e['group']), href=relative(page, entry_destination(e))) for e in entries]
+    order = list(tax['anchors'])
+    ordered = sorted(entries, key=lambda e: (columns[e['column']]['order'], next(i for i,g in enumerate(columns[e['column']]['groups']) if g['slug'] == e['group']), order.index(e['old_anchors'][0])))
+    index = [dict(aliases=e.get('aliases', []), zh=e['zh'], en=e['en'], terms=e['terms'], definition=e['definition'], prompt=copy_payload(e),
+                  column=columns[e['column']]['name'], group=next(g['name'] for g in columns[e['column']]['groups'] if g['slug'] == e['group']), href=relative(page, entry_destination(e))) for e in ordered]
     data = json.dumps(dict(entries=index, columns=[dict(name=c['name'], href=relative(page, column_destination(c['slug']))) for c in tax['columns']], examples=EXAMPLES), ensure_ascii=False, separators=(',', ':')).replace('<', '\u003c')
     selected = [e for e in entries if entry_destination(e) + 'index.html' == page] if entry else [e for e in entries if page == e['column'] + '/index.html']
     bundle_names = set()
