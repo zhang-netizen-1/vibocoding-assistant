@@ -100,8 +100,8 @@ def score_details(slug, narrative, rounds):
     rows, evidence = [], []
     for item in scores[1]["codex"]["items"]:
         number = item["item"]
-        eye = any("你判断" in indexed[rnd][agent][number]["check"] for agent, rnd in columns)
-        label = "目测·待确认" if eye else "工具"
+        eye = any("目测" in indexed[rnd][agent][number]["check"] for agent, rnd in columns)
+        label = "助手目测判定" if eye else "工具"
         title = escape(item["name"])
         cells = "".join(f'<td>{indexed[rnd][agent][number]["score"]}</td>' for agent, rnd in columns)
         rows.append(f'<tr><th scope="row">{number}. {title}<small>{label}</small></th>{cells}</tr>')

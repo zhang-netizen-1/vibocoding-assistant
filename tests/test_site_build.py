@@ -144,7 +144,7 @@ class SiteBuildTest(unittest.TestCase):
                 for data in (first, second):
                     for item in data["items"]:
                         self.assertIn(escape(item["evidence"]), page)
-            self.assertIn("目测·待确认", page)
+            self.assertIn("助手目测判定", page)
             self.assertIn("工具", page)
         time_body = re.findall(r'<tbody>(.*?)</tbody>', overview, re.S)[1]
         time_rows = re.findall(r'<tr>(.*?)</tr>', time_body, re.S)
