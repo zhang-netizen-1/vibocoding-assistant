@@ -134,3 +134,22 @@ class SampleContentTest(unittest.TestCase):
         crossfade = ' '.join(content['interactions/view-crossfade']['acceptance'])
         for term in ('400ms','平滑曲线','分段直线','叠影','冻结'):
             self.assertIn(term, crossfade)
+
+
+class ComponentsContentTest(unittest.TestCase):
+    def test_all_75_components_have_reviewable_content(self):
+        entries = MODULE.load_entries()
+        content = MODULE.load_content()
+        components = [e for e in entries if e['column'] == 'components']
+        self.assertEqual(len([key for key in content if key.startswith('components/')]),75)
+        for entry in components:
+            with self.subTest(slug=entry['slug']):
+                self.assertIs(entry['reviewed'], False)
+                self.assertTrue(entry['prompt_edit'].startswith('在当前项目中找到所有') or entry['prompt_edit'].startswith('先在当前项目中找到所有'))
+                for field in ('prompt_edit','prompt_new'):
+                    self.assertNotIn('验收', entry[field])
+                for criterion in entry['acceptance']:
+                    self.assertNotRegex(criterion, '好看|流畅|合适|自然|友好|美观')
+                if entry.get('params'):
+                    self.assertTrue(2 <= len(entry['params']) <= 4)
+        MODULE.apply_content(MODULE.load_entries(content={}), content)
