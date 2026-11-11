@@ -271,7 +271,8 @@ class SiteBuildTest(unittest.TestCase):
                 self.assertIn(criterion,unescape(payload[1]))
             self.assertEqual('id="acceptance"' in page,bool(entry['acceptance']))
             if entry.get('prompt_secondary'):
-                self.assertIn(escape(entry['prompt_secondary']),page)
+                if not entry.get('prompt_edit'):
+                    self.assertIn(escape(entry['prompt_secondary']),page)
                 self.assertEqual(page.count(' data-interactive'),2)
 
     def test_all_column_galleries_and_source_markup(self):

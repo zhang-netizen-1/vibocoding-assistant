@@ -101,7 +101,7 @@ console.log('Search matching and ranking passed');
             self.assertEqual(row['aliases'],entry.get('aliases',[]))
             self.assertIn(entry['prompt'],row['prompt'])
             for criterion in entry['acceptance']:self.assertIn(criterion,row['prompt'])
-            if entry.get('prompt_secondary'):self.assertIn(entry['prompt_secondary'],row['prompt'])
+            if entry.get('prompt_secondary') and not entry.get('prompt_edit'):self.assertIn(entry['prompt_secondary'],row['prompt'])
 
     def test_redirect_scripts_execute_for_every_frozen_hash(self):
         code=r'''const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
@@ -165,3 +165,23 @@ assert.equal(search.match(rows,'').length,0);
         self.assertEqual(result.returncode, 0, result.stderr)
         site = (ROOT/'site-src/redesign/site.js').read_text()
         self.assertIn('escape(VibeSearch.aliasLabel(row))', site)
+
+
+class SampleSearchTest(unittest.TestCase):
+    def test_three_spoken_queries_hit_correct_entry_in_top_three(self):
+        code = r"""
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const search = require('./site-src/redesign/search.js');
+const entries = JSON.parse(fs.readFileSync('build/entries.json','utf8'));
+const html = fs.readFileSync('dist/index.html','utf8');
+const index = JSON.parse(html.match(/id="redesign-search-index">(.*?)<\/script>/s)[1]).entries;
+for (const [query,slug] of [['浮起来','component-lift'],['弹出来的小黑框','tooltip'],['点了会变的按钮','button']]) {
+ const expected = entries.find(entry=>entry.slug === slug);
+ const result = search.match(index,query);
+ assert.ok(result.slice(0,3).some(row=>row.entry.zh === expected.zh),query);
+ assert.equal(search.aliasLabel(result.find(row=>row.entry.zh === expected.zh)), '也叫：'+query);
+}
+"""
+        result = subprocess.run(['node','-e',code],cwd=ROOT,text=True,capture_output=True)
+        self.assertEqual(result.returncode,0,result.stderr)

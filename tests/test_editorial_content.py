@@ -104,3 +104,33 @@ class EditorialPageTest(unittest.TestCase):
         self.assertNotIn('见使用卡', html)
         self.assertNotIn('entry-aliases', html)
         self.assertEqual(self.templates.copy_payload(entry), entry['prompt'])
+
+
+class SampleContentTest(unittest.TestCase):
+    def test_ten_samples_are_complete_and_unreviewed(self):
+        keys = ('components/button','components/input','components/tooltip','components/modal',
+                'interactions/component-lift','interactions/view-crossfade','interactions/submit',
+                'basics/grid','scenarios/settings','ai/webapp-testing')
+        content = MODULE.load_content()
+        for key in keys:
+            self.assertIn(key, content)
+            self.assertIs(content[key]['reviewed'], False)
+            for field in ('prompt_edit', 'prompt_new'):
+                self.assertNotIn('验收要求', content[key][field])
+                self.assertNotIn('边界与验收', content[key][field])
+        MODULE.apply_content(MODULE.load_entries(content={}), {key: content[key] for key in keys})
+
+    def test_benchmark_criteria_and_original_skill_install_prompt(self):
+        import json
+        content = MODULE.load_content()
+        narrative = json.loads((ROOT/'site-src/bench/data/narrative.json').read_text())
+        for name,column,slug in (('button','components','button'),('grid','basics','grid')):
+            criteria = content[column+'/'+slug]['acceptance']
+            for fix in narrative['entries'][name]['fixes']:
+                self.assertIn(fix['sentence'], criteria)
+        self.assertEqual(len(content['components/button']['acceptance']),5)
+        skill = next(e for e in MODULE.load_entries(content={}) if e['slug'] == 'webapp-testing')
+        self.assertEqual(content['ai/webapp-testing']['prompt_new'], skill['prompt'])
+        crossfade = ' '.join(content['interactions/view-crossfade']['acceptance'])
+        for term in ('400ms','平滑曲线','分段直线','叠影','冻结'):
+            self.assertIn(term, crossfade)
