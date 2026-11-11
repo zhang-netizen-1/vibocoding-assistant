@@ -56,7 +56,11 @@ def group_destination(column, group):
     return column + '/#group-' + group
 
 
-def copy_payload(entry):
+def copy_payload(entry, version='prompt_edit'):
+    if entry.get('prompt_edit'):
+        criteria = '\n'.join(f'{i}. {text}' for i,text in enumerate(entry['acceptance'], 1))
+        return (entry[version] + '\n\n验收要求：\n' + criteria +
+                f'\n\n完成后列出改了哪些文件，并说明以上 {len(entry["acceptance"])} 条各自是怎么验证的。')
     parts = [entry['prompt']]
     if entry.get('prompt_secondary'):
         parts.append(entry['prompt_secondary'])
@@ -208,6 +212,11 @@ def detail(e, entries, tax):
     definition_lines = e['definition'].splitlines()
     points = '<ul class="entry-points">' + ''.join(f'<li>{escape(line)}</li>' for line in definition_lines[1:]) + '</ul>' if len(definition_lines) > 1 else ''
     usage = ''.join(f'<section class="entry-section usage-section"><h2>{label}</h2><p>{escape(e[key])}</p></section>' for key,label in (('when_use','何时用'),('when_avoid','何时不用')) if e.get(key))
+    params = e.get('params', [])
+    if params:
+        usage += '<section class="entry-section usage-section"><h2>关键参数</h2><ul>' + ''.join(f'<li>{escape(item)}</li>' for item in params) + '</ul></section>'
+    aliases = '<p class="entry-aliases small">也叫：' + escape('、'.join(e['aliases'][:5])) + '</p>' if e.get('aliases') else ''
+    notice = f'<p class="small">共 {len(e["acceptance"])} 条验收要求，见使用卡；复制提示词时自动包含</p>' if e.get('prompt_edit') else ''
     related = ''.join(f'<a class="chip" href="{relative(page,entry_destination(other))}">{escape(other["zh"])}</a>' for other in entries if other['column'] == e['column'] and other['group'] == e['group'] and other['slug'] != e['slug'])
     criteria = ''
     if e['acceptance']:
@@ -215,7 +224,9 @@ def detail(e, entries, tax):
         criteria = f'<details class="criteria" id="acceptance"><summary>验收要求（{len(e["acceptance"])} 条）</summary><ol>{items}</ol></details>'
     bench = f'<a class="bench-badge" href="{relative(page,"bench/"+e["bench"]["slug"]+"/")}">{escape(" · ".join(agent.title() + " " + str(score) for agent,score in e["bench"]["totals"].items()))} · 测评结果 →</a>' if 'bench' in e else ''
     bench_line = f'<p class="bench-line">提示词测评：{bench}</p>' if bench else ''
-    prompt_new = f'<details class="entry-section new-section"><summary>提示词 · 新做一个</summary><pre class="prompt-text" id="new-prompt">{escape(e["prompt_new"])}</pre>{copy_button("new-prompt")}</details>' if e.get('prompt_new') else ''
+    prompt_new = ''
+    if e.get('prompt_new'):
+        prompt_new = f'<details class="entry-section new-section"><summary>新做一个</summary><pre class="prompt-text" id="new-prompt">{escape(e["prompt_new"])}</pre>{copy_button("copy-new-prompt", "复制这一版")}<pre class="sr" id="copy-new-prompt" hidden>{escape(copy_payload(e, "prompt_new"))}</pre></details>'
     use_card = f'<aside class="use-card" aria-labelledby="use-card-title"><h2 id="use-card-title">使用卡</h2>{copy_button("copy-prompt",primary=True)}{criteria}<div class="use-actions">{copy_button("entry-english","复制英文名")}<button class="copy-btn" data-copy-link>复制本页链接</button></div>{bench}</aside>'
     def demonstration(demo):
         controls = '<div class="demo-controls"><button type="button" data-demo-replay>重播</button><button type="button" data-demo-slow aria-pressed="false">慢放 0.25 倍</button><span class="reduced-note" hidden>你的系统开启了减弱动态</span></div>' if demo['kind'] == 'motion' else ''
@@ -225,12 +236,12 @@ def detail(e, entries, tax):
         demonstrations = demonstrations.replace('<div class="demo-stage">',states.render(e['slug']) + '<div class="demo-stage">',1)
     if e['demo'].get('secondary'):
         demonstrations += demonstration(e['demo']['secondary'])
-    secondary = f'<section class="entry-section prompt-box"><h2>提示词 · 第二演示</h2><pre class="prompt-text" id="secondary-prompt">{escape(e["prompt_secondary"])}</pre>{copy_button("secondary-prompt")}</section>' if e.get('prompt_secondary') else ''
+    secondary = f'<section class="entry-section prompt-box"><h2>提示词 · 第二演示</h2><pre class="prompt-text" id="secondary-prompt">{escape(e["prompt_secondary"])}</pre>{copy_button("secondary-prompt")}</section>' if e.get('prompt_secondary') and not e.get('prompt_edit') else ''
     source_link = ''
     if e['demo']['kind'] == 'skill-reference':
         links = re.findall(r'<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>', e['demo']['html'], re.S)
         source_link = '<section class="entry-section"><h2>来源</h2>' + ''.join(f'<p><a href="{escape(url)}" rel="noopener noreferrer">{text}</a></p>' for url,text in links) + '</section>'
-    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span></div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{motion_links(e,page,entries,tax)}{usage}<section class="entry-section prompt-box"><h2>提示词</h2><pre class="prompt-text" id="entry-prompt">{escape(e['prompt'])}</pre></section>{secondary}{prompt_new}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>同组相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article>{use_card}</div><div class="bottom-bar">{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
+    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span>{aliases}</div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{motion_links(e,page,entries,tax)}{usage}<section class="entry-section prompt-box"><h2>提示词</h2><pre class="prompt-text" id="entry-prompt">{escape(e['prompt'])}</pre>{notice}{prompt_new}</section>{secondary}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>同组相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article>{use_card}</div><div class="bottom-bar">{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
     return shell(page, e['zh']+' '+e['en'], body, entries, tax, entry=True)
 
 

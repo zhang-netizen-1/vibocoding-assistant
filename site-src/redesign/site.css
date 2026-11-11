@@ -52,4 +52,6 @@
 
 .result-alias { margin: 4px 0; color: var(--secondary); font-size: 13px; }
 
+.entry-aliases { flex-basis: 100%; margin: 0; color: var(--secondary); overflow-wrap: anywhere; }
+
 .result-definition { margin: 4px 0; color: var(--secondary); font-size: 14px; overflow-wrap: anywhere; }
