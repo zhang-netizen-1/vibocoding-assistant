@@ -1,4 +1,6 @@
 from html.parser import HTMLParser
+from html import escape, unescape
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 import importlib.util
 import json
@@ -6,6 +8,7 @@ import re
 import subprocess
 import sys
 import unittest
+from urllib.parse import unquote, urlsplit
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -24,9 +27,17 @@ class PageParser(HTMLParser):
         self.ids = set()
         self.links = []
         self.cards = []
+        self.references = []
+        self.images = []
+        self.demo_links = []
 
     def handle_starttag(self, tag, attrs):
         attributes = dict(attrs)
+        self.references.extend(attributes[key] for key in ("href", "src") if attributes.get(key))
+        if tag == "img":
+            self.images.append(attributes)
+        if tag == "a" and "/demos/" in attributes.get("href", ""):
+            self.demo_links.append(attributes)
         if attributes.get("id"):
             self.ids.add(attributes["id"])
         if tag == "a" and attributes.get("href"):
@@ -50,11 +61,109 @@ class SiteBuildTest(unittest.TestCase):
 
     def test_output_is_explicit_allowlist(self):
         files = {str(path.relative_to(DIST)) for path in DIST.rglob("*") if path.is_file()}
+        bench_files = {"bench/index.html", *(f"bench/{slug}/index.html" for slug in ("button", "crossfade", "grid"))}
+        bench_source = ROOT / "site-src" / "bench"
+        bench_files.update(f"bench/assets/img/{path.name}" for path in (bench_source / "img").glob("*.jpg"))
+        bench_files.update(f"bench/{path.relative_to(bench_source)}" for path in (bench_source / "demos").rglob("*.html"))
         self.assertEqual(files, {
             ".generated-site", "index.html", "ui/index.html", "motion/index.html",
             "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html",
-            "layout/index.html", "visual/index.html", "interaction/index.html", "pages/index.html", "data/index.html", "skills/index.html", "assets/site.css", "assets/theme.css", "assets/site.js", "assets/home.css", "assets/home.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg",
+            "layout/index.html", "visual/index.html", "interaction/index.html", "pages/index.html", "data/index.html", "skills/index.html", "assets/site.css", "assets/theme.css", "assets/site.js", "assets/home.css", "assets/home.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg", "assets/bench.css", *bench_files,
         })
+
+    def test_bench_pages_navigation_badges_and_local_references(self):
+        paths = [DIST / "bench" / "index.html", *(DIST / "bench" / slug / "index.html" for slug in ("button", "crossfade", "grid"))]
+        image_count = 0
+        for path in paths:
+            self.assertTrue(path.is_file(), path)
+            page = path.read_text(encoding="utf-8")
+            self.assertNotRegex(page.lower(), "dsh")
+            self.assertIn('aria-current="page">测评结果</a>', page)
+            parsed = parse(path)
+            self.assertIn("site-content", parsed.ids)
+            for ref in parsed.references:
+                url = urlsplit(ref)
+                if url.scheme or url.netloc:
+                    continue
+                target = (path.parent / unquote(url.path)).resolve() if url.path else path
+                self.assertTrue(target.is_relative_to(DIST.resolve()), (path, ref))
+                if target.is_dir():
+                    target /= "index.html"
+                self.assertTrue(target.is_file(), (path, ref))
+                if url.fragment:
+                    self.assertIn(unquote(url.fragment), parse(target).ids, (path, ref))
+            for img in parsed.images:
+                self.assertTrue(img.get("alt"))
+                self.assertEqual(img.get("loading"), "lazy")
+            image_count += len(parsed.images)
+            if path.parent.name != "bench":
+                self.assertEqual(len(parsed.demo_links), 4)
+                for link in parsed.demo_links:
+                    self.assertEqual(link.get("target"), "_blank")
+                    self.assertIn("noopener", link.get("rel", "").split())
+        self.assertEqual(image_count, 14)
+        for section in ("ui", "motion", "layout", "visual", "interaction", "pages", "data", "skills"):
+            self.assertIn("../bench/", parse(DIST / section / "index.html").links)
+        self.assertIn("./bench/", parse(DIST / "index.html").links)
+        for section, slug in (("ui", "button"), ("motion", "crossfade"), ("layout", "grid")):
+            page = (DIST / section / "index.html").read_text(encoding="utf-8")
+            self.assertIn(f'href="../bench/{slug}/">测评结果 →</a>', page)
+            self.assertEqual(page.count("测评结果 →</a>"), 1)
+            anchor = {"button": "c-button", "crossfade": "e-view-crossfade", "grid": "g-layout-grid"}[slug]
+            card = re.search(rf'<article[^>]*id="{anchor}".*?</article>', page, re.S).group()
+            self.assertIn(f'href="../bench/{slug}/">测评结果 →</a>', card)
+
+    def test_bench_preserves_source_prompts_evidence_and_totals(self):
+        source = ROOT / "site-src" / "bench" / "data"
+        overview = (DIST / "bench" / "index.html").read_text(encoding="utf-8")
+        narrative = json.loads((source / "narrative.json").read_text(encoding="utf-8"))
+        self.assertIn(escape(narrative["time_note"]), overview)
+        rounds = [json.loads((source / f"round{rnd}-results.json").read_text(encoding="utf-8")) for rnd in (1, 2)]
+        for slug in ("button", "crossfade", "grid"):
+            page = (DIST / "bench" / slug / "index.html").read_text(encoding="utf-8")
+            self.assertIn(f'href="../{narrative["entries"][slug]["site_link"]}">查看速查条目', page)
+            tbody = re.search(r'<tbody>(.*?)</tbody>', page, re.S).group(1)
+            score_rows = re.findall(r'<tr>(.*?)</tr>', tbody, re.S)
+            self.assertEqual(len(score_rows), 8)
+            for number, row in enumerate(score_rows, 1):
+                actual = [int(score) for score in re.findall(r'<td>(\d+)</td>', row)]
+                expected = [next(item["score"] for item in data["scores"][slug][agent]["items"] if item["item"] == number)
+                            for agent in ("codex", "hermes") for data in rounds]
+                self.assertEqual(actual, expected, (slug, number))
+            totals = re.search(r'<tfoot>(.*?)</tfoot>', page, re.S).group(1)
+            self.assertEqual([int(score) for score in re.findall(r'<td>(\d+) /16</td>', totals)],
+                             [data["scores"][slug][agent]["total"] for agent in ("codex", "hermes") for data in rounds])
+            prompts = re.findall(r'<pre[^>]*>(.*?)</pre>', page, re.S)
+            self.assertEqual(len(prompts), 2)
+            for rnd, prompt in enumerate(prompts, 1):
+                plain = unescape(re.sub(r'<[^>]+>', '', prompt))
+                self.assertEqual(plain, (source / f"round{rnd}-{slug}-prompt.txt").read_text(encoding="utf-8"))
+            for agent in ("codex", "hermes"):
+                first, second = (data["scores"][slug][agent] for data in rounds)
+                self.assertIn(f'{first["total"]} → {second["total"]} /16', overview)
+                for data in (first, second):
+                    for item in data["items"]:
+                        self.assertIn(escape(item["evidence"]), page)
+            self.assertIn("目测·待确认", page)
+            self.assertIn("工具", page)
+        time_body = re.findall(r'<tbody>(.*?)</tbody>', overview, re.S)[1]
+        time_rows = re.findall(r'<tr>(.*?)</tr>', time_body, re.S)
+        self.assertEqual(len(time_rows), 6)
+        for row, (slug, agent) in zip(time_rows, ((slug, agent) for slug in ("button", "crossfade", "grid") for agent in ("codex", "hermes"))):
+            actual = re.findall(r'<td>(.*?)</td>', row)
+            expected = []
+            for data in rounds:
+                wall_s = Decimal(str(data["agents_runs"][f"{slug}/{agent}"]["wall_s"]))
+                minutes, seconds = divmod(int(wall_s.quantize(Decimal("1"), rounding=ROUND_HALF_UP)), 60)
+                expected.append(f"{minutes} 分 {seconds} 秒")
+            self.assertEqual(actual, expected)
+
+    def test_bench_assets_are_copied_without_changes(self):
+        source = ROOT / "site-src" / "bench"
+        for path in (source / "img").glob("*.jpg"):
+            self.assertEqual(path.read_bytes(), (DIST / "bench" / "assets" / "img" / path.name).read_bytes())
+        for path in (source / "demos").rglob("*.html"):
+            self.assertEqual(path.read_bytes(), (DIST / "bench" / path.relative_to(source)).read_bytes())
 
     def test_site_routes_and_all_cards(self):
         home = parse(DIST / "index.html")

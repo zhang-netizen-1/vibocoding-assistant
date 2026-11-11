@@ -56,6 +56,7 @@ python3 -m http.server 4173 --directory dist
 - 首页与共用导航：编辑 `site-src/index.html`、`site-src/home.css`、`site-src/home.js` 和 `site-src/site.css`。跨类别索引由 `site-src/search_index.py` 从条目源生成；全站视觉变量和覆盖规则集中在 `site-src/theme.css`，修改前先对照 `docs/design-system.md`。
 - 其他五类速查：在 `site-src/guide_pages.py` 中维护内容和 HTML，在 `site-src/guides.css`、`site-src/guides.js` 中维护共用视觉和示例交互；视觉风格的六套风格样式在 `site-src/visual-styles.css`。
 - UI 与交互 Skills：在 `site-src/skill_catalog.py` 中维护条目和安装提示词，在 `site-src/skills.css`、`site-src/skills.js` 中维护页面样式与交互。
+- 测评结果：在 `site-src/bench/data/` 更新两轮真实分数、运行用时、原样提示词和 `narrative.json` 文案，在 `site-src/bench/img/`、`site-src/bench/demos/` 更新对比图与原始演示；运行 `python3 scripts/build_site.py`，由 `site-src/bench_pages.py` 生成 4 页报告。
 - 站点输出：`scripts/build_site.py` 使用明确的文件清单构建首页、七类速查页、Skills 页、两个跨页转场演示页及共用资源；同目录中的其他文件不会进入 `dist/`。
 
 运行构建检查：

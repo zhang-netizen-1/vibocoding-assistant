@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Button 按钮 · 组件实验室</title>
+<style>
+  :root {
+    --page:#f7f8fa; --surface:#fff; --ink:#20232d; --muted:#737988;
+    --line:#e7e9ef; --accent:#6155d9; --accent-hover:#5045c4; --accent-soft:#efedfc;
+    --danger:#c63d4d; --danger-hover:#ac2e3e; --success:#267452;
+    --radius:14px; --button-radius:8px; --focus:#a39bee;
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink); background:var(--page); font-synthesis:none;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; }
+  button,input,select { font:inherit; }
+  button { -webkit-tap-highlight-color:transparent; }
+  button:focus-visible,input:focus-visible { outline:3px solid var(--focus); outline-offset:3px; }
+  .topbar { height:76px; background:var(--surface); border-bottom:1px solid var(--line); }
+  .topbar-inner { max-width:1224px; height:100%; margin:auto; padding:0 36px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+  .brand { display:flex; align-items:center; gap:11px; font-size:15px; font-weight:700; letter-spacing:.02em; }
+  .brand-mark { width:28px; height:28px; display:grid; grid-template-columns:repeat(2,6px); grid-template-rows:repeat(2,6px); gap:3px; place-content:center; border-radius:8px; background:var(--ink); }
+  .brand-mark i { background:#fff; border-radius:1px; }
+  .brand-mark i:last-child { background:#b5abff; }
+  .topbar-meta { font-size:12px; color:var(--muted); display:flex; gap:20px; align-items:center; }
+  .status-dot { display:inline-block; width:6px; height:6px; margin-right:6px; border-radius:50%; background:#4c9974; }
+  .mono { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; }
+  main { max-width:1224px; margin:auto; padding:36px 36px 42px; }
+  .breadcrumb { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--muted); margin-bottom:27px; }
+  .breadcrumb span:last-child { color:var(--ink); }
+  .intro { display:flex; justify-content:space-between; align-items:center; gap:24px; margin-bottom:28px; }
+  .eyebrow { font-size:10px; font-weight:650; letter-spacing:.16em; color:var(--accent); margin-bottom:10px; }
+  h1 { font-size:34px; line-height:1.25; letter-spacing:-1px; margin:0 0 12px; font-weight:650; }
+  h1 span { color:#9b9eaa; font-weight:400; margin-left:9px; letter-spacing:-.8px; }
+  .intro p { font-size:13px; line-height:1.8; color:var(--muted); margin:0; }
+  .version { white-space:nowrap; display:flex; align-items:center; gap:7px; padding:7px 10px; font-size:11px; border:1px solid var(--line); border-radius:6px; background:white; color:var(--muted); }
+  .panel { border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); overflow:hidden; }
+  .workbench { display:grid; grid-template-columns:minmax(0,1fr) 310px; }
+  .preview-side { min-width:0; padding:22px 24px 0; display:flex; flex-direction:column; }
+  .section-label { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  h2 { font-size:14px; font-weight:650; margin:0; }
+  .section-label small { font-size:11px; color:var(--muted); }
+  .canvas { min-height:247px; position:relative; margin-top:19px; border:1px solid #eeeff5; border-radius:10px; background-color:#fafaff; background-image:radial-gradient(#dcdce9 .7px,transparent .7px); background-size:16px 16px; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:19px; }
+  .canvas-tag { position:absolute; top:13px; left:14px; font-size:9px; letter-spacing:.12em; color:#9a9dac; }
+  .canvas-hint { font-size:11px; color:#8b8f9e; margin:0; }
+  .preview-state { position:absolute; right:12px; bottom:12px; font-size:10px; color:#8b8f9e; background:#fff; border:1px solid var(--line); border-radius:4px; padding:4px 6px; }
+  .code-line { display:flex; align-items:center; gap:12px; min-height:66px; font-size:11px; color:#5c6172; }
+  .code-line pre { flex:1; white-space:pre-wrap; overflow-wrap:anywhere; font-size:11px; margin:0; line-height:1.7; }
+  .code-key { color:var(--accent); }
+  .config { border-left:1px solid var(--line); padding:22px 24px; }
+  .config-title { margin-bottom:24px; }
+  .field { margin-bottom:22px; }
+  .field-label { display:flex; align-items:center; justify-content:space-between; font-size:12px; font-weight:550; margin-bottom:10px; }
+  .field-label code { font-size:10px; font-weight:400; color:#9397a4; }
+  .segmented { display:flex; background:#f3f4f7; border:1px solid #eeeff3; padding:3px; border-radius:8px; gap:3px; }
+  .segment { border:0; color:#777c8c; background:transparent; border-radius:5px; padding:8px 4px; cursor:pointer; flex:1; font-size:12px; transition:background .15s,color .15s; }
+  .segment:hover { color:var(--ink); }
+  .segment[aria-pressed="true"] { color:var(--accent); background:#fff; box-shadow:0 1px 4px #24254b0c; font-weight:600; }
+  .text-input { width:100%; height:37px; padding:0 11px; border:1px solid #dfe2e9; border-radius:7px; color:var(--ink); font-size:12px; background:#fff; }
+  .switch-row { display:flex; justify-content:space-between; align-items:center; padding:11px 0; gap:10px; }
+  .switch-text { font-size:12px; }
+  .switch-text span { color:#989caa; font-size:10px; margin-left:7px; }
+  .switch { position:relative; display:block; width:30px; height:18px; flex-shrink:0; }
+  .switch input { appearance:none; -webkit-appearance:none; display:block; width:30px; height:18px; border-radius:20px; margin:0; background:#dce0e8; cursor:pointer; transition:background .18s; }
+  .switch input:checked { background:var(--accent); }
+  .switch input:before { content:""; position:absolute; width:12px; height:12px; top:3px; left:3px; border-radius:50%; background:white; box-shadow:0 1px 2px #0001; transition:transform .18s; pointer-events:none; }
+  .switch input:checked:before { transform:translateX(12px); }
+  .config-note { border-top:1px solid var(--line); margin-top:13px; padding-top:15px; font-size:11px; line-height:1.8; color:var(--muted); }
+  .btn { --bg:var(--accent); --bg-hover:var(--accent-hover); --fg:#fff; --border:transparent; appearance:none; position:relative; display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:40px; padding:9px 17px; border:1px solid var(--border); border-radius:var(--button-radius); background:var(--bg); color:var(--fg); font-size:12px; line-height:20px; font-weight:550; cursor:pointer; vertical-align:middle; white-space:nowrap; transition:background .15s,border-color .15s,box-shadow .15s,transform .1s; }
+  .btn[data-variant="secondary"] { --bg:#fff; --bg-hover:#f3f4f8; --fg:#454b5b; --border:#dce0e8; }
+  .btn[data-variant="danger"] { --bg:var(--danger); --bg-hover:var(--danger-hover); }
+  .btn:not(:disabled):hover,.btn[data-demo="hover"] { background:var(--bg-hover); }
+  .btn:not(:disabled):active { transform:translateY(1px); }
+  .btn:focus-visible,.btn[data-demo="focus"] { outline:3px solid var(--focus); outline-offset:3px; }
+  .btn:disabled { cursor:not-allowed; }
+  .btn[data-state="disabled"] { background:#edeff4; color:#a4a9b6; border-color:#e5e7ee; box-shadow:none; }
+  .btn[data-state="loading"] { opacity:.72; cursor:wait; }
+  .btn[data-state="success"] { background:#e8f5ed; color:#246b4a; border-color:#cce6d6; cursor:default; }
+  .btn svg { width:15px; height:15px; flex-shrink:0; }
+  .btn .spinner { width:14px; height:14px; border:1.7px solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin .75s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .btn-small { min-height:31px; padding:5px 10px; font-size:11px; gap:6px; }
+  .btn-quiet { --bg:transparent; --bg-hover:#f2f3f8; --fg:#7b8090; --border:transparent; }
+  .below-title { margin:30px 0 15px; display:flex; align-items:center; justify-content:space-between; gap:15px; }
+  .below-title p { margin:0; font-size:11px; color:var(--muted); }
+  .examples { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .example { padding:21px 23px; }
+  .example-heading { display:flex; gap:11px; align-items:center; margin-bottom:11px; }
+  .icon-tile { display:grid; place-items:center; width:31px; height:31px; background:var(--accent-soft); border-radius:8px; color:var(--accent); }
+  .icon-tile svg { width:16px; height:16px; }
+  h3 { margin:0; font-size:13px; font-weight:600; }
+  .example p { margin:0 0 20px; font-size:12px; line-height:1.7; color:var(--muted); }
+  .example-bottom { display:flex; align-items:center; justify-content:space-between; gap:14px; min-height:40px; }
+  .feedback { font-size:11px; color:var(--muted); line-height:1.6; }
+  .feedback.ok { color:var(--success); }
+  .feedback.error { color:var(--danger); }
+  .copy-value { font-size:10px; color:#6b7081; border-radius:5px; padding:7px 9px; background:#f6f7fa; overflow-wrap:anywhere; }
+  .state-panel { margin-top:0; padding:5px 23px 10px; overflow-x:auto; }
+  .state-table { width:100%; border-collapse:collapse; text-align:center; min-width:720px; }
+  .state-table th { color:#9095a3; font-size:10px; font-weight:500; padding:17px 12px 14px; }
+  .state-table th:first-child,.state-table td:first-child { text-align:left; width:110px; padding-left:0; }
+  .state-table td { padding:13px 12px; border-top:1px solid #f0f1f5; }
+  .state-table td:first-child { font-size:11px; color:#626878; }
+  .state-table td:first-child span { display:block; font-size:9px; color:#9ca0ae; margin-top:4px; }
+  .state-table .btn { min-width:98px; min-height:34px; padding:6px 13px; font-size:11px; }
+  .state-panel-caption { color:#9095a3; font-size:10px; padding:8px 0 5px; line-height:1.8; }
+  .event-bar { display:flex; align-items:baseline; gap:13px; padding:14px 17px; margin-top:18px; border:1px solid var(--line); border-radius:9px; background:#f1f3f7; color:#6c7282; font-size:11px; }
+  .event-bar .event-label { font-size:9px; letter-spacing:.06em; flex-shrink:0; color:#9398a5; }
+  #event-log { overflow-wrap:anywhere; }
+  footer { display:flex; align-items:center; justify-content:space-between; color:#979ca9; font-size:10px; margin-top:27px; gap:15px; line-height:1.8; }
+  kbd { font-family:inherit; font-size:9px; border:1px solid #dfe2e8; border-bottom-width:2px; border-radius:4px; padding:2px 5px; margin:0 2px; background:#fff; }
+  .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+  @media(max-width:800px) { .topbar-inner { padding:0 22px; } main { padding:26px 22px; } .workbench { grid-template-columns:minmax(0,1fr) 270px; } .config { padding:22px 18px; } .preview-side { padding:22px 18px 0; } .topbar-meta span:last-child { display:none; } .example { padding:20px; } .example-bottom { align-items:flex-start; flex-direction:column; } }
+  @media(max-width:620px) { .topbar { height:64px; } .topbar-inner { padding:0 18px; } main { padding:24px 18px; } .breadcrumb { margin-bottom:22px; } h1 { font-size:30px; } .intro { align-items:flex-start; } .version { margin-top:4px; } .version .version-extra { display:none; } .workbench { grid-template-columns:1fr; } .config { border-left:0; border-top:1px solid var(--line); } .config-title { margin-bottom:18px; } .canvas { min-height:218px; } .field { margin-bottom:18px; } .examples { grid-template-columns:1fr; gap:12px; } .example-bottom { flex-direction:row; align-items:center; } .below-title { align-items:flex-start; } .below-title p { max-width:165px; text-align:right; line-height:1.6; } .state-panel { padding-left:18px; padding-right:18px; } footer { align-items:flex-start; flex-direction:column; gap:7px; } }
+  @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important; animation-iteration-count:1!important; transition:none!important; } }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>组件实验室</div>
+    <div class="topbar-meta"><span><span class="status-dot"></span>原生构建 · 零依赖</span><span class="mono">DESIGN / DEVELOP / PLAY</span></div>
+  </div>
+</header>
+<main>
+  <nav class="breadcrumb" aria-label="面包屑"><span>组件</span><span aria-hidden="true">/</span><span>基础交互</span><span aria-hidden="true">/</span><span aria-current="page">Button</span></nav>
+  <div class="intro">
+    <div><div class="eyebrow mono">COMPONENT 001 / ACTION</div><h1>按钮 <span>Button</span></h1><p>让每一次点击，都有明确回应。统一用途、状态与交互反馈。</p></div>
+    <div class="version"><span class="status-dot"></span>可交互<span class="version-extra mono"> · v1.0</span></div>
+  </div>
+
+  <section class="panel workbench" aria-label="按钮交互实验台">
+    <div class="preview-side">
+      <div class="section-label"><h2>交互预览</h2><small>调整右侧参数，即时试用</small></div>
+      <div class="canvas">
+        <span class="canvas-tag mono">LIVE PREVIEW</span>
+        <div id="preview-mount"></div>
+        <p class="canvas-hint">试试悬停、点击，或用 Tab 聚焦</p>
+        <span id="preview-state" class="preview-state mono">state: default</span>
+      </div>
+      <div class="code-line"><pre id="config-code" class="mono"></pre><div id="copy-code-mount"></div></div>
+    </div>
+    <form class="config" id="config-form" onsubmit="return false">
+      <div class="section-label config-title"><h2>配置属性</h2><small class="mono">PROPS</small></div>
+      <div class="field">
+        <div class="field-label" id="variant-label">用途样式 <code>variant</code></div>
+        <div class="segmented" role="group" aria-labelledby="variant-label">
+          <button class="segment" type="button" data-variant="primary" aria-pressed="true">主要</button>
+          <button class="segment" type="button" data-variant="secondary" aria-pressed="false">次要</button>
+          <button class="segment" type="button" data-variant="danger" aria-pressed="false">危险</button>
+        </div>
+      </div>
+      <div class="field"><label class="field-label" for="label-input">按钮文字 <code>label</code></label><input class="text-input" id="label-input" type="text" value="立即开始" maxlength="24" autocomplete="off"></div>
+      <label class="switch-row"><span class="switch-text">禁用状态<span class="mono">disabled</span></span><span class="switch"><input id="disabled-input" type="checkbox" role="switch" aria-label="禁用状态"></span></label>
+      <label class="switch-row"><span class="switch-text">加载状态<span class="mono">loading</span></span><span class="switch"><input id="loading-input" type="checkbox" role="switch" aria-label="加载状态"></span></label>
+      <div class="config-note">主要用于关键操作，次要用于辅助操作，危险用于需谨慎的操作。禁用与加载期间均不会触发点击回调。</div>
+    </form>
+  </section>
+
+  <div class="below-title"><h2>真实交互，试一下</h2><p>不止是样式，也照顾操作的完整过程。</p></div>
+  <section class="examples" aria-label="操作演示">
+    <article class="panel example">
+      <div class="example-heading"><span class="icon-tile" id="save-icon" aria-hidden="true"></span><h3>异步操作 · 防止重复提交</h3></div>
+      <p>模拟保存需要 1.5 秒，期间自动锁定，完成后恢复。</p>
+      <div class="example-bottom"><div id="save-mount"></div><span class="feedback" id="save-feedback" role="status" aria-live="polite">尚未保存 · 可以连续点击测试</span></div>
+    </article>
+    <article class="panel example">
+      <div class="example-heading"><span class="icon-tile" id="copy-icon" aria-hidden="true"></span><h3>复制操作 · 短暂成功反馈</h3></div>
+      <p>真正写入剪贴板，成功后显示「已复制」，1.8 秒后恢复。</p>
+      <div class="example-bottom"><code class="copy-value mono" id="copy-value">Hello, Button!</code><div id="copy-mount"></div></div>
+      <div class="sr-only" id="copy-feedback" role="status" aria-live="polite"></div>
+    </article>
+  </section>
+
+  <div class="below-title"><h2>状态一览</h2><p>三种用途，共用一套交互规范。</p></div>
+  <section class="panel state-panel" aria-label="按钮状态对照">
+    <table class="state-table">
+      <thead><tr><th scope="col">用途 / 状态</th><th scope="col">默认 Default</th><th scope="col">悬停 Hover</th><th scope="col">聚焦 Focus</th><th scope="col">禁用 Disabled</th><th scope="col">加载 Loading</th></tr></thead>
+      <tbody id="states-body"></tbody>
+    </table>
+    <div class="state-panel-caption">悬停与聚焦列为固定外观示例；可操作按钮仍支持真实悬停与键盘聚焦。禁用、加载示例不可触发。</div>
+  </section>
+  <div class="event-bar"><span class="event-label mono">EVENT LOG</span><span id="event-log" role="status" aria-live="polite">等待第一次操作。所有可操作按钮都会在这里留下记录。</span></div>
+  <footer><span>一致的外观，可预期的行为。</span><span><kbd>Tab</kbd> 切换焦点 <span aria-hidden="true"> / </span><kbd>Enter</kbd> 或 <kbd>Space</kbd> 触发按钮</span></footer>
+</main>
+<div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
+<script>
+(() => {
+  'use strict';
+  const icons = {
+    arrow:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>',
+    copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>',
+    check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>',
+    save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2Z"/><path d="M7 3v6h10V3M7 21v-8h10v8"/></svg>'
+  };
+
+  /**
+   * Reusable native button. Append result.element wherever needed.
+   * createButton({ label, variant, disabled, loading, onClick, successOnComplete })
+   * onClick may return a Promise; the component locks before calling it.
+   * API: { element, setOptions(patch), getState(), destroy() }.
+   * onError receives failures; without it the shared live region reports them.
+   */
+  function createButton(options = {}) {
+    let config = {
+      label:'按钮', variant:'primary', disabled:false, loading:false, icon:null,
+      loadingLabel:'处理中…', successLabel:'已完成', successDuration:1800,
+      successOnComplete:false, onClick:null, onError:null, onStateChange:null,
+      ...options
+    };
+    let running = false, succeeded = false, disposed = false, timer = null;
+    const element = document.createElement('button');
+    element.type = 'button';
+    element.className = 'btn';
+    const icon = document.createElement('span');
+    icon.setAttribute('aria-hidden','true');
+    icon.style.display = 'contents';
+    const text = document.createElement('span');
+    element.append(icon,text);
+
+    function state() {
+      if (running || config.loading) return 'loading';
+      if (config.disabled) return 'disabled';
+      if (succeeded) return 'success';
+      return 'default';
+    }
+    function render() {
+      const current = state();
+      element.dataset.variant = ['primary','secondary','danger'].includes(config.variant) ? config.variant : 'primary';
+      element.dataset.state = current;
+      element.disabled = Boolean(config.disabled || config.loading || running || succeeded);
+      element.setAttribute('aria-busy',String(current === 'loading'));
+      text.textContent = String(current === 'loading' ? config.loadingLabel : current === 'success' ? config.successLabel : config.label);
+      // Only trusted, built-in icon strings are used; labels always use textContent.
+      icon.replaceChildren();
+      if (current === 'loading') {
+        const spinner = document.createElement('span');
+        spinner.className = 'spinner';
+        icon.append(spinner);
+      } else {
+        const key = current === 'success' ? 'check' : config.icon;
+        if (Object.prototype.hasOwnProperty.call(icons,key)) icon.innerHTML = icons[key];
+      }
+      if (typeof config.onStateChange === 'function') config.onStateChange(current);
+    }
+    async function activate(event) {
+      // Guard separately from DOM disabled: protects re-entrancy and synthetic events.
+      if (disposed || config.disabled || config.loading || running || succeeded) return;
+      running = true;
+      try {
+        const result = typeof config.onClick === 'function' ? config.onClick(event) : undefined;
+        if (result && typeof result.then === 'function') {
+          render();
+          await result;
+        }
+        if (disposed) return;
+        running = false;
+        if (config.successOnComplete) {
+          succeeded = true;
+          timer = setTimeout(() => { succeeded = false; timer = null; if (!disposed) render(); },config.successDuration);
+        }
+      } catch (error) {
+        running = false;
+        if (disposed) return;
+        if (typeof config.onError === 'function') config.onError(error);
+        else document.getElementById('announcer').textContent = '操作失败，请重试。';
+      } finally {
+        running = false;
+        if (!disposed) render();
+      }
+    }
+    element.addEventListener('click',activate);
+    render();
+    return {
+      element,
+      setOptions(patch) {
+        if (disposed) return;
+        config = {...config,...patch};
+        render();
+      },
+      getState:state,
+      destroy() {
+        disposed = true;
+        clearTimeout(timer);
+        element.removeEventListener('click',activate);
+        element.remove();
+      }
+    };
+  }
+  window.createButton = createButton;
+
+  let eventCount = 0;
+  const log = message => {
+    eventCount += 1;
+    document.getElementById('event-log').textContent = `${String(eventCount).padStart(2,'0')}  ·  ${message}`;
+  };
+  const mount = (id, component) => {
+    document.getElementById(id).append(component.element);
+    return component;
+  };
+  const delay = ms => new Promise(resolve => setTimeout(resolve,ms));
+
+  async function copyText(value) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try { await navigator.clipboard.writeText(value); return; } catch (_) { /* Try local-file / permission fallback. */ }
+    }
+    const previous = document.activeElement;
+    const selection = document.getSelection();
+    const ranges = selection ? Array.from({length:selection.rangeCount},(_,i) => selection.getRangeAt(i).cloneRange()) : [];
+    const field = document.createElement('textarea');
+    field.value = value;
+    field.setAttribute('readonly','');
+    field.setAttribute('aria-label','临时复制内容');
+    Object.assign(field.style,{position:'fixed',top:'0',left:'-9999px',opacity:'0'});
+    document.body.append(field);
+    try {
+      field.focus({preventScroll:true});
+      field.select();
+      if (!document.execCommand('copy')) throw new Error('浏览器未允许写入剪贴板');
+    } finally {
+      field.remove();
+      if (selection) { selection.removeAllRanges(); ranges.forEach(range => selection.addRange(range)); }
+      if (previous && typeof previous.focus === 'function') previous.focus({preventScroll:true});
+    }
+  }
+
+  const preview = mount('preview-mount',createButton({
+    label:'立即开始', icon:'arrow',
+    onClick:() => log(`交互预览：已触发「${document.getElementById('label-input').value.trim() || '按钮'}」`),
+    onStateChange:current => { document.getElementById('preview-state').textContent = `state: ${current}`; }
+  }));
+  preview.element.id = 'preview-button';
+  let selectedVariant = 'primary';
+  let currentSnippet = '';
+  function updatePreview() {
+    const label = document.getElementById('label-input').value.trim() || '按钮';
+    const disabled = document.getElementById('disabled-input').checked;
+    const loading = document.getElementById('loading-input').checked;
+    preview.setOptions({label, variant:selectedVariant, disabled, loading});
+    const props = [`label: ${JSON.stringify(label)}`,`variant: ${JSON.stringify(selectedVariant)}`];
+    if (disabled) props.push('disabled: true');
+    if (loading) props.push('loading: true');
+    currentSnippet = `createButton({ ${props.join(', ')} });`;
+    document.getElementById('config-code').textContent = currentSnippet;
+  }
+  document.querySelectorAll('.segment').forEach(segment => {
+    segment.addEventListener('click',() => {
+      selectedVariant = segment.dataset.variant;
+      document.querySelectorAll('.segment').forEach(item => item.setAttribute('aria-pressed',String(item === segment)));
+      updatePreview();
+    });
+  });
+  ['label-input','disabled-input','loading-input'].forEach(id => document.getElementById(id).addEventListener('input',updatePreview));
+  updatePreview();
+
+  const copyCode = mount('copy-code-mount',createButton({
+    label:'复制', variant:'secondary', icon:'copy', loadingLabel:'复制中', successLabel:'已复制', successOnComplete:true,
+    onClick:async () => { await copyText(currentSnippet); log('已复制当前按钮配置，可用 createButton() 复用。'); },
+    onError:() => log('复制失败：浏览器未允许写入剪贴板，请手动选择配置文字复制。')
+  }));
+  copyCode.element.classList.add('btn-small','btn-quiet');
+  copyCode.element.setAttribute('aria-label','复制当前按钮配置');
+  copyCode.element.id = 'copy-code-button';
+
+  document.getElementById('save-icon').innerHTML = icons.save;
+  document.getElementById('copy-icon').innerHTML = icons.copy;
+  let saveCount = 0;
+  const saveFeedback = document.getElementById('save-feedback');
+  const save = mount('save-mount',createButton({
+    label:'保存更改', icon:'save', loadingLabel:'保存中…',
+    onClick:async () => {
+      saveFeedback.className = 'feedback';
+      saveFeedback.textContent = '保存中，请稍候…';
+      log('保存开始：按钮已锁定，重复点击不会触发。');
+      await delay(1500);
+      saveCount += 1;
+      saveFeedback.className = 'feedback ok';
+      saveFeedback.textContent = `已保存 · 累计完成 ${saveCount} 次`;
+      log(`保存完成：累计 ${saveCount} 次，按钮已恢复。`);
+    }
+  }));
+  save.element.id = 'save-button';
+  const copy = mount('copy-mount',createButton({
+    label:'复制文本', variant:'secondary', icon:'copy', loadingLabel:'复制中…', successLabel:'已复制', successOnComplete:true,
+    onClick:async () => {
+      await copyText(document.getElementById('copy-value').textContent);
+      document.getElementById('copy-feedback').textContent = '已复制 Hello, Button!';
+      log('文本已写入剪贴板，1.8 秒后恢复按钮。');
+    },
+    onError:() => {
+      document.getElementById('copy-feedback').textContent = '复制失败，请手动选择文本复制。';
+      log('复制失败：请允许剪贴板访问，或手动选择 Hello, Button! 复制。');
+    }
+  }));
+  copy.element.id = 'copy-button';
+
+  const variants = [ ['primary','主要按钮','Primary'], ['secondary','次要按钮','Secondary'], ['danger','危险按钮','Danger'] ];
+  const labels = {primary:'主要操作',secondary:'次要操作',danger:'危险操作'};
+  variants.forEach(([variant,title,english]) => {
+    const row = document.createElement('tr');
+    const heading = document.createElement('td');
+    heading.textContent = title;
+    const subtitle = document.createElement('span');
+    subtitle.className = 'mono';
+    subtitle.textContent = english;
+    heading.append(subtitle);
+    row.append(heading);
+    ['default','hover','focus','disabled','loading'].forEach(state => {
+      const cell = document.createElement('td');
+      const component = createButton({
+        variant, label:labels[variant], disabled:state === 'disabled', loading:state === 'loading', loadingLabel:'处理中…',
+        onClick:() => log(`状态一览：${title} / ${state} 已触发（仅演示，不执行实际操作）。`)
+      });
+      if (state === 'hover' || state === 'focus') component.element.dataset.demo = state;
+      component.element.setAttribute('aria-label',`${title}，${{default:'默认',hover:'悬停示例',focus:'聚焦示例',disabled:'禁用',loading:'加载中'}[state]}`);
+      cell.append(component.element);
+      row.append(cell);
+    });
+    document.getElementById('states-body').append(row);
+  });
+})();
+</script>
+</body>
+</html>

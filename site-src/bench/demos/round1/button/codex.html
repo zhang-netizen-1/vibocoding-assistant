@@ -1,0 +1,1828 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>Button 按钮 · Form 组件库</title>
+    <style>
+      :root {
+        --bg: #f7f8f6;
+        --surface: #fff;
+        --ink: #222a25;
+        --muted: #6e7771;
+        --line: #e5e9e4;
+        --green: #276b49;
+        --green-hover: #1d5639;
+        --green-soft: #edf4ef;
+        --red: #bd3e3b;
+        --radius: 9px;
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--ink);
+        font-size: 14px;
+        font-synthesis: none;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button,
+      a,
+      input,
+      select {
+        -webkit-tap-highlight-color: transparent;
+      }
+      button {
+        cursor: pointer;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 3px solid #72a988;
+        outline-offset: 3px;
+      }
+      button:disabled {
+        cursor: not-allowed;
+      }
+      button {
+        touch-action: manipulation;
+      }
+      button,
+      input,
+      select {
+        max-width: 100%;
+      }
+      ::selection {
+        background: #d9ebdf;
+      }
+      .sidebar {
+        width: 220px;
+        position: fixed;
+        inset: 0 auto 0 0;
+        background: #fcfdfb;
+        border-right: 1px solid var(--line);
+        padding: 33px 22px;
+        display: flex;
+        flex-direction: column;
+        z-index: 2;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        font-family: Georgia, serif;
+        font-size: 29px;
+        letter-spacing: -1.3px;
+        font-weight: bold;
+        padding: 0 11px;
+      }
+      .brand-mark {
+        display: grid;
+        grid-template-columns: repeat(2, 8px);
+        gap: 3px;
+        transform: rotate(-8deg);
+      }
+      .brand-mark i {
+        width: 8px;
+        height: 8px;
+        background: var(--green);
+        border-radius: 2px;
+      }
+      .brand-mark i:last-child {
+        opacity: 0.4;
+      }
+      .brand small {
+        font:
+          10px "Courier New",
+          monospace;
+        letter-spacing: 0;
+        color: #858d87;
+        align-self: end;
+        margin-bottom: 5px;
+      }
+      .library-label {
+        margin: 42px 12px 15px;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        color: #8b938c;
+      }
+      .nav-title {
+        font-size: 12px;
+        font-weight: 600;
+        margin: 20px 12px 10px;
+        color: #7c857d;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 11px 13px;
+        border-radius: 7px;
+        color: #5d685f;
+        font-size: 13px;
+      }
+      .nav-link.active {
+        background: #eaf1e9;
+        color: #275f40;
+        font-weight: 600;
+      }
+      .nav-icon {
+        width: 17px;
+        height: 14px;
+        border: 1.5px solid currentColor;
+        border-radius: 4px;
+        display: inline-grid;
+        place-items: center;
+        font-size: 9px;
+      }
+      .nav-link .dot {
+        width: 5px;
+        height: 5px;
+        background: var(--green);
+        border-radius: 50%;
+        margin-left: auto;
+      }
+      .sidebar-note {
+        margin-top: auto;
+        padding: 18px 11px 0;
+        border-top: 1px solid var(--line);
+        font-size: 11px;
+        color: #7b867e;
+        line-height: 1.8;
+      }
+      .sidebar-note strong {
+        display: block;
+        color: #59695e;
+        font-weight: 500;
+      }
+      .workspace {
+        margin-left: 220px;
+      }
+      .topbar {
+        height: 73px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 48px;
+        background: #fcfdfb;
+      }
+      .breadcrumb {
+        font-size: 12px;
+        color: #859087;
+        display: flex;
+        gap: 13px;
+        align-items: center;
+      }
+      .breadcrumb strong {
+        color: #414f45;
+        font-weight: 500;
+      }
+      .topbar-right {
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        color: #728076;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        background: #679477;
+        border-radius: 50%;
+      }
+      main {
+        max-width: 1260px;
+        margin: auto;
+        padding: 43px 48px 30px;
+      }
+      .page-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .eyebrow {
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        letter-spacing: 1.8px;
+        color: #6f8072;
+        margin: 0 0 11px;
+      }
+      h1 {
+        font-size: 32px;
+        letter-spacing: -1.2px;
+        margin: 0;
+        font-weight: 600;
+        line-height: 1.35;
+      }
+      h1 span {
+        font-weight: 400;
+        font-size: 27px;
+        margin-left: 9px;
+      }
+      .intro {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.9;
+        margin: 13px 0 0;
+      }
+      .key-hint {
+        border: 1px solid #dce5dc;
+        color: #526b59;
+        border-radius: 6px;
+        padding: 7px 11px;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .key-hint span {
+        font-size: 15px;
+      }
+      .tabs {
+        display: flex;
+        gap: 28px;
+        border-bottom: 1px solid var(--line);
+        margin-top: 29px;
+      }
+      .tab {
+        background: none;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        padding: 14px 0 13px;
+        color: #808881;
+        font-size: 13px;
+      }
+      .tab[aria-selected="true"] {
+        color: var(--green);
+        border-bottom-color: var(--green);
+        font-weight: 600;
+      }
+      .tab small {
+        font:
+          10px "Courier New",
+          monospace;
+        margin-left: 6px;
+        color: #87968b;
+      }
+      .panel {
+        padding-top: 24px;
+      }
+      .demo-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--surface);
+        box-shadow: 0 3px 10px #26382a03;
+      }
+      .card-top {
+        height: 53px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 22px;
+      }
+      .card-title {
+        font-size: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-title .status-dot {
+        width: 5px;
+        height: 5px;
+      }
+      .text-button {
+        background: none;
+        border: 0;
+        padding: 6px 0;
+        color: #7b857e;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .text-button:hover {
+        color: var(--green);
+      }
+      .reset-symbol {
+        font-size: 16px;
+      }
+      .playground {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 292px;
+        min-height: 306px;
+      }
+      .preview {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        background-color: #fcfdfb;
+        background-image: radial-gradient(#d6dfd6 0.7px, transparent 0.7px);
+        background-size: 16px 16px;
+        padding: 32px;
+        align-items: center;
+        justify-content: center;
+        gap: 19px;
+        min-height: 306px;
+      }
+      .preview:before {
+        content: "PREVIEW";
+        position: absolute;
+        top: 22px;
+        left: 24px;
+        font:
+          9px "Courier New",
+          monospace;
+        letter-spacing: 1.4px;
+        color: #8a968c;
+      }
+      .preview-stage {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 50px;
+        max-width: 100%;
+        margin-top: 6px;
+      }
+      .preview-status {
+        font-size: 11px;
+        color: #78847b;
+        min-height: 18px;
+        max-width: 100%;
+        text-align: center;
+        overflow-wrap: anywhere;
+      }
+      .keyboard-tip {
+        position: absolute;
+        bottom: 21px;
+        font-size: 10px;
+        color: #8b968e;
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+      kbd {
+        font:
+          9px "Courier New",
+          monospace;
+        background: #fff;
+        border: 1px solid #e2e7e1;
+        border-bottom-width: 2px;
+        border-radius: 3px;
+        padding: 2px 4px;
+      }
+      .controls {
+        border-left: 1px solid var(--line);
+        padding: 22px 22px 17px;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        gap: 17px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .field-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: #69776d;
+      }
+      .input,
+      select {
+        width: 100%;
+        height: 34px;
+        border: 1px solid #dfe5df;
+        border-radius: 6px;
+        padding: 0 10px;
+        background: #fff;
+        color: #394a3f;
+        font-size: 12px;
+      }
+      .input:hover,
+      select:hover {
+        border-color: #9db8a5;
+      }
+      .segments {
+        display: flex;
+        padding: 3px;
+        border-radius: 6px;
+        background: #f3f5f2;
+        gap: 3px;
+      }
+      .segment {
+        flex: 1;
+        min-width: 0;
+        border: 1px solid transparent;
+        background: none;
+        color: #7a837c;
+        border-radius: 4px;
+        font-size: 11px;
+        padding: 6px 3px;
+      }
+      .segment[aria-pressed="true"] {
+        background: #fff;
+        box-shadow: 0 1px 3px #2135250a;
+        border-color: #e1e7e0;
+        color: #315f43;
+      }
+      .segment[data-variant="danger"][aria-pressed="true"] {
+        color: var(--red);
+      }
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 11px;
+        color: #69776d;
+        cursor: pointer;
+      }
+      .toggle {
+        appearance: none;
+        margin: 0;
+        width: 30px;
+        height: 18px;
+        flex: none;
+        background: #d9e0d9;
+        border-radius: 20px;
+        position: relative;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .toggle:before {
+        content: "";
+        width: 12px;
+        height: 12px;
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 0 1px 2px #0001;
+        transition: transform 0.15s;
+      }
+      .toggle:checked {
+        background: var(--green);
+      }
+      .toggle:checked:before {
+        transform: translateX(12px);
+      }
+      .code-strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        border-top: 1px solid var(--line);
+        background: #f8faf7;
+        padding: 14px 22px;
+        min-height: 48px;
+      }
+      .code-strip code {
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        color: #6f7c72;
+        overflow-wrap: anywhere;
+      }
+      .code-strip code .syntax {
+        color: #346b4b;
+      }
+      .copy-small {
+        background: transparent;
+        border: 0;
+        flex: none;
+        color: #76847a;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px;
+      }
+      .copy-small:disabled {
+        opacity: 0.55;
+      }
+      .copy-glyph {
+        display: inline-block;
+        width: 10px;
+        height: 11px;
+        border: 1px solid currentColor;
+        border-radius: 2px;
+        position: relative;
+        margin-left: 2px;
+      }
+      .copy-glyph:before {
+        content: "";
+        position: absolute;
+        left: -4px;
+        top: -4px;
+        width: 6px;
+        height: 7px;
+        border-left: 1px solid currentColor;
+        border-top: 1px solid currentColor;
+        border-radius: 2px;
+      }
+      .ui-button {
+        --button-bg: var(--green);
+        --button-hover: var(--green-hover);
+        --button-color: #fff;
+        --button-border: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        vertical-align: middle;
+        position: relative;
+        max-width: 100%;
+        min-height: 38px;
+        min-width: 104px;
+        padding: 9px 17px;
+        background: var(--button-bg);
+        color: var(--button-color);
+        border: 1px solid var(--button-border);
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+        letter-spacing: 0.1px;
+        transition:
+          background 0.16s,
+          border-color 0.16s,
+          box-shadow 0.16s,
+          transform 0.1s;
+      }
+      .ui-button .button-label {
+        overflow-wrap: anywhere;
+        min-width: 0;
+      }
+      .ui-button[data-variant="secondary"] {
+        --button-bg: #fff;
+        --button-hover: #f1f5f0;
+        --button-color: #485a4d;
+        --button-border: #dce3db;
+      }
+      .ui-button[data-variant="danger"] {
+        --button-bg: #bd3e3b;
+        --button-hover: #a6312f;
+      }
+      .ui-button:not(:disabled):hover,
+      .ui-button[data-display="hover"] {
+        background: var(--button-hover);
+        border-color: transparent;
+      }
+      .ui-button[data-variant="secondary"]:not(:disabled):hover,
+      .ui-button[data-variant="secondary"][data-display="hover"] {
+        border-color: #afc2b0;
+      }
+      .ui-button:not(:disabled):active {
+        transform: translateY(1px);
+      }
+      .ui-button:focus-visible,
+      .ui-button[data-display="focus"] {
+        outline: 3px solid #b5d2bd;
+        outline-offset: 3px;
+      }
+      .ui-button[data-variant="danger"]:focus-visible,
+      .ui-button[data-variant="danger"][data-display="focus"] {
+        outline-color: #edb7b3;
+      }
+      .ui-button:disabled {
+        opacity: 0.42;
+      }
+      .ui-button[data-state="loading"] {
+        opacity: 0.75;
+        cursor: wait;
+      }
+      .ui-button[data-state="success"] {
+        opacity: 1;
+        background: #e9f3ec;
+        border-color: #c9dfd0;
+        color: #276b49;
+        cursor: default;
+      }
+      .button-icon {
+        font-size: 15px;
+        line-height: 16px;
+        flex: none;
+      }
+      .spinner {
+        width: 13px;
+        height: 13px;
+        border: 1.5px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        display: inline-block;
+        flex: none;
+      }
+      .ui-button.small {
+        font-size: 11px;
+        min-width: 80px;
+        min-height: 33px;
+        padding: 6px 12px;
+        gap: 6px;
+      }
+      .section-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin: 29px 0 14px;
+      }
+      .section-title h2 {
+        font-size: 15px;
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: -0.2px;
+      }
+      .section-title p {
+        font-size: 11px;
+        color: #8a938c;
+        margin: 0;
+      }
+      .usage-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .usage-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 20px 21px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-height: 173px;
+      }
+      .usage-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 10px;
+      }
+      .usage-card h3 {
+        font-size: 12px;
+        font-weight: 600;
+        margin: 0;
+      }
+      .usage-type {
+        font:
+          9px "Courier New",
+          monospace;
+        letter-spacing: 0.3px;
+        color: #859186;
+      }
+      .usage-card p {
+        font-size: 11px;
+        color: #858d87;
+        line-height: 1.8;
+        margin: 9px 0 20px;
+      }
+      .usage-bottom {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: auto;
+      }
+      .usage-feedback {
+        font-size: 10px;
+        line-height: 1.7;
+        color: #76847b;
+      }
+      .danger-card .usage-type {
+        color: #a5807b;
+      }
+      .state-card {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fff;
+        overflow-x: auto;
+      }
+      .state-grid {
+        display: grid;
+        grid-template-columns: 90px repeat(6, minmax(100px, 1fr));
+        min-width: 760px;
+        align-items: center;
+        row-gap: 26px;
+        padding: 20px 15px 26px;
+        text-align: center;
+      }
+      .state-heading {
+        font-size: 10px;
+        color: #7e8a80;
+        line-height: 1.8;
+      }
+      .state-heading span {
+        display: block;
+        font:
+          9px "Courier New",
+          monospace;
+        color: #9aa39c;
+      }
+      .state-row-title {
+        text-align: left;
+        padding-left: 9px;
+        color: #657469;
+        font-size: 11px;
+      }
+      .state-grid .ui-button {
+        justify-self: center;
+      }
+      .state-note {
+        font-size: 10px;
+        color: #8a958d;
+        margin-top: 11px;
+        line-height: 1.7;
+      }
+      footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid var(--line);
+        margin-top: 28px;
+        padding-top: 19px;
+        font-size: 10px;
+        color: #8a958c;
+      }
+      footer span:last-child {
+        font-family: "Courier New", monospace;
+      }
+      .docs {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 28px;
+      }
+      .docs h2 {
+        font-size: 17px;
+        margin: 0 0 13px;
+      }
+      .docs h3 {
+        font-size: 13px;
+        margin: 25px 0 10px;
+      }
+      .docs p {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.9;
+      }
+      .docs pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font:
+          12px/1.9 "Courier New",
+          monospace;
+        background: #f5f7f3;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 19px;
+        color: #3c624a;
+      }
+      .api-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        text-align: left;
+      }
+      .api-table th,
+      .api-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+        line-height: 1.8;
+      }
+      .api-table th {
+        font-weight: 500;
+        color: #6c7d70;
+      }
+      .api-table td:first-child {
+        font-family: "Courier New", monospace;
+        color: var(--green);
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *:before {
+          transition: none !important;
+          animation: none !important;
+        }
+      }
+      @media (min-width: 1500px) {
+        main {
+          padding-top: 52px;
+        }
+        .playground {
+          min-height: 330px;
+        }
+        .preview {
+          min-height: 330px;
+        }
+        .controls {
+          padding-top: 26px;
+          gap: 20px;
+        }
+      }
+      @media (max-width: 1150px) {
+        .sidebar {
+          width: 180px;
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+        .workspace {
+          margin-left: 180px;
+        }
+        main {
+          padding: 32px 28px;
+        }
+        .topbar {
+          padding: 0 28px;
+        }
+        .playground {
+          grid-template-columns: minmax(0, 1fr) 260px;
+        }
+        .usage-card {
+          padding: 18px 16px;
+        }
+        .usage-type {
+          font-size: 8px;
+        }
+        .usage-bottom {
+          gap: 8px;
+        }
+      }
+      @media (max-width: 850px) {
+        .sidebar {
+          width: 68px;
+          padding: 26px 12px;
+        }
+        .brand {
+          padding: 0;
+          justify-content: center;
+        }
+        .brand-name,
+        .brand small,
+        .library-label,
+        .nav-title,
+        .nav-text,
+        .sidebar-note,
+        .nav-link .dot {
+          display: none;
+        }
+        .nav-link {
+          justify-content: center;
+          padding: 12px 8px;
+          margin-top: 14px;
+        }
+        .nav-link:first-of-type {
+          margin-top: 45px;
+        }
+        .workspace {
+          margin-left: 68px;
+        }
+        main {
+          padding: 30px 24px;
+        }
+        .topbar {
+          padding: 0 24px;
+          height: 63px;
+        }
+        .key-hint {
+          display: none;
+        }
+        .usage-grid {
+          gap: 10px;
+        }
+        .usage-card-head {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 5px;
+        }
+        .usage-card {
+          padding: 17px 14px;
+        }
+        .usage-card p {
+          min-height: 40px;
+        }
+        .section-title p {
+          font-size: 10px;
+        }
+      }
+      @media (max-width: 620px) {
+        .sidebar {
+          display: none;
+        }
+        .workspace {
+          margin-left: 0;
+        }
+        .topbar {
+          height: 56px;
+          padding: 0 20px;
+        }
+        .topbar-right {
+          font-size: 10px;
+        }
+        main {
+          padding: 28px 18px 24px;
+        }
+        h1 {
+          font-size: 29px;
+        }
+        h1 span {
+          font-size: 24px;
+        }
+        .intro {
+          font-size: 12px;
+          max-width: 300px;
+        }
+        .tabs {
+          margin-top: 20px;
+        }
+        .panel {
+          padding-top: 18px;
+        }
+        .playground {
+          grid-template-columns: 1fr;
+        }
+        .preview {
+          min-height: 245px;
+        }
+        .controls {
+          border-left: 0;
+          border-top: 1px solid var(--line);
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          padding: 19px;
+        }
+        .toggle-row {
+          align-self: end;
+          min-height: 34px;
+        }
+        .copy-field {
+          grid-column: 1/-1;
+        }
+        .code-strip {
+          padding: 13px 16px;
+        }
+        .code-strip code {
+          font-size: 10px;
+        }
+        .card-top {
+          padding: 0 17px;
+        }
+        .usage-grid {
+          grid-template-columns: 1fr;
+        }
+        .usage-card {
+          min-height: 145px;
+          padding: 20px;
+        }
+        .usage-card-head {
+          flex-direction: row;
+        }
+        .usage-card p {
+          min-height: 0;
+          margin-bottom: 18px;
+        }
+        .section-title {
+          gap: 12px;
+        }
+        .section-title p {
+          max-width: 150px;
+          text-align: right;
+          line-height: 1.6;
+        }
+        .usage-type {
+          font-size: 10px;
+        }
+        .docs {
+          padding: 21px;
+        }
+        .api-table {
+          font-size: 11px;
+        }
+        .api-table th,
+        .api-table td {
+          padding: 9px 5px;
+        }
+        footer {
+          font-size: 9px;
+          gap: 14px;
+        }
+        footer span:last-child {
+          text-align: right;
+        }
+        .keyboard-tip {
+          font-size: 9px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar" aria-label="组件导航">
+      <a class="brand" href="#" aria-label="Form 组件库首页"
+        ><span class="brand-mark" aria-hidden="true"
+          ><i></i><i></i><i></i><i></i></span
+        ><span class="brand-name">form.</span><small>UI</small></a
+      >
+      <div class="library-label">DESIGN SYSTEM</div>
+      <div class="nav-title">基础组件</div>
+      <a class="nav-link active" href="#button" aria-current="page"
+        ><span class="nav-icon" aria-hidden="true">↵</span
+        ><span class="nav-text">Button 按钮</span><span class="dot"></span
+      ></a>
+      <div class="nav-title">本页内容</div>
+      <a class="nav-link" href="#examples"
+        ><span class="nav-icon" aria-hidden="true">⊞</span
+        ><span class="nav-text">使用场景</span></a
+      >
+      <a class="nav-link" href="#states"
+        ><span class="nav-icon" aria-hidden="true">◌</span
+        ><span class="nav-text">状态总览</span></a
+      >
+      <div class="sidebar-note">
+        <strong>让每一次操作清晰可见。</strong>原生组件 · 独立运行
+      </div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar">
+        <nav class="breadcrumb" aria-label="面包屑">
+          <span>组件库</span><span aria-hidden="true">/</span><span>基础</span
+          ><span aria-hidden="true">/</span><strong>Button</strong>
+        </nav>
+        <div class="topbar-right">
+          <span class="status-dot" aria-hidden="true"></span>Native HTML / CSS /
+          JS
+        </div>
+      </header>
+      <main id="button">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">COMPONENTS / ACTIONS</p>
+            <h1>Button <span>按钮</span></h1>
+          </div>
+          <div class="key-hint">
+            <span aria-hidden="true">⌨</span>支持键盘操作
+          </div>
+        </div>
+        <p class="intro">
+          承载明确的行动意图，以一致的样式与反馈，让操作有迹可循。
+        </p>
+        <div class="tabs" role="tablist" aria-label="按钮组件文档">
+          <button
+            class="tab"
+            id="demo-tab"
+            role="tab"
+            aria-selected="true"
+            aria-controls="demo-panel"
+          >
+            交互演示 <small>Playground</small></button
+          ><button
+            class="tab"
+            id="api-tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="api-panel"
+            tabindex="-1"
+          >
+            使用方式 <small>API</small>
+          </button>
+        </div>
+        <section
+          class="panel"
+          id="demo-panel"
+          role="tabpanel"
+          aria-labelledby="demo-tab"
+        >
+          <div class="demo-card">
+            <div class="card-top">
+              <span class="card-title"
+                ><span class="status-dot" aria-hidden="true"></span
+                >交互试验台</span
+              ><button type="button" class="text-button" id="reset">
+                <span class="reset-symbol" aria-hidden="true">↺</span>重置配置
+              </button>
+            </div>
+            <div class="playground">
+              <div class="preview">
+                <div class="preview-stage">
+                  <button id="preview-button"></button>
+                </div>
+                <div class="preview-status" id="preview-status" role="status">
+                  点击按钮，查看操作反馈
+                </div>
+                <div class="keyboard-tip">
+                  <kbd>Tab</kbd> 聚焦 <span aria-hidden="true">·</span>
+                  <kbd>Enter</kbd> / <kbd>Space</kbd> 触发
+                </div>
+              </div>
+              <form class="controls" id="config" onsubmit="return false;">
+                <div class="field">
+                  <label class="field-label" for="button-label">按钮文字</label
+                  ><input
+                    class="input"
+                    id="button-label"
+                    value="保存更改"
+                    maxlength="30"
+                    autocomplete="off"
+                  />
+                </div>
+                <div class="field">
+                  <span class="field-label" id="variant-label">用途样式</span>
+                  <div
+                    class="segments"
+                    role="group"
+                    aria-labelledby="variant-label"
+                  >
+                    <button
+                      type="button"
+                      class="segment"
+                      data-variant="primary"
+                      aria-pressed="true"
+                    >
+                      主要</button
+                    ><button
+                      type="button"
+                      class="segment"
+                      data-variant="secondary"
+                      aria-pressed="false"
+                    >
+                      次要</button
+                    ><button
+                      type="button"
+                      class="segment"
+                      data-variant="danger"
+                      aria-pressed="false"
+                    >
+                      危险
+                    </button>
+                  </div>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="action">点击行为</label
+                  ><select id="action">
+                    <option value="click">普通点击</option>
+                    <option value="async">异步提交 · 1.5 秒</option>
+                    <option value="copy">复制文本</option>
+                  </select>
+                </div>
+                <div class="field copy-field" id="copy-field" hidden>
+                  <label class="field-label" for="copy-value">待复制文本</label
+                  ><input
+                    id="copy-value"
+                    class="input"
+                    value="让每一次操作清晰可见。"
+                  />
+                </div>
+                <label class="toggle-row" for="disabled"
+                  >禁用按钮<input
+                    type="checkbox"
+                    id="disabled"
+                    class="toggle"
+                    aria-describedby="preview-status"
+                /></label>
+              </form>
+            </div>
+            <div class="code-strip">
+              <code id="config-code"></code
+              ><button class="copy-small" id="copy-config" type="button">
+                <span class="copy-glyph" aria-hidden="true"></span
+                ><span>复制代码</span>
+              </button>
+            </div>
+          </div>
+          <div class="section-title" id="examples">
+            <h2>常用场景</h2>
+            <p>点击体验完整的操作与反馈</p>
+          </div>
+          <div class="usage-grid">
+            <article class="usage-card">
+              <div class="usage-card-head">
+                <h3>提交与保存</h3>
+                <span class="usage-type">PRIMARY</span>
+              </div>
+              <p>异步任务执行中，自动锁定操作。</p>
+              <div class="usage-bottom">
+                <button id="save-button"></button
+                ><span class="usage-feedback" id="save-feedback" role="status"
+                  >尚未提交</span
+                >
+              </div>
+            </article>
+            <article class="usage-card">
+              <div class="usage-card-head">
+                <h3>复制与分享</h3>
+                <span class="usage-type">SECONDARY</span>
+              </div>
+              <p>复制成功后，短暂确认并恢复原状。</p>
+              <div class="usage-bottom">
+                <button id="copy-button"></button
+                ><span class="usage-feedback" id="copy-feedback" role="status"
+                  >复制当前页面链接</span
+                >
+              </div>
+            </article>
+            <article class="usage-card danger-card">
+              <div class="usage-card-head">
+                <h3>危险操作</h3>
+                <span class="usage-type">DANGER</span>
+              </div>
+              <p>以醒目的颜色，明确操作的重要性。</p>
+              <div class="usage-bottom">
+                <button id="delete-button"></button
+                ><span class="usage-feedback" id="delete-feedback" role="status"
+                  >仅操作演示项目</span
+                >
+              </div>
+            </article>
+          </div>
+          <div class="section-title" id="states">
+            <h2>状态总览</h2>
+            <p>三种用途，统一的交互语言</p>
+          </div>
+          <div class="state-card">
+            <div
+              class="state-grid"
+              id="state-grid"
+              role="group"
+              aria-label="按钮状态示意"
+            ></div>
+          </div>
+          <div class="state-note">
+            悬停与聚焦列为视觉示意。实际按钮支持鼠标悬停与键盘聚焦，加载和成功示例可在上方交互体验。
+          </div>
+        </section>
+        <section
+          class="panel"
+          id="api-panel"
+          role="tabpanel"
+          aria-labelledby="api-tab"
+          hidden
+        >
+          <article class="docs">
+            <h2>一个组件，统一管理操作状态</h2>
+            <p>
+              通过全局
+              <code>Button</code>
+              类增强原生按钮，传入文字、用途样式与点击回调。回调支持
+              Promise，组件在操作完成前锁定点击。
+            </p>
+            <pre>
+// HTML
+&lt;button id="submit"&gt;&lt;/button&gt;
+
+// JavaScript
+const submit = new Button(document.querySelector('#submit'), {
+  label: '保存更改',
+  variant: 'primary',
+  loadingLabel: '保存中…',
+  successLabel: '保存成功',
+  successOnComplete: true,
+  onClick: async () => {
+    await saveChanges();
+  }
+});
+
+submit.update({ label: '发布项目', disabled: false });
+// 移除事件、清理成功计时器
+submit.destroy();</pre>
+            <h3>配置参数</h3>
+            <table class="api-table">
+              <thead>
+                <tr>
+                  <th scope="col">参数</th>
+                  <th scope="col">默认值</th>
+                  <th scope="col">说明</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>label</td>
+                  <td>按钮</td>
+                  <td>按钮文字，按纯文本渲染</td>
+                </tr>
+                <tr>
+                  <td>variant</td>
+                  <td>primary</td>
+                  <td>primary / secondary / danger</td>
+                </tr>
+                <tr>
+                  <td>onClick</td>
+                  <td>空回调</td>
+                  <td>同步或异步操作，接收点击事件</td>
+                </tr>
+                <tr>
+                  <td>disabled</td>
+                  <td>false</td>
+                  <td>禁用时阻止点击与键盘触发</td>
+                </tr>
+                <tr>
+                  <td>loadingOnClick</td>
+                  <td>true</td>
+                  <td>执行回调时显示加载状态</td>
+                </tr>
+                <tr>
+                  <td>loadingLabel</td>
+                  <td>处理中…</td>
+                  <td>加载状态的可访问文字</td>
+                </tr>
+                <tr>
+                  <td>successOnComplete</td>
+                  <td>false</td>
+                  <td>回调成功后显示成功状态</td>
+                </tr>
+                <tr>
+                  <td>successLabel</td>
+                  <td>操作成功</td>
+                  <td>成功状态文字</td>
+                </tr>
+                <tr>
+                  <td>successDuration</td>
+                  <td>1800</td>
+                  <td>成功反馈持续时间，单位毫秒</td>
+                </tr>
+                <tr>
+                  <td>icon</td>
+                  <td>空</td>
+                  <td>文字图标，作为装饰元素显示</td>
+                </tr>
+              </tbody>
+            </table>
+            <h3>反馈与可访问性</h3>
+            <p>
+              操作中使用原生 <code>disabled</code> 锁定按钮，并通过
+              <code>aria-busy</code> 标记加载状态。组件派发
+              <code>buttonstatechange</code>、<code>buttoncomplete</code> 与
+              <code>buttonerror</code>
+              事件，可用于页面状态提示。回调失败时恢复按钮，复制操作仅在剪贴板写入成功后显示“已复制”。
+            </p>
+            <p>
+              所有示例均在本地运行。保存与删除使用模拟任务，复制操作会写入系统剪贴板。
+            </p>
+          </article>
+        </section>
+        <footer>
+          <span>Form · 基础组件 / Button</span
+          ><span>Clear actions. Thoughtful feedback.</span>
+        </footer>
+      </main>
+    </div>
+    <div
+      class="sr-only"
+      id="announcement"
+      role="status"
+      aria-live="polite"
+    ></div>
+    <script>
+      "use strict";
+      /** Reusable native button. Owns loading, success, disabled and re-entry protection. */
+      class Button {
+        constructor(element, options = {}) {
+          if (!(element instanceof HTMLButtonElement))
+            throw new TypeError("Button 需要原生 button 元素");
+          this.element = element;
+          this.options = {
+            label: "按钮",
+            variant: "primary",
+            disabled: false,
+            loadingOnClick: true,
+            loadingLabel: "处理中…",
+            successLabel: "操作成功",
+            successOnComplete: false,
+            successDuration: 1800,
+            icon: "",
+            onClick: () => {},
+            ...options,
+          };
+          this.state = "idle";
+          this.pending = false;
+          this.destroyed = false;
+          this.timer = null;
+          this.handleClick = this.handleClick.bind(this);
+          element.type = "button";
+          element.classList.add("ui-button");
+          element.addEventListener("click", this.handleClick);
+          this.render();
+        }
+        update(options) {
+          if (this.destroyed) return;
+          Object.assign(this.options, options);
+          this.render();
+        }
+        render() {
+          const { element, options, state } = this;
+          element.dataset.variant = ["primary", "secondary", "danger"].includes(
+            options.variant,
+          )
+            ? options.variant
+            : "primary";
+          element.dataset.state = state;
+          element.disabled = Boolean(
+            options.disabled ||
+            this.pending ||
+            state === "loading" ||
+            state === "success" ||
+            this.destroyed,
+          );
+          element.setAttribute(
+            "aria-busy",
+            String(this.pending || state === "loading"),
+          );
+          element.replaceChildren();
+          if (state === "loading") {
+            const spinner = document.createElement("span");
+            spinner.className = "spinner";
+            spinner.setAttribute("aria-hidden", "true");
+            element.append(spinner);
+          } else if (state === "success" || options.icon) {
+            const icon = document.createElement("span");
+            icon.className = "button-icon";
+            icon.setAttribute("aria-hidden", "true");
+            icon.textContent = state === "success" ? "✓" : options.icon;
+            element.append(icon);
+          }
+          const label = document.createElement("span");
+          label.className = "button-label";
+          label.textContent =
+            state === "loading"
+              ? options.loadingLabel
+              : state === "success"
+                ? options.successLabel
+                : options.label;
+          element.append(label);
+        }
+        setState(state) {
+          this.state = state;
+          this.render();
+          this.element.dispatchEvent(
+            new CustomEvent("buttonstatechange", {
+              detail: { state },
+              bubbles: true,
+            }),
+          );
+        }
+        async handleClick(event) {
+          if (
+            this.destroyed ||
+            this.options.disabled ||
+            this.pending ||
+            this.state !== "idle"
+          )
+            return;
+          const operation = { ...this.options };
+          this.pending = true;
+          this.setState(operation.loadingOnClick ? "loading" : "idle");
+          try {
+            await operation.onClick(event);
+            if (this.destroyed) return;
+            this.pending = false;
+            this.setState(operation.successOnComplete ? "success" : "idle");
+            if (operation.successOnComplete) {
+              this.timer = setTimeout(
+                () => {
+                  this.timer = null;
+                  if (!this.destroyed) this.setState("idle");
+                },
+                Math.max(0, Number(operation.successDuration) || 0),
+              );
+            }
+            this.element.dispatchEvent(
+              new CustomEvent("buttoncomplete", { bubbles: true }),
+            );
+          } catch (error) {
+            if (this.destroyed) return;
+            this.pending = false;
+            this.setState("idle");
+            this.element.dispatchEvent(
+              new CustomEvent("buttonerror", {
+                detail: { error },
+                bubbles: true,
+              }),
+            );
+          }
+        }
+        destroy() {
+          this.destroyed = true;
+          clearTimeout(this.timer);
+          this.element.removeEventListener("click", this.handleClick);
+          this.render();
+        }
+      }
+      window.Button = Button;
+      const $ = (selector) => document.querySelector(selector);
+      const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      async function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          try {
+            await navigator.clipboard.writeText(text);
+            return;
+          } catch (_) {
+            /* Fall back for file URLs and browsers denying Clipboard API. */
+          }
+        }
+        const previous = document.activeElement;
+        const field = document.createElement("textarea");
+        field.value = text;
+        field.setAttribute("aria-label", "待复制内容");
+        field.style.cssText = "position:fixed;top:0;left:-9999px;";
+        document.body.append(field);
+        field.select();
+        let copied = false;
+        try {
+          copied = document.execCommand("copy");
+        } finally {
+          field.remove();
+          if (previous instanceof HTMLElement)
+            previous.focus({ preventScroll: true });
+        }
+        if (!copied)
+          throw new Error("浏览器未允许复制，请检查剪贴板权限后重试。");
+      }
+      let clickCount = 0;
+      let configCode = "";
+      const preview = new Button($("#preview-button"), {
+        label: "保存更改",
+        loadingOnClick: false,
+      });
+      function syncConfig() {
+        const action = $("#action").value;
+        const label = $("#button-label").value.trim() || "保存更改";
+        const variant = $('.segment[aria-pressed="true"]').dataset.variant;
+        const disabled = $("#disabled").checked;
+        $("#copy-field").hidden = action !== "copy";
+        preview.update({
+          label,
+          variant,
+          disabled,
+          loadingOnClick: action !== "click",
+          loadingLabel: action === "copy" ? "复制中…" : "提交中…",
+          successOnComplete: action !== "click",
+          successLabel: action === "copy" ? "已复制" : "提交成功",
+          onClick: async () => {
+            if (action === "copy") {
+              const value = $("#copy-value").value;
+              await copyText(value);
+              $("#preview-status").textContent = "文本已复制到剪贴板";
+            } else if (action === "async") {
+              $("#preview-status").textContent =
+                "正在提交，操作期间已锁定按钮…";
+              await delay(1500);
+              $("#preview-status").textContent =
+                "提交完成，按钮将在 1.8 秒后恢复";
+            } else {
+              clickCount += 1;
+              $("#preview-status").textContent =
+                `点击回调已触发 ${clickCount} 次`;
+            }
+          },
+        });
+        if (!preview.pending && preview.state !== "success")
+          $("#preview-status").textContent = disabled
+            ? "按钮已禁用，无法触发操作"
+            : "点击按钮，查看操作反馈";
+        const handler =
+          action === "copy"
+            ? "() => copyText(text)"
+            : action === "async"
+              ? "async () => { await submit(); }"
+              : "() => { /* 点击行为 */ }";
+        configCode = `new Button(element, { label: ${JSON.stringify(label)}, variant: ${JSON.stringify(variant)}, disabled: ${disabled}, loadingOnClick: ${action !== "click"}, successOnComplete: ${action !== "click"}, onClick: ${handler} });`;
+        $("#config-code").textContent =
+          `Button({ label: ${JSON.stringify(label)}, variant: ${JSON.stringify(variant)}${disabled ? ", disabled: true" : ""} })`;
+      }
+      $("#button-label").addEventListener("input", syncConfig);
+      $("#action").addEventListener("change", syncConfig);
+      $("#disabled").addEventListener("change", syncConfig);
+      for (const segment of document.querySelectorAll(".segment")) {
+        segment.addEventListener("click", () => {
+          document
+            .querySelectorAll(".segment")
+            .forEach((item) =>
+              item.setAttribute("aria-pressed", String(item === segment)),
+            );
+          syncConfig();
+        });
+      }
+      $("#reset").addEventListener("click", () => {
+        $("#config").reset();
+        document
+          .querySelectorAll(".segment")
+          .forEach((item) =>
+            item.setAttribute(
+              "aria-pressed",
+              String(item.dataset.variant === "primary"),
+            ),
+          );
+        clickCount = 0;
+        syncConfig();
+      });
+      syncConfig();
+      new Button($("#copy-config"), {
+        label: "复制代码",
+        icon: "⧉",
+        loadingLabel: "复制中…",
+        successLabel: "已复制",
+        successOnComplete: true,
+        onClick: () => copyText(configCode),
+      });
+      $("#copy-config").classList.remove("ui-button");
+      let saveCount = 0;
+      new Button($("#save-button"), {
+        label: "保存更改",
+        icon: "↑",
+        loadingLabel: "保存中…",
+        successLabel: "保存成功",
+        successOnComplete: true,
+        onClick: async () => {
+          $("#save-feedback").textContent = "正在保存…";
+          await delay(1500);
+          saveCount += 1;
+          $("#save-feedback").textContent = `已完成 ${saveCount} 次保存`;
+        },
+      });
+      new Button($("#copy-button"), {
+        label: "复制链接",
+        variant: "secondary",
+        icon: "⧉",
+        loadingLabel: "复制中…",
+        successLabel: "已复制",
+        successOnComplete: true,
+        onClick: async () => {
+          await copyText(window.location.href);
+          $("#copy-feedback").textContent = "页面链接已复制";
+        },
+      });
+      let deleted = false;
+      const deleteButton = new Button($("#delete-button"), {
+        label: "删除项目",
+        variant: "danger",
+        icon: "×",
+        loadingLabel: "删除中…",
+        onClick: async () => {
+          if (deleted) {
+            deleted = false;
+            deleteButton.update({
+              label: "删除项目",
+              variant: "danger",
+              icon: "×",
+              loadingLabel: "删除中…",
+            });
+            $("#delete-feedback").textContent = "演示项目已恢复";
+            return;
+          }
+          $("#delete-feedback").textContent = "正在删除演示项目…";
+          await delay(1000);
+          deleted = true;
+          deleteButton.update({
+            label: "恢复项目",
+            variant: "secondary",
+            icon: "↺",
+            loadingLabel: "恢复中…",
+          });
+          $("#delete-feedback").textContent = "已删除，可恢复";
+        },
+      });
+      const grid = $("#state-grid");
+      const headings = [
+        ["用途", "VARIANT"],
+        ["默认", "Default"],
+        ["悬停", "Hover"],
+        ["聚焦", "Focus"],
+        ["禁用", "Disabled"],
+        ["加载", "Loading"],
+        ["成功", "Success"],
+      ];
+      for (const [name, english] of headings) {
+        const heading = document.createElement("div");
+        heading.className = "state-heading";
+        heading.append(document.createTextNode(name));
+        const sub = document.createElement("span");
+        sub.textContent = english;
+        heading.append(sub);
+        grid.append(heading);
+      }
+      for (const [variant, title] of [
+        ["primary", "主要按钮"],
+        ["secondary", "次要按钮"],
+        ["danger", "危险按钮"],
+      ]) {
+        const rowTitle = document.createElement("div");
+        rowTitle.className = "state-row-title";
+        rowTitle.textContent = title;
+        grid.append(rowTitle);
+        for (const state of [
+          "default",
+          "hover",
+          "focus",
+          "disabled",
+          "loading",
+          "success",
+        ]) {
+          const element = document.createElement("button");
+          element.className = "small";
+          element.tabIndex = -1;
+          element.setAttribute(
+            "aria-label",
+            `${title}，${headings[["default", "hover", "focus", "disabled", "loading", "success"].indexOf(state) + 1][0]}状态示意`,
+          );
+          const button = new Button(element, {
+            label: "按钮",
+            variant,
+            disabled: state === "disabled",
+          });
+          element.dataset.display = state;
+          // Preview specimens remain inert while retaining their native button appearance.
+          element.inert = true;
+          if (state === "loading" || state === "success")
+            button.setState(state);
+          grid.append(element);
+        }
+      }
+      const tabs = [...document.querySelectorAll('[role="tab"]')];
+      function activateTab(tab, focus = false) {
+        tabs.forEach((item) => {
+          const selected = item === tab;
+          item.setAttribute("aria-selected", String(selected));
+          item.tabIndex = selected ? 0 : -1;
+          document.getElementById(item.getAttribute("aria-controls")).hidden =
+            !selected;
+        });
+        if (focus) tab.focus();
+      }
+      tabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => activateTab(tab));
+        tab.addEventListener("keydown", (event) => {
+          const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+          if (!keys.includes(event.key)) return;
+          event.preventDefault();
+          const next =
+            event.key === "Home"
+              ? 0
+              : event.key === "End"
+                ? tabs.length - 1
+                : (index +
+                    (event.key === "ArrowRight" ? 1 : -1) +
+                    tabs.length) %
+                  tabs.length;
+          activateTab(tabs[next], true);
+        });
+      });
+      document
+        .querySelectorAll(".sidebar a")
+        .forEach((link) =>
+          link.addEventListener("click", () => activateTab($("#demo-tab"))),
+        );
+      document.addEventListener("buttonerror", (event) => {
+        const message = event.detail.error?.message || "操作失败，请重试。";
+        const feedback = event.target
+          .closest(".usage-bottom")
+          ?.querySelector('[role="status"]');
+        if (feedback) feedback.textContent = message;
+        else if (event.target.id === "preview-button")
+          $("#preview-status").textContent = message;
+        $("#announcement").textContent = message;
+      });
+      document.addEventListener("buttoncomplete", (event) => {
+        if (event.target.id === "copy-config")
+          $("#announcement").textContent = "配置代码已复制到剪贴板";
+      });
+    </script>
+  </body>
+</html>

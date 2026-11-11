@@ -1,0 +1,1629 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>Button 按钮 · Forma 设计系统</title>
+  <style>
+    /* 所有颜色、圆角与空间尺寸均从此处定义，组件可按用途覆盖语义令牌。 */
+
+    :root {
+      --canvas: #f7f8fa;
+      --surface: #ffffff;
+      --sidebar: #fcfcfd;
+      --surface-soft: #f4f6f8;
+      --surface-green: #edf5f1;
+      --surface-code: #f8faf9;
+      --text: #1e2825;
+      --text-secondary: #56625d;
+      --text-muted: #68726e;
+      --line: #e6eae8;
+      --line-strong: #cbd3ce;
+      --grid-dot: #d8dfdb;
+      --accent: #27634d;
+      --accent-hover: #1e513e;
+      --accent-active: #103a2a;
+      --accent-soft: #e8f2ec;
+      --on-accent: #ffffff;
+      --secondary: #ffffff;
+      --secondary-hover: #eaf0ed;
+      --secondary-active: #d2dfd7;
+      --secondary-text: #37463e;
+      --secondary-border: #bcc9c0;
+      --danger: #b43c3e;
+      --danger-hover: #9b2c30;
+      --danger-active: #792025;
+      --on-danger: #ffffff;
+      --disabled-bg: #ecefed;
+      --disabled-text: #77817b;
+      --disabled-border: #e0e5e1;
+      --success-bg: #e5f2e9;
+      --success-text: #24623d;
+      --success-border: #b5d3bf;
+      --error-bg: #fff0ef;
+      --error-text: #972a2d;
+      --focus-ring: #27634d;
+      --focus-gap: #ffffff;
+      --system-focus: Highlight;
+      --shadow-color: #142a2010;
+      --transparent: transparent;
+      --space-0: 0;
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 20px;
+      --space-6: 24px;
+      --space-7: 28px;
+      --space-8: 32px;
+      --space-9: 36px;
+      --space-10: 40px;
+      --space-12: 48px;
+      --space-14: 56px;
+      --space-16: 64px;
+      --radius-sm: 5px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+      --radius-full: 999px;
+      --border-width: 1px;
+      --border-heavy: 2px;
+      --focus-width: 3px;
+      --focus-offset: 3px;
+      --sidebar-width: 232px;
+      --content-max: 1112px;
+      --control-width: 292px;
+      --button-height: 42px;
+      --button-min: 112px;
+      --button-small-height: 36px;
+      --button-small-min: 92px;
+      --icon-size: 16px;
+      --icon-large: 20px;
+      --spinner-width: 2px;
+      --switch-width: 32px;
+      --switch-height: 20px;
+      --switch-knob: 14px;
+      --switch-inset: 3px;
+      --switch-travel: 12px;
+      --preview-height: 320px;
+      --grid-size: 18px;
+      --dot-size: 0.8px;
+      --matrix-min: 780px;
+      --matrix-label-width: 130px;
+      --font-body: "DM Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --font-xs: 11px;
+      --font-sm: 12px;
+      --font-base: 13px;
+      --font-md: 14px;
+      --font-lg: 16px;
+      --font-xl: 20px;
+      --font-title: 36px;
+      --font-title-cn: 28px;
+      --tracking-brand: -.7px;
+      --tracking-caption: .8px;
+      --tracking-eyebrow: 1.2px;
+      --tracking-title: -1.4px;
+      --tracking-title-cn: -1px;
+      --tracking-heading: -.3px;
+      --tracking-footer: .3px;
+      --line-body: 1.6;
+      --duration: 160ms;
+      --spin-duration: 850ms;
+      --ease: cubic-bezier(.2, .7, .2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: var(--space-8);
+    }
+
+    body {
+      margin: var(--space-0);
+      background: var(--canvas);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: var(--font-md);
+      line-height: var(--line-body);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button, a, input, select {
+      -webkit-tap-highlight-color: var(--transparent);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    svg {
+      width: var(--icon-size);
+      height: var(--icon-size);
+      flex-shrink: 0;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    :where(a, button, input, select, summary, [tabindex]):focus-visible {
+      outline: var(--focus-width) solid var(--focus-ring);
+      outline-offset: var(--focus-offset);
+    }
+
+    .svg-library {
+      position: absolute;
+      width: var(--space-0);
+      height: var(--space-0);
+      overflow: hidden;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: var(--border-width);
+      height: var(--border-width);
+      padding: var(--space-0);
+      margin: calc(-1 * var(--border-width));
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: var(--space-0);
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 10;
+      top: var(--space-3);
+      left: var(--space-3);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      transform: translateY(-200%);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .sidebar {
+      position: fixed;
+      inset: var(--space-0) auto var(--space-0) var(--space-0);
+      width: var(--sidebar-width);
+      background: var(--sidebar);
+      border-right: var(--border-width) solid var(--line);
+      padding: var(--space-8) var(--space-5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-0) var(--space-3);
+    }
+
+    .brand-mark {
+      width: var(--space-8);
+      height: var(--space-8);
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius-md);
+      color: var(--on-accent);
+      background: var(--accent);
+    }
+
+    .brand-mark svg {
+      width: var(--icon-large);
+      height: var(--icon-large);
+      stroke-width: 2;
+    }
+
+    .brand-name {
+      font-size: var(--font-xl);
+      font-weight: 700;
+      letter-spacing: var(--tracking-brand);
+      line-height: 1.2;
+    }
+
+    .brand-caption {
+      font-size: var(--font-xs);
+      color: var(--text-muted);
+      letter-spacing: var(--tracking-caption);
+      margin-top: var(--space-1);
+    }
+
+    .library-label {
+      display: flex;
+      justify-content: space-between;
+      margin: var(--space-10) var(--space-3) var(--space-3);
+      color: var(--text-muted);
+      font-size: var(--font-sm);
+    }
+
+    .nav-group {
+      display: grid;
+      gap: var(--space-1);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: var(--font-base);
+    }
+
+    .nav-item:hover {
+      background: var(--surface-soft);
+    }
+
+    .nav-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .nav-dot {
+      width: var(--space-1);
+      height: var(--space-1);
+      border-radius: var(--radius-full);
+      background: currentColor;
+      margin-left: auto;
+    }
+
+    .nav-item small {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: var(--font-xs);
+    }
+
+    .sidebar-note {
+      margin-top: auto;
+      padding: var(--space-4) var(--space-3) var(--space-0);
+      border-top: var(--border-width) solid var(--line);
+      color: var(--text-muted);
+      font-size: var(--font-xs);
+    }
+
+    .version {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--text-secondary);
+      font-size: var(--font-sm);
+      margin-bottom: var(--space-2);
+    }
+
+    .status-dot {
+      width: var(--space-2);
+      height: var(--space-2);
+      border-radius: var(--radius-full);
+      background: var(--accent);
+    }
+
+    .main {
+      margin-left: var(--sidebar-width);
+    }
+
+    .topbar {
+      height: var(--space-16);
+      background: var(--surface);
+      border-bottom: var(--border-width) solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      padding: var(--space-0) var(--space-10);
+    }
+
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: var(--font-sm);
+      color: var(--text-muted);
+    }
+
+    .breadcrumbs svg {
+      width: var(--space-3);
+      height: var(--space-3);
+    }
+
+    .breadcrumbs strong {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .topbar-end {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .platform {
+      color: var(--text-muted);
+      font-size: var(--font-xs);
+      font-family: var(--font-mono);
+    }
+
+    .icon-button {
+      width: var(--space-8);
+      height: var(--space-8);
+      display: inline-grid;
+      place-items: center;
+      border: var(--border-width) solid var(--line);
+      background: var(--surface);
+      color: var(--text-secondary);
+      border-radius: var(--radius-md);
+    }
+
+    .icon-button:hover {
+      background: var(--surface-soft);
+    }
+
+    .content {
+      max-width: var(--content-max);
+      margin: var(--space-0) auto;
+      padding: var(--space-10) var(--space-10) var(--space-6);
+    }
+
+    .page-header {
+      margin-bottom: var(--space-8);
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: var(--font-xs);
+      letter-spacing: var(--tracking-eyebrow);
+      margin-bottom: var(--space-3);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    h1, h2, h3, p {
+      margin: var(--space-0);
+    }
+
+    h1 {
+      font-size: var(--font-title);
+      letter-spacing: var(--tracking-title);
+      line-height: 1.25;
+      font-weight: 650;
+    }
+
+    h1 span {
+      color: var(--text-muted);
+      font-weight: 400;
+      font-size: var(--font-title-cn);
+      letter-spacing: var(--tracking-title-cn);
+      margin-left: var(--space-2);
+    }
+
+    .stable-badge {
+      color: var(--accent);
+      border: var(--border-width) solid var(--success-border);
+      background: var(--surface-green);
+      padding: var(--space-0) var(--space-2);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-xs);
+    }
+
+    .page-description {
+      color: var(--text-secondary);
+      font-size: var(--font-base);
+      margin-top: var(--space-4);
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    h2 {
+      font-size: var(--font-lg);
+      font-weight: 600;
+      letter-spacing: var(--tracking-heading);
+    }
+
+    .section-meta {
+      font-family: var(--font-mono);
+      font-size: var(--font-xs);
+      color: var(--text-muted);
+    }
+
+    .panel {
+      background: var(--surface);
+      border: var(--border-width) solid var(--line);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--space-0) var(--space-1) var(--space-4) var(--shadow-color);
+    }
+
+    .playground {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) var(--control-width);
+    }
+
+    .preview {
+      position: relative;
+      min-height: var(--preview-height);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-12) var(--space-8);
+      background-color: var(--surface);
+      background-image: radial-gradient(var(--grid-dot) var(--dot-size), var(--transparent) var(--dot-size));
+      background-size: var(--grid-size) var(--grid-size);
+    }
+
+    .preview-tag {
+      position: absolute;
+      top: var(--space-5);
+      left: var(--space-6);
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: var(--font-xs);
+    }
+
+    .preview-center {
+      max-width: 100%;
+      text-align: center;
+      display: grid;
+      justify-items: center;
+      gap: var(--space-5);
+    }
+
+    .state-caption {
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      font-size: var(--font-xs);
+    }
+
+    .preview-hint {
+      position: absolute;
+      bottom: var(--space-5);
+      left: var(--space-6);
+      right: var(--space-6);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: var(--font-xs);
+    }
+
+    kbd {
+      font: inherit;
+      padding: var(--space-0) var(--space-1);
+      border: var(--border-width) solid var(--line-strong);
+      border-bottom-width: var(--border-heavy);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+    }
+
+    .controls {
+      border-left: var(--border-width) solid var(--line);
+      padding: var(--space-6);
+    }
+
+    .controls-heading {
+      color: var(--text-secondary);
+      font-size: var(--font-sm);
+      font-weight: 600;
+      margin-bottom: var(--space-5);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .field {
+      margin-bottom: var(--space-4);
+    }
+
+    .field-label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: var(--font-sm);
+      margin-bottom: var(--space-2);
+    }
+
+    .text-input, .select-input {
+      width: 100%;
+      height: var(--space-9);
+      color: var(--text);
+      background: var(--surface);
+      padding: var(--space-0) var(--space-3);
+      border: var(--border-width) solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      font-size: var(--font-sm);
+    }
+
+    .text-input:hover, .select-input:hover {
+      border-color: var(--text-muted);
+    }
+
+    .variant-options {
+      padding: var(--space-1);
+      background: var(--surface-soft);
+      border-radius: var(--radius-md);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-1);
+    }
+
+    .variant-option {
+      position: relative;
+      text-align: center;
+      font-size: var(--font-sm);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .variant-option input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      inset: var(--space-0);
+      margin: var(--space-0);
+      cursor: pointer;
+    }
+
+    .variant-option span {
+      display: block;
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+      border: var(--border-width) solid var(--transparent);
+    }
+
+    .variant-option input:checked + span {
+      background: var(--surface);
+      border-color: var(--line);
+      color: var(--accent);
+      font-weight: 600;
+      box-shadow: var(--space-0) var(--border-width) var(--space-1) var(--shadow-color);
+    }
+
+    .variant-option input:focus-visible {
+      outline: none;
+    }
+
+    .variant-option input:focus-visible + span {
+      outline: var(--focus-width) solid var(--focus-ring);
+      outline-offset: var(--focus-offset);
+    }
+
+    .switches {
+      border-top: var(--border-width) solid var(--line);
+      padding-top: var(--space-4);
+      display: grid;
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+    }
+
+    .switch-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      color: var(--text-secondary);
+      font-size: var(--font-sm);
+      cursor: pointer;
+    }
+
+    .switch {
+      position: relative;
+      width: var(--switch-width);
+      height: var(--switch-height);
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      margin: var(--space-0);
+      inset: var(--space-0);
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .switch-track {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: var(--line-strong);
+      border-radius: var(--radius-full);
+      transition: background-color var(--duration);
+      pointer-events: none;
+    }
+
+    .switch-track::after {
+      content: "";
+      position: absolute;
+      top: var(--switch-inset);
+      left: var(--switch-inset);
+      width: var(--switch-knob);
+      height: var(--switch-knob);
+      background: var(--surface);
+      border-radius: var(--radius-full);
+      transition: transform var(--duration) var(--ease);
+    }
+
+    .switch input:checked + .switch-track {
+      background: var(--accent);
+    }
+
+    .switch input:checked + .switch-track::after {
+      transform: translateX(var(--switch-travel));
+    }
+
+    .switch input:focus-visible + .switch-track {
+      outline: var(--focus-width) solid var(--focus-ring);
+      outline-offset: var(--focus-offset);
+    }
+
+    .eventbar {
+      grid-column: 1 / -1;
+      min-height: var(--space-12);
+      padding: var(--space-3) var(--space-6);
+      border-top: var(--border-width) solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      color: var(--text-secondary);
+      font-size: var(--font-xs);
+    }
+
+    .event-message {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-width: 0;
+      flex: 1;
+    }
+
+    .event-message svg {
+      color: var(--accent);
+    }
+
+    .event-message > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .event-count {
+      white-space: nowrap;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .event-count strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .section {
+      margin-top: var(--space-8);
+    }
+
+    .matrix-scroll {
+      overflow-x: auto;
+      padding: var(--space-2);
+    }
+
+    .matrix {
+      width: 100%;
+      min-width: var(--matrix-min);
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    .matrix th, .matrix td {
+      text-align: center;
+      padding: var(--space-4) var(--space-2);
+    }
+
+    .matrix thead th {
+      font-weight: 400;
+      font-size: var(--font-xs);
+      color: var(--text-muted);
+      padding-top: var(--space-3);
+      padding-bottom: var(--space-3);
+    }
+
+    .matrix th:first-child {
+      width: var(--matrix-label-width);
+      text-align: left;
+      padding-left: var(--space-4);
+    }
+
+    .matrix tbody tr {
+      border-top: var(--border-width) solid var(--line);
+    }
+
+    .row-name {
+      font-size: var(--font-sm);
+      font-weight: 500;
+      display: block;
+    }
+
+    .row-code {
+      font-family: var(--font-mono);
+      font-size: var(--font-xs);
+      font-weight: 400;
+      color: var(--text-muted);
+      display: block;
+      margin-top: var(--space-1);
+    }
+
+    .matrix-note {
+      font-size: var(--font-xs);
+      color: var(--text-muted);
+      margin-top: var(--space-3);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .copy-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-8);
+      padding: var(--space-6);
+    }
+
+    .copy-description {
+      flex: 1;
+    }
+
+    h3 {
+      font-size: var(--font-md);
+      font-weight: 600;
+      margin-bottom: var(--space-1);
+    }
+
+    .copy-description p {
+      color: var(--text-muted);
+      font-size: var(--font-sm);
+    }
+
+    .copy-field {
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+      background: var(--surface-soft);
+      padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+      border: var(--border-width) solid var(--line);
+      border-radius: var(--radius-md);
+    }
+
+    .copy-value {
+      font-family: var(--font-mono);
+      font-size: var(--font-sm);
+      color: var(--text-secondary);
+      white-space: nowrap;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .copy-field > div {
+      flex-shrink: 0;
+    }
+
+    .feedback-line {
+      color: var(--text-muted);
+      font-size: var(--font-xs);
+      margin-top: var(--space-3);
+      block-size: var(--space-10);
+      overflow: auto;
+    }
+
+    .source-panel {
+      background: var(--surface-code);
+      padding: var(--space-0) var(--space-6);
+    }
+
+    .source-panel summary {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+      cursor: pointer;
+      padding: var(--space-4) var(--space-0);
+      font-size: var(--font-sm);
+      color: var(--text-secondary);
+      list-style: none;
+    }
+
+    .source-panel summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .source-panel summary::after {
+      content: "+";
+      margin-left: auto;
+      font-size: var(--font-lg);
+    }
+
+    .source-panel[open] summary::after {
+      content: "−";
+    }
+
+    .source-panel pre {
+      margin: var(--space-0);
+      padding: var(--space-4) var(--space-0) var(--space-6);
+      border-top: var(--border-width) solid var(--line);
+      overflow: auto;
+      color: var(--secondary-text);
+      font: var(--font-sm)/1.9 var(--font-mono);
+    }
+
+    .code-comment {
+      color: var(--text-muted);
+    }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      border-top: var(--border-width) solid var(--line);
+      margin-top: var(--space-8);
+      padding-top: var(--space-5);
+      color: var(--text-muted);
+      font-size: var(--font-xs);
+    }
+
+    .footer-brand {
+      font-weight: 600;
+      letter-spacing: var(--tracking-footer);
+    }
+
+    /* 可复用 Button。四层文字重叠参与布局，状态只改变可见性。 */
+
+    .button {
+      --button-bg: var(--accent);
+      --button-hover-bg: var(--accent-hover);
+      --button-active-bg: var(--accent-active);
+      --button-fg: var(--on-accent);
+      --button-border: var(--transparent);
+      appearance: none;
+      display: inline-grid;
+      grid-template-areas: "content";
+      align-items: center;
+      justify-items: center;
+      min-inline-size: var(--button-min);
+      max-inline-size: 100%;
+      min-block-size: var(--button-height);
+      padding: var(--space-2) var(--space-5);
+      margin: var(--space-0);
+      border: var(--border-width) solid var(--button-border);
+      border-radius: var(--radius-md);
+      background-color: var(--button-bg);
+      color: var(--button-fg);
+      font-family: var(--font-body);
+      font-size: var(--font-base);
+      font-weight: 500;
+      line-height: 1.5;
+      vertical-align: middle;
+      user-select: none;
+      touch-action: manipulation;
+      transition: background-color var(--duration) var(--ease), border-color var(--duration) var(--ease), color var(--duration) var(--ease);
+    }
+
+    .button[data-variant="secondary"] {
+      --button-bg: var(--secondary);
+      --button-hover-bg: var(--secondary-hover);
+      --button-active-bg: var(--secondary-active);
+      --button-fg: var(--secondary-text);
+      --button-border: var(--secondary-border);
+    }
+
+    .button[data-variant="danger"] {
+      --button-bg: var(--danger);
+      --button-hover-bg: var(--danger-hover);
+      --button-active-bg: var(--danger-active);
+      --button-fg: var(--on-danger);
+    }
+
+    @media (hover: hover) {
+      .button:not(:disabled):not([aria-disabled="true"]):hover {
+        background-color: var(--button-hover-bg);
+      }
+    }
+
+    .button[data-preview="hover"]:not(:disabled):not([aria-disabled="true"]) {
+      background-color: var(--button-hover-bg);
+    }
+
+    .button:not(:disabled):not([aria-disabled="true"]):active, .button[data-preview="active"]:not(:disabled):not([aria-disabled="true"]) {
+      background-color: var(--button-active-bg);
+    }
+
+    .button:focus-visible, .button[data-preview="focus"] {
+      outline: var(--focus-width) solid var(--focus-ring);
+      outline-offset: var(--focus-offset);
+      box-shadow: var(--space-0) var(--space-0) var(--space-0) var(--focus-offset) var(--focus-gap);
+    }
+
+    .button[data-state="loading"] {
+      cursor: progress;
+    }
+
+    .button[data-state="success"] {
+      background-color: var(--success-bg);
+      color: var(--success-text);
+      border-color: var(--success-border);
+      cursor: default;
+    }
+
+    .button[data-state="error"] {
+      --button-bg: var(--error-bg);
+      --button-hover-bg: var(--error-bg);
+      --button-active-bg: var(--error-bg);
+      --button-fg: var(--error-text);
+      --button-border: var(--danger);
+    }
+
+    .button:disabled {
+      background-color: var(--disabled-bg);
+      color: var(--disabled-text);
+      border-color: var(--disabled-border);
+      cursor: not-allowed;
+    }
+
+    .button:disabled[data-state="loading"] {
+      color: var(--secondary-text);
+    }
+
+    .button--small {
+      min-inline-size: var(--button-small-min);
+      min-block-size: var(--button-small-height);
+      padding: var(--space-2) var(--space-3);
+      font-size: var(--font-sm);
+    }
+
+    .button-layer {
+      grid-area: content;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--space-2);
+      visibility: hidden;
+      pointer-events: none;
+      white-space: nowrap;
+      max-inline-size: 100%;
+      min-inline-size: 0;
+    }
+
+    .button-layer-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .button[data-state="idle"] .button-layer--idle, .button[data-state="loading"] .button-layer--loading, .button[data-state="success"] .button-layer--success, .button[data-state="error"] .button-layer--error {
+      visibility: visible;
+    }
+
+    .spinner {
+      display: inline-block;
+      flex: 0 0 var(--icon-size);
+      width: var(--icon-size);
+      height: var(--icon-size);
+      border: var(--spinner-width) solid currentColor;
+      border-right-color: var(--transparent);
+      border-radius: var(--radius-full);
+      animation: spin var(--spin-duration) linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (min-width: 1500px) {
+      .content {
+        padding-top: var(--space-12);
+      }
+    }
+
+    @media (max-width: 1120px) {
+      :root {
+        --sidebar-width: 200px;
+        --control-width: 260px;
+      }
+      .content {
+        padding: var(--space-8) var(--space-6) var(--space-6);
+      }
+      .topbar {
+        padding-inline: var(--space-6);
+      }
+      .copy-panel {
+        gap: var(--space-4);
+      }
+      .copy-field {
+        gap: var(--space-2);
+      }
+    }
+
+    @media (max-width: 920px) {
+      :root {
+        --sidebar-width: 176px;
+        --control-width: 240px;
+      }
+      .sidebar {
+        padding-inline: var(--space-3);
+      }
+      .controls {
+        padding: var(--space-5);
+      }
+      .copy-panel {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: var(--space-4);
+      }
+      .copy-field {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    @media (max-width: 740px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        padding: var(--space-4) var(--space-5);
+        border-right: none;
+        border-bottom: var(--border-width) solid var(--line);
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        padding: var(--space-0);
+      }
+      .brand-caption, .library-label, .sidebar-note, .nav-item:not(.active), .nav-item svg, .nav-dot {
+        display: none;
+      }
+      .nav-item {
+        padding: var(--space-2) var(--space-3);
+      }
+      .main {
+        margin-left: var(--space-0);
+      }
+      .topbar {
+        padding-inline: var(--space-5);
+        height: var(--space-14);
+      }
+      .content {
+        padding: var(--space-7) var(--space-5) var(--space-6);
+      }
+      .playground {
+        grid-template-columns: 1fr;
+      }
+      .preview {
+        min-height: var(--preview-height);
+      }
+      .controls {
+        border-left: none;
+        border-top: var(--border-width) solid var(--line);
+      }
+      .controls-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-4);
+      }
+      .field {
+        margin-bottom: var(--space-0);
+      }
+      .controls-heading {
+        margin-bottom: var(--space-4);
+      }
+      .switches {
+        grid-column: 1 / -1;
+        margin-top: var(--space-0);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .field--behavior {
+        grid-column: 1 / -1;
+      }
+      .matrix-scroll {
+        margin-inline: var(--space-0);
+      }
+      .section-meta {
+        display: none;
+      }
+      .footer {
+        align-items: flex-start;
+      }
+      .footer > span:last-child {
+        text-align: right;
+      }
+    }
+
+    @media (max-width: 400px) {
+      :root {
+        --font-title: 32px;
+      }
+      .platform {
+        display: none;
+      }
+      .controls-grid {
+        grid-template-columns: 1fr;
+      }
+      .copy-value {
+        font-size: var(--font-xs);
+      }
+      .copy-field {
+        padding-left: var(--space-3);
+      }
+      .copy-field .button {
+        min-inline-size: var(--button-small-min);
+        padding-inline: var(--space-2);
+      }
+      .eventbar {
+        align-items: flex-start;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+      *, *::before, *::after {
+        transition: none !important;
+      }
+      .spinner {
+        animation: none;
+      }
+    }
+
+    @media (forced-colors: active) {
+      .button:focus-visible, .button[data-preview="focus"] {
+        outline-color: var(--system-focus);
+      }
+      .spinner {
+        forced-color-adjust: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg class="svg-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-brand" viewBox="0 0 24 24"><path d="M6 19V5h12M6 12h9M12 19v-7"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></symbol>
+    <symbol id="i-button" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="3"/><path d="M8 12h8"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 7-5 5 5 5m8-10 5 5-5 5M14 4l-4 16"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h7m4 0h5M4 17h3m4 0h9"/><circle cx="13" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M15 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.1"/></symbol>
+    <symbol id="i-retry" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 1 7M4 4v6h6"/></symbol>
+  </defs></svg>
+  <a class="skip-link" href="#main-content">跳至主要内容</a>
+  <aside class="sidebar" aria-label="组件文档导航">
+    <a class="brand" href="#main-content" aria-label="Forma 设计系统首页">
+      <span class="brand-mark"><svg aria-hidden="true"><use href="#i-brand"/></svg></span>
+      <span><span class="brand-name">forma<span aria-hidden="true">.</span></span><span class="brand-caption" style="display:block">DESIGN SYSTEM</span></span>
+    </a>
+    <div class="library-label"><span>组件文档</span><svg aria-hidden="true"><use href="#i-grid"/></svg></div>
+    <nav class="nav-group" aria-label="本页章节">
+      <a class="nav-item active" href="#playground" aria-current="location"><svg aria-hidden="true"><use href="#i-button"/></svg>Button 按钮<span class="nav-dot"></span></a>
+      <a class="nav-item" href="#states"><svg aria-hidden="true"><use href="#i-layers"/></svg>状态总览<small>18</small></a>
+      <a class="nav-item" href="#copy-demo"><svg aria-hidden="true"><use href="#i-copy"/></svg>复制反馈</a>
+      <a class="nav-item" href="#usage"><svg aria-hidden="true"><use href="#i-code"/></svg>使用方式</a>
+    </nav>
+    <div class="sidebar-note"><div class="version"><span class="status-dot"></span>组件库 v1.0</div>一致的细节，清晰的交互。</div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <div class="breadcrumbs"><span>组件</span><svg aria-hidden="true"><use href="#i-chevron"/></svg><span>通用</span><svg aria-hidden="true"><use href="#i-chevron"/></svg><strong>Button</strong></div>
+      <div class="topbar-end"><span class="platform">HTML / CSS / JS</span><button class="icon-button" id="show-source" aria-label="查看组件使用代码" aria-controls="usage" aria-expanded="false"><svg aria-hidden="true"><use href="#i-code"/></svg></button></div>
+    </header>
+    <main class="content" id="main-content">
+      <header class="page-header">
+        <div class="eyebrow"><span class="status-dot"></span>COMPONENTS / GENERAL</div>
+        <div class="title-row"><h1>Button <span>按钮</span></h1><span class="stable-badge">稳定</span></div>
+        <p class="page-description">承载明确的操作意图，让每一次点击都有清晰、可预期的反馈。</p>
+      </header>
+
+      <section id="playground" aria-labelledby="playground-title">
+        <div class="section-heading"><h2 id="playground-title">交互演示</h2><span class="section-meta">PLAYGROUND</span></div>
+        <div class="panel playground">
+          <div class="preview">
+            <div class="preview-tag"><svg aria-hidden="true"><use href="#i-button"/></svg>实时预览</div>
+            <div class="preview-center"><div id="live-button"></div><div class="state-caption" id="live-state">primary / default</div></div>
+            <div class="preview-hint">点击体验异步操作，使用 <kbd>Tab</kbd> 查看键盘焦点</div>
+          </div>
+          <div class="controls">
+            <div class="controls-heading"><svg aria-hidden="true"><use href="#i-sliders"/></svg>组件配置</div>
+            <div class="controls-grid">
+              <div class="field"><label class="field-label" for="button-label">按钮文字</label><input class="text-input" id="button-label" value="保存更改" maxlength="24" autocomplete="off"></div>
+              <div class="field"><span class="field-label" id="variant-label">用途样式</span><div class="variant-options" role="radiogroup" aria-labelledby="variant-label">
+                <label class="variant-option"><input type="radio" name="variant" value="primary" checked><span>主要</span></label>
+                <label class="variant-option"><input type="radio" name="variant" value="secondary"><span>次要</span></label>
+                <label class="variant-option"><input type="radio" name="variant" value="danger"><span>危险</span></label>
+              </div></div>
+              <div class="field field--behavior"><label class="field-label" for="button-action">点击行为</label><select class="select-input" id="button-action"><option value="submit">模拟异步提交</option><option value="copy">复制示例文本</option><option value="click">记录一次点击</option></select></div>
+              <div class="switches">
+                <label class="switch-label" for="disable-toggle">禁用按钮<span class="switch"><input type="checkbox" role="switch" id="disable-toggle"><span class="switch-track"></span></span></label>
+                <label class="switch-label" for="loading-toggle">持续加载<span class="switch"><input type="checkbox" role="switch" id="loading-toggle"><span class="switch-track"></span></span></label>
+              </div>
+            </div>
+          </div>
+          <div class="eventbar"><div class="event-message"><svg aria-hidden="true"><use href="#i-info"/></svg><span id="event-text" role="status" aria-live="polite">准备就绪，点击按钮开始体验</span></div><span class="event-count">触发次数 <strong id="click-count">0</strong></span></div>
+        </div>
+      </section>
+
+      <section class="section" id="states" aria-labelledby="states-title">
+        <div class="section-heading"><h2 id="states-title">用途与状态</h2><span class="section-meta">3 VARIANTS × 6 STATES</span></div>
+        <div class="panel matrix-scroll" tabindex="0" role="region" aria-label="按钮状态对照表，窄屏可横向滚动">
+          <table class="matrix"><caption class="sr-only">三种用途在默认、悬停、按下、聚焦、禁用、加载六种状态下的外观</caption>
+            <thead><tr><th scope="col">用途</th><th scope="col">默认</th><th scope="col">悬停</th><th scope="col">按下</th><th scope="col">聚焦</th><th scope="col">禁用</th><th scope="col">加载中</th></tr></thead>
+            <tbody id="state-rows"></tbody>
+          </table>
+        </div>
+        <p class="matrix-note"><svg aria-hidden="true"><use href="#i-info"/></svg><span>状态固定展示。可用按钮仍可点击，禁用与加载状态会阻止操作。</span></p>
+      </section>
+
+      <section class="section" id="copy-demo" aria-labelledby="copy-title">
+        <div class="section-heading"><h2 id="copy-title">操作反馈</h2><span class="section-meta">FEEDBACK</span></div>
+        <div class="panel copy-panel">
+          <div class="copy-description"><h3>复制，一次即可。</h3><p>完成后显示「已复制」，2 秒后自动恢复。</p></div>
+          <div class="copy-field"><span class="copy-value" id="copy-value">npm install @forma/ui</span><div id="copy-button"></div></div>
+        </div>
+        <p class="feedback-line" id="copy-feedback" role="status" aria-live="polite">点击复制，将示例命令写入剪贴板。</p>
+      </section>
+
+      <details class="section panel source-panel" id="usage">
+        <summary><svg aria-hidden="true"><use href="#i-code"/></svg>使用方式<span class="section-meta">VANILLA JAVASCRIPT</span></summary>
+        <pre><code><span class="code-comment">// 挂载到任意容器，onClick 支持同步或异步操作。</span>
+const saveButton = new Button(document.querySelector('#container'), {
+  label: '保存更改',
+  variant: 'primary', <span class="code-comment">// primary | secondary | danger</span>
+  onClick: async () =&gt; { await saveChanges(); }
+});
+
+saveButton.setDisabled(true);
+saveButton.setLoading(true);
+saveButton.setLabel('确认保存');
+saveButton.setVariant('secondary');
+
+<span class="code-comment">// 仅在复制成功后显示反馈，失败时提示重试。</span>
+new Button(document.querySelector('#copy'), {
+  label: '复制命令',
+  variant: 'secondary',
+  successLabel: '已复制',
+  onClick: () =&gt; copyText('npm install @forma/ui')
+});</code></pre>
+      </details>
+      <footer class="footer"><span class="footer-brand">forma. <span class="brand-caption">DESIGN SYSTEM</span></span><span>原生构建 · 键盘可达 · 支持减少动态效果</span></footer>
+    </main>
+  </div>
+  <div class="sr-only" id="announcement" role="status" aria-live="polite" aria-atomic="true"></div>
+  <script>
+    'use strict';
+
+    const icon = (name) => {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+      svg.setAttribute('aria-hidden', 'true');
+      use.setAttribute('href', `#i-${name}`);
+      svg.append(use);
+      return svg;
+    };
+
+    /** 可单独复用的原生组件。异步回调结束前保留操作锁，加载中保留键盘焦点。 */
+    class Button {
+      constructor(container, options = {}) {
+        this.options = {
+          label: '按钮', variant: 'primary', loadingLabel: '处理中',
+          successLabel: '', errorLabel: '请重试', successDuration: 2000,
+          disabled: false, loading: false, icon: '', onClick: () => {},
+          onStateChange: () => {}, onError: () => {}, ...options
+        };
+        this.pending = false;
+        this.feedback = 'idle';
+        this.feedbackLabel = '';
+        this.timer = null;
+        this.element = document.createElement('button');
+        this.element.type = 'button';
+        this.element.className = 'button';
+        this.layers = {};
+        for (const state of ['idle', 'loading', 'success', 'error']) {
+          const layer = document.createElement('span');
+          layer.className = `button-layer button-layer--${state}`;
+          layer.setAttribute('aria-hidden', 'true');
+          this.layers[state] = layer;
+          this.element.append(layer);
+        }
+        this.buildLabels();
+        this.element.addEventListener('click', () => this.activate());
+        container.append(this.element);
+        this.render();
+      }
+
+      buildLabels() {
+        const labels = {
+          idle: this.options.label,
+          loading: this.options.loadingLabel,
+          success: this.feedbackLabel || this.options.successLabel || '操作成功',
+          error: this.options.errorLabel
+        };
+        for (const [state, layer] of Object.entries(this.layers)) {
+          layer.replaceChildren();
+          if (state === 'loading') {
+            const spinner = document.createElement('span');
+            spinner.className = 'spinner';
+            layer.append(spinner);
+          } else {
+            const name = { idle: this.options.icon, success: 'check', error: 'retry' }[state];
+            if (name) layer.append(icon(name));
+          }
+          const text = document.createElement('span');
+          text.className = 'button-layer-text';
+          text.textContent = labels[state];
+          layer.append(text);
+        }
+      }
+
+      get state() {
+        return this.pending || this.options.loading ? 'loading' : this.feedback;
+      }
+
+      render() {
+        const state = this.state;
+        const blocked = this.options.disabled || state === 'loading' || state === 'success';
+        this.element.dataset.variant = this.options.variant;
+        this.element.dataset.state = state;
+        this.element.disabled = this.options.disabled;
+        this.element.setAttribute('aria-disabled', String(blocked));
+        this.element.setAttribute('aria-busy', String(state === 'loading'));
+        const labels = {
+          idle: this.options.label, loading: this.options.loadingLabel,
+          success: this.feedbackLabel || this.options.successLabel || '操作成功', error: this.options.errorLabel
+        };
+        this.element.setAttribute('aria-label', labels[state]);
+        this.options.onStateChange(state, this);
+      }
+
+      async activate() {
+        if (this.options.disabled || this.pending || this.options.loading || this.feedback === 'success') return;
+        clearTimeout(this.timer);
+        const { onClick, successLabel, successDuration } = this.options;
+        this.feedback = 'idle';
+        this.pending = true;
+        this.render();
+        try {
+          // 在首次点击事件内直接调用，以保留剪贴板 API 所需的用户激活权限。
+          const result = onClick(this);
+          await result;
+          if (successLabel) {
+            this.feedback = 'success';
+            this.feedbackLabel = successLabel;
+            this.buildLabels();
+            this.scheduleReset(successDuration);
+          }
+        } catch (error) {
+          this.feedback = 'error';
+          this.scheduleReset(2500);
+          this.options.onError(error, this);
+        } finally {
+          this.pending = false;
+          this.render();
+        }
+      }
+
+      scheduleReset(duration) {
+        this.timer = setTimeout(() => {
+          this.feedback = 'idle';
+          this.render();
+        }, duration);
+      }
+
+      setDisabled(disabled) { this.options.disabled = Boolean(disabled); this.render(); }
+      setLoading(loading) { this.options.loading = Boolean(loading); this.render(); }
+      setLabel(label) { this.options.label = String(label); this.buildLabels(); this.render(); }
+      setVariant(variant) {
+        if (!['primary', 'secondary', 'danger'].includes(variant)) throw new TypeError('未知按钮用途');
+        this.options.variant = variant;
+        this.render();
+      }
+    }
+
+    /** 兼容直接打开 HTML 的复制方式，只有实际成功才返回。 */
+    async function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return;
+        } catch { /* 权限不可用时继续尝试本地文档复制。 */ }
+      }
+      const previousFocus = document.activeElement;
+      const selection = window.getSelection();
+      const ranges = [];
+      if (selection) {
+        for (let index = 0; index < selection.rangeCount; index++) ranges.push(selection.getRangeAt(index).cloneRange());
+      }
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.setAttribute('aria-label', '待复制文本');
+      textarea.className = 'sr-only';
+      document.body.append(textarea);
+      let copied = false;
+      try {
+        textarea.focus({ preventScroll: true });
+        textarea.select();
+        copied = document.execCommand('copy');
+      } finally {
+        textarea.remove();
+        previousFocus?.focus({ preventScroll: true });
+        if (selection) {
+          selection.removeAllRanges();
+          for (const range of ranges) selection.addRange(range);
+        }
+      }
+      if (!copied) throw new Error('复制未完成，请检查浏览器的剪贴板权限后重试。');
+    }
+
+    const wait = (duration) => new Promise(resolve => setTimeout(resolve, duration));
+    const eventText = document.querySelector('#event-text');
+    const liveState = document.querySelector('#live-state');
+    const announcement = document.querySelector('#announcement');
+    let count = 0;
+    const recordClick = (message) => {
+      count += 1;
+      document.querySelector('#click-count').textContent = count;
+      eventText.textContent = message;
+    };
+    let action = 'submit';
+    const liveButton = new Button(document.querySelector('#live-button'), {
+      label: '保存更改', icon: 'check',
+      onClick: async () => {
+        const selectedAction = action;
+        const messages = {
+          copy: '正在复制示例文本…',
+          submit: '正在提交，请等待操作完成…',
+          click: '已记录一次点击'
+        };
+        recordClick(messages[selectedAction]);
+        if (selectedAction === 'copy') {
+          await copyText(document.querySelector('#copy-value').textContent);
+          eventText.textContent = '示例文本已复制，2 秒后恢复';
+        } else if (selectedAction === 'submit') {
+          await wait(1400);
+          eventText.textContent = '更改已保存，可再次操作';
+        }
+      },
+      onStateChange: (state, button) => {
+        let displayState = state === 'idle' ? 'default' : state;
+        if (button.options.disabled) displayState = 'disabled';
+        liveState.textContent = `${button.options.variant} / ${displayState}`;
+      },
+      onError: error => { eventText.textContent = error.message || '操作未完成，请重试'; }
+    });
+
+    document.querySelector('#button-label').addEventListener('input', event => {
+      liveButton.setLabel(event.target.value.trim() || '按钮');
+    });
+    document.querySelectorAll('input[name="variant"]').forEach(input => {
+      input.addEventListener('change', () => liveButton.setVariant(input.value));
+    });
+    document.querySelector('#button-action').addEventListener('change', event => {
+      action = event.target.value;
+      // 更改配置不打断正在进行的操作，结束后才应用新行为。
+      liveButton.options.successLabel = action === 'copy' ? '已复制' : '';
+      liveButton.buildLabels();
+      eventText.textContent = '点击行为已更新';
+    });
+    document.querySelector('#disable-toggle').addEventListener('change', event => {
+      liveButton.setDisabled(event.target.checked);
+      eventText.textContent = event.target.checked ? '按钮已禁用，点击与键盘操作均不会触发' : '按钮已启用';
+    });
+    document.querySelector('#loading-toggle').addEventListener('change', event => {
+      liveButton.setLoading(event.target.checked);
+      eventText.textContent = event.target.checked ? '持续加载中，关闭开关即可恢复' : '持续加载已关闭';
+    });
+
+    const variants = [
+      { value: 'primary', name: '主要按钮', label: '主要操作' },
+      { value: 'secondary', name: '次要按钮', label: '次要操作' },
+      { value: 'danger', name: '危险按钮', label: '删除项目' }
+    ];
+    const states = ['default', 'hover', 'active', 'focus', 'disabled', 'loading'];
+    for (const variant of variants) {
+      const row = document.createElement('tr');
+      const heading = document.createElement('th');
+      heading.scope = 'row';
+      const name = document.createElement('span');
+      name.className = 'row-name';
+      name.textContent = variant.name;
+      const code = document.createElement('span');
+      code.className = 'row-code';
+      code.textContent = variant.value;
+      heading.append(name, code);
+      row.append(heading);
+      for (const state of states) {
+        const cell = document.createElement('td');
+        const sample = new Button(cell, {
+          label: variant.label, variant: variant.value,
+          disabled: state === 'disabled', loading: state === 'loading',
+          onClick: () => {
+            recordClick(`已触发${variant.name}的${{ default: '默认', hover: '悬停', active: '按下', focus: '聚焦' }[state]}示例`);
+            announcement.textContent = eventText.textContent;
+          }
+        });
+        sample.element.classList.add('button--small');
+        sample.element.dataset.preview = state;
+        row.append(cell);
+      }
+      document.querySelector('#state-rows').append(row);
+    }
+
+    const copyFeedback = document.querySelector('#copy-feedback');
+    const copyButton = new Button(document.querySelector('#copy-button'), {
+      label: '复制命令', variant: 'secondary', icon: 'copy', successLabel: '已复制',
+      loadingLabel: '复制中',
+      onClick: async () => {
+        await copyText(document.querySelector('#copy-value').textContent);
+        copyFeedback.textContent = '命令已复制到剪贴板。';
+      },
+      onError: error => { copyFeedback.textContent = error.message; }
+    });
+    copyButton.element.classList.add('button--small');
+
+    const usage = document.querySelector('#usage');
+    const sourceTrigger = document.querySelector('#show-source');
+    sourceTrigger.addEventListener('click', () => {
+      usage.open = !usage.open;
+      if (usage.open) {
+        usage.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
+        usage.querySelector('summary').focus({ preventScroll: true });
+      }
+    });
+    usage.addEventListener('toggle', () => sourceTrigger.setAttribute('aria-expanded', String(usage.open)));
+    document.querySelector('a[href="#usage"]').addEventListener('click', () => { usage.open = true; });
+
+    // 在其他页面可直接 new Button(container, options) 复用。
+    window.Button = Button;
+    window.copyText = copyText;
+  </script>
+</body>
+</html>

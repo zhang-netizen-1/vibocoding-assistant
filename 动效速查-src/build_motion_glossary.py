@@ -114,12 +114,17 @@ replay={'view-curtain','view-stagger','text-stagger','text-mask','text-typewrite
 scroll={x[0] for x in entries if x[1]=='scroll' and not x[0].startswith('extra-')}
 
 def card(e):
-    kind,cat,name,en,trigger,description,prompt=e
+    kind,cat,name,en,trigger,description,prompt=e[:7]
+    options = e[7] if len(e) > 7 else {}
+    bench_link = f'<a class="tag" href="{esc(options["bench_link"])}">测评结果 →</a> ' if options.get("bench_link") else ''
+    card_label = f'<span class="tag">{esc(trigger)}</span>'
+    if bench_link:
+        card_label = f'<div>{bench_link}{card_label}</div>'
     tools = ('<button class="run-demo" type="button" data-action="scroll-play">模拟滚动</button>' if kind in scroll else '<button class="run-demo" type="button" data-action="replay">重播效果</button>' if kind in replay else '<button class="run-demo pause-loop" type="button" data-action="pause" aria-pressed="false">暂停动画</button>' if kind in loop else '')
     if not tools: tools='<span class="gesture-note">'+esc(trigger)+'</span>'
     backdrop = '<div class="overlay-preview-shell" aria-hidden="true"><span class="overlay-preview-title">工作台 <small>OVERVIEW</small></span><span class="overlay-preview-line"></span><span class="overlay-preview-line short"></span><span class="overlay-preview-tiles"><i></i><i></i><i></i></span></div>' if cat=='overlay' and not kind.startswith('extra-') else ''
     return f'''<article class="effect-card" id="e-{esc(kind)}" data-cat="{esc(cat)}" data-name="{esc(name+' '+en+' '+trigger+' '+description)}">
-      <div class="card-head"><div><h3>{esc(name)}</h3><button class="english" type="button" data-copy="{esc(en)}" aria-label="复制英文名称：{esc(en)}">{esc(en)}</button></div><span class="tag">{esc(trigger)}</span></div>
+      <div class="card-head"><div><h3>{esc(name)}</h3><button class="english" type="button" data-copy="{esc(en)}" aria-label="复制英文名称：{esc(en)}">{esc(en)}</button></div>{card_label}</div>
       <div class="stage {'dark-stage' if cat=='background' else ''}" data-effect="{esc(kind)}"><span class="stage-label">{esc(trigger)}</span><span class="stage-live" aria-hidden="true"><i></i> LIVE DEMO</span>{backdrop}{demo(kind)}<span class="stage-signature" aria-hidden="true">{esc(cat.upper())} / MOTION STUDY</span></div>
       <div class="demo-tools">{tools}<span class="preview-label">真实交互演示</span></div>
       <div class="card-note">{esc(description)}</div>

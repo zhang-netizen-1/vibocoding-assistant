@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f6f3">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23345c45%27/%3E%3Cpath d=%27M10 24V8h14M10 15h11%27 fill=%27none%27 stroke=%27%23edf3e9%27 stroke-width=%273%27/%3E%3C/svg%3E">
+<title>Forma — 视图交叉淡化实验室</title>
+<style>
+:root{--canvas:#f5f6f3;--paper:#fff;--ink:#252c29;--muted:#868e87;--line:#e6e9e3;--green:#345c45;--light:#edf3e9;--orange:#d38954;--radius:14px;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);font-size:14px;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas)}button,input{font:inherit}button{cursor:pointer;color:inherit}button:disabled{cursor:default}button,a,input{-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #81a786;outline-offset:4px}button{border:0}svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}a{color:inherit;text-decoration:none}.app{display:flex;min-height:100vh}.sidebar{width:218px;flex-shrink:0;border-right:1px solid var(--line);background:#fafbf8;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0;padding:36px 20px 24px}.brand{display:flex;gap:10px;align-items:center;padding-left:14px;font-family:Georgia,serif;font-size:31px;letter-spacing:-1.5px;font-weight:bold}.brand-symbol{width:28px;height:31px;color:var(--green)}.workspace{display:flex;align-items:center;gap:10px;margin:36px 0 29px;padding:12px 11px;border:1px solid var(--line);border-radius:9px;background:#fff}.workspace-icon{background:#e9eee5;border:1px solid #dce4d5;color:var(--green);border-radius:6px;width:30px;height:30px;display:grid;place-items:center;font-size:12px;font-weight:600}.workspace-text{font-size:12px;flex:1}.workspace svg{width:14px;color:var(--muted)}.nav-label{font-size:12px;letter-spacing:1.5px;color:#9a9f98;padding-left:14px;margin:0 0 12px}.nav-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:7px;font-size:13px;color:#747d74;margin-bottom:5px;width:100%;text-align:left;background:transparent}.nav-item svg{width:18px;height:18px}.nav-item.active{color:var(--green);background:#e9efe3;font-weight:600}.nav-count{margin-left:auto;font-size:12px;padding:2px 6px;border:1px solid #cbd9c0;border-radius:4px}.nav-spacer{height:27px}.sidebar-bottom{margin-top:auto}.mini-note{padding:16px 14px;border:1px solid #e1e7d9;border-radius:10px;background:#f0f3e9;margin-bottom:22px}.mini-note svg{color:#658153;margin-bottom:7px}.mini-note strong{display:block;font-size:12px;font-weight:500;margin-bottom:7px}.mini-note p{font-size:12px;color:#89917f;line-height:1.8;margin:0}.profile{border-top:1px solid var(--line);padding:20px 10px 0;display:flex;align-items:center;gap:10px}.avatar{width:33px;height:33px;background:#dedacb;border-radius:50%;display:grid;place-items:center;font-family:Georgia,serif;font-size:14px;color:#655d48}.profile-text{flex:1}.profile-text strong{font-size:12px;font-weight:500;display:block}.profile-text small{font-size:12px;color:var(--muted)}.profile svg{width:16px;color:#92998f}.main{margin-left:218px;flex:1;min-width:0}.topbar{height:78px;border-bottom:1px solid var(--line);padding:0 43px;display:flex;align-items:center;justify-content:space-between}.breadcrumbs{display:flex;align-items:center;gap:14px;font-size:12px}.breadcrumbs span:first-child{color:var(--muted)}.breadcrumbs .slash{color:#c4c9bf}.top-actions{display:flex;align-items:center;gap:22px}.top-actions span{color:#91978e;font-size:12px;letter-spacing:1px}.icon-button{background:transparent;display:grid;place-items:center;padding:4px;color:#737c71}.notification{position:relative}.notification:after{content:"";position:absolute;right:5px;top:4px;width:4px;height:4px;border-radius:50%;background:var(--orange);border:2px solid var(--canvas)}.small-avatar{width:28px;height:28px;font-size:12px}.content{max-width:1400px;margin:auto;padding:39px 43px 24px}.eyebrow{color:#899480;font-size:12px;font-weight:600;letter-spacing:2px;display:flex;align-items:center;gap:9px;margin-bottom:13px}.eyebrow:before{content:"";width:6px;height:6px;background:#6f8b58;border-radius:50%}.heading-row{display:flex;justify-content:space-between;align-items:center;gap:20px}.heading-row h1{font-size:30px;letter-spacing:-1.2px;line-height:1.5;margin:0;font-weight:600}.intro{font-size:12px;color:#8a9289;line-height:1.9;margin:9px 0 0}.version{font:10px ui-monospace,SFMono-Regular,monospace;border:1px solid #dbe2d4;padding:7px 10px;border-radius:5px;color:#7e8b74;background:#f9faf7}.lab-layout{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:22px;margin-top:31px;align-items:start}.preview{border:1px solid var(--line);border-radius:var(--radius);background:#fff;overflow:hidden;box-shadow:0 4px 14px #28352102}.preview-bar{height:59px;display:flex;align-items:center;justify-content:space-between;padding:0 23px;border-bottom:1px solid var(--line)}.window-dots{display:flex;gap:5px}.window-dots i{width:7px;height:7px;border-radius:50%;background:#e0e4dc}.window-title{font-size:12px;letter-spacing:1px;color:#929a8e;display:flex;align-items:center;gap:6px}.window-title svg{width:12px;height:12px}.live{font-size:11px;letter-spacing:1px;color:#7e8b74;display:flex;align-items:center;gap:5px}.live:before{content:"";height:5px;width:5px;background:#8ea47e;border-radius:50%}.project-head{padding:25px 28px 0}.project-top{display:flex;align-items:center;justify-content:space-between}.project-identity{display:flex;gap:12px;align-items:center}.project-logo{background:#edf1e6;width:40px;height:40px;display:grid;place-items:center;border-radius:11px;color:#648052}.project-logo svg{width:25px;height:25px}.project-identity h2{font-size:16px;letter-spacing:-.3px;font-weight:600;margin:0 0 5px}.project-identity p{font-size:12px;color:#99a08f;margin:0}.project-menu{color:#8e9688;background:transparent;padding:5px}.project-meta{display:flex;align-items:center;justify-content:space-between;margin:22px 0 20px}.project-tag{font-size:11px;border:1px solid #dfe9d6;background:#f3f7ee;border-radius:4px;padding:4px 7px;color:#7c906a;display:flex;gap:4px;align-items:center}.project-tag:before{content:"";width:4px;height:4px;background:#8ba272;border-radius:50%}.people{display:flex;align-items:center;padding-left:5px}.person{font:10px Georgia,serif;display:grid;place-items:center;width:24px;height:24px;border:2px solid white;border-radius:50%;margin-left:-5px;color:#716a58;background:#e3ddca}.person:nth-child(2){background:#d7dfd2;color:#60705a}.person:nth-child(3){background:#e4d4cc;color:#8a6b5d}.people small{font-size:11px;color:#99a18f;margin-left:7px}.tabs{display:flex;gap:25px;border-bottom:1px solid var(--line)}.tab{position:relative;font-size:12px;display:flex;align-items:center;gap:6px;padding:0 1px 15px;background:none;color:#91998b;white-space:nowrap}.tab svg{width:14px;height:14px}.tab[aria-selected="true"]{color:var(--green);font-weight:600}.tab[aria-selected="true"]:after{content:"";position:absolute;height:2px;bottom:-1px;left:0;right:0;background:#648451;border-radius:2px}.stage{height:355px;position:relative;isolation:isolate;background:#fff}.view,.outgoing{position:absolute;inset:0}.view{padding:23px 28px;background:#fff}.outgoing{pointer-events:none}.view[inert]{pointer-events:none}.view-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}.view-top h3{font-size:12px;margin:0;font-weight:500}.view-top small{font-size:11px;color:#9da492}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.metric{border:1px solid #e7ebdf;border-radius:7px;padding:14px 15px;background:#fdfefb}.metric-label{font-size:11px;color:#939c89}.metric-value{font-family:Georgia,"Times New Roman",serif;font-size:28px;margin:8px 0 6px;letter-spacing:-1px;line-height:1.15}.metric-value small{font:10px -apple-system,sans-serif;letter-spacing:0;color:#8f9984;margin-left:3px}.metric-sub{font-size:10px;color:#93a17f}.metric-sub.neutral{color:#a1a897}.progress-section{margin-top:23px}.section-title{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:16px}.section-title span{font-size:11px;color:#98a18f}.progress-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;font-size:11px}.progress-name{width:76px;color:#838e79}.progress-track{flex:1;height:5px;border-radius:3px;background:#f0f3ea;overflow:hidden}.progress-fill{height:100%;background:#a3b78f;border-radius:3px}.progress-number{font-size:10px;width:26px;color:#98a28c;text-align:right}.preview-footer{padding:12px 23px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:#fbfcf9;gap:10px;min-height:42px}.connection{font-size:11px;color:#91a280;display:flex;align-items:center;gap:6px}.connection:before{content:"";width:5px;height:5px;border-radius:50%;background:#8ca476}.key-hint{color:#a1a895;font-size:11px}.key-hint kbd{font:9px inherit;border:1px solid #e0e5d9;border-radius:3px;padding:1px 4px;background:white}.settings{border:1px solid var(--line);background:white;border-radius:var(--radius);padding:22px 21px}.panel-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;margin:0}.panel-title svg{width:16px;height:16px;color:#7d8a70}.panel-desc{font-size:12px;color:#9aa18f;margin:9px 0 23px;line-height:1.8}.setting-label{display:flex;align-items:center;justify-content:space-between;font-size:12px;margin-bottom:12px}.value-chip{font:10px ui-monospace,monospace;color:#6d815d;background:#f0f4e9;border:1px solid #e6ebdf;border-radius:4px;padding:4px 7px}.slider{width:100%;accent-color:#668350;height:4px;cursor:pointer;margin:5px 0 12px;display:block}.range-ticks{display:flex;justify-content:space-between;font:8px ui-monospace,monospace;color:#a4ab9b}.divider{height:1px;background:var(--line);margin:22px 0}.toggle-row{display:flex;gap:10px;justify-content:space-between;align-items:center}.toggle-copy strong{font-size:12px;font-weight:500;display:block;margin-bottom:6px}.toggle-copy small{font-size:11px;color:#a0a793}.switch{width:31px;height:18px;border-radius:12px;background:#dfe5d8;position:relative;padding:0;flex-shrink:0}.switch:after{content:"";position:absolute;width:12px;height:12px;left:3px;top:3px;border-radius:50%;background:white;box-shadow:0 1px 3px #0001;transition:transform .15s}.switch[aria-checked="true"]{background:#668350}.switch[aria-checked="true"]:after{transform:translateX(13px)}.system-preference{font-size:11px;color:#92a17e;margin-top:13px;display:flex;gap:5px;align-items:center}.system-preference svg{width:11px;height:11px}.test-button{width:100%;padding:11px 6px;background:var(--green);color:#f2f6ed;font-size:12px;border-radius:6px;display:flex;justify-content:center;align-items:center;gap:7px}.test-button:hover{background:#254b36}.test-button svg{width:13px;height:13px}.test-caption{font-size:11px;line-height:1.8;color:#a1a894;text-align:center;margin:9px 0 0}.status-block{margin-top:21px;padding:13px;border:1px solid #e5ebdc;border-radius:7px;background:#f8faf4}.status-heading{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#9aa58e;letter-spacing:1px}.status-led{width:5px;height:5px;border-radius:50%;background:#94aa7f}.status-value{font-size:12px;color:#708262;margin-top:10px;display:flex;align-items:center;gap:6px}.status-value svg{width:12px;height:12px}.status-detail{font-size:10px;color:#9da88f;margin-top:7px}.below-preview{display:flex;align-items:center;justify-content:space-between;margin-top:13px;gap:12px}.below-preview p{font-size:12px;color:#909b85;margin:0;display:flex;align-items:center;gap:6px}.below-preview svg{width:13px;height:13px}.replay{background:transparent;color:#7b8e6c;font-size:12px;display:flex;align-items:center;gap:5px;white-space:nowrap}.principles{margin-top:33px;border-top:1px solid var(--line);padding-top:23px;display:grid;grid-template-columns:repeat(3,1fr);gap:25px}.principle{display:flex;gap:12px;align-items:start}.principle-icon{width:30px;height:30px;border:1px solid #e3e8dd;border-radius:8px;display:grid;place-items:center;background:#f9fbf6;flex-shrink:0;color:#8a9b79}.principle-icon svg{width:15px;height:15px}.principle h3{font-size:12px;font-weight:500;margin:1px 0 7px}.principle p{font-size:11px;color:#a0a794;line-height:1.9;margin:0}.page-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);margin-top:32px;padding-top:18px;color:#a4ad9b;font-size:11px}.page-footer span:last-child{font:8px ui-monospace,monospace;letter-spacing:.5px}.board{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.board-col{border-radius:7px;background:#f5f7f1;padding:11px;min-height:264px}.board-label{display:flex;justify-content:space-between;font-size:11px;color:#8b967e;margin-bottom:12px}.task{padding:12px 10px;background:#fff;border:1px solid #e7ebdf;border-radius:6px;margin-bottom:9px}.task small{display:inline-block;font-size:7px;border-radius:3px;background:#eef3e7;color:#8b9d76;padding:3px 5px}.task h4{font-size:12px;font-weight:500;margin:11px 0 12px}.task-footer{font-size:10px;color:#a0a894;display:flex;justify-content:space-between;align-items:center}.task-dot{height:17px;width:17px;display:grid;place-items:center;border-radius:50%;background:#e1e6d7;color:#849475;font-size:7px}.file-list{display:flex;flex-direction:column;gap:9px}.file-item{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:7px}.file-icon{width:33px;height:37px;border-radius:5px;background:#edf2e5;display:grid;place-items:center;color:#829a68;font-size:11px}.file-item:nth-child(2) .file-icon{background:#f5eee5;color:#b19166}.file-item:nth-child(3) .file-icon{background:#e9eef0;color:#7b9196}.file-text{flex:1}.file-text h4{margin:0 0 6px;font-size:12px;font-weight:500}.file-text p{margin:0;color:#a1aa96;font-size:10px}.file-item>span{font-size:10px;color:#9fa893}.file-item svg{height:14px;width:14px;color:#a2ad95}.timeline-item{position:relative;display:flex;gap:13px;margin:0 0 25px}.timeline-item:after{content:"";position:absolute;top:30px;left:13px;height:30px;width:1px;background:var(--line)}.timeline-item:last-child:after{display:none}.timeline-item .person{margin:0;width:28px;height:28px;border:0;font-size:11px}.timeline-copy{padding-top:1px;font-size:12px;line-height:1.7;flex:1}.timeline-copy strong{font-weight:500}.timeline-copy p{font-size:11px;color:#99a58c;margin:4px 0 0}.timeline-item time{font-size:10px;color:#a5ad9a;margin-top:4px}.help-button{border:0;background:none;font-size:12px;color:#7c8874;display:flex;align-items:center;gap:6px;padding:6px}.help-button svg{width:15px;height:15px}dialog{border:1px solid var(--line);border-radius:15px;padding:30px;max-width:450px;width:calc(100% - 40px);color:var(--ink);box-shadow:0 24px 100px #20362120}dialog::backdrop{background:#25352d50}dialog h2{font-size:20px;margin:0 0 18px}dialog p{font-size:12px;line-height:1.9;color:#7d8973}dialog button{margin-top:12px;padding:10px 18px;background:var(--green);color:white;border-radius:6px;font-size:12px}.mobile-brand{display:none}
+@media(min-width:1450px){.content{padding-top:48px}.lab-layout{grid-template-columns:minmax(0,1fr) 280px}.stage{height:390px}.view{padding-top:28px}.metric{padding:18px}.progress-row{margin-bottom:18px}.settings{padding:25px}.principles{margin-top:40px}.heading-row h1{font-size:34px}}
+@media(max-width:1150px){.sidebar{width:182px;padding:30px 14px 22px}.main{margin-left:182px}.topbar{padding:0 28px}.content{padding:30px 28px 24px}.lab-layout{grid-template-columns:minmax(0,1fr) 224px;gap:16px}.settings{padding:20px 16px}.project-head{padding:22px 20px 0}.view{padding:23px 20px}.tabs{gap:19px}.stage{height:355px}.metric{padding:13px 10px}.metric-value{font-size:26px}.principles{gap:15px}.principle{gap:8px}.key-hint{display:none}}
+@media(max-width:940px){.sidebar{width:76px;padding:30px 12px 22px}.brand{padding:0;justify-content:center}.brand-word,.workspace,.nav-label,.nav-item span,.mini-note,.profile-text,.profile>svg{display:none}.brand-symbol{width:28px}.nav-item{justify-content:center;padding:14px;margin-bottom:8px}.nav-section{margin-top:38px}.nav-spacer{height:15px}.profile{padding:20px 0 0;justify-content:center}.main{margin-left:76px}.topbar{height:68px}.content{padding:28px 24px}.topbar{padding:0 24px}.heading-row h1{font-size:28px}.intro{font-size:12px}.lab-layout{grid-template-columns:minmax(0,1fr) 218px}.project-identity h2{font-size:14px}.people small{display:none}.tabs{gap:15px}.tab{font-size:12px}.tab svg{width:12px}.principle p br{display:none}.view-top small{display:none}}
+@media(max-width:730px){.sidebar{display:none}.main{margin-left:0}.topbar{padding:0 20px;height:62px}.top-actions{gap:13px}.top-actions>span,.top-actions>.notification{display:none}.content{padding:27px 20px 22px}.eyebrow{font-size:11px}.heading-row h1{font-size:26px}.heading-row .version{display:none}.intro{max-width:300px}.lab-layout{grid-template-columns:1fr;margin-top:24px;gap:20px}.stage{height:355px}.project-head{padding:24px 22px 0}.view{padding:23px 22px}.tabs{gap:0;justify-content:space-between}.tab{font-size:10px}.tab svg{width:12px}.settings{padding:21px}.panel-desc{margin-bottom:20px}.settings .divider{margin:20px 0}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.settings-grid>.divider{display:none}.settings .status-block{margin-top:18px}.settings .test-button{margin-top:0}.settings .panel-desc{font-size:12px}.principles{gap:18px;grid-template-columns:1fr;padding-top:24px;margin-top:25px}.principle{gap:13px}.principle h3{font-size:12px}.principle p{font-size:12px}.principle p br{display:none}.page-footer{gap:15px;line-height:1.7}.page-footer span:last-child{font-size:7px}.help-button{font-size:12px}.breadcrumbs{gap:10px;font-size:12px}.below-preview p{font-size:11px}.project-identity p{font-size:11px}.metric-value{font-size:27px}.board-col{padding:9px}.board{gap:8px}.task{padding:10px 8px}.task h4{font-size:11px}.board-label{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}html[data-reduced="true"] *{transition:none!important}
+</style>
+</head>
+<body>
+<svg style="display:none" aria-hidden="true"><defs>
+<symbol id="grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+<symbol id="layers" viewBox="0 0 24 24"><path d="m12 3 10 5-10 5L2 8Z M3 12l9 5 9-5 M3 16l9 5 9-5"/></symbol>
+<symbol id="folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></symbol>
+<symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+<symbol id="activity" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></symbol>
+<symbol id="board" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16 M15 4v16 M5.5 8h1 M11.5 8h1 M17.5 8h1"/></symbol>
+<symbol id="arrow" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+<symbol id="sliders" viewBox="0 0 24 24"><path d="M5 3v4 M5 11v10 M12 3v10 M12 17v4 M19 3v4 M19 11v10 M2 7h6 M9 17h6 M16 7h6"/></symbol>
+<symbol id="play" viewBox="0 0 24 24"><path d="m9 5 10 7-10 7Z M4 5v14"/></symbol>
+<symbol id="refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5 M4 17v-5h5 M19.3 12a7.5 7.5 0 0 0-13-5 M4.7 12a7.5 7.5 0 0 0 13 5"/></symbol>
+<symbol id="shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z m-4 9 3 3 5-6"/></symbol>
+<symbol id="leaf" viewBox="0 0 24 24"><path d="M20 3C8 2 3 8 5 15s15 6 15-12Z M4 21 16 9"/></symbol>
+<symbol id="info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6 M12 7v.5"/></symbol>
+<symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="bell" viewBox="0 0 24 24"><path d="M5 16h14l-2-3V9a5 5 0 0 0-10 0v4Z M10 20h4"/></symbol>
+<symbol id="spark" viewBox="0 0 24 24"><path d="m12 2 2.8 7.2L22 12l-7.2 2.8L12 22l-2.8-7.2L2 12l7.2-2.8Z"/></symbol>
+<symbol id="external" viewBox="0 0 24 24"><path d="M14 4h6v6 M20 4 10 14 M10 4H4v16h16v-6"/></symbol>
+</defs></svg>
+<div class="app">
+<aside class="sidebar" aria-label="工作区导航">
+<a class="brand" href="#" aria-label="Forma 首页"><svg class="brand-symbol" viewBox="0 0 30 34" aria-hidden="true"><path d="M5 28V7l10-5 10 5v21l-10 5ZM5 7l10 6 10-6M15 13v20M5 18l10 6 10-6" stroke-width="2"/></svg><span class="brand-word">forma<span style="color:#8ca077">.</span></span></a>
+<div class="workspace"><div class="workspace-icon">F</div><span class="workspace-text">Forma 设计工作室</span><svg aria-hidden="true" style="transform:rotate(90deg)"><use href="#arrow"/></svg></div>
+<nav class="nav-section"><p class="nav-label">WORKSPACE</p><button class="nav-item" data-nav="overview"><svg aria-hidden="true"><use href="#grid"/></svg><span>工作台</span></button><button class="nav-item" data-nav="board"><svg aria-hidden="true"><use href="#folder"/></svg><span>我的项目</span><span class="nav-count">08</span></button><button class="nav-item" data-nav="files"><svg aria-hidden="true"><use href="#layers"/></svg><span>资源库</span></button><div class="nav-spacer"></div><p class="nav-label">PLAYGROUND</p><button class="nav-item active" id="lab-nav"><svg aria-hidden="true"><use href="#spark"/></svg><span>交互实验室</span><span class="nav-count">LAB</span></button></nav>
+<div class="sidebar-bottom"><div class="mini-note"><svg aria-hidden="true"><use href="#leaf"/></svg><strong>好的体验，藏在细节里。</strong><p>用更自然的动效，<br>连接每一个工作瞬间。</p></div><div class="profile"><div class="avatar">L</div><div class="profile-text"><strong>Lin</strong><small>设计师 · Pro 计划</small></div><svg aria-hidden="true"><use href="#sliders"/></svg></div></div>
+</aside>
+<main class="main">
+<header class="topbar"><div class="breadcrumbs"><span>交互实验室</span><span class="slash">/</span><span>视图切换</span></div><div class="top-actions"><span>DESIGNED TO FLOW</span><button class="help-button" id="help-open"><svg aria-hidden="true"><use href="#info"/></svg>使用说明</button><div class="avatar small-avatar" aria-label="用户 Lin">L</div></div></header>
+<div class="content">
+<div class="eyebrow">INTERACTION LAB <span style="color:#c0c7b8">/</span> 001</div>
+<div class="heading-row"><h1>视图更迭，流畅如一。</h1><span class="version">CROSSFADE · V1.0</span></div>
+<p class="intro">让内容自然交接，让思路保持连贯。体验有重叠、无间断的视图切换。</p>
+<div class="lab-layout">
+<section aria-label="视图切换演示">
+<div class="preview">
+<div class="preview-bar"><div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div><span class="window-title"><svg aria-hidden="true"><use href="#folder"/></svg> project / brand-refresh</span><span class="live">LIVE PREVIEW</span></div>
+<div class="project-head"><div class="project-top"><div class="project-identity"><div class="project-logo"><svg aria-hidden="true"><use href="#layers"/></svg></div><div><h2>品牌焕新计划</h2><p>让每一个触点，都表达同一种态度。</p></div></div><button class="project-menu" id="project-info" aria-label="查看项目信息">•••</button></div><div class="project-meta"><span class="project-tag">进行中</span><div class="people" aria-label="3 位项目成员"><span class="person">L</span><span class="person">Y</span><span class="person">C</span><small>3 位成员</small></div></div>
+<div class="tabs" role="tablist" aria-label="项目视图"><button class="tab" id="tab-overview" role="tab" aria-selected="true" aria-controls="view-panel" data-view="overview"><svg aria-hidden="true"><use href="#grid"/></svg>项目概览</button><button class="tab" id="tab-board" role="tab" aria-selected="false" tabindex="-1" aria-controls="view-panel" data-view="board"><svg aria-hidden="true"><use href="#board"/></svg>任务看板</button><button class="tab" id="tab-files" role="tab" aria-selected="false" tabindex="-1" aria-controls="view-panel" data-view="files"><svg aria-hidden="true"><use href="#folder"/></svg>项目文件</button><button class="tab" id="tab-activity" role="tab" aria-selected="false" tabindex="-1" aria-controls="view-panel" data-view="activity"><svg aria-hidden="true"><use href="#activity"/></svg>最新动态</button></div></div>
+<div class="stage" id="view-panel" role="tabpanel" aria-labelledby="tab-overview" tabindex="0"></div>
+<div class="preview-footer"><span class="connection" id="view-state" role="status" aria-live="polite">项目概览 · 已就绪</span><span class="key-hint"><kbd>←</kbd> <kbd>→</kbd> 切换视图</span></div>
+</div>
+<div class="below-preview"><p><svg aria-hidden="true"><use href="#info"/></svg>点击上方标签，感受内容之间的自然过渡。</p><button class="replay" id="next-view"><svg aria-hidden="true"><use href="#refresh"/></svg>再体验一次</button></div>
+</section>
+<aside class="settings" aria-label="切换设置"><h2 class="panel-title"><svg aria-hidden="true"><use href="#sliders"/></svg>切换设置</h2><p class="panel-desc">调节节奏，找到恰到好处的衔接。</p><div class="settings-grid"><div><label class="setting-label" for="duration">过渡时长 <output class="value-chip" id="duration-value" for="duration">400 ms</output></label><input class="slider" id="duration" type="range" min="150" max="900" step="50" value="400"><div class="range-ticks"><span>150 ms</span><span>900 ms</span></div></div><div class="divider"></div><div><div class="toggle-row"><div class="toggle-copy"><strong id="reduce-label">减弱动态</strong><small>直接替换内容，跳过动画</small></div><button class="switch" id="reduce-motion" role="switch" aria-checked="false" aria-labelledby="reduce-label"></button></div><div class="system-preference"><svg aria-hidden="true"><use href="#check"/></svg><span id="preference-label">已跟随系统偏好</span></div></div></div><div class="divider"></div><button class="test-button" id="stress-test"><svg aria-hidden="true"><use href="#play"/></svg><span>测试连续切换</span></button><p class="test-caption" id="test-caption">快速切换 4 个视图，体验即时响应。</p><div class="status-block"><div class="status-heading">TRANSITION STATUS <span class="status-led" id="status-led"></span></div><div class="status-value" role="status" aria-live="polite"><svg aria-hidden="true"><use href="#check"/></svg><span id="transition-status">就绪，等待切换</span></div><div class="status-detail" id="transition-detail">内容保持可见 · 操作随时响应</div></div></aside>
+</div>
+<section class="principles" aria-label="交互原则"><div class="principle"><div class="principle-icon"><svg aria-hidden="true"><use href="#layers"/></svg></div><div><h3>自然交叠，无缝衔接</h3><p>旧内容淡出，新内容同步淡入。<br>每一帧都有内容，不打断注意力。</p></div></div><div class="principle"><div class="principle-icon"><svg aria-hidden="true"><use href="#refresh"/></svg></div><div><h3>随时切换，即时响应</h3><p>新操作接管未完成的过渡。<br>不排队，不重复，始终跟随你的节奏。</p></div></div><div class="principle"><div class="principle-icon"><svg aria-hidden="true"><use href="#leaf"/></svg></div><div><h3>尊重偏好，减少动态</h3><p>自动识别系统的减弱动态设置。<br>也可手动开启，让内容直接替换。</p></div></div></section>
+<footer class="page-footer"><span>Forma 实验室 · 为细节留一点空间。</span><span>THOUGHTFUL MOTION. BETTER FLOW.</span></footer>
+</div>
+</main>
+</div>
+<dialog id="help-dialog" aria-labelledby="help-title"><h2 id="help-title">体验视图交叉淡化</h2><p>点击项目标签切换视图，或在标签上使用左右方向键、Home 和 End 键。拖动滑块可以调整下一次切换的时长。</p><p>“测试连续切换”会快速切换四次。你可以随时点击其他标签接管；再次点击当前标签不会重复启动动画。</p><p>开启“减弱动态”后立即替换内容。系统启用减弱动态时会自动生效，手动开关不能覆盖系统保护。</p><button id="help-close">开始体验</button></dialog>
+<template id="template-overview"><div class="view-top"><h3>项目概况</h3><small>更新于今天 10:24</small></div><div class="metrics"><div class="metric"><div class="metric-label">整体进度</div><div class="metric-value">68<small>%</small></div><div class="metric-sub">↗ 较上周提升 12%</div></div><div class="metric"><div class="metric-label">已完成任务</div><div class="metric-value">24<small>/ 36</small></div><div class="metric-sub">本周完成 6 项</div></div><div class="metric"><div class="metric-label">距离交付</div><div class="metric-value">12<small>天</small></div><div class="metric-sub neutral">计划于 11 月 23 日交付</div></div></div><div class="progress-section"><div class="section-title">阶段进度<span>3 个里程碑</span></div><div class="progress-row"><span class="progress-name">品牌策略与定位</span><div class="progress-track"><div class="progress-fill" style="width:100%"></div></div><span class="progress-number">100%</span></div><div class="progress-row"><span class="progress-name">视觉识别系统</span><div class="progress-track"><div class="progress-fill" style="width:72%;background:#b4c3a2"></div></div><span class="progress-number">72%</span></div><div class="progress-row"><span class="progress-name">应用与落地</span><div class="progress-track"><div class="progress-fill" style="width:32%;background:#c9d4bb"></div></div><span class="progress-number">32%</span></div></div></template>
+<template id="template-board"><div class="view-top"><h3>任务看板</h3><small>本周重点 · 6 项任务</small></div><div class="board"><div class="board-col"><div class="board-label">待开始 <span>02</span></div><div class="task"><small>品牌应用</small><h4>包装视觉延展</h4><div class="task-footer">11 月 18 日 <span class="task-dot">Y</span></div></div><div class="task"><small>交付准备</small><h4>设计规范整理</h4><div class="task-footer">11 月 21 日 <span class="task-dot">L</span></div></div></div><div class="board-col"><div class="board-label">进行中 <span>02</span></div><div class="task"><small>视觉设计</small><h4>品牌色彩系统</h4><div class="task-footer">11 月 13 日 <span class="task-dot">L</span></div></div><div class="task"><small>视觉设计</small><h4>字体与排版探索</h4><div class="task-footer">11 月 15 日 <span class="task-dot">C</span></div></div></div><div class="board-col"><div class="board-label">已完成 <span>02</span></div><div class="task"><small>品牌策略</small><h4>核心价值梳理</h4><div class="task-footer">已完成 <span class="task-dot">✓</span></div></div><div class="task"><small>前期调研</small><h4>品牌视觉审计</h4><div class="task-footer">已完成 <span class="task-dot">✓</span></div></div></div></div></template>
+<template id="template-files"><div class="view-top"><h3>项目文件</h3><small>3 个文件 · 所有成员可查看</small></div><div class="file-list"><div class="file-item"><div class="file-icon">FIG</div><div class="file-text"><h4>品牌视觉识别系统 v2.0</h4><p>Lin 更新于今天 10:24</p></div><span>18.6 MB</span><svg aria-hidden="true"><use href="#folder"/></svg></div><div class="file-item"><div class="file-icon">PDF</div><div class="file-text"><h4>品牌策略与定位方案</h4><p>Yuki 更新于昨天 16:30</p></div><span>4.2 MB</span><svg aria-hidden="true"><use href="#folder"/></svg></div><div class="file-item"><div class="file-icon">ZIP</div><div class="file-text"><h4>品牌调研 · 参考素材</h4><p>Chen 更新于 11 月 8 日</p></div><span>32.8 MB</span><svg aria-hidden="true"><use href="#folder"/></svg></div></div><p style="font-size:9px;color:#a1aa95;margin-top:20px;line-height:1.8">演示文件，仅展示视图内容；无需上传或下载。</p></template>
+<template id="template-activity"><div class="view-top"><h3>最新动态</h3><small>今天 · 11 月 11 日</small></div><div style="padding-top:5px"><div class="timeline-item"><span class="person">L</span><div class="timeline-copy"><strong>Lin</strong> 更新了视觉识别系统<p>完成品牌主色与辅助色方案，等待团队评审。</p></div><time>10:24</time></div><div class="timeline-item"><span class="person">Y</span><div class="timeline-copy"><strong>Yuki</strong> 完成了品牌策略与定位<p>里程碑已完成，下一阶段进入视觉探索。</p></div><time>09:45</time></div><div class="timeline-item"><span class="person">C</span><div class="timeline-copy"><strong>Chen</strong> 添加了新的参考素材<p>12 份灵感素材已整理至项目资源。</p></div><time>09:12</time></div></div></template>
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const stage = $('view-panel');
+const tabs = [...document.querySelectorAll('[data-view]')];
+const ids = tabs.map(tab => tab.dataset.view);
+const names = Object.fromEntries(tabs.map(tab => [tab.dataset.view, tab.textContent.trim()]));
+const media = matchMedia('(prefers-reduced-motion: reduce)');
+const params = new URLSearchParams(location.search);
+let manualReduce = params.get('reduce') === '1';
+let current = 'overview';
+let animations = [];
+let generation = 0;
+let testTimers = [];
+let testRunning = false;
+let transitionCount = 0;
+let cancelCount = 0;
+const reduced = () => media.matches || manualReduce;
+function makeView(id) {
+  const view = document.createElement('div');
+  view.className = 'view';
+  view.dataset.viewId = id;
+  view.append($('template-' + id).content.cloneNode(true));
+  return view;
+}
+function setStatus(text, detail) {
+  $('transition-status').textContent = text;
+  $('transition-detail').textContent = detail;
+}
+function stopTest() {
+  testTimers.forEach(clearTimeout);
+  testTimers = [];
+  testRunning = false;
+  $('stress-test').querySelector('span').textContent = '测试连续切换';
+  $('test-caption').textContent = '快速切换 4 个视图，体验即时响应。';
+}
+// Freeze the currently painted composite before cancelling. Keeping its layers
+// together preserves the exact appearance when a new request interrupts a fade.
+function cancelAnimations(freeze = true) {
+  if (freeze && animations.length) cancelCount++;
+  for (const animation of animations) {
+    if (freeze) {
+      try { animation.commitStyles(); }
+      catch { animation.effect.target.style.opacity = getComputedStyle(animation.effect.target).opacity; }
+    }
+    animation.cancel();
+  }
+  animations = [];
+}
+function settle(view, token) {
+  if (token !== generation) return;
+  view.style.opacity = '1';
+  stage.replaceChildren(view);
+  cancelAnimations(false);
+  $('view-state').textContent = names[current] + ' · 已就绪';
+  $('status-led').style.background = '#94aa7f';
+  setStatus(reduced() ? '已直接替换' : '切换完成', reduced() ? '减弱动态已启用 · 无动画' : '内容保持可见 · 操作随时响应');
+}
+function switchView(id, source = 'user') {
+  if (!ids.includes(id)) return;
+  if (source === 'user') stopTest();
+  // A repeated request for the active destination must never restart a fade.
+  if (id === current) return;
+  const interrupted = animations.length > 0;
+  const token = ++generation;
+  cancelAnimations();
+  current = id;
+  transitionCount++;
+  for (const tab of tabs) {
+    const active = tab.dataset.view === id;
+    tab.setAttribute('aria-selected', String(active));
+    tab.tabIndex = active ? 0 : -1;
+  }
+  stage.setAttribute('aria-labelledby', 'tab-' + id);
+  const incoming = makeView(id);
+  if (reduced() || !incoming.animate) {
+    settle(incoming, token);
+    return;
+  }
+  // There is exactly one accessible destination. The outgoing snapshot is inert.
+  const outgoing = document.createElement('div');
+  outgoing.className = 'outgoing';
+  outgoing.inert = true;
+  outgoing.setAttribute('aria-hidden', 'true');
+  outgoing.append(...stage.childNodes);
+  stage.append(outgoing, incoming);
+  const duration = Number($('duration').value);
+  incoming.style.opacity = '0';
+  // The old layer stays opaque for the first 30%; the new layer reaches full
+  // opacity at 75%. Their fades overlap without ever exposing an empty stage.
+  const enter = incoming.animate([
+    {opacity:0,offset:0,easing:'cubic-bezier(.2,.65,.3,1)'},
+    {opacity:1,offset:.75},
+    {opacity:1,offset:1}
+  ], {duration,fill:'both'});
+  const exit = outgoing.animate([
+    {opacity:1,offset:0},
+    {opacity:1,offset:.3,easing:'ease-in-out'},
+    {opacity:0,offset:1}
+  ], {duration,fill:'both'});
+  animations = [enter, exit];
+  $('view-state').textContent = names[id] + ' · 切换中';
+  $('status-led').style.background = '#d0a06b';
+  setStatus(interrupted ? '已取消前序，切换至新视图' : '交叉淡化中', duration + ' ms · ' + (interrupted ? '最新操作已接管' : '旧内容与新内容同时可见'));
+  Promise.all([enter.finished,exit.finished]).then(() => settle(incoming, token)).catch(() => {});
+}
+function syncPreference() {
+  const isReduced = reduced();
+  document.documentElement.dataset.reduced = String(isReduced);
+  $('reduce-motion').setAttribute('aria-checked', String(isReduced));
+  $('preference-label').textContent = media.matches ? '系统已启用减弱动态' : manualReduce ? '手动启用减弱动态' : '已跟随系统偏好';
+  if (isReduced && animations.length) {
+    const token = ++generation;
+    cancelAnimations(false);
+    settle(makeView(current), token);
+  } else if (!animations.length) {
+    setStatus(isReduced ? '减弱动态已启用' : '就绪，等待切换', isReduced ? '直接替换内容 · 无动画' : '内容保持可见 · 操作随时响应');
+  }
+}
+tabs.forEach((tab,index) => {
+  tab.addEventListener('click', () => switchView(tab.dataset.view));
+  tab.addEventListener('keydown', event => {
+    let target;
+    if (event.key === 'ArrowRight') target = (index + 1) % tabs.length;
+    if (event.key === 'ArrowLeft') target = (index + tabs.length - 1) % tabs.length;
+    if (event.key === 'Home') target = 0;
+    if (event.key === 'End') target = tabs.length - 1;
+    if (target === undefined) return;
+    event.preventDefault();
+    tabs[target].focus();
+    switchView(tabs[target].dataset.view);
+  });
+});
+$('duration').addEventListener('input', event => $('duration-value').textContent = event.target.value + ' ms');
+$('reduce-motion').addEventListener('click', () => {
+  manualReduce = !manualReduce;
+  syncPreference();
+});
+media.addEventListener('change', syncPreference);
+$('next-view').addEventListener('click', () => switchView(ids[(ids.indexOf(current)+1)%ids.length]));
+$('stress-test').addEventListener('click', () => {
+  if (testRunning) { stopTest(); return; }
+  stopTest();
+  testRunning = true;
+  $('stress-test').querySelector('span').textContent = '停止连续测试';
+  $('test-caption').textContent = '连续切换中 · 点击任意标签可立即接管';
+  const start = ids.indexOf(current);
+  const interval = Math.min(120, Number($('duration').value) / 3);
+  for (let i=1; i<=4; i++) {
+    testTimers.push(setTimeout(() => switchView(ids[(start+i)%ids.length], 'test'), (i-1)*interval));
+  }
+  testTimers.push(setTimeout(stopTest, 3*interval + Number($('duration').value) + 40));
+});
+document.querySelectorAll('[data-nav]').forEach(button => button.addEventListener('click', () => switchView(button.dataset.nav)));
+$('lab-nav').addEventListener('click', () => { stopTest(); switchView('overview'); });
+const dialog = $('help-dialog');
+$('help-open').addEventListener('click', () => dialog.showModal());
+$('project-info').addEventListener('click', () => dialog.showModal());
+$('help-close').addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', event => { if(event.target === dialog && (event.clientX < dialog.getBoundingClientRect().left || event.clientX > dialog.getBoundingClientRect().right || event.clientY < dialog.getBoundingClientRect().top || event.clientY > dialog.getBoundingClientRect().bottom)) dialog.close(); });
+stage.append(makeView(current));
+syncPreference();
+// Small read-only diagnostics for repeat-request, interruption and cleanup checks.
+window.crossfadeDemo = Object.freeze({
+  get state() { return {current, animating:animations.length>0, reduced:reduced(), transitionCount, cancelCount, layers:stage.querySelectorAll('.view').length, testRunning}; }
+});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,2446 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f6f7f9" />
+    <title>Folio · 视图交叉淡化演示</title>
+    <style>
+      :root {
+        --ink: #24332e;
+        --muted: #84908b;
+        --green: #2c7158;
+        --green-dark: #205840;
+        --mint: #eaf3ed;
+        --line: #e8ece9;
+        --surface: #fff;
+        --canvas: #f6f7f9;
+        --radius: 16px;
+        font-family: "DM Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--ink);
+        background: var(--canvas);
+        font-synthesis: none;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-size: 14px;
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        color: inherit;
+      }
+      button,
+      a,
+      input {
+        -webkit-tap-highlight-color: transparent;
+      }
+      button {
+        border: 0;
+        background: none;
+      }
+      button:focus-visible,
+      a:focus-visible,
+      input:focus-visible {
+        outline: 3px solid #7fae91;
+        outline-offset: 4px;
+      }
+      button:disabled {
+        cursor: default;
+      }
+      ::selection {
+        background: #d8ebdd;
+      }
+      a {
+        color: inherit;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+      button {
+        touch-action: manipulation;
+      }
+      small {
+        font-size: 11px;
+      }
+      .app {
+        display: grid;
+        grid-template-columns: 216px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+      .sidebar {
+        padding: 38px 20px 22px;
+        border-right: 1px solid var(--line);
+        background: #fcfdfb;
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+        font-size: 29px;
+        font-weight: 750;
+        letter-spacing: -1.5px;
+      }
+      .brand-mark {
+        width: 25px;
+        height: 27px;
+        display: flex;
+        gap: 4px;
+        transform: skewY(-15deg);
+      }
+      .brand-mark i {
+        display: block;
+        width: 8px;
+        background: var(--green);
+        border-radius: 2px;
+      }
+      .brand-mark i:last-child {
+        height: 18px;
+      }
+      .brand-dot {
+        color: #78a486;
+      }
+      .workspace-select {
+        margin: 43px 0 29px;
+        padding: 12px 11px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: white;
+      }
+      .workspace-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        background: #eeeae4;
+        color: #716658;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .workspace-name {
+        flex: 1;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .chevron {
+        color: #a4ada7;
+        font-size: 12px;
+      }
+      .section-label {
+        color: #929b95;
+        font-size: 10px;
+        letter-spacing: 1.6px;
+        margin: 0 13px 12px;
+      }
+      .side-nav {
+        display: grid;
+        gap: 7px;
+      }
+      .side-nav button {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        padding: 13px 14px;
+        border-radius: 8px;
+        color: #76827a;
+        font-size: 13px;
+      }
+      .side-nav button.active {
+        background: #eaf1e9;
+        color: #356649;
+        font-weight: 600;
+      }
+      .side-nav button:hover {
+        background: #eef2ed;
+      }
+      .nav-glyph {
+        font-size: 17px;
+        line-height: 1;
+        width: 18px;
+        display: inline-block;
+        text-align: center;
+      }
+      .nav-count {
+        margin-left: auto;
+        color: #8b9b8e;
+        font-size: 11px;
+      }
+      .sidebar-project {
+        margin-top: 34px;
+      }
+      .project-link {
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        color: #6f7a72;
+      }
+      .project-dot {
+        height: 7px;
+        width: 7px;
+        border: 2px solid #90b299;
+        border-radius: 50%;
+      }
+      .side-bottom {
+        margin-top: auto;
+      }
+      .local-note {
+        display: flex;
+        gap: 7px;
+        align-items: center;
+        font-size: 10px;
+        color: #9aa19b;
+        padding: 18px 12px;
+      }
+      .tiny-dot {
+        height: 5px;
+        width: 5px;
+        border-radius: 50%;
+        background: #83a68b;
+      }
+      .profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 9px 0;
+        border-top: 1px solid var(--line);
+      }
+      .avatar {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border: 2px solid white;
+        border-radius: 50%;
+        background: #e5e6da;
+        color: #67745c;
+        font-size: 10px;
+        font-weight: 700;
+      }
+      .profile strong {
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .profile p {
+        font-size: 10px;
+        color: #929b95;
+        margin-top: 3px;
+      }
+      .profile .chevron {
+        margin-left: auto;
+      }
+      .main {
+        min-width: 0;
+      }
+      .topbar {
+        height: 83px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 40px;
+        border-bottom: 1px solid var(--line);
+        background: #fcfdfc;
+      }
+      .breadcrumbs {
+        display: flex;
+        gap: 13px;
+        color: #9aa29c;
+        font-size: 11px;
+      }
+      .breadcrumbs strong {
+        font-weight: 500;
+        color: #536259;
+      }
+      .top-tools {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .demo-label {
+        font-size: 10px;
+        color: #718278;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      .help {
+        border: 1px solid #dce3de;
+        border-radius: 50%;
+        height: 22px;
+        width: 22px;
+        color: #7c8980;
+        font-family: Georgia, serif;
+        font-size: 13px;
+      }
+      .top-tools .avatar {
+        height: 28px;
+        width: 28px;
+        background: #e8e7dc;
+      }
+      .main-body {
+        padding: 36px 40px 24px;
+        max-width: 1560px;
+        margin: auto;
+      }
+      .page-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 29px;
+      }
+      .page-title h1 {
+        font-size: 27px;
+        letter-spacing: -0.8px;
+        font-weight: 650;
+      }
+      .page-title p {
+        margin-top: 10px;
+        font-size: 11px;
+        color: #919a95;
+      }
+      .team {
+        display: flex;
+        align-items: center;
+      }
+      .team .avatar {
+        margin-left: -7px;
+        width: 29px;
+        height: 29px;
+        font-size: 9px;
+      }
+      .team .avatar:nth-child(2) {
+        background: #e7dece;
+        color: #8b7759;
+      }
+      .team .avatar:nth-child(3) {
+        background: #dce5ef;
+        color: #687c98;
+      }
+      .team-label {
+        color: #8e9891;
+        margin-left: 10px;
+        font-size: 10px;
+      }
+      .workspace-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 266px;
+        gap: 24px;
+        align-items: start;
+      }
+      .view-tabs {
+        display: flex;
+        gap: 29px;
+        border-bottom: 1px solid #e2e7e3;
+        margin-bottom: 24px;
+        height: 45px;
+      }
+      .view-tab {
+        font-size: 12px;
+        padding: 0 2px 16px;
+        position: relative;
+        color: #89948c;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .view-tab[aria-selected="true"] {
+        color: var(--green);
+        font-weight: 650;
+      }
+      .view-tab[aria-selected="true"]:after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--green);
+        border-radius: 2px;
+      }
+      .tab-number {
+        font-size: 9px;
+        background: #e9eeeb;
+        color: #829087;
+        padding: 2px 5px;
+        border-radius: 4px;
+      }
+      .view-stack {
+        display: grid;
+        isolation: isolate;
+        position: relative;
+        min-width: 0;
+      }
+      .view {
+        grid-area: 1 / 1;
+        align-self: start;
+        min-width: 0;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .view[data-active="true"] {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+      }
+      .view-stack.is-transitioning .view {
+        pointer-events: none;
+      }
+      .view-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 19px;
+      }
+      .view-title h2 {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .view-title p {
+        font-size: 10px;
+        color: #919d95;
+        margin-top: 7px;
+      }
+      .small-link {
+        font-size: 10px;
+        color: #7b8b80;
+        padding: 5px 0;
+      }
+      .small-link:hover {
+        color: var(--green);
+      }
+      .overview-banner {
+        background: #eaf1e9;
+        border: 1px solid #e1e9df;
+        border-radius: var(--radius);
+        padding: 25px 27px;
+        position: relative;
+        overflow: hidden;
+        min-height: 162px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .eyebrow {
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 1.8px;
+        color: #7d9581;
+      }
+      .overview-banner h3 {
+        font-size: 23px;
+        letter-spacing: -0.5px;
+        font-weight: 600;
+        margin-top: 11px;
+      }
+      .overview-banner p {
+        font-size: 11px;
+        color: #7e9182;
+        margin-top: 10px;
+      }
+      .banner-art {
+        width: 132px;
+        height: 106px;
+        position: relative;
+        flex-shrink: 0;
+        margin-left: 12px;
+      }
+      .orbit {
+        position: absolute;
+        border: 1px solid #c0d1bd;
+        border-radius: 50%;
+        width: 92px;
+        height: 92px;
+        top: 7px;
+        left: 20px;
+      }
+      .orbit:after {
+        content: "";
+        position: absolute;
+        width: 65px;
+        height: 65px;
+        border: 1px solid #c0d1bd;
+        border-radius: 50%;
+        left: 12px;
+        top: 12px;
+      }
+      .art-square {
+        position: absolute;
+        width: 62px;
+        height: 72px;
+        top: 19px;
+        left: 35px;
+        background: #719579;
+        transform: rotate(-16deg);
+        border-radius: 8px;
+        box-shadow: 6px 7px 0 #d4dfca;
+      }
+      .art-square:before,
+      .art-square:after {
+        content: "";
+        position: absolute;
+        height: 3px;
+        background: #d9e6d6;
+        left: 14px;
+        border-radius: 5px;
+      }
+      .art-square:before {
+        top: 24px;
+        width: 30px;
+      }
+      .art-square:after {
+        top: 34px;
+        width: 20px;
+      }
+      .art-dot {
+        position: absolute;
+        top: 9px;
+        right: 6px;
+        width: 10px;
+        height: 10px;
+        background: #d6c99a;
+        border: 3px solid #eaf1e9;
+        border-radius: 50%;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin: 18px 0 25px;
+      }
+      .metric {
+        border: 1px solid var(--line);
+        background: white;
+        border-radius: 12px;
+        padding: 18px 19px;
+      }
+      .metric-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #89958c;
+        font-size: 10px;
+      }
+      .metric-icon {
+        color: #97a69a;
+        font-size: 14px;
+      }
+      .metric-value {
+        font-size: 29px;
+        line-height: 1.3;
+        margin: 9px 0 7px;
+        letter-spacing: -1.2px;
+        font-weight: 550;
+      }
+      .metric-value span {
+        font-size: 12px;
+        color: #a1aba3;
+        letter-spacing: 0;
+        margin-left: 4px;
+        font-weight: 400;
+      }
+      .metric-foot {
+        font-size: 9px;
+        color: #9da69f;
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+      .metric-foot .positive {
+        color: #6a9474;
+      }
+      .metric-progress {
+        height: 3px;
+        border-radius: 4px;
+        background: #edf0ed;
+        margin-top: 12px;
+      }
+      .metric-progress span {
+        display: block;
+        background: #87a88b;
+        height: 100%;
+        width: 72%;
+        border-radius: 4px;
+      }
+      .card {
+        border: 1px solid var(--line);
+        background: white;
+        border-radius: 13px;
+        overflow: hidden;
+      }
+      .card-head {
+        padding: 19px 21px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #edf0ed;
+      }
+      .card-head h3 {
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .task-list {
+        padding: 0 21px;
+      }
+      .task-row {
+        display: flex;
+        gap: 11px;
+        align-items: center;
+        min-height: 58px;
+        border-bottom: 1px solid #eff2ef;
+        font-size: 11px;
+      }
+      .task-row:last-child {
+        border: 0;
+      }
+      .task-row input {
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        border: 1px solid #d6dfd7;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 0;
+        flex-shrink: 0;
+        display: grid;
+        place-content: center;
+        background: white;
+      }
+      .task-row input:checked {
+        background: #729879;
+        border-color: #729879;
+      }
+      .task-row input:checked:after {
+        content: "✓";
+        color: white;
+        font-size: 10px;
+      }
+      .task-row label {
+        cursor: pointer;
+        flex: 1;
+        line-height: 1.5;
+      }
+      .task-row:has(input:checked) label {
+        color: #a0aaa2;
+        text-decoration: line-through;
+      }
+      .badge {
+        font-size: 9px;
+        border-radius: 4px;
+        background: #edf4ee;
+        color: #7a9a7b;
+        padding: 4px 7px;
+        white-space: nowrap;
+      }
+      .badge.sand {
+        background: #f7f1e5;
+        color: #b3a078;
+      }
+      .badge.gray {
+        background: #f1f3f3;
+        color: #95a19b;
+      }
+      .row-date {
+        font-size: 9px;
+        color: #9ba69e;
+        min-width: 34px;
+        text-align: right;
+      }
+      .task-row .avatar {
+        width: 23px;
+        height: 23px;
+        font-size: 8px;
+        margin-left: 5px;
+        border: 0;
+      }
+      .section-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 13px;
+      }
+      .section-top h3 {
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .section-top span {
+        font-size: 9px;
+        color: #9aa59d;
+      }
+      .view-footer {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 9px;
+        color: #a0aaa3;
+        margin-top: 20px;
+      }
+      .view-footer .tiny-dot {
+        width: 4px;
+        height: 4px;
+        background: #a0b6a5;
+      }
+      .panel {
+        margin-top: 0;
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: white;
+        overflow: hidden;
+      }
+      .panel-header {
+        padding: 23px 23px 19px;
+        border-bottom: 1px solid var(--line);
+      }
+      .panel-kicker {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 10px;
+        color: #89958c;
+        margin-bottom: 22px;
+      }
+      .live-pill {
+        font-size: 8px;
+        letter-spacing: 0.7px;
+        background: #eef4ef;
+        color: #72947c;
+        padding: 4px 6px;
+        border-radius: 4px;
+      }
+      .fade-mark {
+        width: 40px;
+        height: 27px;
+        position: relative;
+        margin-bottom: 15px;
+      }
+      .fade-mark:before,
+      .fade-mark:after {
+        content: "";
+        position: absolute;
+        top: 1px;
+        width: 25px;
+        height: 25px;
+        border: 1px solid #69997a;
+        border-radius: 50%;
+        background: #edf4ee;
+      }
+      .fade-mark:after {
+        left: 15px;
+        background: #a9c5af88;
+      }
+      .panel-header h2 {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.3px;
+      }
+      .panel-header p {
+        font-size: 10px;
+        line-height: 1.9;
+        color: #8b998f;
+        margin-top: 10px;
+      }
+      .panel-content {
+        padding: 23px;
+      }
+      .setting-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 10px;
+      }
+      .setting-heading output {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 10px;
+        color: #7c8e80;
+      }
+      .range {
+        display: block;
+        accent-color: var(--green);
+        width: 100%;
+        height: 4px;
+        margin: 22px 0 10px;
+        cursor: pointer;
+      }
+      .range:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+      .range-labels {
+        display: flex;
+        justify-content: space-between;
+        color: #a8b0aa;
+        font-family: monospace;
+        font-size: 8px;
+      }
+      .chart {
+        margin: 24px 0 10px;
+        background: #f8faf8;
+        border: 1px solid #eef1ed;
+        border-radius: 8px;
+        padding: 11px 10px 8px;
+      }
+      .chart canvas {
+        width: 100%;
+        height: 87px;
+        display: block;
+      }
+      .chart-axis {
+        display: flex;
+        justify-content: space-between;
+        font-size: 8px;
+        color: #a6afa8;
+        margin-top: 4px;
+      }
+      .legend {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        font-size: 8px;
+        color: #9aa69c;
+        margin-top: 10px;
+      }
+      .legend span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .line-key {
+        height: 2px;
+        width: 11px;
+        background: #b8c2b8;
+      }
+      .line-key.new {
+        background: #5c8b68;
+      }
+      .motion-setting {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 26px 0 22px;
+        gap: 8px;
+      }
+      .motion-setting label {
+        font-size: 11px;
+        cursor: pointer;
+      }
+      .motion-setting p {
+        font-size: 9px;
+        color: #a1aaa3;
+        margin-top: 6px;
+      }
+      .switch {
+        appearance: none;
+        width: 31px;
+        height: 18px;
+        flex-shrink: 0;
+        border-radius: 20px;
+        background: #dfe5e0;
+        cursor: pointer;
+        position: relative;
+        margin: 0;
+      }
+      .switch:before {
+        content: "";
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: white;
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        box-shadow: 0 1px 2px #0001;
+      }
+      .switch:checked {
+        background: var(--green);
+      }
+      .switch:checked:before {
+        left: 16px;
+      }
+      .switch:disabled {
+        cursor: default;
+      }
+      .primary-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        background: var(--green);
+        color: white;
+        border-radius: 7px;
+        padding: 12px 10px;
+        font-size: 10px;
+        font-weight: 500;
+        box-shadow: 0 2px 3px #24563f0d;
+      }
+      .primary-button:hover {
+        background: var(--green-dark);
+      }
+      .play-icon {
+        font-size: 10px;
+      }
+      .test-note {
+        font-size: 8px;
+        line-height: 1.8;
+        text-align: center;
+        margin-top: 9px;
+        color: #a0aaa2;
+      }
+      .panel-status {
+        padding: 16px 23px;
+        background: #fafbf9;
+        border-top: 1px solid var(--line);
+      }
+      .status-main {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 9px;
+      }
+      .status-indicator {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        color: #6e8c77;
+      }
+      .status-indicator .tiny-dot {
+        width: 5px;
+        height: 5px;
+      }
+      .status-route {
+        color: #8d9d91;
+        font-size: 9px;
+      }
+      .status-details {
+        font-size: 8px;
+        color: #a3ada5;
+        margin-top: 9px;
+        min-height: 12px;
+      }
+      .aside-note {
+        display: flex;
+        gap: 9px;
+        align-items: flex-start;
+        padding: 17px 9px;
+        font-size: 9px;
+        color: #9ba79f;
+        line-height: 1.9;
+      }
+      .aside-note .info {
+        border: 1px solid #acb6ae;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-grid;
+        place-items: center;
+        font-size: 8px;
+        flex-shrink: 0;
+        margin-top: 3px;
+      }
+      .bottom-bar {
+        margin-top: 27px;
+        border-top: 1px solid var(--line);
+        padding-top: 17px;
+        display: flex;
+        justify-content: space-between;
+        color: #a4aea7;
+        font-size: 9px;
+      }
+      .keyboard-key {
+        border: 1px solid #dfe5df;
+        border-radius: 3px;
+        padding: 1px 4px;
+        background: #fcfdfb;
+        font-family: inherit;
+        font-size: 9px;
+        margin: 0 2px;
+      }
+      .tasks-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 17px;
+      }
+      .filter-group {
+        display: flex;
+        padding: 3px;
+        background: #edf1ee;
+        border-radius: 7px;
+        gap: 3px;
+      }
+      .filter {
+        padding: 6px 10px;
+        font-size: 9px;
+        border-radius: 5px;
+        color: #8b998e;
+      }
+      .filter[aria-pressed="true"] {
+        background: #fff;
+        color: #487154;
+        box-shadow: 0 1px 3px #1d422514;
+      }
+      .task-summary {
+        font-size: 10px;
+        color: #94a097;
+      }
+      .full-task-list .task-row {
+        min-height: 67px;
+      }
+      .task-priority {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #c5b183;
+        margin: 0 3px;
+      }
+      .task-priority.low {
+        background: #a2b9a6;
+      }
+      .empty-state {
+        display: none;
+        text-align: center;
+        font-size: 12px;
+        color: #93a196;
+        padding: 48px 20px;
+      }
+      .file-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+      }
+      .file-card {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+        text-align: left;
+        padding: 0;
+        min-width: 0;
+      }
+      .file-card:hover {
+        border-color: #a5bca9;
+        box-shadow: 0 3px 14px #28453208;
+      }
+      .file-preview {
+        height: 126px;
+        display: grid;
+        place-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .file-preview.brand-preview {
+        background: #e9efe5;
+      }
+      .poster-word {
+        font-size: 43px;
+        font-weight: 700;
+        letter-spacing: -4px;
+        color: #4e7255;
+      }
+      .brand-preview:after {
+        content: "";
+        position: absolute;
+        right: 23px;
+        bottom: 21px;
+        border: 1px solid #8aa38b;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+      }
+      .type-preview {
+        background: #f1ede6;
+        color: #7b705f;
+        font-family: Georgia, serif;
+        font-size: 55px;
+        letter-spacing: -6px;
+      }
+      .color-preview {
+        background: #eeefea;
+        display: flex;
+        gap: 0;
+        padding: 28px 35px;
+      }
+      .swatch {
+        height: 67px;
+        width: 25%;
+        background: #335e45;
+        border-radius: 4px;
+        transform: rotate(-10deg);
+        margin-left: -3px;
+        box-shadow: 0 3px 7px #0001;
+      }
+      .swatch:nth-child(2) {
+        background: #799a7b;
+      }
+      .swatch:nth-child(3) {
+        background: #c9d8bf;
+      }
+      .swatch:nth-child(4) {
+        background: #ebe5d5;
+      }
+      .layout-preview {
+        background: #e8edf0;
+        padding: 20px 37px;
+      }
+      .mini-layout {
+        width: 100%;
+        height: 87px;
+        border-radius: 5px;
+        background: white;
+        display: grid;
+        grid-template-columns: 20% 1fr;
+        gap: 8px;
+        padding: 9px;
+        box-shadow: 0 3px 10px #6374800a;
+      }
+      .mini-nav {
+        background: #e3ebe4;
+        border-radius: 2px;
+      }
+      .mini-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+      }
+      .mini-content i {
+        background: #e8ede7;
+        border-radius: 2px;
+      }
+      .mini-content i:first-child {
+        grid-column: span 2;
+        background: #b2c6b5;
+      }
+      .file-info {
+        display: block;
+        padding: 14px 16px;
+      }
+      .file-info strong {
+        display: block;
+        font-size: 11px;
+        font-weight: 550;
+      }
+      .file-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 8px;
+        color: #9da79f;
+        margin-top: 7px;
+      }
+      .file-type {
+        font-size: 8px;
+        letter-spacing: 0.4px;
+      }
+      .file-count {
+        font-size: 10px;
+        color: #9ba69d;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+      }
+      dialog {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        width: min(460px, calc(100vw - 36px));
+        padding: 30px;
+        color: var(--ink);
+        box-shadow: 0 20px 100px #152e2929;
+      }
+      dialog::backdrop {
+        background: #20352b42;
+      }
+      dialog h2 {
+        font-size: 20px;
+        letter-spacing: -0.4px;
+      }
+      dialog p {
+        font-size: 12px;
+        color: #7a8c80;
+        line-height: 1.9;
+        margin: 17px 0 22px;
+      }
+      dialog .primary-button {
+        width: auto;
+        min-width: 90px;
+        margin-left: auto;
+      }
+      dialog .file-preview {
+        border-radius: 9px;
+        height: 200px;
+        margin-top: 22px;
+      }
+      dialog .file-preview .poster-word {
+        font-size: 70px;
+      }
+      .modal-close {
+        position: absolute;
+        right: 17px;
+        top: 15px;
+        font-size: 20px;
+        color: #91a095;
+        padding: 3px 7px;
+      }
+      @media (min-width: 1600px) {
+        .main-body {
+          padding-top: 45px;
+        }
+        .workspace-layout {
+          grid-template-columns: minmax(0, 1fr) 286px;
+          gap: 30px;
+        }
+        .overview-banner {
+          min-height: 190px;
+        }
+        .file-preview {
+          height: 156px;
+        }
+      }
+      @media (max-width: 1190px) {
+        .app {
+          grid-template-columns: 181px minmax(0, 1fr);
+        }
+        .sidebar {
+          padding-left: 12px;
+          padding-right: 12px;
+        }
+        .topbar {
+          padding: 0 27px;
+        }
+        .main-body {
+          padding: 30px 27px 22px;
+        }
+        .workspace-layout {
+          grid-template-columns: minmax(0, 1fr) 239px;
+          gap: 20px;
+        }
+        .panel-content {
+          padding: 20px;
+        }
+        .panel-header {
+          padding: 21px;
+        }
+        .metric {
+          padding: 16px 13px;
+        }
+        .overview-banner {
+          padding: 22px;
+        }
+        .banner-art {
+          width: 105px;
+          transform: scale(0.88);
+          transform-origin: center right;
+        }
+        .task-row .avatar {
+          display: none;
+        }
+        .task-list {
+          padding: 0 16px;
+        }
+      }
+      @media (max-width: 980px) {
+        .app {
+          grid-template-columns: 76px minmax(0, 1fr);
+        }
+        .sidebar {
+          align-items: center;
+          padding: 31px 10px 20px;
+        }
+        .brand {
+          font-size: 0;
+          padding: 0;
+        }
+        .brand-mark {
+          width: 25px;
+        }
+        .workspace-select,
+        .section-label,
+        .sidebar-project,
+        .profile,
+        .local-note {
+          display: none;
+        }
+        .side-nav {
+          margin-top: 54px;
+          width: 100%;
+        }
+        .side-nav button {
+          justify-content: center;
+          padding: 14px;
+        }
+        .nav-text,
+        .nav-count {
+          display: none;
+        }
+        .side-bottom {
+          flex: 1;
+        }
+        .workspace-layout {
+          grid-template-columns: minmax(0, 1fr) 235px;
+          gap: 20px;
+        }
+        .topbar {
+          height: 73px;
+        }
+        .page-title h1 {
+          font-size: 24px;
+        }
+        .team-label {
+          display: none;
+        }
+        .view-tabs {
+          gap: 24px;
+        }
+        .metric-value {
+          font-size: 25px;
+        }
+        .metric-foot {
+          font-size: 8px;
+        }
+        .overview-banner h3 {
+          font-size: 20px;
+        }
+        .banner-art {
+          width: 72px;
+          opacity: 0.7;
+        }
+        .overview-banner p {
+          font-size: 10px;
+        }
+        .task-row {
+          gap: 8px;
+          font-size: 10px;
+        }
+        .row-date {
+          display: none;
+        }
+      }
+      @media (max-width: 760px) {
+        .workspace-layout {
+          grid-template-columns: 1fr;
+        }
+        .settings-aside {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+        .panel {
+          margin-top: 6px;
+        }
+        .panel-header {
+          display: none;
+        }
+        .panel-content {
+          padding: 22px;
+        }
+        .panel-content .chart,
+        .panel-content .legend {
+          display: none;
+        }
+        .motion-setting {
+          margin: 23px 0;
+        }
+        .panel-status {
+          padding: 14px 22px;
+        }
+        .test-note {
+          font-size: 9px;
+        }
+        .aside-note {
+          padding-top: 12px;
+        }
+        .bottom-bar {
+          margin-top: 10px;
+        }
+        .view-stack {
+          min-height: 575px;
+        }
+        .view-title {
+          margin-bottom: 17px;
+        }
+        .overview-banner {
+          min-height: 150px;
+        }
+        .metric {
+          padding: 17px;
+        }
+        .task-row .avatar {
+          display: grid;
+        }
+        .row-date {
+          display: block;
+        }
+        .task-row {
+          font-size: 11px;
+          gap: 10px;
+        }
+        .metrics {
+          margin-bottom: 23px;
+        }
+        .primary-button {
+          font-size: 11px;
+        }
+        .setting-heading {
+          font-size: 11px;
+        }
+      }
+      @media (max-width: 480px) {
+        .app {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          display: none;
+        }
+        .topbar {
+          height: 62px;
+          padding: 0 21px;
+        }
+        .breadcrumbs {
+          font-size: 10px;
+          gap: 9px;
+        }
+        .top-tools {
+          gap: 12px;
+        }
+        .demo-label {
+          display: none;
+        }
+        .main-body {
+          padding: 26px 21px 20px;
+        }
+        .page-title {
+          margin-bottom: 25px;
+        }
+        .page-title h1 {
+          font-size: 22px;
+        }
+        .page-title p {
+          font-size: 10px;
+        }
+        .team .avatar {
+          width: 24px;
+          height: 24px;
+          font-size: 8px;
+        }
+        .view-tabs {
+          margin-bottom: 22px;
+        }
+        .overview-banner {
+          padding: 21px;
+          min-height: 145px;
+        }
+        .overview-banner h3 {
+          font-size: 21px;
+        }
+        .banner-art {
+          width: 81px;
+        }
+        .metric {
+          padding: 15px 11px;
+        }
+        .metric-top {
+          font-size: 9px;
+        }
+        .metric-icon {
+          font-size: 11px;
+        }
+        .metric-value {
+          font-size: 24px;
+          margin: 12px 0 8px;
+        }
+        .metric-value span {
+          font-size: 9px;
+        }
+        .metric-foot {
+          font-size: 8px;
+          white-space: nowrap;
+        }
+        .task-row {
+          font-size: 10px;
+          gap: 8px;
+        }
+        .task-row .avatar {
+          display: none;
+        }
+        .badge {
+          font-size: 8px;
+        }
+        .card-head {
+          padding: 17px;
+        }
+        .file-grid {
+          gap: 12px;
+        }
+        .file-preview {
+          height: 122px;
+        }
+        .file-info {
+          padding: 13px;
+        }
+        .file-info strong {
+          font-size: 10px;
+        }
+        .color-preview {
+          padding: 28px 17px;
+        }
+        .layout-preview {
+          padding: 20px;
+        }
+        .poster-word {
+          font-size: 38px;
+        }
+        .type-preview {
+          font-size: 49px;
+        }
+        .bottom-bar {
+          font-size: 8px;
+        }
+        .keyboard-hint {
+          display: none;
+        }
+        .view-stack {
+          min-height: 564px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar" aria-label="工作空间导航">
+        <div class="brand" aria-label="Folio">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i></span
+          >folio<span class="brand-dot">.</span>
+        </div>
+        <div class="workspace-select">
+          <span class="workspace-icon">S</span
+          ><span class="workspace-name">Studio 工作空间</span
+          ><span class="chevron" aria-hidden="true">⌄</span>
+        </div>
+        <p class="section-label">工作空间</p>
+        <nav class="side-nav" aria-label="视图导航">
+          <button
+            data-go="overview"
+            class="active"
+            aria-current="page"
+            aria-label="项目概览"
+          >
+            <span class="nav-glyph" aria-hidden="true">▦</span
+            ><span class="nav-text">项目概览</span>
+          </button>
+          <button data-go="tasks" aria-label="团队任务">
+            <span class="nav-glyph" aria-hidden="true">☑</span
+            ><span class="nav-text">团队任务</span
+            ><span class="nav-count">6</span>
+          </button>
+          <button data-go="files" aria-label="设计文件">
+            <span class="nav-glyph" aria-hidden="true">▱</span
+            ><span class="nav-text">设计文件</span
+            ><span class="nav-count">4</span>
+          </button>
+        </nav>
+        <div class="sidebar-project">
+          <p class="section-label">当前项目</p>
+          <div class="project-link">
+            <span class="project-dot"></span>品牌焕新计划
+          </div>
+        </div>
+        <div class="side-bottom">
+          <div class="local-note">
+            <span class="tiny-dot"></span>本地交互演示
+          </div>
+          <div class="profile">
+            <span class="avatar">LC</span>
+            <div>
+              <strong>林初</strong>
+              <p>设计师 · Studio</p>
+            </div>
+            <span class="chevron" aria-hidden="true">⌄</span>
+          </div>
+        </div>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="breadcrumbs">
+            <span>工作空间</span><span aria-hidden="true">/</span
+            ><strong>品牌焕新计划</strong>
+          </div>
+          <div class="top-tools">
+            <span class="demo-label"
+              ><span class="tiny-dot"></span>交互演示</span
+            ><button class="help" id="help-button" aria-label="查看演示说明">
+              ?</button
+            ><span class="avatar" aria-label="林初">LC</span>
+          </div>
+        </header>
+        <div class="main-body">
+          <div class="page-title">
+            <div>
+              <h1>品牌焕新计划</h1>
+              <p>
+                2026 年 11 月
+                <span aria-hidden="true">&nbsp; / &nbsp;</span> Studio 设计团队
+              </p>
+            </div>
+            <div class="team" aria-label="项目成员 林初、陈可、江宁">
+              <span class="avatar">LC</span><span class="avatar">CK</span
+              ><span class="avatar">JN</span
+              ><span class="team-label">3 位成员</span>
+            </div>
+          </div>
+          <div class="workspace-layout">
+            <section class="workspace" aria-label="项目视图">
+              <div class="view-tabs" role="tablist" aria-label="项目内容">
+                <button
+                  class="view-tab"
+                  id="tab-overview"
+                  role="tab"
+                  aria-selected="true"
+                  aria-controls="view-overview"
+                  data-go="overview"
+                  tabindex="0"
+                >
+                  <span class="nav-glyph" aria-hidden="true">▦</span>概览
+                </button>
+                <button
+                  class="view-tab"
+                  id="tab-tasks"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="view-tasks"
+                  data-go="tasks"
+                  tabindex="-1"
+                >
+                  <span class="nav-glyph" aria-hidden="true">☑</span>任务<span
+                    class="tab-number"
+                    >6</span
+                  >
+                </button>
+                <button
+                  class="view-tab"
+                  id="tab-files"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="view-files"
+                  data-go="files"
+                  tabindex="-1"
+                >
+                  <span class="nav-glyph" aria-hidden="true">▱</span>文件<span
+                    class="tab-number"
+                    >4</span
+                  >
+                </button>
+              </div>
+              <div class="view-stack" id="view-stack">
+                <section
+                  class="view"
+                  id="view-overview"
+                  role="tabpanel"
+                  aria-labelledby="tab-overview"
+                  tabindex="0"
+                  data-active="true"
+                >
+                  <div class="view-title">
+                    <h2>项目概览</h2>
+                    <span class="badge">进行中</span>
+                  </div>
+                  <div class="overview-banner">
+                    <div>
+                      <div class="eyebrow">BRAND REFRESH / 2026</div>
+                      <h3>视觉识别系统升级</h3>
+                      <p>第二阶段 · 11 月 11 日至 23 日</p>
+                    </div>
+                    <div class="banner-art" aria-hidden="true">
+                      <div class="orbit"></div>
+                      <div class="art-square"></div>
+                      <div class="art-dot"></div>
+                    </div>
+                  </div>
+                  <div class="metrics">
+                    <div class="metric">
+                      <div class="metric-top">
+                        项目进度<span class="metric-icon" aria-hidden="true"
+                          >◴</span
+                        >
+                      </div>
+                      <div class="metric-value">72<span>%</span></div>
+                      <div class="metric-foot">
+                        <span class="positive">↗ 12%</span>较上周
+                      </div>
+                      <div class="metric-progress"><span></span></div>
+                    </div>
+                    <div class="metric">
+                      <div class="metric-top">
+                        已完成任务<span class="metric-icon" aria-hidden="true"
+                          >☑</span
+                        >
+                      </div>
+                      <div class="metric-value">
+                        <b id="completed-count" style="font-weight: inherit"
+                          >2</b
+                        ><span>/ 6</span>
+                      </div>
+                      <div class="metric-foot">任务状态实时同步</div>
+                    </div>
+                    <div class="metric">
+                      <div class="metric-top">
+                        距离交付<span class="metric-icon" aria-hidden="true"
+                          >▦</span
+                        >
+                      </div>
+                      <div class="metric-value">12<span>天</span></div>
+                      <div class="metric-foot">11 月 23 日交付</div>
+                    </div>
+                  </div>
+                  <div class="section-top">
+                    <h3>近期任务</h3>
+                    <button class="small-link" data-go="tasks">
+                      查看全部 <span aria-hidden="true">↗</span>
+                    </button>
+                  </div>
+                  <div class="card">
+                    <div class="task-list" id="recent-tasks"></div>
+                  </div>
+                  <p class="view-footer">
+                    <span class="tiny-dot"></span>示例项目数据 ·
+                    可勾选任务体验状态保留
+                  </p>
+                </section>
+                <section
+                  class="view"
+                  id="view-tasks"
+                  role="tabpanel"
+                  aria-labelledby="tab-tasks"
+                  tabindex="0"
+                  data-active="false"
+                  aria-hidden="true"
+                  inert
+                >
+                  <div class="view-title">
+                    <div>
+                      <h2>团队任务</h2>
+                      <p>第二阶段 · 共 6 项设计与交付任务</p>
+                    </div>
+                    <span class="badge">6 项任务</span>
+                  </div>
+                  <div class="tasks-toolbar">
+                    <div
+                      class="filter-group"
+                      role="group"
+                      aria-label="筛选任务"
+                    >
+                      <button
+                        class="filter"
+                        data-filter="all"
+                        aria-pressed="true"
+                      >
+                        全部</button
+                      ><button
+                        class="filter"
+                        data-filter="open"
+                        aria-pressed="false"
+                      >
+                        待完成</button
+                      ><button
+                        class="filter"
+                        data-filter="done"
+                        aria-pressed="false"
+                      >
+                        已完成
+                      </button>
+                    </div>
+                    <span class="task-summary" id="task-summary"
+                      >2 / 6 已完成</span
+                    >
+                  </div>
+                  <div class="card">
+                    <div class="card-head">
+                      <h3>第二阶段 · 视觉系统</h3>
+                      <span class="badge gray">11.11 — 11.23</span>
+                    </div>
+                    <div class="task-list full-task-list" id="all-tasks"></div>
+                    <p class="empty-state" id="empty-tasks">
+                      当前筛选下暂无任务
+                    </p>
+                  </div>
+                  <p class="view-footer">
+                    <span class="tiny-dot"></span
+                    >勾选状态与概览同步，切换后继续保留
+                  </p>
+                </section>
+                <section
+                  class="view"
+                  id="view-files"
+                  role="tabpanel"
+                  aria-labelledby="tab-files"
+                  tabindex="0"
+                  data-active="false"
+                  aria-hidden="true"
+                  inert
+                >
+                  <div class="view-title">
+                    <div>
+                      <h2>设计文件</h2>
+                      <p>品牌视觉资产，集中整理。</p>
+                    </div>
+                    <span class="file-count">4 个文件</span>
+                  </div>
+                  <div class="file-grid">
+                    <button
+                      class="file-card"
+                      data-file="0"
+                      aria-label="预览 品牌标志规范"
+                    >
+                      <span class="file-preview brand-preview"
+                        ><span class="poster-word">folio.</span></span
+                      ><span class="file-info"
+                        ><strong>品牌标志规范</strong>
+                        <span class="file-meta">
+                          <span>林初 · 今天更新</span
+                          ><span class="file-type">FIG</span>
+                        </span></span
+                      >
+                    </button>
+                    <button
+                      class="file-card"
+                      data-file="1"
+                      aria-label="预览 字体与排版系统"
+                    >
+                      <span class="file-preview type-preview">Aa Bb</span
+                      ><span class="file-info"
+                        ><strong>字体与排版系统</strong>
+                        <span class="file-meta">
+                          <span>陈可 · 昨天更新</span
+                          ><span class="file-type">PDF</span>
+                        </span></span
+                      >
+                    </button>
+                    <button
+                      class="file-card"
+                      data-file="2"
+                      aria-label="预览 品牌色彩方案"
+                    >
+                      <span class="file-preview color-preview"
+                        ><i class="swatch"></i><i class="swatch"></i
+                        ><i class="swatch"></i><i class="swatch"></i></span
+                      ><span class="file-info"
+                        ><strong>品牌色彩方案</strong>
+                        <span class="file-meta">
+                          <span>林初 · 11 月 09 日</span
+                          ><span class="file-type">FIG</span>
+                        </span></span
+                      >
+                    </button>
+                    <button
+                      class="file-card"
+                      data-file="3"
+                      aria-label="预览 网站组件库"
+                    >
+                      <span class="file-preview layout-preview"
+                        ><span class="mini-layout"
+                          ><span class="mini-nav"></span
+                          ><span class="mini-content"
+                            ><i></i><i></i><i></i></span></span></span
+                      ><span class="file-info"
+                        ><strong>网站组件库</strong>
+                        <span class="file-meta">
+                          <span>江宁 · 11 月 08 日</span
+                          ><span class="file-type">FIG</span>
+                        </span></span
+                      >
+                    </button>
+                  </div>
+                  <p class="view-footer">
+                    <span class="tiny-dot"></span>点击文件查看示例预览
+                  </p>
+                </section>
+              </div>
+            </section>
+            <aside class="settings-aside" aria-label="动效设置">
+              <section class="panel">
+                <div class="panel-header">
+                  <div class="panel-kicker">
+                    动效设置<span class="live-pill">LIVE DEMO</span>
+                  </div>
+                  <div class="fade-mark" aria-hidden="true"></div>
+                  <h2>交叉淡化</h2>
+                  <p>
+                    旧视图退场与新视图进场同步进行，<br />让切换过程保持连贯。
+                  </p>
+                </div>
+                <div class="panel-content">
+                  <div class="setting-heading">
+                    <label for="duration">切换时长</label
+                    ><output id="duration-value" for="duration">360 ms</output>
+                  </div>
+                  <input
+                    class="range"
+                    id="duration"
+                    type="range"
+                    min="160"
+                    max="800"
+                    step="20"
+                    value="360"
+                    aria-label="切换时长，毫秒"
+                  />
+                  <div class="range-labels">
+                    <span>160 ms</span><span>800 ms</span>
+                  </div>
+                  <div class="chart">
+                    <canvas
+                      id="fade-chart"
+                      role="img"
+                      aria-label="旧视图透明度下降、新视图透明度上升，完整重叠的交叉淡化曲线"
+                    ></canvas>
+                    <div class="chart-axis">
+                      <span>0</span><span id="chart-end">360 ms</span>
+                    </div>
+                  </div>
+                  <div class="legend">
+                    <span><i class="line-key"></i>旧视图</span
+                    ><span><i class="line-key new"></i>新视图</span>
+                  </div>
+                  <div class="motion-setting">
+                    <div>
+                      <label for="reduce-motion">减弱动态</label>
+                      <p id="motion-description">开启后立即替换视图</p>
+                    </div>
+                    <input
+                      class="switch"
+                      type="checkbox"
+                      role="switch"
+                      id="reduce-motion"
+                      aria-describedby="motion-description"
+                    />
+                  </div>
+                  <button class="primary-button" id="stress-test">
+                    <span class="play-icon" aria-hidden="true">▷</span
+                    ><span id="stress-label">连续切换演示</span>
+                  </button>
+                  <p class="test-note">每 120 ms 切换一次，验证最新操作优先</p>
+                </div>
+                <div class="panel-status">
+                  <div class="status-main">
+                    <span class="status-indicator"
+                      ><span class="tiny-dot"></span
+                      ><span id="transition-status">就绪</span></span
+                    ><span class="status-route" id="transition-route"
+                      >概览</span
+                    >
+                  </div>
+                  <div class="status-details" id="transition-detail">
+                    等待切换 · 点击上方视图标签
+                  </div>
+                </div>
+              </section>
+              <p class="aside-note">
+                <span class="info" aria-hidden="true">i</span
+                ><span>可在动画中继续切换。重复选择当前视图时，自动忽略。</span>
+              </p>
+            </aside>
+          </div>
+          <footer class="bottom-bar">
+            <span
+              >Folio Studio
+              <span aria-hidden="true">&nbsp; / &nbsp;</span> 原生交互实验</span
+            ><span class="keyboard-hint"
+              >聚焦标签后使用 <kbd class="keyboard-key">←</kbd
+              ><kbd class="keyboard-key">→</kbd> 切换视图</span
+            ><span>HTML · CSS · JavaScript</span>
+          </footer>
+        </div>
+      </main>
+    </div>
+    <div
+      id="announcement"
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+    ></div>
+    <dialog id="preview-dialog" aria-labelledby="dialog-title">
+      <button class="modal-close" id="close-dialog" aria-label="关闭弹窗">
+        ×
+      </button>
+      <h2 id="dialog-title">演示说明</h2>
+      <div id="dialog-content"></div>
+      <button class="primary-button" id="dialog-done">知道了</button>
+    </dialog>
+    <script>
+      (() => {
+        "use strict";
+        const names = { overview: "概览", tasks: "任务", files: "文件" };
+        const keys = Object.keys(names);
+        const stack = document.getElementById("view-stack");
+        const panels = keys.map((key) =>
+          document.getElementById("view-" + key),
+        );
+        const tabs = [...document.querySelectorAll('[role="tab"]')];
+        const durationInput = document.getElementById("duration");
+        const reduceInput = document.getElementById("reduce-motion");
+        const systemMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        );
+        const status = document.getElementById("transition-status");
+        const route = document.getElementById("transition-route");
+        const detail = document.getElementById("transition-detail");
+        const announcement = document.getElementById("announcement");
+        const stressButton = document.getElementById("stress-test");
+        let current = "overview";
+        let weights = [1, 0, 0];
+        let animationFrame = 0;
+        let transitioning = false;
+        let cancellations = 0;
+        let demoTimer = 0;
+        let reduceOverride = false;
+        let duration = 360;
+
+        // All panels share one grid cell. Preserve the last painted weights on interruption.
+        // Interpolating from those weights keeps their sum at one throughout rapid switching.
+        function paint() {
+          panels.forEach((panel, index) => {
+            panel.style.opacity = weights[index];
+            panel.style.visibility = weights[index] > 0 ? "visible" : "hidden";
+          });
+        }
+
+        function finish() {
+          cancelAnimationFrame(animationFrame);
+          animationFrame = 0;
+          transitioning = false;
+          weights = keys.map((key) => (key === current ? 1 : 0));
+          paint();
+          stack.classList.remove("is-transitioning");
+          status.textContent = reduceInput.checked ? "直接替换" : "就绪";
+          route.textContent = names[current];
+          detail.textContent = cancellations
+            ? "已取消 " + cancellations + " 次旧动画 · 最新视图已就绪"
+            : "当前视图已就绪 · 可继续切换";
+          announcement.textContent = "已切换至" + names[current] + "视图";
+          drawChart();
+        }
+
+        function selectView(next) {
+          if (!keys.includes(next) || next === current) return;
+          const previous = current;
+          const initial = [...weights];
+          const focusWasInPanel = panels.some((panel) =>
+            panel.contains(document.activeElement),
+          );
+          if (transitioning) cancellations++;
+          cancelAnimationFrame(animationFrame);
+          current = next;
+          tabs.forEach((tab) => {
+            const active = tab.dataset.go === next;
+            tab.setAttribute("aria-selected", String(active));
+            tab.tabIndex = active ? 0 : -1;
+          });
+          document.querySelectorAll(".side-nav button").forEach((button) => {
+            const active = button.dataset.go === next;
+            button.classList.toggle("active", active);
+            if (active) button.setAttribute("aria-current", "page");
+            else button.removeAttribute("aria-current");
+          });
+          if (focusWasInPanel)
+            document
+              .getElementById("tab-" + next)
+              .focus({ preventScroll: true });
+          panels.forEach((panel, index) => {
+            const active = keys[index] === next;
+            panel.dataset.active = String(active);
+            panel.inert = !active;
+            panel.setAttribute("aria-hidden", String(!active));
+          });
+          if (reduceInput.checked) {
+            finish();
+            return;
+          }
+          transitioning = true;
+          stack.classList.add("is-transitioning");
+          status.textContent = "交叉淡化中";
+          route.textContent = names[previous] + " → " + names[next];
+          detail.textContent =
+            "同步退场 / 进场 · 已取消 " + cancellations + " 次旧动画";
+          const startedAt = performance.now();
+          const transitionDuration = duration;
+          const targetIndex = keys.indexOf(next);
+          function frame(now) {
+            const progress = Math.min(
+              (now - startedAt) / transitionDuration,
+              1,
+            );
+            const eased = (1 - Math.cos(progress * Math.PI)) / 2;
+            weights = initial.map(
+              (value, index) =>
+                value * (1 - eased) + (index === targetIndex ? eased : 0),
+            );
+            paint();
+            drawChart(progress);
+            if (progress < 1) animationFrame = requestAnimationFrame(frame);
+            else finish();
+          }
+          paint();
+          animationFrame = requestAnimationFrame(frame);
+        }
+
+        function stopDemo() {
+          clearTimeout(demoTimer);
+          demoTimer = 0;
+          document.getElementById("stress-label").textContent = "连续切换演示";
+          stressButton.setAttribute("aria-pressed", "false");
+        }
+
+        document.querySelectorAll("[data-go]").forEach((button) => {
+          button.addEventListener("click", () => {
+            stopDemo();
+            selectView(button.dataset.go);
+          });
+        });
+
+        document
+          .querySelector('[role="tablist"]')
+          .addEventListener("keydown", (event) => {
+            const index = tabs.indexOf(document.activeElement);
+            if (index < 0) return;
+            let nextIndex = index;
+            if (event.key === "ArrowRight")
+              nextIndex = (index + 1) % tabs.length;
+            else if (event.key === "ArrowLeft")
+              nextIndex = (index + tabs.length - 1) % tabs.length;
+            else if (event.key === "Home") nextIndex = 0;
+            else if (event.key === "End") nextIndex = tabs.length - 1;
+            else return;
+            event.preventDefault();
+            stopDemo();
+            tabs[nextIndex].focus();
+            selectView(tabs[nextIndex].dataset.go);
+          });
+
+        stressButton.setAttribute("aria-pressed", "false");
+        stressButton.addEventListener("click", () => {
+          if (demoTimer) {
+            stopDemo();
+            return;
+          }
+          let remaining = 6;
+          stressButton.setAttribute("aria-pressed", "true");
+          document.getElementById("stress-label").textContent = "停止连续演示";
+          function step() {
+            selectView(keys[(keys.indexOf(current) + 1) % keys.length]);
+            remaining--;
+            if (remaining) demoTimer = setTimeout(step, 120);
+            else stopDemo();
+          }
+          step();
+        });
+
+        durationInput.addEventListener("input", () => {
+          duration = Number(durationInput.value);
+          document.getElementById("duration-value").textContent =
+            duration + " ms";
+          document.getElementById("chart-end").textContent = duration + " ms";
+        });
+
+        function syncMotionPreference() {
+          reduceInput.checked = systemMotion.matches || reduceOverride;
+          reduceInput.disabled = systemMotion.matches;
+          durationInput.disabled = reduceInput.checked;
+          document.getElementById("motion-description").textContent =
+            systemMotion.matches
+              ? "已跟随系统设置 · 立即替换"
+              : "开启后立即替换视图";
+          if (reduceInput.checked || !transitioning) finish();
+        }
+        reduceInput.addEventListener("change", () => {
+          reduceOverride = reduceInput.checked;
+          syncMotionPreference();
+        });
+        systemMotion.addEventListener("change", syncMotionPreference);
+
+        const chart = document.getElementById("fade-chart");
+        function drawChart(progress = null) {
+          const width = chart.clientWidth;
+          const height = chart.clientHeight;
+          if (!width || !height) return;
+          const ratio = window.devicePixelRatio || 1;
+          if (
+            chart.width !== Math.round(width * ratio) ||
+            chart.height !== Math.round(height * ratio)
+          ) {
+            chart.width = Math.round(width * ratio);
+            chart.height = Math.round(height * ratio);
+          }
+          const ctx = chart.getContext("2d");
+          ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+          ctx.clearRect(0, 0, width, height);
+          const left = 6,
+            right = width - 6,
+            top = 10,
+            bottom = height - 10;
+          ctx.strokeStyle = "#e7ede6";
+          ctx.lineWidth = 1;
+          [top, (top + bottom) / 2, bottom].forEach((y) => {
+            ctx.beginPath();
+            ctx.moveTo(left, y);
+            ctx.lineTo(right, y);
+            ctx.stroke();
+          });
+          ctx.fillStyle = "#e7eee548";
+          ctx.fillRect(
+            left + (right - left) * 0.3,
+            top,
+            (right - left) * 0.4,
+            bottom - top,
+          );
+          [false, true].forEach((incoming) => {
+            ctx.beginPath();
+            for (let step = 0; step <= 60; step++) {
+              const t = step / 60;
+              const value = (1 - Math.cos(t * Math.PI)) / 2;
+              const y = top + (bottom - top) * (incoming ? 1 - value : value);
+              const x = left + (right - left) * t;
+              if (!step) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = incoming ? "#698e70" : "#bbc7b9";
+            ctx.lineWidth = 1.8;
+            ctx.stroke();
+          });
+          if (progress !== null) {
+            const x = left + (right - left) * progress;
+            ctx.beginPath();
+            ctx.moveTo(x, top - 3);
+            ctx.lineTo(x, bottom + 3);
+            ctx.strokeStyle = "#7e9b7e";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 3]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        }
+        new ResizeObserver(() => drawChart()).observe(chart);
+
+        const tasks = [
+          {
+            title: "品牌标志延展设计",
+            owner: "LC",
+            date: "今天",
+            status: "进行中",
+            tone: "",
+            done: false,
+          },
+          {
+            title: "官网首页视觉方案",
+            owner: "JN",
+            date: "明天",
+            status: "待开始",
+            tone: "sand",
+            done: false,
+          },
+          {
+            title: "字体规范整理与交付",
+            owner: "CK",
+            date: "11.14",
+            status: "进行中",
+            tone: "",
+            done: false,
+          },
+          {
+            title: "品牌色彩系统定义",
+            owner: "LC",
+            date: "11.09",
+            status: "待开始",
+            tone: "sand",
+            done: true,
+          },
+          {
+            title: "视觉风格探索与提案",
+            owner: "CK",
+            date: "11.08",
+            status: "待开始",
+            tone: "sand",
+            done: true,
+          },
+          {
+            title: "设计组件库搭建",
+            owner: "JN",
+            date: "11.18",
+            status: "待开始",
+            tone: "sand",
+            done: false,
+          },
+        ];
+        let taskFilter = "all";
+        function taskMarkup(task, index, prefix) {
+          return (
+            '<div class="task-row" data-task-row="' +
+            index +
+            '"><input type="checkbox" id="' +
+            prefix +
+            "-" +
+            index +
+            '" data-task="' +
+            index +
+            '" ' +
+            (task.done ? "checked" : "") +
+            '><label for="' +
+            prefix +
+            "-" +
+            index +
+            '">' +
+            task.title +
+            '</label><span class="badge ' +
+            (task.done ? "gray" : task.tone) +
+            '">' +
+            (task.done ? "已完成" : task.status) +
+            '</span><span class="row-date">' +
+            task.date +
+            '</span><span class="avatar" aria-label="负责人 ' +
+            task.owner +
+            '">' +
+            task.owner +
+            "</span></div>"
+          );
+        }
+        document.getElementById("recent-tasks").innerHTML = tasks
+          .slice(0, 3)
+          .map((task, index) => taskMarkup(task, index, "recent"))
+          .join("");
+        document.getElementById("all-tasks").innerHTML = tasks
+          .map((task, index) => taskMarkup(task, index, "task"))
+          .join("");
+        function updateTasks() {
+          const completed = tasks.filter((task) => task.done).length;
+          document.getElementById("completed-count").textContent = completed;
+          document.getElementById("task-summary").textContent =
+            completed + " / 6 已完成";
+          document.querySelectorAll("[data-task-row]").forEach((row) => {
+            const task = tasks[Number(row.dataset.taskRow)];
+            row.querySelector("input").checked = task.done;
+            const badge = row.querySelector(".badge");
+            badge.textContent = task.done ? "已完成" : task.status;
+            badge.className = "badge " + (task.done ? "gray" : task.tone);
+            if (row.closest("#all-tasks"))
+              row.classList.toggle(
+                "hidden",
+                (taskFilter === "done" && !task.done) ||
+                  (taskFilter === "open" && task.done),
+              );
+          });
+          const visible = tasks.filter(
+            (task) =>
+              taskFilter === "all" ||
+              (taskFilter === "done" ? task.done : !task.done),
+          ).length;
+          document.getElementById("empty-tasks").style.display = visible
+            ? "none"
+            : "block";
+        }
+        document.querySelectorAll("[data-task]").forEach((input) =>
+          input.addEventListener("change", () => {
+            tasks[Number(input.dataset.task)].done = input.checked;
+            updateTasks();
+          }),
+        );
+        document.querySelectorAll("[data-filter]").forEach((button) =>
+          button.addEventListener("click", () => {
+            taskFilter = button.dataset.filter;
+            document
+              .querySelectorAll("[data-filter]")
+              .forEach((item) =>
+                item.setAttribute("aria-pressed", String(item === button)),
+              );
+            updateTasks();
+          }),
+        );
+
+        const dialog = document.getElementById("preview-dialog");
+        const dialogContent = document.getElementById("dialog-content");
+        document.getElementById("help-button").addEventListener("click", () => {
+          document.getElementById("dialog-title").textContent = "演示说明";
+          dialogContent.innerHTML =
+            "<p>点击概览、任务或文件，体验视图交叉淡化。可调整时长，或运行连续切换演示观察动画被中断后的衔接。<br><br>重复点击当前目标不会重启动画。手动切换会停止连续演示并立即响应。开启减弱动态或启用系统对应偏好后，视图将直接替换。<br><br>项目及文件为示例数据，任务勾选在本次打开期间保留。</p>";
+          dialog.showModal();
+        });
+        document.querySelectorAll("[data-file]").forEach((button) =>
+          button.addEventListener("click", () => {
+            document.getElementById("dialog-title").textContent =
+              button.querySelector("strong").textContent;
+            dialogContent.replaceChildren(
+              button.querySelector(".file-preview").cloneNode(true),
+            );
+            const note = document.createElement("p");
+            note.textContent = "示例设计资产预览 · 此内容用于视图切换演示。";
+            dialogContent.append(note);
+            dialog.showModal();
+          }),
+        );
+        document
+          .getElementById("close-dialog")
+          .addEventListener("click", () => dialog.close());
+        document
+          .getElementById("dialog-done")
+          .addEventListener("click", () => dialog.close());
+        dialog.addEventListener("click", (event) => {
+          const bounds = dialog.getBoundingClientRect();
+          if (
+            event.clientX < bounds.left ||
+            event.clientX > bounds.right ||
+            event.clientY < bounds.top ||
+            event.clientY > bounds.bottom
+          )
+            dialog.close();
+        });
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden) {
+            stopDemo();
+            if (transitioning) finish();
+          }
+        });
+        syncMotionPreference();
+        const initialView = new URLSearchParams(location.search).get("view");
+        if (keys.includes(initialView)) {
+          selectView(initialView);
+          finish();
+        }
+        paint();
+        drawChart();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,547 @@
+{
+ "round": 1,
+ "date": "2026-11-11",
+ "scale": "每项 0/1/2，满分 16",
+ "note": "标「你判断（待用户确认）」的分数是预评分；dsh 三项均未产出，记为未评分（null），不是 0 分质量",
+ "agents_runs": {
+  "button/codex": {
+   "entry": "button",
+   "agent": "codex",
+   "cmd": [
+    "/Users/zhiguang/.codex/plugins/.plugin-appserver/codex-cli/bin/codex",
+    "exec",
+    "--skip-git-repo-check",
+    "-s",
+    "workspace-write",
+    "-c",
+    "approval_policy=\"never\"",
+    "-C",
+    "/Users/zhiguang/Downloads/设计意图测评台/round1/button/codex",
+    "<prompt.txt>"
+   ],
+   "wall_s": 432.9,
+   "status": "finished",
+   "returncode": 0,
+   "index_html": true
+  },
+  "button/hermes": {
+   "entry": "button",
+   "agent": "hermes",
+   "cmd": [
+    "/Users/zhiguang/.local/bin/hermes",
+    "--in",
+    "/Users/zhiguang/Downloads/设计意图测评台/round1/button/hermes",
+    "-z",
+    "<prompt.txt>"
+   ],
+   "wall_s": 329.6,
+   "status": "finished",
+   "returncode": 0,
+   "index_html": true
+  },
+  "button/dsh": {
+   "entry": "button",
+   "agent": "dsh",
+   "cmd": [
+    "/Users/zhiguang/.npm-global/bin/dsh",
+    "headless",
+    "<prompt.txt>"
+   ],
+   "wall_s": 1.7,
+   "status": "nonzero_exit",
+   "returncode": 1,
+   "index_html": false
+  },
+  "crossfade/codex": {
+   "entry": "crossfade",
+   "agent": "codex",
+   "cmd": [
+    "/Users/zhiguang/.codex/plugins/.plugin-appserver/codex-cli/bin/codex",
+    "exec",
+    "--skip-git-repo-check",
+    "-s",
+    "workspace-write",
+    "-c",
+    "approval_policy=\"never\"",
+    "-C",
+    "/Users/zhiguang/Downloads/设计意图测评台/round1/crossfade/codex",
+    "<prompt.txt>"
+   ],
+   "wall_s": 677.8,
+   "status": "finished",
+   "returncode": 0,
+   "index_html": true
+  },
+  "crossfade/hermes": {
+   "entry": "crossfade",
+   "agent": "hermes",
+   "cmd": [
+    "/Users/zhiguang/.local/bin/hermes",
+    "--in",
+    "/Users/zhiguang/Downloads/设计意图测评台/round1/crossfade/hermes",
+    "-z",
+    "<prompt.txt>"
+   ],
+   "wall_s": 461.3,
+   "status": "finished",
+   "returncode": 0,
+   "index_html": true
+  },
+  "crossfade/dsh": {
+   "entry": "crossfade",
+   "agent": "dsh",
+   "cmd": [
+    "/Users/zhiguang/.npm-global/bin/dsh",
+    "headless",
+    "<prompt.txt>"
+   ],
+   "wall_s": 1.0,
+   "status": "nonzero_exit",
+   "returncode": 1,
+   "index_html": false
+  },
+  "grid/codex": {
+   "entry": "grid",
+   "agent": "codex",
+   "cmd": [
+    "/Users/zhiguang/.codex/plugins/.plugin-appserver/codex-cli/bin/codex",
+    "exec",
+    "--skip-git-repo-check",
+    "-s",
+    "workspace-write",
+    "-c",
+    "approval_policy=\"never\"",
+    "-C",
+    "/Users/zhiguang/Downloads/设计意图测评台/round1/grid/codex",
+    "<prompt.txt>"
+   ],
+   "wall_s": 402.9,
+   "status": "finished",
+   "returncode": 0,
+   "index_html": true
+  },
+  "grid/hermes": {
+   "entry": "grid",
+   "agent": "hermes",
+   "cmd": [
+    "/Users/zhiguang/.local/bin/hermes",
+    "--in",
+    "/Users/zhiguang/Downloads/设计意图测评台/round1/grid/hermes",
+    "-z",
+    "<prompt.txt>"
+   ],
+   "wall_s": 296.5,
+   "status": "finished",
+   "returncode": 0,
+   "index_html": true
+  },
+  "grid/dsh": {
+   "entry": "grid",
+   "agent": "dsh",
+   "cmd": [
+    "/Users/zhiguang/.npm-global/bin/dsh",
+    "headless",
+    "<prompt.txt>"
+   ],
+   "wall_s": 1.0,
+   "status": "nonzero_exit",
+   "returncode": 1,
+   "index_html": false
+  }
+ },
+ "scores": {
+  "button": {
+   "codex": {
+    "total": 13,
+    "items": [
+     {
+      "item": 1,
+      "name": "三种用途一眼可分",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "主要深绿实底、次要白底描边、危险红底，见 contact_button.png"
+     },
+     {
+      "item": 2,
+      "name": "六种状态齐全且有区别",
+      "check": "你判断（待用户确认）",
+      "score": 1,
+      "evidence": "默认/悬停/聚焦/禁用/加载/成功都有；「按下」只下移 1px，颜色与悬停完全相同（实测 rgb(29,86,57)），肉眼难分"
+     },
+     {
+      "item": 3,
+      "name": "键盘聚焦看得见",
+      "check": "工具查",
+      "score": 1,
+      "evidence": "Tab 到达按钮显示 3px 外描边、偏移 3px、未被裁切；但焦点环浅绿 #b5d2bd 与背景对比只有 1.59:1，低于 WCAG 非文字 3:1"
+     },
+     {
+      "item": 4,
+      "name": "不能重复触发",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "禁用按钮连点 5 次触发 0 次；保存按钮连点 5 次只进入 1 次加载；复制按钮连点 5 次只写剪贴板 1 次"
+     },
+     {
+      "item": 5,
+      "name": "文字对比度够",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "可用按钮最低 5.36:1（危险）；禁用约 1.9:1 属例外；加载态 3.5–4.0:1（加载时按钮被禁用，按规则算例外，但偏淡）"
+     },
+     {
+      "item": 6,
+      "name": "成功反馈会恢复",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "复制后 51ms 显示「已复制」，1.79 秒后恢复；宽高与位置全程不变（104×38）"
+     },
+     {
+      "item": 7,
+      "name": "点击区域够大",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "最小 80×33px ≥ 24×24；未达移动端建议 44×44"
+     },
+     {
+      "item": 8,
+      "name": "沿用现有规范",
+      "check": "工具查",
+      "score": 1,
+      "evidence": "组件规则里有 13 处写死颜色（次要 #485a4d、危险 #bd3e3b、成功态等），只有主色走变量；没有现成项目可沿用，AI 自建了一套"
+     }
+    ],
+    "measure": "button/codex/_measure/measure.json"
+   },
+   "hermes": {
+    "total": 12,
+    "items": [
+     {
+      "item": 1,
+      "name": "三种用途一眼可分",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "主要紫色实底、次要白底描边、危险红底"
+     },
+     {
+      "item": 2,
+      "name": "六种状态齐全且有区别",
+      "check": "你判断（待用户确认）",
+      "score": 1,
+      "evidence": "状态表有默认/悬停/聚焦/禁用/加载；「按下」只下移 1px 且与悬停同色；三种禁用都变成同一灰色"
+     },
+     {
+      "item": 3,
+      "name": "键盘聚焦看得见",
+      "check": "工具查",
+      "score": 1,
+      "evidence": "第一次按 Tab 就聚焦到按钮，3px 紫色外描边、未被裁切；焦点环对背景 2.38:1，低于 3:1"
+     },
+     {
+      "item": 4,
+      "name": "不能重复触发",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "禁用连点 0 次；保存连点 5 次只 1 次加载；复制连点只写剪贴板 1 次"
+     },
+     {
+      "item": 5,
+      "name": "文字对比度够",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "可用按钮最低 5.03:1；禁用 2.04:1 属例外；加载态 3.2–4.1:1 偏淡"
+     },
+     {
+      "item": 6,
+      "name": "成功反馈会恢复",
+      "check": "你判断（待用户确认）",
+      "score": 1,
+      "evidence": "1.75 秒后恢复，时长合格；但按钮宽度在 95px 与 107px 间跳变、左边位置移动 12px，有布局跳动"
+     },
+     {
+      "item": 7,
+      "name": "点击区域够大",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "最小 65×32px ≥ 24×24；未达 44×44"
+     },
+     {
+      "item": 8,
+      "name": "沿用现有规范",
+      "check": "工具查",
+      "score": 1,
+      "evidence": "主色、危险色走变量；次要、禁用、成功态仍有 11 处写死颜色（第 2 轮修正统计口径后重测；首次记为 13）"
+     }
+    ],
+    "measure": "button/hermes/_measure/measure.json"
+   },
+   "dsh": {
+    "total": null,
+    "items": [],
+    "status": "未产出：dsh 启动即报错 MISSING_CREDENTIAL（headless 配置找不到 DeepSeek API key）"
+   }
+  },
+  "crossfade": {
+   "codex": {
+    "total": 16,
+    "items": [
+     {
+      "item": 1,
+      "name": "没有空白帧",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "逐帧采样 185 帧，最低画面覆盖率 0.75，0 帧空白"
+     },
+     {
+      "item": 2,
+      "name": "时长合适",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "代码设定 360ms（页面上有时长滑杆），实测可见变化约 333–350ms"
+     },
+     {
+      "item": 3,
+      "name": "缓动自然",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "JS 逐帧动画，缓动为正弦缓入缓出 (1−cos πt)/2，非匀速"
+     },
+     {
+      "item": 4,
+      "name": "连点可打断",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "约 340ms 内连点 5 次，最后停在「文件」视图且只剩它可见，结束后无残留动画；过程中瞬间最多 3 层叠加"
+     },
+     {
+      "item": 5,
+      "name": "尊重减弱动态",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "模拟系统减弱动态后，下一帧直接替换，无过渡"
+     },
+     {
+      "item": 6,
+      "name": "布局不跳",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "三个视图高度 631/605/488px，容器始终保持最高的 631px，下方不跳；代价是短视图下面留白"
+     },
+     {
+      "item": 7,
+      "name": "动画不卡",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "只逐帧改 opacity（开始/结束时改 visibility/display）；未测真实帧率"
+     },
+     {
+      "item": 8,
+      "name": "焦点去向合理",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "键盘 ←→ 移动、Enter 切换后焦点仍在标签上，再按 Tab 进入新面板"
+     }
+    ],
+    "measure": "crossfade/codex/_measure/measure.json"
+   },
+   "hermes": {
+    "total": 16,
+    "items": [
+     {
+      "item": 1,
+      "name": "没有空白帧",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "最低覆盖率 0.75，0 帧空白"
+     },
+     {
+      "item": 2,
+      "name": "时长合适",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "代码设定 400ms，实测 404–418ms，正好压在上限"
+     },
+     {
+      "item": 3,
+      "name": "缓动自然",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "WAAPI，cubic-bezier(.22,.61,.36,1)（先快后慢的缓出）"
+     },
+     {
+      "item": 4,
+      "name": "连点可打断",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "连点 5 次停在「文件」，结束后只剩 1 层、无残留动画；中途会先冻结当前画面再接管，瞬间最多 3 层"
+     },
+     {
+      "item": 5,
+      "name": "尊重减弱动态",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "减弱动态下不创建任何动画，直接替换"
+     },
+     {
+      "item": 6,
+      "name": "布局不跳",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "切换时用 JS 锁住容器高度；但三视图高度只差 5px（605/610），这项没被真正压测"
+     },
+     {
+      "item": 7,
+      "name": "动画不卡",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "只动画 opacity；未测真实帧率"
+     },
+     {
+      "item": 8,
+      "name": "焦点去向合理",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "Enter 切换后焦点留在标签，Tab 进入新面板"
+     }
+    ],
+    "measure": "crossfade/hermes/_measure/measure.json"
+   },
+   "dsh": {
+    "total": null,
+    "items": [],
+    "status": "未产出：dsh 启动即报错 MISSING_CREDENTIAL（headless 配置找不到 DeepSeek API key）"
+   }
+  },
+  "grid": {
+   "codex": {
+    "total": 12,
+    "items": [
+     {
+      "item": 1,
+      "name": "任何宽度都不横向溢出",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "320/768/1280 三种宽度 scrollWidth = 视口宽度，无横向滚动（默认内容）"
+     },
+     {
+      "item": 2,
+      "name": "列数随宽度变化",
+      "check": "你判断（待用户确认）",
+      "score": 1,
+      "evidence": "320→1 列、768→2 列、1280→4 列、≥1480→5 列；但 760px 是 3 列、800px 反而变回 2 列（侧栏出现吃掉宽度），变宽反而少列"
+     },
+     {
+      "item": 3,
+      "name": "阅读顺序不变",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "各宽度下视觉顺序与 DOM 顺序一致"
+     },
+     {
+      "item": 4,
+      "name": "间距统一",
+      "check": "工具查",
+      "score": 1,
+      "evidence": "所有卡片间距一致，但横向 20px、纵向 24px 不相等，且直接写死 gap:24px 20px，没用间距变量"
+     },
+     {
+      "item": 5,
+      "name": "同一行对齐",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "同行顶部对齐，默认内容等高"
+     },
+     {
+      "item": 6,
+      "name": "卡片不被挤扁",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "minmax(min(100%,215px),1fr)，最窄卡片 230px（1280）/252px（768）"
+     },
+     {
+      "item": 7,
+      "name": "长内容不破版",
+      "check": "工具查",
+      "score": 0,
+      "evidence": "注入无空格超长标题+高图后，三种宽度都出现整页横向溢出，标题和图片冲出卡片"
+     },
+     {
+      "item": 8,
+      "name": "没有写死宽度",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "卡片宽随视口变化（1100→1160 宽时 272→273px），用 auto-fit + minmax"
+     }
+    ],
+    "measure": "grid/codex/_measure/measure.json"
+   },
+   "hermes": {
+    "total": 14,
+    "items": [
+     {
+      "item": 1,
+      "name": "任何宽度都不横向溢出",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "三种宽度均无横向滚动"
+     },
+     {
+      "item": 2,
+      "name": "列数随宽度变化",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "1 列（<560）→2 列（560–800）→3 列（840–1040）→4 列（≥1080），单调变化"
+     },
+     {
+      "item": 3,
+      "name": "阅读顺序不变",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "各宽度下顺序一致"
+     },
+     {
+      "item": 4,
+      "name": "间距统一",
+      "check": "工具查",
+      "score": 1,
+      "evidence": "桌面横向 20px、纵向 24px 不等（窄屏统一为 18px），写死数值，没用间距变量"
+     },
+     {
+      "item": 5,
+      "name": "同一行对齐",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "同行顶部对齐、等高"
+     },
+     {
+      "item": 6,
+      "name": "卡片不被挤扁",
+      "check": "你判断（待用户确认）",
+      "score": 2,
+      "evidence": "minmax(min(100%,235px),1fr)，最窄卡片 265px（1280）"
+     },
+     {
+      "item": 7,
+      "name": "长内容不破版",
+      "check": "工具查",
+      "score": 1,
+      "evidence": "注入后页面不横向溢出、网格仍整齐；但无空格的英文长串被卡片裁掉一截，图片不缩放、超出部分被裁切"
+     },
+     {
+      "item": 8,
+      "name": "没有写死宽度",
+      "check": "工具查",
+      "score": 2,
+      "evidence": "卡片宽随视口变化（244→259px），auto-fit + minmax"
+     }
+    ],
+    "measure": "grid/hermes/_measure/measure.json"
+   },
+   "dsh": {
+    "total": null,
+    "items": [],
+    "status": "未产出：dsh 启动即报错 MISSING_CREDENTIAL（headless 配置找不到 DeepSeek API key）"
+   }
+  }
+ }
+}

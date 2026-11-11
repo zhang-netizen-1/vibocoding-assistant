@@ -1,0 +1,56 @@
+/* Benchmark report: shared site tokens, contained tables, readable source text. */
+.site-bench { margin: 0; color: var(--ds-ink); background: var(--ds-shell); font: var(--fs-body)/1.8 var(--font-sans); }
+.site-bench * { box-sizing: border-box; }
+.bench-page { width: 100%; max-width: var(--ds-content-max); margin: auto; padding: 28px var(--ds-content-gutter) 64px; background: var(--ds-canvas); }
+.bench-page > * { min-width: 0; }
+.bench-hero, .bench-section { padding: 32px; margin: 0 0 24px; border: 1px solid var(--ds-line); background: var(--ds-surface); }
+.bench-kicker { color: var(--ds-muted); font: var(--fs-small)/1.6 var(--font-mono); }
+.bench-hero h1 { margin: 20px 0; font-size: var(--fs-h1); line-height: 1.3; letter-spacing: -.04em; }
+.bench-lead { max-width: 900px; color: var(--ds-muted); font-size: var(--fs-h3); }
+.bench-section h2 { margin: 0 0 22px; font-size: var(--fs-h2); line-height: 1.4; }
+.bench-section h3 { margin: 24px 0 12px; font-size: var(--fs-h3); line-height: 1.6; }
+.bench-section p { margin: 12px 0; }
+.bench-lesson { font-size: var(--fs-h2); font-weight: 700; }
+.bench-page a { color: var(--text-accent); text-underline-offset: 4px; }
+.bench-page a:hover { color: var(--ds-ink); }
+.bench-page :is(p, li, dd, h1, h2, h3, a, figcaption) { overflow-wrap: anywhere; }
+.bench-page ul, .bench-page ol { padding-left: 24px; }
+.bench-page li + li { margin-top: 12px; }
+.bench-page-links { display: flex; flex-wrap: wrap; gap: 14px 28px; }
+.bench-page-links a { display: inline-flex; align-items: center; min-height: 44px; }
+.bench-table-scroll { width: 100%; max-width: 100%; overflow-x: auto; border: 1px solid var(--ds-line); }
+.bench-table-scroll table { width: 100%; min-width: 620px; border-collapse: collapse; text-align: left; font-variant-numeric: tabular-nums; }
+.bench-table-scroll caption { padding: 12px 18px; text-align: left; color: var(--ds-muted); }
+.bench-table-scroll th, .bench-table-scroll td { padding: 14px 18px; border-top: 1px solid var(--ds-line); }
+.bench-table-scroll thead, .bench-table-scroll tfoot { background: var(--ds-soft); }
+.bench-table-scroll td { white-space: nowrap; }
+.bench-table-scroll small { display: block; color: var(--ds-muted); font-weight: 400; }
+.bench-entry-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.bench-entry-card { min-width: 0; padding: 22px; background: var(--ds-soft); border: 1px solid var(--ds-line); text-decoration: none; }
+.bench-entry-card h3 { margin-top: 0; color: var(--ds-ink); }
+.bench-entry-card p { color: var(--ds-muted); }
+.bench-evidence { padding: 4px 0 24px; border-bottom: 1px solid var(--ds-line); }
+.bench-label { display: inline-block; padding: 3px 8px; color: var(--ds-muted); background: var(--ds-soft); font-size: var(--fs-small); font-weight: 400; }
+.bench-page details { margin-top: 12px; color: var(--ds-muted); }
+.bench-page summary { width: fit-content; min-height: 44px; padding-block: 8px; cursor: pointer; }
+.bench-page pre { max-width: 100%; padding: 20px; color: var(--ds-ink); background: var(--ds-soft); font: var(--fs-body)/1.9 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.bench-page mark { color: var(--text-accent); background: var(--ds-surface); font-weight: 700; }
+.bench-fixes li { padding: 8px; }
+.bench-page figure { min-width: 0; margin: 24px 0 40px; }
+.bench-page img { display: block; width: 100%; max-width: 100%; height: auto; }
+.bench-page figcaption { padding-top: 12px; color: var(--ds-muted); font-size: var(--fs-small); }
+.bench-demo-links { display: flex; flex-wrap: wrap; gap: 12px 28px; list-style: none; padding: 0 !important; }
+.bench-demo-links li + li { margin-top: 0; }
+.bench-demo-links a { display: inline-flex; align-items: center; min-height: 44px; }
+.bench-glossary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-bottom: 0; }
+.bench-glossary dt { font-weight: 700; }
+.bench-glossary dd { margin: 8px 0 0; color: var(--ds-muted); }
+.site-bench :is(a, summary, .bench-table-scroll):focus-visible { outline: 2px solid var(--ds-ink); outline-offset: 3px; }
+@media (max-width: 900px) {
+  .bench-entry-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .bench-page { padding: 18px 14px 40px; }
+  .bench-hero, .bench-section { padding: 22px 18px; }
+  .bench-glossary { grid-template-columns: 1fr; }
+}

@@ -24,6 +24,9 @@ SKILL_MODULE_SPEC.loader.exec_module(SKILL_MODULE)
 SEARCH_MODULE_SPEC = importlib.util.spec_from_file_location("search_index", SITE_SOURCE / "search_index.py")
 SEARCH_MODULE = importlib.util.module_from_spec(SEARCH_MODULE_SPEC)
 SEARCH_MODULE_SPEC.loader.exec_module(SEARCH_MODULE)
+BENCH_MODULE_SPEC = importlib.util.spec_from_file_location("bench_pages", SITE_SOURCE / "bench_pages.py")
+BENCH_MODULE = importlib.util.module_from_spec(BENCH_MODULE_SPEC)
+BENCH_MODULE_SPEC.loader.exec_module(BENCH_MODULE)
 
 
 def asset_version(name: str) -> str:
@@ -38,7 +41,7 @@ PAGES = (
 def site_navigation(section: str) -> str:
     links = (("首页", "../", "home"), ("UI 元素", "../ui/", "ui"), ("动效", "../motion/", "motion")) + tuple(
         (guide["name"], f"../{slug}/", slug) for slug, guide in GUIDES.items()
-    ) + (("Skills", "../skills/", "skills"),)
+    ) + (("Skills", "../skills/", "skills"), ("测评结果", "../bench/", "bench"))
     parts = []
     for label, href, key in links:
         current = ' aria-current="page"' if key == section else ""
@@ -105,7 +108,7 @@ def build() -> None:
     (OUTPUT / "index.html").write_text(home, encoding="utf-8")
     assets = OUTPUT / "assets"
     assets.mkdir()
-    for name in ("site.css", "theme.css", "site.js", "home.css", "home.js", "guides.css", "guides.js", "visual-styles.css", "skills.css", "skills.js", "favicon.svg"):
+    for name in ("site.css", "theme.css", "site.js", "home.css", "home.js", "guides.css", "guides.js", "visual-styles.css", "skills.css", "skills.js", "favicon.svg", "bench.css"):
         shutil.copy2(SITE_SOURCE / name, assets / name)
     for section, path, label, description, card_class, expected_cards in PAGES:
         destination = OUTPUT / section
@@ -127,11 +130,13 @@ def build() -> None:
     skill_html = SKILL_MODULE.render_page(site_navigation("skills"), asset_version("site.css"), asset_version("skills.css"), asset_version("theme.css"), asset_version("skills.js"))
     (skill_destination / "index.html").write_text(skill_html, encoding="utf-8")
     print(f"Built UI 与交互 Skills: {skill_destination / 'index.html'}")
+    BENCH_MODULE.build(OUTPUT, SITE_SOURCE / "bench", site_navigation("bench"), asset_version)
     files = sorted(str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*") if path.is_file())
     expected = sorted((MARKER, "index.html", "ui/index.html", "motion/index.html", "motion/motion-demo-gallery.html", "motion/motion-demo-detail.html", "assets/site.css", "assets/theme.css", "assets/site.js", "assets/home.css", "assets/home.js", "assets/guides.css", "assets/guides.js", "assets/visual-styles.css", "assets/skills.css", "assets/skills.js", "assets/favicon.svg", "skills/index.html", *(f"{slug}/index.html" for slug in GUIDES)))
+    expected = sorted((*expected, "assets/bench.css", *(str(path.relative_to(OUTPUT)) for path in (OUTPUT / "bench").rglob("*") if path.is_file())))
     if files != expected:
         raise RuntimeError(f"Unexpected build files: {files}")
-    print("Built site: 10 pages, 189 entries + 动效实现规范, curated static output")
+    print("Built site: 10 pages, 189 entries + 动效实现规范 + 测评结果 4 页, curated static output")
 
 
 if __name__ == "__main__":
