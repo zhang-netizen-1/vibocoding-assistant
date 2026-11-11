@@ -1,7 +1,7 @@
-"""Lossless source adapters. Taxonomy owns placement; source files own all copy.
+"""Lossless source adapters with a validated, independent editorial overlay.
 
 UI definitions use the existing .pts bullet text; .where remains when_use.
-Missing editorial fields are deliberately absent (acceptance defaults to []).
+Unfilled editorial fields remain absent (source acceptance defaults to []).
 Motion markup is taken from its normal generator output, verified against JSON
 and extra_demos. No generator is imported for its side effects.
 """
@@ -10,10 +10,12 @@ from html.parser import HTMLParser
 from pathlib import Path
 import importlib.util
 import json
+import os
 import re
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'site-src'
+STRICT_CONTENT = os.environ.get('STRICT_CONTENT', 'false').lower() in ('1', 'true', 'yes')
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'}
 
 
@@ -142,7 +144,7 @@ def source_entries():
                    source=dict(path='site-src/skill_catalog.py', old_path='/skills/'))
 
 
-def load_entries():
+def load_entries(content=None):
     tax = taxonomy()
     raw = {item['anchor']: item for item in source_entries()}
     if set(raw) != set(tax['anchors']):
@@ -166,7 +168,7 @@ def load_entries():
                 entry['bench'] = dict(slug=slug, totals={agent:scores[slug][agent]['total'] for agent in ('codex','hermes')})
         result.append(entry)
     validate(result, tax)
-    return result
+    return apply_content(result, load_content() if content is None else content)
 
 
 def validate(entries, tax):
@@ -197,3 +199,66 @@ def write_entries():
     target.parent.mkdir(exist_ok=True)
     target.write_text(json.dumps(entries, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     return entries
+
+
+def normalize_alias(text):
+    import unicodedata
+    return ''.join(unicodedata.normalize('NFKC', text).casefold().split())
+
+
+def load_content():
+    content = {}
+    for column in taxonomy()['columns']:
+        path = SOURCE / 'content' / (column['slug'] + '.json')
+        data = json.loads(path.read_text(encoding='utf-8'))
+        if not isinstance(data, dict):
+            raise ValueError(f'Content must be an object: {path.name}')
+        content.update({column['slug'] + '/' + slug: fields for slug, fields in data.items()})
+    return content
+
+
+def apply_content(entries, content, strict=None):
+    """Validate only edited entries until all 187 entries are ready for strict mode."""
+    import copy
+    strict = STRICT_CONTENT if strict is None else strict
+    by_key = {e['column'] + '/' + e['slug']: e for e in entries}
+    unknown = set(content) - set(by_key)
+    if unknown:
+        raise ValueError(f'Unknown editorial entries: {sorted(unknown)}')
+    if strict and set(content) != set(by_key):
+        raise ValueError(f'Strict content requires all 187 entries; missing: {sorted(set(by_key)-set(content))}')
+    aliases_seen = {}
+    for key, fields in content.items():
+        if not isinstance(fields, dict):
+            raise ValueError(f'{key}: content must be an object')
+        for field in ('prompt_edit', 'prompt_new', 'when_use', 'when_avoid'):
+            if not isinstance(fields.get(field), str) or not fields[field].strip():
+                raise ValueError(f'{key}: {field} must be nonempty text')
+        aliases = fields.get('aliases')
+        if not isinstance(aliases, list) or not 3 <= len(aliases) <= 10 or not all(isinstance(a, str) and a.strip() for a in aliases):
+            raise ValueError(f'{key}: aliases must contain 3–10 nonempty strings')
+        normalized = [normalize_alias(a) for a in aliases]
+        names = [by_key[key]['zh'], by_key[key]['en'], *by_key[key]['en'].split('/')]
+        if len(set(normalized)) != len(normalized) or set(normalized) & {normalize_alias(n) for n in names}:
+            raise ValueError(f'{key}: duplicate alias or alias equals name')
+        for alias in normalized:
+            if alias in aliases_seen:
+                raise ValueError(f'Alias conflict: {aliases_seen[alias]} and {key}: {alias}')
+            aliases_seen[alias] = key
+        acceptance = fields.get('acceptance')
+        if not isinstance(acceptance, list) or not 3 <= len(acceptance) <= 6 or not all(isinstance(a, str) and a.strip() for a in acceptance):
+            raise ValueError(f'{key}: acceptance must contain 3–6 nonempty strings')
+        if any(re.search('好看|流畅|合适|自然|友好|美观', a) for a in acceptance):
+            raise ValueError(f'{key}: acceptance contains forbidden wording')
+        if not isinstance(fields.get('reviewed'), bool):
+            raise ValueError(f'{key}: reviewed must be boolean')
+        if 'params' in fields and (not isinstance(fields['params'], list) or not all(isinstance(p, str) and p.strip() for p in fields['params'])):
+            raise ValueError(f'{key}: params must be a list of text')
+    result = copy.deepcopy(entries)
+    for entry in result:
+        fields = content.get(entry['column'] + '/' + entry['slug'])
+        if fields is not None:
+            entry['prompt_original'] = entry.get('prompt_original', entry['prompt'])
+            entry.update(fields)
+            entry['prompt'] = fields['prompt_edit']
+    return result
