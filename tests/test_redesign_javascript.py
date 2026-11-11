@@ -167,6 +167,85 @@ assert.equal(search.match(rows,'').length,0);
         self.assertIn('escape(VibeSearch.aliasLabel(row))', site)
 
 
+class FuzzySearchTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        subprocess.run(['python3', 'scripts/build_site.py'], cwd=ROOT, check=True, capture_output=True)
+
+    def run_node(self, code):
+        result = subprocess.run(['node', '-e', code], cwd=ROOT, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_strict_results_gate_fuzzy_append_and_keep_original_order(self):
+        self.run_node(r"""
+const assert = require('node:assert/strict');
+const search = require('./site-src/redesign/search.js');
+const strict = [{zh:'开关按钮'}, {en:'开关按钮'}, {aliases:['开关按钮']}];
+const fuzzy = Array.from({length:12}, (_,i) => ({zh:'开关',slug:String(i)}));
+const enough = search.match([...fuzzy,...strict],'开关按钮');
+assert.deepEqual(enough.map(row=>row.rank),[0,1,2]);
+assert.deepEqual(enough.map(row=>row.index),[12,13,14]);
+for (const count of [0,1,2]) {
+ const rows = search.match([...fuzzy,...strict.slice(0,count)],'开关按钮');
+ assert.deepEqual(rows.slice(0,count).map(row=>row.rank),[0,1].slice(0,count));
+ assert.equal(rows.filter(row=>row.rank === 7).length,8);
+ assert.ok(rows.slice(count).every(row=>row.rank === 7));
+ assert.equal(new Set(rows.map(row=>row.index)).size,rows.length);
+ assert.deepEqual(rows.slice(count).map(row=>row.index),[0,1,2,3,4,5,6,7]);
+}
+""")
+
+    def test_spoken_queries_hit_generated_homepage_index(self):
+        self.run_node(r"""
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const search = require('./dist/assets/redesign/search.js');
+const html = fs.readFileSync('dist/index.html','utf8');
+const entries = JSON.parse(html.match(/id="redesign-search-index">(.*?)<\/script>/s)[1]).entries;
+for (const [query,keys] of [
+ ['开关按钮',['components/switch']],
+ ['侧边滑出来的面板',['components/drawer','interactions/overlay-drawer']],
+ ['输错了抖一下',['interactions/data-input-shake']],
+ ['没有数据的时候显示什么',['components/empty']]
+]) {
+ const rows = search.match(entries,query);
+ const top3 = rows.slice(0,3).map(row=>row.entry.href.replace(/^\.\//,'').replace(/\/$/,''));
+ assert.ok(keys.some(key=>top3.includes(key)),query+' '+JSON.stringify(top3));
+ assert.ok(rows.some(row=>row.rank === 7),query);
+}
+for (const query of ['qzxv','的的的','怎么的呢啊','霓虹灯','']) {
+ assert.deepEqual(search.match(entries,query),[],query);
+}
+""")
+
+    def test_fuzzy_field_weights_tokens_aliases_and_noise(self):
+        self.run_node(r"""
+const assert = require('node:assert/strict');
+const search = require('./site-src/redesign/search.js');
+const fields = [
+ {definition:'侧边'}, {terms:'侧边'}, {aliases:['其他名称','侧边']}, {zh:'侧边'}
+];
+const rows = search.match(fields,'侧边面');
+assert.deepEqual(rows.map(row=>row.index),[2,3,1,0]);
+assert.ok(rows.every(row=>row.rank === 7));
+assert.equal(rows[0].alias,'侧边');
+assert.equal(search.aliasLabel(rows[0]),'也叫：侧边');
+assert.equal(rows[1].alias,'');
+assert.deepEqual(search.match([{zh:'侧滑'},{aliases:['边栏']}],'侧边浮层'),[]);
+assert.deepEqual(search.match([{terms:'侧边'},{definition:'侧边'}],'侧边浮层'),[]);
+assert.deepEqual(search.match([{zh:'面'},{aliases:['板']}],'侧边面板'),[]);
+const english = [{en:'Toggle Switch'},{terms:'toggle switch'},{definition:'toggle switch'}];
+assert.deepEqual(search.match(english,'please TOGGLE SWITCH now').map(row=>row.index),[0,1,2]);
+assert.deepEqual(search.match(english,'please ＴＯＧＧＬＥ switch now'),search.match(english,'PLEASE toggle SWITCH NOW'));
+assert.deepEqual(search.match([{en:'ToggleSwitch'}],'please toggle now'),[]);
+const fragments = search.match([{aliases:['填错后输入框抖一下']},{aliases:['抖一下']}],'输错了抖一下');
+assert.equal(fragments.length,1);
+assert.equal(fragments[0].alias,'填错后输入框抖一下');
+assert.equal(search.match([{zh:'浮起',aliases:['浮起来']}],'浮起来')[0].rank,2);
+assert.equal(search.match([{zh:'悬浮',aliases:['鼠标放上去']}],'鼠标放上去')[0].rank,2);
+""")
+
+
 class SampleSearchTest(unittest.TestCase):
     def test_three_spoken_queries_hit_correct_entry_in_top_three(self):
         code = r"""
