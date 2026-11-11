@@ -29,6 +29,11 @@ BENCH_MODULE = importlib.util.module_from_spec(BENCH_MODULE_SPEC)
 BENCH_MODULE_SPEC.loader.exec_module(BENCH_MODULE)
 
 
+ENTRY_MODULE = importlib.util.spec_from_file_location("entries", SITE_SOURCE / "entries.py")
+ENTRY_ADAPTER = importlib.util.module_from_spec(ENTRY_MODULE)
+ENTRY_MODULE.loader.exec_module(ENTRY_ADAPTER)
+
+
 def asset_version(name: str) -> str:
     return hashlib.sha256((SITE_SOURCE / name).read_bytes()).hexdigest()[:8]
 
@@ -94,6 +99,7 @@ def prepare_output() -> None:
 
 def build() -> None:
     subprocess.run([sys.executable, str(ROOT / "动效速查-src" / "build_motion_glossary.py")], check=True, cwd=ROOT)
+    ENTRY_ADAPTER.write_entries()
     prepare_output()
     home = (SITE_SOURCE / "index.html").read_text(encoding="utf-8")
     search_entries = SEARCH_MODULE.build_search_index(
