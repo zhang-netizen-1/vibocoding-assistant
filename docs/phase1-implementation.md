@@ -58,3 +58,11 @@ git diff --check
 - 颜色控件仅修复演示克隆内损坏的 `hexc` ID，未改原来源文本。旧 `motion/` 两个跨页演示保持字节一致，另产出供新舞台 iframe 使用的紫色演示副本。
 - 动效详情增加重播和 0.25 倍慢放。跨文档 iframe 演示无法可靠慢放，慢放按钮禁用，原生跨页动作保留。
 - 检查通过 `python3 scripts/build_site.py`、完整 unittest 24 项、`git diff --check`。Node 检查 189 份来源演示初始化及所有新脚本语法，未运行浏览器。
+
+
+### 第 8 步 · 搜索完整版
+
+- 187 条索引全部使用新地址，沿用原中文名、英文名、terms、描述和完整复制内容，未新增别名。
+- 共用搜索浮层提供名称完全匹配、英文、terms、描述排序，空输入示例与无结果三块入口保留。新增 combobox / grid / row 语义、aria-activedescendant 和 aria-selected，同步上下键选择。
+- 快捷键通过 composedPath 判断 ShadowRoot 内的真实输入控件，输入中 `/` 保留原输入行为，Ctrl / Command + K 仍可打开搜索并记录原焦点。
+- 构建与完整 unittest 25 项通过，包含中文、英文大小写与空格、原 terms、排序、相近名称、合并前名称、复制载荷一致性；浏览器焦点和剪贴板交给第 13 步。

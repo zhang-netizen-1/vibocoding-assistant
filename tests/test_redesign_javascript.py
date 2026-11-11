@@ -81,3 +81,20 @@ console.log('Search matching and ranking passed');
             self.assertNotRegex(source,r'@import|https?://')
         for hook in ('holdBtn','splitCaret','fabBtn','copyDemoBtn','bttPage'):
             self.assertIn(hook,(ROOT/'dist/assets/redesign/demo-ui.js').read_text())
+
+    def test_shared_search_accessibility_hooks_and_payloads(self):
+        script=(ROOT/'site-src/redesign/site.js').read_text()
+        self.assertIn("event.composedPath()[0]",script)
+        self.assertIn("input.setAttribute('aria-activedescendant','result-' + selected)",script)
+        self.assertIn('role="grid"',script)
+        self.assertIn('aria-selected="${index === 0}"',script)
+        home=(ROOT/'dist/index.html').read_text()
+        self.assertIn('role="combobox"',home)
+        import re
+        data=json.loads(re.search(r'id="redesign-search-index">(.*?)</script>',home,re.S)[1])
+        original=json.loads((ROOT/'build/entries.json').read_text())
+        for row,entry in zip(data['entries'],original):
+            self.assertEqual(row['terms'],entry['terms'])
+            self.assertIn(entry['prompt'],row['prompt'])
+            for criterion in entry['acceptance']:self.assertIn(criterion,row['prompt'])
+            if entry.get('prompt_secondary'):self.assertIn(entry['prompt_secondary'],row['prompt'])

@@ -66,13 +66,19 @@
   let selected = 0, results = [];
   const queryButtons = () => data.examples.map(query => `<button class="chip" data-query="${escape(query)}">${escape(query)}</button>`).join('');
   function renderSearch() {
+    input.removeAttribute('aria-activedescendant');
+    input.removeAttribute('aria-controls');
+    input.setAttribute('aria-expanded', 'false');
     const query = input.value.trim(); selected = 0; results = query ? VibeSearch.match(data.entries,query) : [];
     if (!query) { body.innerHTML = `<h2 class="common-title">常用搜法</h2><div class="chips">${queryButtons()}</div>`; return; }
     if (!results.length) {
       body.innerHTML = `<h2 class="empty-title">没有找到「${escape(query)}」</h2><div class="empty-grid"><section class="empty-block"><h3>相近的名称</h3>${VibeSearch.similar(data.entries,query).map(entry => `<a href="${escape(entry.href)}">${escape(entry.zh)} <span class="english">${escape(entry.en)}</span></a>`).join('')}</section><section class="empty-block"><h3>换个说法</h3><p>描述它怎么动或在哪里，比如「滑入」「弹出」「浮起来」。</p></section><section class="empty-block"><h3>按栏目找</h3>${data.columns.map(column => `<a href="${escape(column.href)}">${escape(column.name)}</a>`).join('')}</section></div>`;
       announce(`没有找到「${query}」`); return;
     }
-    body.innerHTML = `<p class="result-count">找到 ${results.length} 条结果</p><div id="result-list">${results.map((row,index) => `<div class="result-row${index === 0 ? ' selected' : ''}" id="result-${index}"><div class="result-info"><span class="result-name">${escape(row.entry.zh)}</span><span class="english">${escape(row.entry.en)}</span><p class="result-meta">${escape(row.entry.column)} · ${escape(row.entry.group)}</p></div><div class="result-actions"><a href="${escape(row.entry.href)}" aria-label="打开${escape(row.entry.zh)}">打开</a><button class="copy-btn" data-copy-result="${row.index}" aria-label="复制${escape(row.entry.zh)}提示词">复制提示词</button></div></div>`).join('')}</div>`;
+    body.innerHTML = `<p class="result-count">找到 ${results.length} 条结果</p><div id="result-list" role="grid" aria-label="搜索结果">${results.map((row,index) => `<div class="result-row${index === 0 ? ' selected' : ''}" id="result-${index}" role="row" aria-selected="${index === 0}"><div class="result-info" role="gridcell"><span class="result-name">${escape(row.entry.zh)}</span><span class="english">${escape(row.entry.en)}</span><p class="result-meta">${escape(row.entry.column)} · ${escape(row.entry.group)}</p></div><div class="result-actions" role="gridcell"><a href="${escape(row.entry.href)}" aria-label="打开${escape(row.entry.zh)}">打开</a><button class="copy-btn" data-copy-result="${row.index}" aria-label="复制${escape(row.entry.zh)}提示词">复制提示词</button></div></div>`).join('')}</div>`;
+    input.setAttribute('aria-expanded','true');
+    input.setAttribute('aria-controls','result-list');
+    input.setAttribute('aria-activedescendant','result-0');
     announce(`找到 ${results.length} 条结果`);
   }
   input.addEventListener('input',renderSearch);
@@ -80,7 +86,8 @@
     if (!results.length || event.isComposing) return;
     if (['ArrowDown','ArrowUp'].includes(event.key) && event.target === input) {
       event.preventDefault(); selected = (selected + (event.key === 'ArrowDown' ? 1 : results.length - 1)) % results.length;
-      $$('.result-row').forEach((row,index) => row.classList.toggle('selected',index === selected));
+      $$('.result-row').forEach((row,index) => { row.classList.toggle('selected',index === selected); row.setAttribute('aria-selected',String(index === selected)); });
+      input.setAttribute('aria-activedescendant','result-' + selected);
       $('#result-' + selected).scrollIntoView({block:'nearest'}); announce(`已选择 ${results[selected].entry.zh}，按 Enter 打开`);
     } else if (event.key === 'Enter' && event.target === input) { event.preventDefault(); location.assign(results[selected].entry.href); }
   });
@@ -124,9 +131,10 @@
   document.addEventListener('keydown', event => {
     if (event.isComposing) return;
     if (event.key === 'Escape' && activeMenu) { event.preventDefault(); closeMenu(true); return; }
-    const editing = /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName) || event.target.isContentEditable;
+    const target = event.composedPath()[0];
+    const editing = /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName) || target.isContentEditable;
     if (((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') || (event.key === '/' && !editing && !event.ctrlKey && !event.metaKey && !event.altKey)) {
-      event.preventDefault(); if (!search.open) openSearch('',document.activeElement);
+      event.preventDefault(); if (!search.open) openSearch('',event.composedPath()[0] instanceof HTMLElement ? event.composedPath()[0] : document.activeElement);
     }
   });
 
