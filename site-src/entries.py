@@ -134,10 +134,10 @@ def source_entries():
                        prompt=guide.build_prompt(section, item), acceptance=[item['check']],
                        when_use=item['fit'], when_avoid=item['avoid'], source=dict(path='site-src/guide_pages.py', old_path=f'/{section}/'))
     skills = load_module('entry_skills', SOURCE / 'skill_catalog.py')
-    for item in skills.all_skills():
+    for number, item in enumerate(skills.all_skills(), 1):
         yield dict(anchor='skill-' + item['slug'], zh=item['title'], en=item['slug'],
                    terms=' '.join((item['slug'], item['repo'], item['use'], *item['tags'])),
-                   definition=item['summary'], demo=dict(kind='skill-reference', html=skills.render_card(item, 1)),
+                   definition=item['summary'], demo=dict(kind='skill-reference', html=skills.render_card(item, number)),
                    prompt=skills.install_prompt(item), acceptance=[], when_use=item['use'],
                    source=dict(path='site-src/skill_catalog.py', old_path='/skills/'))
 
@@ -159,6 +159,7 @@ def load_entries():
                 entry['demo']['secondary'] = raw[old]['demo']
                 entry['prompt_secondary'] = raw[old]['prompt']
                 entry['source']['secondary'] = raw[old]['source']
+                entry['terms'] += ' ' + raw[old]['terms']
         for slug, report in bench.items():
             if report['site_link'].split('#')[-1] == anchor:
                 entry['bench'] = dict(slug=slug)

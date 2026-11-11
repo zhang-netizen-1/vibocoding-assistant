@@ -43,8 +43,10 @@ class EntriesTest(unittest.TestCase):
     def test_source_copy_and_optional_fields_preserved(self):
         for e in self.entries:
             raw = self.raw[e['old_anchors'][0]]
-            for field in ('zh', 'en', 'terms', 'definition', 'prompt', 'acceptance'):
+            for field in ('zh', 'en', 'definition', 'prompt', 'acceptance'):
                 self.assertEqual(e[field], raw[field], (e['slug'], field))
+            expected_terms = raw['terms'] + ''.join(' ' + self.raw[a]['terms'] for a in e['old_anchors'][1:])
+            self.assertEqual(e['terms'], expected_terms)
             self.assertNotIn('prompt_new', e)
             self.assertEqual(e.get('when_use'), raw.get('when_use'))
             self.assertEqual(e.get('when_avoid'), raw.get('when_avoid'))
