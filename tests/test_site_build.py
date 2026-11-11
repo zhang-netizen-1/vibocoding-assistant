@@ -351,6 +351,24 @@ class SiteBuildTest(unittest.TestCase):
                 if target.is_dir():target/='index.html'
                 self.assertTrue(target.is_file(),(path,item['href']))
 
+    def test_component_motion_mapping_links_both_directions(self):
+        spec=importlib.util.spec_from_file_location('mapping_templates',ROOT/'site-src/redesign/templates.py')
+        templates=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(templates)
+        entries=json.loads((ROOT/'build/entries.json').read_text())
+        taxonomy=json.loads((ROOT/'site-src/taxonomy.json').read_text())
+        by_anchor={anchor:entry for entry in entries for anchor in entry['old_anchors']}
+        for pair in taxonomy['component_motion']:
+            component,motion=(by_anchor[pair[key]] for key in ('component','motion'))
+            for source,target,heading in ((component,motion,'它怎么动'),(motion,component,'用在哪些组件上')):
+                page=templates.entry_destination(source)+'index.html'
+                html=(DIST/page).read_text()
+                self.assertIn(heading,html)
+                href=templates.relative(page,templates.entry_destination(target))
+                self.assertIn(href,parse(DIST/page).links)
+                self.assertTrue((DIST/templates.entry_destination(target)/'index.html').is_file())
+            self.assertIn('demo-motion.js',(DIST/templates.entry_destination(component)/'index.html').read_text())
+
     def test_ten_state_switchers_have_matching_captions_and_styles(self):
         spec=importlib.util.spec_from_file_location('states_test',ROOT/'site-src/redesign/states.py')
         states=importlib.util.module_from_spec(spec)

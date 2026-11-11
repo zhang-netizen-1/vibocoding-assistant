@@ -93,6 +93,32 @@ def header(page, tax):
 <dialog class="overlay drawer" id="directory" aria-labelledby="drawer-title"><div class="drawer-head row between"><h2 id="drawer-title">浏览目录</h2><button class="close-button" data-close="directory" autofocus>关闭</button></div><div class="drawer-body"><p><a href="{relative(page, '')}">首页 →</a></p>{''.join(drawers)}</div></dialog>'''
 
 
+def mapped_entries(entry, entries, tax):
+    anchors = {anchor:item for item in entries for anchor in item['old_anchors']}
+    forward, reverse = [], []
+    for pair in tax['component_motion']:
+        if pair['component'] in entry['old_anchors']:
+            forward.append(anchors[pair['motion']])
+        if pair['motion'] in entry['old_anchors']:
+            reverse.append(anchors[pair['component']])
+    def unique(items):
+        return list({entry_destination(item):item for item in items}.values())
+    return unique(forward), unique(reverse)
+
+
+def motion_links(entry, page, entries, tax):
+    forward, reverse = mapped_entries(entry,entries,tax)
+    parts = []
+    if forward:
+        shown = ''.join(gallery_card(item,page,compact=True) for item in forward[:6])
+        more = '<details class="more-motions"><summary>更多动效</summary><div class="gallery motion-grid">' + ''.join(gallery_card(item,page,compact=True) for item in forward[6:]) + '</div></details>' if len(forward)>6 else ''
+        parts.append(f'<section class="entry-section motion-section"><h2>它怎么动</h2><div class="gallery motion-grid">{shown}</div>{more}</section>')
+    if reverse:
+        links = ''.join(f'<a class="chip" href="{relative(page,entry_destination(item))}">{escape(item["zh"])}</a>' for item in reverse)
+        parts.append(f'<section class="entry-section motion-section"><h2>用在哪些组件上</h2><div class="chips">{links}</div></section>')
+    return ''.join(parts)
+
+
 def shell(page, title, body, entries, tax, entry=False):
     columns = {c['slug']: c for c in tax['columns']}
     index = [dict(zh=e['zh'], en=e['en'], terms=e['terms'], definition=e['definition'], prompt=copy_payload(e),
@@ -104,6 +130,9 @@ def shell(page, title, body, entries, tax, entry=False):
         bundle_names.update(demos.bundle_names(item['demo']))
         if item['demo'].get('secondary'):
             bundle_names.update(demos.bundle_names(item['demo']['secondary']))
+    if entry and selected:
+        for related in mapped_entries(selected[0],entries,tax)[0]:
+            bundle_names.update(demos.bundle_names(related['demo']))
     generated = demos.assets(entries)
     def asset_tag(name):
         content = generated[name] if name in generated else (HERE/name).read_text(encoding='utf-8')
@@ -138,9 +167,11 @@ def demo_scope(demo, page, interactive=False):
 
 
 
-def gallery_card(e, page):
+def gallery_card(e, page, compact=False):
     target = relative(page, entry_destination(e))
     caption = f'<strong>{escape(e["zh"])}</strong><span class="english">{escape(e["en"])}</span><p>{escape(e["definition"].splitlines()[0])}</p>'
+    if compact:
+        caption = f'<strong>{escape(e["zh"])}</strong><span class="english">{escape(e["en"])}</span>'
     return f'''<article class="gallery-card" data-demo-key="{e['slug']}"><div class="mini-stage">{demo_scope(e['demo'], page)}<button class="play-button" aria-label="播放{escape(e['zh'])}演示" aria-pressed="false">▶ 播放</button><span class="reduced-link">看演示 →</span></div><a class="gallery-link" href="{target}"><div class="gallery-caption">{caption}</div></a></article>'''
 
 
@@ -197,7 +228,7 @@ def detail(e, entries, tax):
     if e['demo']['kind'] == 'skill-reference':
         links = re.findall(r'<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>', e['demo']['html'], re.S)
         source_link = '<section class="entry-section"><h2>来源</h2>' + ''.join(f'<p><a href="{escape(url)}" rel="noopener noreferrer">{text}</a></p>' for url,text in links) + '</section>'
-    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span></div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{usage}<section class="entry-section prompt-box"><h2>提示词</h2><pre class="prompt-text" id="entry-prompt">{escape(e['prompt'])}</pre></section>{secondary}{prompt_new}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>同组相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article>{use_card}</div><div class="bottom-bar">{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
+    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span></div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{motion_links(e,page,entries,tax)}{usage}<section class="entry-section prompt-box"><h2>提示词</h2><pre class="prompt-text" id="entry-prompt">{escape(e['prompt'])}</pre></section>{secondary}{prompt_new}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>同组相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article>{use_card}</div><div class="bottom-bar">{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
     return shell(page, e['zh']+' '+e['en'], body, entries, tax, entry=True)
 
 

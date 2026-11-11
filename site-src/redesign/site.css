@@ -46,3 +46,6 @@
 @media(max-width:1023px){.entry-demo{order:1}.entry-layout>.entry-demo{width:100%}}
 
 .state-picker{margin-bottom:16px}.state-picker h2{font-size:14px;margin-bottom:8px}.state-picker button{font-size:13px}.state-picker [aria-pressed="true"]{background:var(--ink);color:var(--white);border-color:var(--ink)}.state-caption{margin-top:12px;font-size:14px;color:var(--secondary)}
+
+.motion-section{margin-bottom:32px}.motion-grid .gallery-caption{padding:12px}.motion-grid .gallery-caption strong{font-size:14px}.more-motions{margin-top:16px}.more-motions>summary{font-size:14px;margin-bottom:12px}
+@media(max-width:1023px){.motion-section{order:2}.usage-section{order:3}.prompt-box{order:4}.use-card{order:5}.new-section{order:6}.related-section{order:7}.bench-line{order:8}}
