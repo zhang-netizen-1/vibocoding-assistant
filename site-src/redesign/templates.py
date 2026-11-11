@@ -51,8 +51,6 @@ def column_destination(column):
 
 
 def group_destination(column, group):
-    if column == 'basics' and group == 'tokens':
-        return None
     return column + '/#group-' + group
 
 
@@ -126,7 +124,7 @@ def motion_links(entry, page, entries, tax):
 def shell(page, title, body, entries, tax, entry=False):
     columns = {c['slug']: c for c in tax['columns']}
     order = list(tax['anchors'])
-    ordered = sorted(entries, key=lambda e: (columns[e['column']]['order'], next(i for i,g in enumerate(columns[e['column']]['groups']) if g['slug'] == e['group']), order.index(e['old_anchors'][0])))
+    ordered = sorted(entries, key=lambda e: (columns[e['column']]['order'], next(i for i,g in enumerate(columns[e['column']]['groups']) if g['slug'] == e['group']), (order.index(e['id']) if e['id'] in order else len(order))))
     index = [dict(aliases=e.get('aliases', []), zh=e['zh'], en=e['en'], terms=e['terms'], definition=e['definition'], prompt=copy_payload(e),
                   column=columns[e['column']]['name'], group=next(g['name'] for g in columns[e['column']]['groups'] if g['slug'] == e['group']), href=relative(page, entry_destination(e))) for e in ordered]
     data = json.dumps(dict(entries=index, columns=[dict(name=c['name'], href=relative(page, column_destination(c['slug']))) for c in tax['columns']], examples=EXAMPLES), ensure_ascii=False, separators=(',', ':')).replace('<', '\u003c')
@@ -189,7 +187,7 @@ def column_page(slug, entries, tax):
     order = list(tax['anchors'])
     for g in column['groups']:
         cards = [e for e in entries if e['column'] == slug and e['group'] == g['slug']]
-        cards.sort(key=lambda e: order.index(e['old_anchors'][0]))
+        cards.sort(key=lambda e: order.index(e['id']) if e['id'] in order else len(order))
         content = '<div class="gallery">' + ''.join(gallery_card(e,page) for e in cards) + '</div>' if cards else '<p class="small">三期新增</p>'
         sections.append(f'<section class="group-section" id="group-{g["slug"]}"><h2>{g["name"]} <span class="count">{len(cards)}</span></h2>{content}</section>')
     extra = f'<p class="entry-section"><a href="{relative(page, "bench/")}">测评结果 →</a></p>' if slug == 'ai' else ''
@@ -217,7 +215,7 @@ def detail(e, entries, tax):
         usage += '<section class="entry-section usage-section"><h2>关键参数</h2><ul>' + ''.join(f'<li>{escape(item)}</li>' for item in params) + '</ul></section>'
     aliases = '<p class="entry-aliases small">也叫：' + escape('、'.join(e['aliases'][:5])) + '</p>' if e.get('aliases') else ''
     notice = f'<p class="small">共 {len(e["acceptance"])} 条验收要求，见使用卡；复制提示词时自动包含</p>' if e.get('prompt_edit') else ''
-    related = ''.join(f'<a class="chip" href="{relative(page,entry_destination(other))}">{escape(other["zh"])}</a>' for other in entries if other['column'] == e['column'] and other['group'] == e['group'] and other['slug'] != e['slug'])
+    related = ''.join(f'<a class="chip" href="{relative(page,entry_destination(other))}">{escape(other["zh"])}</a>' for other in entries if (other['column'] == e['column'] and other['group'] == e['group'] and other['slug'] != e['slug']) or other['column'] + '/' + other['slug'] in e.get('related', []))
     criteria = ''
     if e['acceptance']:
         items = ''.join(f'<li><p id="criterion-{i}">{escape(text)}</p>{copy_button("criterion-"+str(i), "复制这条")}</li>' for i,text in enumerate(e['acceptance']))
@@ -232,6 +230,8 @@ def detail(e, entries, tax):
         controls = '<div class="demo-controls"><button type="button" data-demo-replay>重播</button><button type="button" data-demo-slow aria-pressed="false">慢放 0.25 倍</button><span class="reduced-note" hidden>你的系统开启了减弱动态</span></div>' if demo['kind'] == 'motion' else ''
         return '<div class="entry-demo"><div class="demo-stage">' + demo_scope(demo, page, True) + '</div>' + controls + '</div>'
     demonstrations = demonstration(e['demo'])
+    if e.get('demo_hint'):
+        demonstrations += f'<p class="small demo-hint">{escape(e["demo_hint"])}</p>'
     if e['column'] == 'components' and e['slug'] in states.STATES:
         demonstrations = demonstrations.replace('<div class="demo-stage">',states.render(e['slug']) + '<div class="demo-stage">',1)
     if e['demo'].get('secondary'):
@@ -241,7 +241,7 @@ def detail(e, entries, tax):
     if e['demo']['kind'] == 'skill-reference':
         links = re.findall(r'<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>', e['demo']['html'], re.S)
         source_link = '<section class="entry-section"><h2>来源</h2>' + ''.join(f'<p><a href="{escape(url)}" rel="noopener noreferrer">{text}</a></p>' for url,text in links) + '</section>'
-    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span>{aliases}</div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{motion_links(e,page,entries,tax)}{usage}<section class="entry-section prompt-box"><h2>提示词</h2><pre class="prompt-text" id="entry-prompt">{escape(e['prompt'])}</pre>{notice}{prompt_new}</section>{secondary}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>同组相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article>{use_card}</div><div class="bottom-bar">{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
+    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span>{aliases}</div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{motion_links(e,page,entries,tax)}{usage}<section class="entry-section prompt-box"><h2>提示词</h2><pre class="prompt-text" id="entry-prompt">{escape(e['prompt'])}</pre>{notice}{prompt_new}</section>{secondary}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article>{use_card}</div><div class="bottom-bar">{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
     return shell(page, e['zh']+' '+e['en'], body, entries, tax, entry=True)
 
 

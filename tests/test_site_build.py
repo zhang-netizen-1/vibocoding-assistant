@@ -214,7 +214,7 @@ class SiteBuildTest(unittest.TestCase):
         self.assertEqual(len(entries), len(unified))
         self.assertEqual(len({entry["href"] for entry in entries}), len(unified))
         counts = {category: sum(entry["column"] == category for entry in entries) for category in {entry["column"] for entry in entries}}
-        self.assertEqual(counts, {"设计基础": 12, "组件": 75, "交互与动效": 84, "页面与场景": 6, "AI 实现": 10})
+        self.assertEqual(counts, {"设计基础": 17, "组件": 75, "交互与动效": 84, "页面与场景": 6, "AI 实现": 10})
         for entry in entries:
             url = urlsplit(entry["href"])
             target = DIST / unquote(url.path)
@@ -302,7 +302,7 @@ class SiteBuildTest(unittest.TestCase):
             points=doc.find_all(cls='entry-points')
             self.assertEqual([n.text() for n in points[0].find_all('li')] if points else [],entry['definition'].splitlines()[1:])
             index=json.loads(next(n for n in doc.find_all('script') if n.attrs.get('id')=='redesign-search-index').text())
-            self.assertEqual(len(index['entries']),187)
+            self.assertEqual(len(index['entries']),192)
             for item in [*index['entries'],*index['columns']]:
                 target=(path.parent/urlsplit(item['href']).path).resolve()
                 self.assertFalse(item['href'].startswith('/'))

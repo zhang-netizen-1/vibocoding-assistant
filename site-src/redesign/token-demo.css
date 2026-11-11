@@ -1,0 +1,22 @@
+.token-demo{padding:24px;display:grid;gap:16px;min-width:0;color:var(--demo-ink);font-size:14px;line-height:1.7}
+.token-demo label{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.token-controls{display:flex;flex-wrap:wrap;gap:16px}
+.token-demo select,.token-demo input,.token-demo button{font:inherit;min-height:32px;max-width:100%;border:1px solid var(--demo-border,#868E9C);border-radius:8px;background:var(--demo-white);color:var(--demo-ink);padding:4px 8px}
+.token-demo input[type=color]{width:64px;padding:4px}
+.token-demo p{margin:8px 0 0;overflow-wrap:anywhere}
+.token-demo output{display:block;color:var(--demo-secondary);font-size:12px;min-height:3em;overflow-wrap:anywhere}
+.token-card{padding:24px;background:var(--demo-white);border:1px solid var(--demo-border,#868E9C);border-radius:12px}
+.contrast-sample{padding:24px;border-radius:12px;background:var(--sample-bg,#FFFFFF);color:var(--sample-fg,#6D28D9)}
+.contrast-sample strong{font-size:24px}
+.type-ladder{display:grid;gap:8px;line-height:1.7;overflow-wrap:anywhere}
+.type-ladder strong{line-height:1.3;color:var(--demo-primary)}
+.space-ruler{font:12px/1.5 ui-monospace,monospace;padding:8px;background:repeating-linear-gradient(90deg,var(--demo-line) 0 1px,transparent 1px 8px)}
+.space-frame{border:1px dashed var(--demo-border,#868E9C);background:var(--demo-soft)}
+.spacing-card{padding:var(--sample-padding,16px);margin:var(--sample-margin,12px);border-radius:8px}
+.elevation-frame{padding:16px}
+.elevation-card{border-radius:var(--sample-radius,12px);box-shadow:var(--sample-shadow,none)}
+.theme-sample{--theme-bg:#FFFFFF;--theme-text:#111827;--theme-border:#868E9C;--theme-action:var(--demo-primary);background:var(--theme-bg);color:var(--theme-text);border-color:var(--theme-border);transition:background-color .2s,color .2s}
+.theme-sample[data-theme=dark]{--theme-bg:#111827;--theme-text:#F6F7F9;--theme-border:#868E9C;--theme-action:#C4B5FD}
+.theme-sample button{background:var(--theme-action);color:var(--theme-bg);border-color:var(--theme-action);margin-top:16px}
+.theme-sample button:focus-visible{outline-color:var(--theme-text)}
+@media(prefers-reduced-motion:reduce){.token-demo *{transition:none!important;animation:none!important}}

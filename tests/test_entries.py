@@ -18,13 +18,13 @@ class EntriesTest(unittest.TestCase):
         cls.tax = MODULE.taxonomy()
 
     def test_counts_and_unique_slugs(self):
-        self.assertEqual(len(self.entries), 187)
+        self.assertEqual(len(self.entries), 192)
         self.assertEqual(Counter(e['column'] for e in self.entries),
-                         {'basics': 12, 'components': 75, 'interactions': 84, 'scenarios': 6, 'ai': 10})
+                         {'basics': 17, 'components': 75, 'interactions': 84, 'scenarios': 6, 'ai': 10})
         for c in self.tax['columns']:
             for g in c['groups']:
                 self.assertEqual(sum(e['column'] == c['slug'] and e['group'] == g['slug'] for e in self.entries), g['expected'])
-        self.assertEqual(len({(e['column'], e['slug']) for e in self.entries}), 187)
+        self.assertEqual(len({(e['column'], e['slug']) for e in self.entries}), 192)
         for e in self.entries:
             for field in ('slug', 'zh', 'prompt', 'demo'):
                 self.assertTrue(e[field], (e['old_anchors'], field))
@@ -42,6 +42,10 @@ class EntriesTest(unittest.TestCase):
 
     def test_source_copy_and_optional_fields_preserved(self):
         for e in self.entries:
+            if not e['old_anchors']:
+                self.assertEqual(e['source']['path'], 'site-src/token_entries.py')
+                self.assertEqual(e['demo']['kind'], 'token')
+                continue
             raw = self.raw[e['old_anchors'][0]]
             for field in ('zh', 'en', 'definition'):
                 self.assertEqual(e[field], raw[field], (e['slug'], field))

@@ -1,0 +1,202 @@
+{
+  "按钮": {
+    "expected": "components/button",
+    "rank": 0
+  },
+  "Button": {
+    "expected": "components/button",
+    "rank": 0
+  },
+  "浮起来": {
+    "expected": "interactions/component-lift",
+    "rank": 0
+  },
+  "小黑框": {
+    "expected": "components/tooltip",
+    "rank": 0
+  },
+  "弹窗": {
+    "expected": "components/modal",
+    "rank": 0
+  },
+  "Toggle": {
+    "expected": "components/switch",
+    "rank": 0
+  },
+  "水波纹": {
+    "expected": "interactions/component-ripple",
+    "rank": 0
+  },
+  "加载占位": {
+    "expected": "components/skeleton",
+    "rank": 0
+  },
+  "淡入淡出": {
+    "expected": "interactions/view-crossfade",
+    "rank": 0
+  },
+  "提交中": {
+    "expected": "interactions/submit",
+    "rank": 0
+  },
+  "鼠标放上去浮起来": {
+    "expected": "interactions/component-lift",
+    "rank": 0
+  },
+  "弹出来的小黑框": {
+    "expected": "components/tooltip",
+    "rank": 0
+  },
+  "Crossfade": {
+    "expected": "interactions/view-crossfade",
+    "rank": 0
+  },
+  "点了会变的按钮": {
+    "expected": "components/button",
+    "rank": 0
+  },
+  "输入东西的框": {
+    "expected": "components/input",
+    "rank": 0
+  },
+  "多行文本": {
+    "expected": "components/textarea",
+    "rank": 0
+  },
+  "面包屑": {
+    "expected": "components/breadcrumb",
+    "rank": 0
+  },
+  "右键出来的菜单": {
+    "expected": "components/context-menu",
+    "rank": 0
+  },
+  "键盘搜功能": {
+    "expected": "components/cmdk",
+    "rank": 0
+  },
+  "能拖文件上传的区域": {
+    "expected": "components/upload",
+    "rank": 0
+  },
+  "一直往下加载": {
+    "expected": "components/infinite-scroll",
+    "rank": 0
+  },
+  "密码能不能用": {
+    "expected": "components/password-strength",
+    "rank": 0
+  },
+  "卡片一列变多列": {
+    "expected": "basics/grid",
+    "rank": 0
+  },
+  "左边导航右边内容": {
+    "expected": "basics/sidebar",
+    "rank": 0
+  },
+  "左右两栏": {
+    "expected": "basics/split",
+    "rank": 0
+  },
+  "根据容器宽度调整": {
+    "expected": "basics/container",
+    "rank": 0
+  },
+  "列表紧凑一点": {
+    "expected": "basics/density",
+    "rank": 0
+  },
+  "标题吸在顶部": {
+    "expected": "basics/sticky",
+    "rank": 0
+  },
+  "毛玻璃": {
+    "expected": "basics/glass",
+    "rank": 0
+  },
+  "硬边框大阴影": {
+    "expected": "basics/brutalist",
+    "rank": 0
+  },
+  "产品介绍页": {
+    "expected": "scenarios/landing",
+    "rank": 0
+  },
+  "看数据的总览页": {
+    "expected": "scenarios/dashboard",
+    "rank": 0
+  },
+  "搜索结果页面": {
+    "expected": "scenarios/list",
+    "rank": 0
+  },
+  "商品详情页": {
+    "expected": "scenarios/detail",
+    "rank": 0
+  },
+  "账户设置页面": {
+    "expected": "scenarios/settings",
+    "rank": 0
+  },
+  "分几步填表": {
+    "expected": "scenarios/wizard",
+    "rank": 0
+  },
+  "seTTings Page": {
+    "expected": "scenarios/settings",
+    "rank": 0
+  },
+  "网页视觉设计技能": {
+    "expected": "ai/frontend-design",
+    "rank": 0
+  },
+  "搜配色和字体": {
+    "expected": "ai/ui-ux-pro-max",
+    "rank": 0
+  },
+  "提取项目设计规范": {
+    "expected": "ai/create-design-md",
+    "rank": 0
+  },
+  "检查键盘能不能操作": {
+    "expected": "ai/fixing-accessibility",
+    "rank": 0
+  },
+  "动画卡顿怎么查": {
+    "expected": "ai/fixing-motion-performance",
+    "rank": 0
+  },
+  "pLAyWright验收": {
+    "expected": "ai/webapp-testing",
+    "rank": 0
+  },
+  "输入完自己保存": {
+    "expected": "interactions/auto-save",
+    "rank": 0
+  },
+  "删除后反悔": {
+    "expected": "interactions/undo",
+    "rank": 0
+  },
+  "输入错了马上提示": {
+    "expected": "interactions/validation",
+    "rank": 0
+  },
+  "一起选好多条": {
+    "expected": "interactions/bulk",
+    "rank": 0
+  },
+  "按下去弹回来": {
+    "expected": "interactions/component-press",
+    "rank": 0
+  },
+  "往下滚才出现": {
+    "expected": "interactions/scroll-reveal",
+    "rank": 0
+  },
+  "数字从零往上跳": {
+    "expected": "interactions/data-count",
+    "rank": 0
+  }
+}

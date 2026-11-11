@@ -166,13 +166,30 @@ def load_entries(content=None, *, strict=None):
             if report['site_link'].split('#')[-1] == anchor:
                 entry['bench'] = dict(slug=slug, totals={agent:scores[slug][agent]['total'] for agent in ('codex','hermes')})
         result.append(entry)
+    native = load_module('native_token_entries', SOURCE / 'token_entries.py')
+    result.extend(native.entries())
+    for entry in result:
+        entry.setdefault('id', entry['old_anchors'][0] if entry['old_anchors'] else '')
+        entry.setdefault('related', [])
+    by_key = {e['column'] + '/' + e['slug']: e for e in result}
+    for entry in result:
+        for target in entry['related'][:]:
+            if target not in by_key:
+                raise ValueError(f'Unknown related entry: {target}')
+            reverse = by_key[target]['related']
+            key = entry['column'] + '/' + entry['slug']
+            if key not in reverse:
+                reverse.append(key)
     validate(result, tax)
     return apply_content(result, load_content() if content is None else content, strict=strict)
 
 
 def validate(entries, tax):
-    if len(entries) != sum(c['expected'] for c in tax['columns']) or len(entries) != 187:
-        raise ValueError('Expected 187 unified entries')
+    expected = sum(c['expected'] for c in tax['columns'])
+    if len(entries) != expected:
+        raise ValueError(f'Expected {expected} unified entries')
+    if len({e['id'] for e in entries}) != len(entries):
+        raise ValueError('Duplicate entry id')
     counts = Counter((e['column'], e['group']) for e in entries)
     keys = [(e['column'], e['slug']) for e in entries]
     if len(set(keys)) != len(keys):
@@ -184,7 +201,7 @@ def validate(entries, tax):
             if counts[(column['slug'], group['slug'])] != group['expected']:
                 raise ValueError(f'Group count: {column["slug"]}/{group["slug"]}')
     for e in entries:
-        if not all(e.get(field) for field in ('slug', 'zh', 'prompt', 'demo', 'old_anchors')):
+        if not all(e.get(field) for field in ('id', 'slug', 'zh', 'prompt', 'demo')):
             raise ValueError(f'Incomplete entry: {e}')
     frozen = json.loads((ROOT / 'tests/fixtures/old_anchors.json').read_text(encoding='utf-8'))['entries']
     all_anchors = [a for e in entries for a in e['old_anchors']]
@@ -225,7 +242,7 @@ def apply_content(entries, content, strict=None):
     if unknown:
         raise ValueError(f'Unknown editorial entries: {sorted(unknown)}')
     if strict and set(content) != set(by_key):
-        raise ValueError(f'Strict content requires all 187 entries; missing: {sorted(set(by_key)-set(content))}')
+        raise ValueError(f'Strict content requires all {len(by_key)} entries; missing: {sorted(set(by_key)-set(content))}')
     aliases_seen = {}
     for key, fields in content.items():
         if not isinstance(fields, dict):

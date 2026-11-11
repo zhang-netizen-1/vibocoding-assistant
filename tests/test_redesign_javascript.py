@@ -34,7 +34,7 @@ class RedesignJavaScriptTest(unittest.TestCase):
             fixture.write_text(json.dumps(demos.smoke_fixture(entries.load_entries()),ensure_ascii=False))
             result=subprocess.run(['node',str(ROOT/'site-src/redesign/demo-smoke.cjs'),str(fixture)],cwd=ROOT,text=True,capture_output=True)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
-        self.assertIn('189',result.stdout)
+        self.assertIn('194',result.stdout)
         self.assertIn('Command palette: 70 real candidates',result.stdout)
         self.assertIn('Motion modal: local sibling inert',result.stdout)
 
@@ -77,7 +77,7 @@ console.log('Search matching and ranking passed');
         runtime=(ROOT/'dist/assets/redesign/demo-runtime.js').read_text()
         self.assertIn("attachShadow({mode: 'open'})",runtime)
         self.assertIn('shadow.querySelector',runtime)
-        for kind in ('ui','motion','guide','skill-reference'):
+        for kind in ('ui','motion','guide','skill-reference','token'):
             source=(ROOT/f'dist/assets/redesign/demo-{kind}.css').read_text()
             self.assertNotIn('#1d4ed8',source.lower())
             self.assertNotRegex(source,r'@import|https?://')

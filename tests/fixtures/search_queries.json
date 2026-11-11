@@ -198,5 +198,45 @@
   {
     "query": "数字从零往上跳",
     "expected": "interactions/data-count"
+  },
+  {
+    "query": "配色",
+    "expected": "basics/color"
+  },
+  {
+    "query": "对比度",
+    "expected": "basics/color"
+  },
+  {
+    "query": "字号",
+    "expected": "basics/typography"
+  },
+  {
+    "query": "行高",
+    "expected": "basics/typography"
+  },
+  {
+    "query": "留白",
+    "expected": "basics/spacing"
+  },
+  {
+    "query": "间距规范",
+    "expected": "basics/spacing"
+  },
+  {
+    "query": "投影",
+    "expected": "basics/radius-shadow"
+  },
+  {
+    "query": "阴影",
+    "expected": "basics/radius-shadow"
+  },
+  {
+    "query": "暗黑模式",
+    "expected": "basics/dark-mode"
+  },
+  {
+    "query": "夜间模式",
+    "expected": "basics/dark-mode"
   }
 ]

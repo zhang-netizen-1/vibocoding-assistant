@@ -19,10 +19,12 @@ function entryKey(entry) {
 }
 
 const indexKeys = new Set(index.map(entryKey));
-assert.equal(index.length, 187);
-assert.equal(indexKeys.size, 187);
-assert.equal(fixtures.length, 50);
-assert.equal(new Set(fixtures.map(test => search.normalize(test.query))).size, 50);
+const taxonomy = JSON.parse(fs.readFileSync(path.join(root, 'site-src/taxonomy.json'), 'utf8'));
+const count = taxonomy.columns.reduce((sum, column) => sum + column.expected, 0);
+assert.equal(index.length, count);
+assert.equal(indexKeys.size, count);
+assert.equal(fixtures.length, 60);
+assert.equal(new Set(fixtures.map(test => search.normalize(test.query))).size, 60);
 assert.deepEqual([...new Set(fixtures.map(test => test.expected.split('/')[0]))].sort(),
   ['ai', 'basics', 'components', 'interactions', 'scenarios']);
 for (const test of fixtures) {
@@ -51,6 +53,15 @@ const byQuery = new Map(results.map(result => [result.query, result]));
 for (const [query, expected] of mandatory) {
   assert.equal(byQuery.get(query)?.expected, expected, `Required fixture ${query}`);
 }
+const baseline = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/phase2-search-ranks.json'), 'utf8'));
+assert.equal(Object.keys(baseline).length, 50);
+for (const [query, previous] of Object.entries(baseline)) {
+  const current = byQuery.get(query);
+  assert.equal(current.expected, previous.expected);
+  const rank = current.top3.indexOf(previous.expected);
+  assert.ok(rank >= 0 && rank <= previous.rank, `Original query regressed: ${query}`);
+}
+for (const test of fixtures.slice(50)) mandatory.set(test.query, test.expected);
 const mandatoryMissed = results.filter(result => mandatory.has(result.query) && !result.hit);
 
 const englishQueries = new Set([

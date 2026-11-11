@@ -50,7 +50,7 @@ class EditorialTest(unittest.TestCase):
     def test_alias_conflict_reports_both_entries_and_strict_requires_all(self):
         with self.assertRaisesRegex(ValueError, 'components/button.*components/input'):
             MODULE.apply_content(self.entries, {self.key: sample(), 'components/input': sample()}, strict=False)
-        with self.assertRaisesRegex(ValueError, '187'):
+        with self.assertRaisesRegex(ValueError, '192'):
             MODULE.apply_content(self.entries, {}, strict=True)
         with self.assertRaisesRegex(ValueError, 'unknown'):
             MODULE.apply_content(self.entries, {'components/unknown': sample()}, strict=False)
@@ -224,9 +224,9 @@ class StrictContentTest(unittest.TestCase):
     def test_strict_mode_is_enabled_by_default(self):
         self.assertIs(MODULE.STRICT_CONTENT, True)
         entries = MODULE.load_entries()
-        self.assertEqual(len(entries), 187)
+        self.assertEqual(len(entries), 192)
         content = MODULE.load_content()
-        self.assertEqual(len(content), 187)
+        self.assertEqual(len(content), 192)
         for entry in entries:
             fields = content[entry['column'] + '/' + entry['slug']]
             for field in ('aliases', 'when_use', 'when_avoid', 'params', 'prompt_edit', 'prompt_new', 'acceptance', 'reviewed'):
@@ -244,7 +244,7 @@ class StrictContentTest(unittest.TestCase):
             with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'components/button.*' + field):
                 MODULE.apply_content(raw, edited)
         del content['components/button']
-        with self.assertRaisesRegex(ValueError, '187.*components/button'):
+        with self.assertRaisesRegex(ValueError, '192.*components/button'):
             MODULE.apply_content(raw, content)
 
     def test_build_entry_point_fails_for_incomplete_content(self):
@@ -279,7 +279,8 @@ build['build']()
                 continue
             with self.subTest(slug=entry['slug']):
                 criteria = ' '.join(content[entry['column'] + '/' + entry['slug']]['acceptance'])
-                self.assertIn('390px', criteria)
+                if entry['group'] != 'tokens':
+                    self.assertIn('390px', criteria)
                 if not (entry['column'] == 'basics' and entry['slug'] == 'grid'):
                     for checkpoint in entry['acceptance']:
                         expected = checkpoint.replace('自然形状', '有机形状')

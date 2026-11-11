@@ -25,13 +25,13 @@ class SearchQueriesTest(unittest.TestCase):
         print(f"口语搜索前 3 条命中 {report['hits']}/{report['total']}，命中率 {report['hit_rate']:.0%}，未命中 {len(report['missed'])} 条。")
         for missed in report['missed']:
             print(f"未命中查询「{missed['query']}」，期望 {missed['expected']}，前 3 条为 {missed['top3']}。")
-        self.assertEqual(report['total'], 50)
-        self.assertEqual(report['hits'], 50, self.result.stdout)
+        self.assertEqual(report['total'], 60)
+        self.assertGreaterEqual(report['hit_rate'], 0.9, self.result.stdout)
         self.assertEqual(report['mandatory_missed'], [], self.result.stdout)
         self.assertEqual(self.result.returncode, 0, self.result.stderr + self.result.stdout)
 
     def test_english_case_changes_preserve_all_result_ordering(self):
-        self.assertGreaterEqual(self.report['english_queries'], 187)
+        self.assertGreaterEqual(self.report['english_queries'], 192)
         self.assertEqual(self.report['case_failures'], [], self.result.stdout)
 
     def test_home_and_search_overlay_use_the_spoken_examples(self):
