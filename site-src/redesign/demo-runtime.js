@@ -189,7 +189,8 @@
       if (!stage && !shadow.querySelector('button,[data-cmd]')) toast('静态参考；请查看条目说明。');
       return true;
     }
-    const controller={reset,preview,root:shadow,get supportsSlow(){return !shadow.querySelector('iframe');}};controllers.set(scope,controller);mount();
+    function restore(){reset();previewMode=false;playbackSpeed=1;playbackStart=performance.now();activate();particlePreview();}
+    const controller={reset,restore,preview,root:shadow,get supportsSlow(){return !shadow.querySelector('iframe');}};controllers.set(scope,controller);mount();
     if(scope.hasAttribute('data-interactive')) {activate();particlePreview();}
     return controller;
   }

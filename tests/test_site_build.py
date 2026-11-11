@@ -351,6 +351,25 @@ class SiteBuildTest(unittest.TestCase):
                 if target.is_dir():target/='index.html'
                 self.assertTrue(target.is_file(),(path,item['href']))
 
+    def test_ten_state_switchers_have_matching_captions_and_styles(self):
+        spec=importlib.util.spec_from_file_location('states_test',ROOT/'site-src/redesign/states.py')
+        states=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(states)
+        self.assertEqual(len(states.STATES),10)
+        css=(ROOT/'site-src/redesign/states.css').read_text()
+        for slug,options in states.STATES.items():
+            page=(DIST/'components'/slug/'index.html').read_text()
+            self.assertEqual(page.count('class="state-picker"'),1,slug)
+            self.assertIn('role="group" aria-labelledby="state-title"',page)
+            self.assertIn('data-state-css="../../assets/redesign/states.css"',page)
+            for key,label,description in options:
+                self.assertIn(f'data-state="{key}" data-state-class="force-{key}"',page)
+                self.assertIn(f'id="state-description-{key}"',page)
+                self.assertIn(escape(description),page)
+                self.assertIn(f':host(.force-{key})',css)
+        for page in (DIST/'components').glob('*/index.html'):
+            self.assertEqual('class="state-picker"' in page.read_text(),page.parent.name in states.STATES)
+
     def test_old_pages_unchanged_during_first_group(self):
         import hashlib
         hashes = json.loads((ROOT / "tests/fixtures/legacy_page_hashes.json").read_text())

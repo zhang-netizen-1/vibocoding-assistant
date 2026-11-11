@@ -161,6 +161,31 @@
     card.querySelector('.play-button').addEventListener('click', () => playCard(card,true));
   });
   $$('.demo-scope[data-interactive]').forEach(scope => window.VibeDemos.init(scope));
+  $$('.state-picker').forEach(picker => {
+    const scope = picker.closest('.entry-demo').querySelector('.demo-scope');
+    const controller = window.VibeDemos.init(scope);
+    const options = [...picker.querySelectorAll('[data-state]')];
+    options.forEach(option => option.addEventListener('click', () => {
+      controller.restore();
+      options.forEach(button => {
+        button.setAttribute('aria-pressed',String(button === option));
+        scope.classList.remove(button.dataset.stateClass);
+      });
+      const state = option.dataset.state;
+      scope.classList.add(option.dataset.stateClass);
+      picker.querySelectorAll('[data-description]').forEach(caption => {caption.hidden = caption.dataset.description !== state;});
+      const root = controller.root;
+      if (state === 'focus') (root.querySelector('input,select,textarea') || root.querySelector('button'))?.setAttribute('data-simulated-focus','');
+      if (state === 'selected' || state === 'unselected') {
+        const checked = state === 'selected';
+        const radios = [...root.querySelectorAll('input[type="radio"]')];
+        root.querySelectorAll('input[type="checkbox"]').forEach(input => {input.checked = checked;input.indeterminate = false;});
+        radios.forEach((input,index) => {input.checked = index === radios.length-1;});
+        if (checked) root.querySelector('[data-cmd="switchTab"][data-arg="1"]')?.click();
+      }
+      scope.inert = state !== 'free';
+    }));
+  });
   $$('[data-demo-replay],[data-demo-slow]').forEach(button => {
     const scope = button.closest('.entry-demo').querySelector('.demo-scope');
     const demo = window.VibeDemos.init(scope);

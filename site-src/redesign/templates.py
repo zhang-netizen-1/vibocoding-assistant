@@ -10,8 +10,9 @@ import sys
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import demos
+import states
 
-ASSETS = ('tokens.css', 'base.css', 'site.css', 'site.js', 'search.js')
+ASSETS = ('tokens.css', 'base.css', 'site.css', 'site.js', 'search.js', 'states.css')
 EXAMPLES = ('鼠标放上去浮起来', '弹出来的小黑框', 'Crossfade', '点了会变的按钮')
 
 
@@ -108,7 +109,7 @@ def shell(page, title, body, entries, tax, entry=False):
         content = generated[name] if name in generated else (HERE/name).read_text(encoding='utf-8')
         url = relative(page, 'assets/redesign/' + name) + '?v=' + hashlib.sha256(content.encode()).hexdigest()[:8]
         return f'<link rel="stylesheet" href="{url}">' if name.endswith('.css') else f'<script defer src="{url}"></script>'
-    css = ''.join(asset_tag(name) for name in ASSETS if name.endswith('.css'))
+    css = ''.join(asset_tag(name) for name in ASSETS if name.endswith('.css') and name != 'states.css')
     css += asset_tag('demos.css')
     css += ''.join(asset_tag(name) for name in sorted(bundle_names) if name.endswith('.css'))
     js = ''.join(asset_tag(name) for name in ('demo-runtime.js', *sorted(name for name in bundle_names if name.endswith('.js') and name != 'demo-runtime.js'), 'search.js', 'site.js'))
@@ -130,7 +131,11 @@ def home(entries, tax):
 
 def demo_scope(demo, page, interactive=False):
     attrs = ' data-interactive' if interactive else ' inert aria-hidden="true"'
-    return f'<div class="demo-scope" data-demo-kind="{demo["kind"]}" data-demo-key="{escape(demo.get("key", ""))}" data-demo-section="{demo.get("section", "")}"{attrs}>{demos.markup({k:v for k,v in demo.items() if k != 'secondary'}, relative(page, "assets/redesign/") + '/', interactive)}</div>'
+    markup = demos.markup({k:v for k,v in demo.items() if k != 'secondary'}, relative(page, "assets/redesign/") + '/', interactive)
+    if interactive and page.startswith('components/') and page.split('/')[1] in states.STATES:
+        markup = markup.replace('data-demo-template ', f'data-demo-template data-state-css="{relative(page, "assets/redesign/states.css")}" ', 1)
+    return f'<div class="demo-scope" data-demo-kind="{demo["kind"]}" data-demo-key="{escape(demo.get("key", ""))}" data-demo-section="{demo.get("section", "")}"{attrs}>{markup}</div>'
+
 
 
 def gallery_card(e, page):
@@ -183,6 +188,8 @@ def detail(e, entries, tax):
         controls = '<div class="demo-controls"><button type="button" data-demo-replay>重播</button><button type="button" data-demo-slow aria-pressed="false">慢放 0.25 倍</button><span class="reduced-note" hidden>你的系统开启了减弱动态</span></div>' if demo['kind'] == 'motion' else ''
         return '<div class="entry-demo"><div class="demo-stage">' + demo_scope(demo, page, True) + '</div>' + controls + '</div>'
     demonstrations = demonstration(e['demo'])
+    if e['column'] == 'components' and e['slug'] in states.STATES:
+        demonstrations = demonstrations.replace('<div class="demo-stage">',states.render(e['slug']) + '<div class="demo-stage">',1)
     if e['demo'].get('secondary'):
         demonstrations += demonstration(e['demo']['secondary'])
     secondary = f'<section class="entry-section prompt-box"><h2>提示词 · 第二演示</h2><pre class="prompt-text" id="secondary-prompt">{escape(e["prompt_secondary"])}</pre>{copy_button("secondary-prompt")}</section>' if e.get('prompt_secondary') else ''
