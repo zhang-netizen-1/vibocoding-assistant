@@ -1,3 +1,4 @@
+from functools import lru_cache
 from html.parser import HTMLParser
 from html import escape, unescape
 from decimal import Decimal, ROUND_HALF_UP
@@ -33,7 +34,7 @@ class PageParser(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         attributes = dict(attrs)
-        self.references.extend(attributes[key] for key in ("href", "src") if attributes.get(key))
+        self.references.extend(attributes[key] for key in ("href", "src", "data-demo-css", "data-state-css") if attributes.get(key))
         if tag == "img":
             self.images.append(attributes)
         if tag == "a" and "/demos/" in attributes.get("href", ""):
@@ -48,6 +49,7 @@ class PageParser(HTMLParser):
                 self.cards.append(attributes.get("id"))
 
 
+@lru_cache(maxsize=None)
 def parse(path):
     parser = PageParser()
     parser.feed(path.read_text(encoding="utf-8"))
@@ -66,7 +68,7 @@ class SiteBuildTest(unittest.TestCase):
         spec.loader.exec_module(builder)
         entries = json.loads((ROOT / "build/entries.json").read_text())
         self.assertEqual(files, builder.expected_build_files(entries))
-        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 2 + len(builder.REDESIGN.first_group(entries)))
+        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 7 + len(entries))
 
     def test_bench_pages_navigation_badges_and_local_references(self):
         paths = [DIST / "bench" / "index.html", *(DIST / "bench" / slug / "index.html" for slug in ("button", "crossfade", "grid"))]
@@ -165,7 +167,7 @@ class SiteBuildTest(unittest.TestCase):
     def test_site_routes_and_all_cards(self):
         home = parse(DIST / "index.html")
         self.assertIn("./components/", home.links)
-        self.assertIn("./motion/#section-view", home.links)
+        self.assertIn("./interactions/#group-view", home.links)
         home_html = (DIST / "index.html").read_text(encoding="utf-8")
         entries = json.loads((ROOT / "build/entries.json").read_text())
         self.assertIn(f"{len(entries)} 个界面效果", home_html)
@@ -204,9 +206,9 @@ class SiteBuildTest(unittest.TestCase):
             self.assertEqual(len(set(built.cards)), 6, section)
             self.assertTrue(all(card.startswith(f"g-{section}-") for card in built.cards))
             if section == "data":
-                self.assertIn("../data/#g-data-line", parse(DIST / "components/index.html").links)
+                self.assertIn("./line/", parse(DIST / "components/index.html").links)
             else:
-                self.assertIn(f"./{section}/", home.links)
+                self.assertIn({"layout":"./basics/","visual":"./basics/","interaction":"./interactions/","pages":"./scenarios/"}[section], home.links)
             self.assertIn("guide-main", built.ids)
             self.assertIn("../", built.links)
         visual_html = (DIST / "visual" / "index.html").read_text(encoding="utf-8")
@@ -220,7 +222,7 @@ class SiteBuildTest(unittest.TestCase):
         self.assertEqual((DIST / "skills" / "index.html").read_text(encoding="utf-8").count("<summary>查看并复制 Skill 安装提示词</summary>"), 10)
         self.assertEqual(len(set(skills.cards)), 10)
         self.assertTrue(all(card.startswith("skill-") for card in skills.cards))
-        self.assertIn("./skills/", home.links)
+        self.assertIn("./ai/", home.links)
         self.assertIn("skills-main", skills.ids)
         self.assertIn("../", skills.links)
 
@@ -272,90 +274,82 @@ class SiteBuildTest(unittest.TestCase):
             if url.fragment:
                 self.assertIn(url.fragment, parse(target).ids, entry["href"])
             self.assertTrue(entry["zh"])
-        self.assertEqual([e["prompt"] for e in entries], [e["prompt"] for e in unified])
+        self.assertEqual([e["prompt"] for e in entries], [e["prompt"] + ("\n\n" + e["prompt_secondary"] if e.get("prompt_secondary") else "") for e in unified])
 
-    def test_redesign_first_group_and_local_routes(self):
-        entries = json.loads((ROOT / "build/entries.json").read_text())
-        actions = [e for e in entries if e["column"] == "components" and e["group"] == "actions"]
-        new_pages = [DIST / "index.html", DIST / "components/index.html", *(DIST / "components" / e["slug"] / "index.html" for e in actions)]
-        for path in new_pages:
-            self.assertTrue(path.is_file(), path)
-            page = path.read_text()
-            self.assertIn("Vibe Design 速查", page)
-            self.assertNotIn("189", page)
-            self.assertNotIn("INTERFACE FIELD GUIDE", page)
+    def test_redesign_all_entries_and_local_routes(self):
+        spec = importlib.util.spec_from_file_location('templates_test', ROOT/'site-src/redesign/templates.py')
+        templates = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(templates)
+        entries = json.loads((ROOT/'build/entries.json').read_text())
+        for name in templates.generated_pages(entries):
+            path = DIST/name
+            self.assertTrue(path.is_file(), name)
+            html = path.read_text()
+            self.assertIn('Vibe Design 速查', html)
+            self.assertIn('rel="icon"', html)
+            self.assertNotIn('189', html)
+            self.assertNotIn('INTERFACE FIELD GUIDE', html)
             parsed = parse(path)
             for ref in parsed.references:
                 url = urlsplit(ref)
-                self.assertFalse(ref.startswith("/"), (path, ref))
-                self.assertFalse(url.scheme or url.netloc, (path, ref))
-                target = (path.parent / unquote(url.path)).resolve() if url.path else path
-                self.assertTrue(target.is_relative_to(DIST.resolve()), (path, ref))
-                if target.is_dir():
-                    target /= "index.html"
-                self.assertTrue(target.is_file(), (path, ref))
-                if url.fragment:
-                    self.assertIn(unquote(url.fragment), parse(target).ids, (path, ref))
-            for panel in re.findall(r'<div class="mega".*?</div><!-- mega -->', page, re.S):
-                # D19 exception: the component-state introduction is allowed.
-                text = unescape(re.sub(r'<[^>]+>', '', panel))
-                for entry in entries:
-                    if entry["zh"] != "组件状态":
-                        self.assertNotRegex(text, r'(?<![\w\u4e00-\u9fff])' + re.escape(entry["zh"]) + r'(?![\w\u4e00-\u9fff])')
-        for e in actions:
-            page = (DIST / "components" / e["slug"] / "index.html").read_text()
-            match = re.search(r'<pre class="prompt-text" id="entry-prompt">(.*?)</pre>', page, re.S)
-            self.assertIsNotNone(match)
-            self.assertEqual(unescape(match[1]), e["prompt"])
-            self.assertIn('data-copy-source="entry-prompt"', page)
-            self.assertIn('class="demo-scope"', page)
-            self.assertNotIn('id="acceptance"', page)  # UI sources contain no acceptance array.
-            self.assertNotIn('状态切换', page)
-            self.assertNotIn('它怎么动', page)
-
-    def test_first_group_uses_original_demo_markup_and_safe_search_destinations(self):
-        spec = importlib.util.spec_from_file_location("entry_adapter_test", ROOT / "site-src/entries.py")
-        adapter = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(adapter)
-        entries = adapter.load_entries()
-        actions = [e for e in entries if e['column'] == 'components' and e['group'] == 'actions']
-        column_path = DIST / 'components/index.html'
-        column_html = column_path.read_text()
-        column_doc = adapter.Document(column_html).root
-        self.assertEqual(len(column_doc.find_all('article','gallery-card')),len(actions))
-        self.assertEqual(len(column_doc.find_all('article','simple-card')),sum(e['column']=='components' for e in entries)-len(actions))
-        self.assertEqual(column_doc.find_all(cls='prompt-text'),[])
-        for e in actions:
-            path = DIST / 'components' / e['slug'] / 'index.html'
-            page = path.read_text()
-            doc = adapter.Document(page).root
-            self.assertEqual(doc.one(cls='demo-scope').inner(page), e['demo']['html'])
-            self.assertEqual(doc.one(cls='definition').text(), e['definition'].splitlines()[0])
-            points = doc.find_all(cls='entry-points')
-            self.assertEqual([n.text() for n in points[0].find_all('li')] if points else [], e['definition'].splitlines()[1:])
-            for optional in ('when_avoid','prompt_new'):
-                self.assertNotIn(optional,e)
-            if 'bench' in e:
-                self.assertIn('../../bench/'+e['bench']['slug']+'/',parse(path).links)
-            else:
-                self.assertEqual(doc.find_all(cls='bench-badge'),[])
-        paths = [DIST/'index.html', column_path, *(DIST/'components'/e['slug']/'index.html' for e in actions)]
-        for path in paths:
-            html = path.read_text()
-            doc = adapter.Document(html).root
-            ids = [node.attrs['id'] for node in doc.find_all() if node.attrs.get('id')]
-            self.assertEqual(len(ids),len(set(ids)),path)
-            index = json.loads(next(n for n in doc.find_all('script') if n.attrs.get('id')=='redesign-search-index').text())
-            self.assertEqual(len(index['entries']),len(entries))
-            for item in [*index['entries'],*index['columns']]:
-                href = item['href']
-                self.assertFalse(href.startswith('/'),(path,href))
-                url = urlsplit(href)
-                target = (path.parent/url.path).resolve()
-                self.assertTrue(target.is_relative_to(DIST.resolve()))
+                self.assertFalse(ref.startswith('/'), (name,ref))
+                if url.scheme or url.netloc:
+                    # Existing skill source links are outbound anchors, never fetched resources.
+                    self.assertEqual(url.netloc, 'github.com', (name,ref))
+                    self.assertIn('ai/skills/', name)
+                    continue
+                target = (path.parent/unquote(url.path)).resolve() if url.path else path
+                self.assertTrue(target.is_relative_to(DIST.resolve()), (name,ref))
                 if target.is_dir(): target /= 'index.html'
-                self.assertTrue(target.is_file(),(path,href))
-                if url.fragment: self.assertIn(url.fragment,parse(target).ids,(path,href))
+                self.assertTrue(target.is_file(), (name,ref))
+                if url.fragment: self.assertIn(unquote(url.fragment),parse(target).ids,(name,ref))
+            self.assertNotRegex(html, r'<(?:script|link|img)[^>]+(?:src|href)="https?://')
+        for entry in entries:
+            path = DIST/templates.entry_destination(entry)/'index.html'
+            page = path.read_text()
+            prompt = re.search(r'<pre class="prompt-text" id="entry-prompt">(.*?)</pre>',page,re.S)
+            self.assertEqual(unescape(prompt[1]),entry['prompt'])
+            payload = re.search(r'<pre class="sr" id="copy-prompt" hidden>(.*?)</pre>',page,re.S)
+            self.assertEqual(unescape(payload[1]),templates.copy_payload(entry))
+            self.assertIn('data-copy-source="copy-prompt"',page)
+            for criterion in entry['acceptance']:
+                self.assertIn(escape(criterion),page)
+                self.assertIn(criterion,unescape(payload[1]))
+            self.assertEqual('id="acceptance"' in page,bool(entry['acceptance']))
+            if entry.get('prompt_secondary'):
+                self.assertIn(escape(entry['prompt_secondary']),page)
+                self.assertEqual(page.count(' data-interactive'),2)
+
+    def test_all_column_galleries_and_source_markup(self):
+        spec = importlib.util.spec_from_file_location('entry_adapter_test',ROOT/'site-src/entries.py')
+        adapter=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(adapter)
+        entries=adapter.load_entries()
+        for column in adapter.taxonomy()['columns']:
+            html=(DIST/column['slug']/'index.html').read_text()
+            doc=adapter.Document(html).root
+            cards=doc.find_all('article','gallery-card')
+            self.assertEqual(len(cards),column['expected'])
+            self.assertEqual(doc.find_all('article','simple-card'),[])
+            self.assertEqual(doc.find_all(cls='prompt-text'),[])
+            self.assertNotIn('提示词写法',html)
+            for group in column['groups']:
+                self.assertIn('id="group-'+group['slug']+'"',html)
+        for entry in entries:
+            middle='skills/' if entry['column']=='ai' else ''
+            path=DIST/entry['column']/middle/entry['slug']/'index.html'
+            html=path.read_text()
+            doc=adapter.Document(html).root
+            self.assertEqual(doc.one(cls='definition').text(),entry['definition'].splitlines()[0])
+            points=doc.find_all(cls='entry-points')
+            self.assertEqual([n.text() for n in points[0].find_all('li')] if points else [],entry['definition'].splitlines()[1:])
+            index=json.loads(next(n for n in doc.find_all('script') if n.attrs.get('id')=='redesign-search-index').text())
+            self.assertEqual(len(index['entries']),187)
+            for item in [*index['entries'],*index['columns']]:
+                target=(path.parent/urlsplit(item['href']).path).resolve()
+                self.assertFalse(item['href'].startswith('/'))
+                if target.is_dir():target/='index.html'
+                self.assertTrue(target.is_file(),(path,item['href']))
 
     def test_old_pages_unchanged_during_first_group(self):
         import hashlib

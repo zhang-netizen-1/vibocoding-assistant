@@ -115,6 +115,7 @@
   document.addEventListener('click', event => {
     const button = event.target.closest('button'); if (!button) return;
     if (button.hasAttribute('data-query')) openSearch(button.dataset.query,button);
+    if (button.matches('.spec-group .copy-prompt')) copy(button,button.previousElementSibling.textContent);
     if (button.hasAttribute('data-copy-source')) copy(button,document.getElementById(button.dataset.copySource).textContent);
     if (button.hasAttribute('data-copy-result')) copy(button,data.entries[Number(button.dataset.copyResult)].prompt);
     if (button.hasAttribute('data-copy-link')) copy(button,location.href.split('#')[0]);
@@ -136,13 +137,15 @@
     activeCard = null;
   }
   function playCard(card, once = false) {
-    stopAllCards(); if (reduced.matches) return;
+    stopAllCards(); if (reduced.matches || card.querySelector('.demo-scope').dataset.demoStatic === 'true') return;
     activeCard = card; card.classList.add('playing'); card.querySelector('.play-button').setAttribute('aria-pressed','true');
     const scope = card.querySelector('.demo-scope'); controller = window.VibeDemos.init(scope); controller.preview();
     // A full original action runs once; restart only while hover/focus is held.
     cardTimer = setTimeout(() => { const replay = activeCard === card && !once; stopAllCards(); if (replay) playCard(card); },2400);
   }
+  window.VibeDemos.mountAll();
   $$('.gallery-card').forEach(card => {
+    if (card.querySelector('.demo-scope').dataset.demoStatic === 'true') { card.classList.add('static-preview'); card.querySelector('.play-button').hidden = true; return; }
     card.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse' && !mobile.matches) playCard(card); });
     card.addEventListener('pointerleave', () => { if (activeCard === card) stopAllCards(); });
     card.addEventListener('focusin', event => { if (event.target.matches('.gallery-link') && !mobile.matches) playCard(card); });
@@ -150,6 +153,19 @@
     card.querySelector('.play-button').addEventListener('click', () => playCard(card,true));
   });
   $$('.demo-scope[data-interactive]').forEach(scope => window.VibeDemos.init(scope));
+  $$('[data-demo-replay],[data-demo-slow]').forEach(button => {
+    const scope = button.closest('.entry-demo').querySelector('.demo-scope');
+    const demo = window.VibeDemos.init(scope);
+    if (button.hasAttribute('data-demo-slow') && demo.supportsSlow === false) button.disabled = true;
+    button.addEventListener('click', () => {
+      const slow = button.hasAttribute('data-demo-slow');
+      demo.preview(slow ? .25 : 1);
+      button.closest('.demo-controls').querySelector('[data-demo-slow]').setAttribute('aria-pressed',String(slow));
+    });
+  });
+  function updateReducedNotes() { $$('.reduced-note').forEach(note => {note.hidden = !reduced.matches;}); }
+  updateReducedNotes();
+  reduced.addEventListener('change',updateReducedNotes);
   document.addEventListener('demo-message', event => { if (!event.target.closest('.gallery-card')) announce(event.detail); });
   reduced.addEventListener('change',stopAllCards);
   mobile.addEventListener('change', () => { stopAllCards(); closeMenu(); if (!mobile.matches && drawer.open) drawer.close(); });

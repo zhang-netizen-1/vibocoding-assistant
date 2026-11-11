@@ -37,3 +37,10 @@
   .entry-heading{order:0}.demo-stage{order:1}.usage-section{order:2}.prompt-box{order:3}
   .use-card{order:4}.new-section{order:5}.related-section{order:6}.bench-line{order:7}
 }
+
+.static-preview .play-button,.static-preview .reduced-link{display:none!important}
+.entry-demo{width:100%;margin-bottom:24px}
+.demo-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.spec-table-wrap{max-width:100%;overflow-x:auto}.spec-table{border-collapse:collapse;min-width:600px;font-size:14px}.spec-table th,.spec-table td{padding:12px;border:1px solid var(--line);text-align:left}
+.spec-group{margin-top:32px;scroll-margin-top:88px}.spec-group h3{margin-bottom:12px}.spec-note{color:var(--secondary);margin-bottom:16px}
+@media(max-width:1023px){.entry-demo{order:1}.entry-layout>.entry-demo{width:100%}}

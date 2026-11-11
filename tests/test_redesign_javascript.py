@@ -16,9 +16,25 @@ class RedesignJavaScriptTest(unittest.TestCase):
         subprocess.run(['python3', 'scripts/build_site.py'], cwd=ROOT, check=True, capture_output=True)
 
     def test_javascript_syntax(self):
-        for name in ('site.js','search.js','demos.js'):
-            result = subprocess.run(['node','--check',str(ROOT/'dist/assets/redesign'/name)], text=True, capture_output=True)
+        for asset in (ROOT/'dist/assets/redesign').glob('*.js'):
+            result = subprocess.run(['node','--check',str(asset)], text=True, capture_output=True)
             self.assertEqual(result.returncode,0,result.stderr)
+
+    def test_all_source_demos_initialize_without_browser(self):
+        import importlib.util
+        import tempfile
+        import sys
+        sys.path.insert(0,str(ROOT/'site-src'))
+        import entries
+        spec=importlib.util.spec_from_file_location('demo_smoke_assets',ROOT/'site-src/redesign/demos.py')
+        demos=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(demos)
+        with tempfile.TemporaryDirectory() as folder:
+            fixture=Path(folder)/'demos.json'
+            fixture.write_text(json.dumps(demos.smoke_fixture(entries.load_entries()),ensure_ascii=False))
+            result=subprocess.run(['node',str(ROOT/'site-src/redesign/demo-smoke.cjs'),str(fixture)],cwd=ROOT,text=True,capture_output=True)
+        self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+        self.assertIn('189',result.stdout)
 
     def test_real_index_matching_ranking_and_near_names(self):
         code = r'''
@@ -55,6 +71,13 @@ console.log('Search matching and ranking passed');
         self.assertNotRegex(css.lower(),r'dark|https?://|@import')
         for selector in re.findall(r'([^{}]+)\{[^{}]*\}',css):
             for part in selector.split(','):
-                self.assertTrue(part.strip().startswith('.demo-scope'),part)
+                self.assertTrue(part.strip().startswith(('.demo-scope','.demo-secondary')),part)
+        runtime=(ROOT/'dist/assets/redesign/demo-runtime.js').read_text()
+        self.assertIn("attachShadow({mode: 'open'})",runtime)
+        self.assertIn('shadow.querySelector',runtime)
+        for kind in ('ui','motion','guide','skill-reference'):
+            source=(ROOT/f'dist/assets/redesign/demo-{kind}.css').read_text()
+            self.assertNotIn('#1d4ed8',source.lower())
+            self.assertNotRegex(source,r'@import|https?://')
         for hook in ('holdBtn','splitCaret','fabBtn','copyDemoBtn','bttPage'):
-            self.assertIn(hook,(ROOT/'dist/assets/redesign/demos.js').read_text())
+            self.assertIn(hook,(ROOT/'dist/assets/redesign/demo-ui.js').read_text())

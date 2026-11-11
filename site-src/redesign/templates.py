@@ -1,4 +1,4 @@
-"""Phase 1, step 5: shared shell and the first five component detail pages."""
+"""Shared shell, five column galleries and all unified entry pages."""
 from html import escape
 from pathlib import Path
 import hashlib
@@ -11,20 +11,23 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import demos
 
-ASSETS = ('tokens.css', 'base.css', 'site.css', 'site.js', 'search.js', 'demos.css', 'demos.js')
+ASSETS = ('tokens.css', 'base.css', 'site.css', 'site.js', 'search.js')
 EXAMPLES = ('鼠标放上去浮起来', '弹出来的小黑框', 'Crossfade', '点了会变的按钮')
 
 
-def first_group(entries):
-    return [e for e in entries if e['column'] == 'components' and e['group'] == 'actions']
+def entry_destination(entry):
+    middle = 'skills/' if entry['column'] == 'ai' else ''
+    return f'{entry["column"]}/{middle}{entry["slug"]}/'
 
 
 def generated_pages(entries):
-    return ['index.html', 'components/index.html', *(f'components/{e["slug"]}/index.html' for e in first_group(entries))]
+    return ['index.html', *(f'{column}/index.html' for column in ('basics', 'components', 'interactions', 'scenarios', 'ai')),
+            *(entry_destination(e) + 'index.html' for e in entries), 'interactions/spec/index.html']
 
 
 def generated_files(entries):
-    return generated_pages(entries) + [f'assets/redesign/{name}' for name in ASSETS]
+    return generated_pages(entries) + [f'assets/redesign/{name}' for name in (*ASSETS, *demos.assets(entries))]
+
 
 
 def relative(page, destination):
@@ -42,24 +45,23 @@ def relative(page, destination):
     return result + (mark + fragment if mark else '')
 
 
-def entry_destination(entry):
-    if entry['column'] == 'components' and entry['group'] == 'actions':
-        return f'components/{entry["slug"]}/'
-    return entry['source']['old_path'].strip('/') + '/#' + entry['old_anchors'][0]
-
-
 def column_destination(column):
-    return {'basics':'visual/', 'components':'components/', 'interactions':'interaction/', 'scenarios':'pages/', 'ai':'skills/'}[column]
+    return column + '/'
 
 
 def group_destination(column, group):
-    if column == 'components':
-        return 'components/#group-' + group
-    if column == 'basics':
-        return {'visual':'visual/', 'layout':'layout/'}.get(group)
-    if column == 'interactions':
-        return 'interaction/' if group == 'rules' else f'motion/#section-{group}'
-    return 'pages/' if column == 'scenarios' else 'skills/'
+    if column == 'basics' and group == 'tokens':
+        return None
+    return column + '/#group-' + group
+
+
+def copy_payload(entry):
+    parts = [entry['prompt']]
+    if entry.get('prompt_secondary'):
+        parts.append(entry['prompt_secondary'])
+    parts.extend(text for text in entry['acceptance'] if not any(text in part for part in parts))
+    return '\n\n'.join(parts)
+
 
 
 def query_buttons():
@@ -78,11 +80,11 @@ def header(page, tax):
             label = f'{escape(group["name"])} <span class="count">{group["expected"]} 条</span>'
             groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, target)}">{label}</a></div>' if target else f'<div class="menu-group"><span class="menu-group-link">{label}</span><p class="menu-note">三期新增</p></div>')
         if slug == 'interactions':
-            groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, "motion/#section-spec")}">动效实现规范 <span class="count">不计条目</span></a></div>')
+            groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, "interactions/spec/")}">动效实现规范 <span class="count">不计条目</span></a></div>')
         if slug == 'ai':
             groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, "bench/")}">测评结果</a></div>')
         # No entry lists in either menu. Only the approved component intro.
-        first = f'<p class="small menu-intro">先看：<a href="{relative(page, "ui/#c-states")}">组件状态</a></p>' if slug == 'components' else ''
+        first = f'<p class="small menu-intro">先看：<a href="{relative(page, "components/states/")}">组件状态</a></p>' if slug == 'components' else ''
         panels.append(f'<div class="mega" id="mega-{slug}" hidden><div class="wrap mega-inner"><div class="row between mega-heading"><h2>{name}</h2><span class="small">{column["expected"]} 条</span></div>{first}<div class="mega-grid">{"".join(groups)}</div></div></div><!-- mega -->')
         drawers.append(f'<details class="drawer-category"><summary>{number} {name}</summary>{"".join(groups)}</details>')
     return f'''<a class="skip" href="#main">跳到主要内容</a>
@@ -92,16 +94,26 @@ def header(page, tax):
 
 def shell(page, title, body, entries, tax, entry=False):
     columns = {c['slug']: c for c in tax['columns']}
-    index = [dict(zh=e['zh'], en=e['en'], terms=e['terms'], definition=e['definition'], prompt=e['prompt'],
+    index = [dict(zh=e['zh'], en=e['en'], terms=e['terms'], definition=e['definition'], prompt=copy_payload(e),
                   column=columns[e['column']]['name'], group=next(g['name'] for g in columns[e['column']]['groups'] if g['slug'] == e['group']), href=relative(page, entry_destination(e))) for e in entries]
-    data = json.dumps(dict(entries=index, columns=[dict(name=c['name'], href=relative(page, column_destination(c['slug']))) for c in tax['columns']], examples=EXAMPLES), ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c')
-    css = ''.join(f'<link rel="stylesheet" href="{relative(page, "assets/redesign/" + name)}?v={hashlib.sha256((HERE/name).read_bytes()).hexdigest()[:8]}">' for name in ASSETS if name.endswith('.css') and not name.startswith('demos'))
-    # Demo assets are generated from original source, so use a stable source hash.
-    demo_hash = hashlib.sha256((HERE.parent.parent / '网页UI元素速查.html').read_bytes() + (HERE/'demos.py').read_bytes()).hexdigest()[:8]
-    css += f'<link rel="stylesheet" href="{relative(page, "assets/redesign/demos.css")}?v={demo_hash}">'
-    js = ''.join(f'<script defer src="{relative(page, "assets/redesign/" + name)}?v={demo_hash if name == "demos.js" else hashlib.sha256((HERE/name).read_bytes()).hexdigest()[:8]}"></script>' for name in ('demos.js', 'search.js', 'site.js'))
-    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="查看界面效果的中英文名称与演示，复制原始实现提示词。"><title>{escape(title)} · Vibe Design 速查</title>{css}{js}</head><body{' class="entry-active"' if entry else ''}>{header(page,tax)}<main class="wrap view" id="main" tabindex="-1">{body}</main><footer class="wrap footer">Vibe Design 速查 · <a href="{relative(page,'bench/')}">测评结果</a></footer>
-<dialog class="overlay search-dialog" id="search-dialog" aria-label="搜索条目"><div class="search-top"><label class="sr" for="search-input">搜索中文名、英文名或别名</label><input id="search-input" type="search" placeholder="搜索名称、英文名或你自己的说法" autocomplete="off" aria-controls="result-list" aria-describedby="search-help"><button class="close-button" data-close="search-dialog">关闭</button></div><div class="search-body" id="search-body"></div><p class="search-help" id="search-help">↑↓ 选择条目 · Enter 打开 · Tab 选择操作 · Esc 关闭</p></dialog><div class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></div><script type="application/json" id="redesign-search-index">{data}</script></body></html>'''
+    data = json.dumps(dict(entries=index, columns=[dict(name=c['name'], href=relative(page, column_destination(c['slug']))) for c in tax['columns']], examples=EXAMPLES), ensure_ascii=False, separators=(',', ':')).replace('<', '\u003c')
+    selected = [e for e in entries if entry_destination(e) + 'index.html' == page] if entry else [e for e in entries if page == e['column'] + '/index.html']
+    bundle_names = set()
+    for item in selected:
+        bundle_names.update(demos.bundle_names(item['demo']))
+        if item['demo'].get('secondary'):
+            bundle_names.update(demos.bundle_names(item['demo']['secondary']))
+    generated = demos.assets(entries)
+    def asset_tag(name):
+        content = generated[name] if name in generated else (HERE/name).read_text(encoding='utf-8')
+        url = relative(page, 'assets/redesign/' + name) + '?v=' + hashlib.sha256(content.encode()).hexdigest()[:8]
+        return f'<link rel="stylesheet" href="{url}">' if name.endswith('.css') else f'<script defer src="{url}"></script>'
+    css = ''.join(asset_tag(name) for name in ASSETS if name.endswith('.css'))
+    css += asset_tag('demos.css')
+    css += ''.join(asset_tag(name) for name in sorted(bundle_names) if name.endswith('.css'))
+    js = ''.join(asset_tag(name) for name in ('demo-runtime.js', *sorted(name for name in bundle_names if name.endswith('.js') and name != 'demo-runtime.js'), 'search.js', 'site.js'))
+    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="查看界面效果的中英文名称与演示，复制原始实现提示词。"><title>{escape(title)} · Vibe Design 速查</title><link rel="icon" href="{relative(page, "assets/favicon.svg")}">{css}{js}</head><body{' class="entry-active"' if entry else ''}>{header(page,tax)}<main class="wrap view" id="main" tabindex="-1">{body}</main><footer class="wrap footer">Vibe Design 速查 · <a href="{relative(page,'bench/')}">测评结果</a></footer>
+<dialog class="overlay search-dialog" id="search-dialog" aria-label="搜索条目"><div class="search-top"><label class="sr" for="search-input">搜索中文名、英文名或已有词</label><input id="search-input" type="search" placeholder="搜索名称、英文名或你自己的说法" autocomplete="off" aria-controls="result-list" aria-describedby="search-help"><button class="close-button" data-close="search-dialog">关闭</button></div><div class="search-body" id="search-body"></div><p class="search-help" id="search-help">↑↓ 选择条目 · Enter 打开 · Tab 选择操作 · Esc 关闭</p></dialog><div class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></div><script type="application/json" id="redesign-search-index">{data}</script></body></html>'''
 
 
 def home(entries, tax):
@@ -116,26 +128,35 @@ def home(entries, tax):
     return shell(page, '首页', body, entries, tax)
 
 
+def demo_scope(demo, page, interactive=False):
+    attrs = ' data-interactive' if interactive else ' inert aria-hidden="true"'
+    return f'<div class="demo-scope" data-demo-kind="{demo["kind"]}" data-demo-key="{escape(demo.get("key", ""))}" data-demo-section="{demo.get("section", "")}"{attrs}>{demos.markup({k:v for k,v in demo.items() if k != 'secondary'}, relative(page, "assets/redesign/") + '/', interactive)}</div>'
+
+
 def gallery_card(e, page):
     target = relative(page, entry_destination(e))
     caption = f'<strong>{escape(e["zh"])}</strong><span class="english">{escape(e["en"])}</span><p>{escape(e["definition"].splitlines()[0])}</p>'
-    if e['group'] != 'actions':
-        return f'<article class="simple-card"><a href="{target}">{caption}</a></article>'
-    return f'''<article class="gallery-card" data-demo-key="{e['slug']}"><div class="mini-stage"><div class="demo-scope" inert aria-hidden="true">{e['demo']['html']}</div><button class="play-button" aria-label="播放{escape(e['zh'])}演示" aria-pressed="false">▶ 播放</button><span class="reduced-link">看演示 →</span></div><a class="gallery-link" href="{target}"><div class="gallery-caption">{caption}</div></a></article>'''
+    return f'''<article class="gallery-card" data-demo-key="{e['slug']}"><div class="mini-stage">{demo_scope(e['demo'], page)}<button class="play-button" aria-label="播放{escape(e['zh'])}演示" aria-pressed="false">▶ 播放</button><span class="reduced-link">看演示 →</span></div><a class="gallery-link" href="{target}"><div class="gallery-caption">{caption}</div></a></article>'''
 
 
-def components(entries, tax):
-    page = 'components/index.html'
-    column = next(c for c in tax['columns'] if c['slug'] == 'components')
-    chips = ''.join(f'<a class="chip" href="#group-{g["slug"]}">{g["name"]} {g["expected"]}</a>' for g in column['groups'])
+def column_page(slug, entries, tax):
+    page = slug + '/index.html'
+    column = next(c for c in tax['columns'] if c['slug'] == slug)
+    chips = ''.join(f'<a class="chip" href="#group-{g["slug"]}">{g["name"]} {g["expected"]}</a>' for g in column['groups'] if g['expected'])
     sections = []
+    order = list(tax['anchors'])
     for g in column['groups']:
-        cards = [e for e in entries if e['column'] == 'components' and e['group'] == g['slug']]
-        order = list(tax['anchors'])
+        cards = [e for e in entries if e['column'] == slug and e['group'] == g['slug']]
         cards.sort(key=lambda e: order.index(e['old_anchors'][0]))
-        sections.append(f'<section class="group-section" id="group-{g["slug"]}"><h2>{g["name"]} <span class="count">{len(cards)}</span></h2><div class="gallery">{"".join(gallery_card(e,page) for e in cards)}</div></section>')
-    body = f'<nav class="breadcrumbs" aria-label="面包屑"><a href="../">首页</a><span>/</span><span aria-current="page">组件</span></nav><div class="row landing-title"><h1>组件</h1><span class="title-count">{column["expected"]} 条</span></div><p class="lead">认识界面里可复用的基本单元，理解用途、状态与实现要求。</p><button class="column-search" data-search>搜索组件或其他条目　⌘K</button><nav class="chips group-tabs" aria-label="组件分组">{chips}</nav>{"".join(sections)}'
-    return shell(page, '组件', body, entries, tax)
+        content = '<div class="gallery">' + ''.join(gallery_card(e,page) for e in cards) + '</div>' if cards else '<p class="small">三期新增</p>'
+        sections.append(f'<section class="group-section" id="group-{g["slug"]}"><h2>{g["name"]} <span class="count">{len(cards)}</span></h2>{content}</section>')
+    extra = f'<p class="entry-section"><a href="{relative(page, "bench/")}">测评结果 →</a></p>' if slug == 'ai' else ''
+    if slug == 'interactions':
+        extra = f'<p class="entry-section"><a href="{relative(page, "interactions/spec/")}">动效实现规范 →</a></p>'
+    descriptions = ['先建立颜色、排版和布局的共同语言。', '认识界面里可复用的基本单元，理解用途、状态与实现要求。', '写清操作规则、反馈过程和界面变化。', '把组件和规则组织成完整页面与操作场景。', '把需求交给 AI，用提示词、技能和测评辅助验收。']
+    body = f'<nav class="breadcrumbs" aria-label="面包屑"><a href="../">首页</a><span>/</span><span aria-current="page">{column["name"]}</span></nav><div class="row landing-title"><h1>{column["name"]}</h1><span class="title-count">{column["expected"]} 条</span></div><p class="lead">{descriptions[column["order"]-1]}</p><button class="column-search" data-search>搜索条目　⌘K</button><nav class="chips group-tabs" aria-label="栏目分组">{chips}</nav>{"".join(sections)}{extra}'
+    return shell(page, column['name'], body, entries, tax)
+
 
 
 def copy_button(source, label='复制提示词', primary=False):
@@ -143,14 +164,13 @@ def copy_button(source, label='复制提示词', primary=False):
 
 
 def detail(e, entries, tax):
-    page = f'components/{e["slug"]}/index.html'
-    aliases = [term for term in e['terms'].split() if term.casefold() not in {e['zh'].casefold(), *e['en'].casefold().split()}]
-    aliases = list(dict.fromkeys(aliases))
-    alias_html = '<div class="chips aliases"><span class="small">也叫：</span>' + ''.join(f'<span class="chip">{escape(a)}</span>' for a in aliases) + '</div>' if aliases else ''
+    page = entry_destination(e) + 'index.html'
+    column = next(c for c in tax['columns'] if c['slug'] == e['column'])
+    group = next(g for g in column['groups'] if g['slug'] == e['group'])
     definition_lines = e['definition'].splitlines()
     points = '<ul class="entry-points">' + ''.join(f'<li>{escape(line)}</li>' for line in definition_lines[1:]) + '</ul>' if len(definition_lines) > 1 else ''
     usage = ''.join(f'<section class="entry-section usage-section"><h2>{label}</h2><p>{escape(e[key])}</p></section>' for key,label in (('when_use','何时用'),('when_avoid','何时不用')) if e.get(key))
-    related = ''.join(f'<a class="chip" href="{relative(page,entry_destination(other))}">{escape(other["zh"])}</a>' for other in first_group(entries) if other['slug'] != e['slug'])
+    related = ''.join(f'<a class="chip" href="{relative(page,entry_destination(other))}">{escape(other["zh"])}</a>' for other in entries if other['column'] == e['column'] and other['group'] == e['group'] and other['slug'] != e['slug'])
     criteria = ''
     if e['acceptance']:
         items = ''.join(f'<li><p id="criterion-{i}">{escape(text)}</p>{copy_button("criterion-"+str(i), "复制这条")}</li>' for i,text in enumerate(e['acceptance']))
@@ -158,20 +178,41 @@ def detail(e, entries, tax):
     bench = f'<a class="bench-badge" href="{relative(page,"bench/"+e["bench"]["slug"]+"/")}">查看测评 →</a>' if 'bench' in e else ''
     bench_line = f'<p class="bench-line">提示词测评：{bench}</p>' if bench else ''
     prompt_new = f'<details class="entry-section new-section"><summary>提示词 · 新做一个</summary><pre class="prompt-text" id="new-prompt">{escape(e["prompt_new"])}</pre>{copy_button("new-prompt")}</details>' if e.get('prompt_new') else ''
-    use_card = f'<aside class="use-card" aria-labelledby="use-card-title"><h2 id="use-card-title">使用卡</h2>{copy_button("entry-prompt",primary=True)}{criteria}<div class="use-actions">{copy_button("entry-english","复制英文名")}<button class="copy-btn" data-copy-link>复制本页链接</button></div>{bench}</aside>'
-    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="../../">首页</a><span>/</span><a href="../">组件</a><span>/</span><a href="../#group-actions">按钮与操作</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span></div>{alias_html}<p class="definition">{escape(definition_lines[0])}</p>{points}</header><div class="demo-stage"><div class="demo-scope" data-interactive>{e['demo']['html']}</div></div>{usage}<section class="entry-section prompt-box"><h2>提示词</h2><pre class="prompt-text" id="entry-prompt">{escape(e['prompt'])}</pre></section>{prompt_new}<section class="entry-section related-section"><h2>同组相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article>{use_card}</div><div class="bottom-bar">{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('entry-prompt',primary=True)}</div>'''
+    use_card = f'<aside class="use-card" aria-labelledby="use-card-title"><h2 id="use-card-title">使用卡</h2>{copy_button("copy-prompt",primary=True)}{criteria}<div class="use-actions">{copy_button("entry-english","复制英文名")}<button class="copy-btn" data-copy-link>复制本页链接</button></div>{bench}</aside>'
+    def demonstration(demo):
+        controls = '<div class="demo-controls"><button type="button" data-demo-replay>重播</button><button type="button" data-demo-slow aria-pressed="false">慢放 0.25 倍</button><span class="reduced-note" hidden>你的系统开启了减弱动态</span></div>' if demo['kind'] == 'motion' else ''
+        return '<div class="entry-demo"><div class="demo-stage">' + demo_scope(demo, page, True) + '</div>' + controls + '</div>'
+    demonstrations = demonstration(e['demo'])
+    if e['demo'].get('secondary'):
+        demonstrations += demonstration(e['demo']['secondary'])
+    secondary = f'<section class="entry-section prompt-box"><h2>提示词 · 第二演示</h2><pre class="prompt-text" id="secondary-prompt">{escape(e["prompt_secondary"])}</pre>{copy_button("secondary-prompt")}</section>' if e.get('prompt_secondary') else ''
+    source_link = ''
+    if e['demo']['kind'] == 'skill-reference':
+        links = re.findall(r'<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>', e['demo']['html'], re.S)
+        source_link = '<section class="entry-section"><h2>来源</h2>' + ''.join(f'<p><a href="{escape(url)}" rel="noopener noreferrer">{text}</a></p>' for url,text in links) + '</section>'
+    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span></div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{usage}<section class="entry-section prompt-box"><h2>提示词</h2><pre class="prompt-text" id="entry-prompt">{escape(e['prompt'])}</pre></section>{secondary}{prompt_new}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>同组相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article>{use_card}</div><div class="bottom-bar">{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
     return shell(page, e['zh']+' '+e['en'], body, entries, tax, entry=True)
+
+
+def spec_page(entries, tax):
+    source = (HERE.parent.parent / '动效速查.html').read_text(encoding='utf-8')
+    sys.path.insert(0, str(HERE.parent))
+    from entries import Document
+    section = next(n for n in Document(source).root.find_all('section') if n.attrs.get('id') == 'section-spec')
+    body = '<nav class="breadcrumbs" aria-label="面包屑"><a href="../../">首页</a><span>/</span><a href="../">交互与动效</a></nav><h1>动效实现规范</h1>' + section.inner(source)
+    return shell('interactions/spec/index.html', '动效实现规范', body, entries, tax)
 
 
 def build(output, entries, tax):
     assets = output / 'assets/redesign'
     assets.mkdir(parents=True)
-    ui = (HERE.parent.parent / '网页UI元素速查.html').read_text(encoding='utf-8')
-    for name in ASSETS:
-        content = demos.css(ui) if name == 'demos.css' else demos.javascript(ui) if name == 'demos.js' else (HERE/name).read_text(encoding='utf-8')
+    contents = {name:(HERE/name).read_text(encoding='utf-8') for name in ASSETS}
+    contents.update(demos.assets(entries))
+    for name, content in contents.items():
         (assets/name).write_text(content, encoding='utf-8')
-    pages = {'index.html':home(entries,tax), 'components/index.html':components(entries,tax)}
-    pages.update({f'components/{e["slug"]}/index.html':detail(e,entries,tax) for e in first_group(entries)})
+    pages = {'index.html':home(entries,tax), 'interactions/spec/index.html':spec_page(entries,tax)}
+    pages.update({f'{column["slug"]}/index.html':column_page(column['slug'],entries,tax) for column in tax['columns']})
+    pages.update({entry_destination(e) + 'index.html':detail(e,entries,tax) for e in entries})
     for name, html in pages.items():
         target = output / name
         target.parent.mkdir(parents=True, exist_ok=True)
