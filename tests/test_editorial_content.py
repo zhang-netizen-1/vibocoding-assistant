@@ -153,3 +153,33 @@ class ComponentsContentTest(unittest.TestCase):
                 if entry.get('params'):
                     self.assertTrue(2 <= len(entry['params']) <= 4)
         MODULE.apply_content(MODULE.load_entries(content={}), content)
+
+
+class InteractionsContentTest(unittest.TestCase):
+    def test_all_84_interactions_have_complete_content(self):
+        content = MODULE.load_content()
+        raw = MODULE.load_entries(content={})
+        interactions = [entry for entry in raw if entry['column'] == 'interactions']
+        self.assertEqual(len(interactions), 84)
+        self.assertEqual(sum(key.startswith('interactions/') for key in content), 84)
+        for entry in interactions:
+            key = 'interactions/' + entry['slug']
+            with self.subTest(key=key):
+                fields = content[key]
+                self.assertIs(fields['reviewed'], False)
+                for field in ('prompt_edit', 'prompt_new'):
+                    self.assertNotIn('验收', fields[field])
+                self.assertTrue(2 <= len(fields.get('params', [])) <= 4)
+        MODULE.apply_content(raw, content)
+
+    def test_motion_content_has_duration_interrupt_and_reduced_motion_criteria(self):
+        content = MODULE.load_content()
+        for entry in MODULE.load_entries(content={}):
+            if entry['column'] != 'interactions' or entry['demo']['kind'] != 'motion':
+                continue
+            with self.subTest(slug=entry['slug']):
+                criteria = ' '.join(content.get('interactions/' + entry['slug'], {}).get('acceptance', []))
+                for term in ('ms', '平滑', 'transform', 'opacity', 'prefers-reduced-motion'):
+                    self.assertIn(term, criteria)
+                self.assertRegex(criteria, '打断|连续|连点|重复')
+                self.assertRegex(criteria, '叠影|跳帧')
