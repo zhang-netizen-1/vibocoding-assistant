@@ -113,8 +113,9 @@
       Array.from(shadow.children).forEach(node => {if (!node.hasAttribute('data-demo-sheet')) node.remove();});
       sheets.forEach(([name, href]) => {
         let sheet = shadow.querySelector(`link[data-demo-sheet="${name}"]`);
-        if (!sheet) { sheet = nativeDocument.createElement('link'); sheet.rel = 'stylesheet'; sheet.href = href; sheet.dataset.demoSheet = name; }
-        shadow.append(sheet);
+        // Re-inserting a connected <link> makes the browser drop and refetch its
+        // sheet, so existing links stay in place (their order is already right).
+        if (!sheet) { sheet = nativeDocument.createElement('link'); sheet.rel = 'stylesheet'; sheet.href = href; sheet.dataset.demoSheet = name; shadow.append(sheet); }
       });
       shadow.append(template.content.cloneNode(true));
       body = shadow.querySelector('.demo-root');
