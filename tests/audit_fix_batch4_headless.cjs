@@ -70,7 +70,9 @@ function inspect() {
   const report = {checks:[],errors:[],smallTextCount:0,textCount:0};
   try {
     const entries = JSON.parse(fs.readFileSync(path.resolve(__dirname,'../build/entries.json'),'utf8'));
-    const destinations = entries.map(e => `${e.column}/${e.column === 'ai' ? 'skills/' : ''}${e.slug}/`);
+    const sample = Number(process.env.AUDIT_SAMPLE || 1);
+    const destinations = entries.map(e => `${e.column}/${e.column === 'ai' ? 'skills/' : ''}${e.slug}/`)
+      .filter((d,i) => i % sample === 0 || /view-(crossfade|slide|curtain)|components\/button\//.test(d));
     for (const mode of [{width:390,touch:true},{width:768,touch:true},{width:1023,touch:true},
                         {width:1024,touch:false},{width:1440,touch:false},{width:1440,touch:true}]) {
       const context = await browser.newContext({viewport:{width:mode.width,height:900},hasTouch:mode.touch,reducedMotion:'reduce'});
@@ -119,6 +121,7 @@ function inspect() {
       await page.locator('[data-close=search-dialog]').click();
       // All five galleries and all 192 entries, at every requested device mode.
       for (const destination of ['basics/','components/','interactions/','scenarios/','ai/',...destinations]) {
+        if (process.env.AUDIT_PROGRESS) console.error(mode.width,mode.touch,destination,new Date().toISOString().slice(11,19));
         await visit(destination);await record(destination);
         const states = await page.locator('[data-state]').evaluateAll(nodes => nodes.map(node => node.dataset.state));
         for (const state of states) {

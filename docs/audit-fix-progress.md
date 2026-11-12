@@ -11,13 +11,16 @@
 - 第 6 批 09fb34e：U10 缩略放大、U05 小字对比度遗留、悬停预览卡留空
 - 第 7 批（本次）：演示重挂载保留样式表（修复重播/重置时样式闪失，减弱动态下重播看不到效果）；缩略格 ResizeObserver 只在宽度变化时重算（修复缩略抖动、播放按钮点不中）
 
-## 无界面浏览器复测（执行者在 Mac 终端运行，Codex 沙箱内无法启动 Chromium）
-- 通过：audit_fix_batch1、audit_fix_batch2、audit_fix_batch3、audit_fix_batch3_headless、audit_fix_batch5_headless（808 个页面×尺寸组合）、audit_fix_batch6_headless；Python 单元测试全部通过，口语搜索 62/62
-- 未通过 / 待查：audit_fix_batch4_headless
-  - 一次在第 102 行失败：#directory-toggle 可见性与「宽度 < 1024 用手机页头」不符（U20）。当时单元测试同时在重建 dist，可能是竞争导致，需单独复跑确认
-  - 单独复跑时超过 10 分钟未结束，已终止；需查是否卡在某个等待上
+## 复测（2026-11-13 凌晨，Mac 终端无界面 Chromium）
+- batch4 之前的「卡住」：不是死循环，是全量 6 种设备 × 192 条目逐节点检查很慢；Mac 间歇休眠让它更慢。之前第 102 行失败是单元测试同时重建 dist 造成的文件竞争，单独跑不复现
+- 新增 AUDIT_SAMPLE / AUDIT_PROGRESS 环境变量（抽样与进度输出），默认仍全量
+- 抽样（每 12 条 + 4 个重点页，6 种设备，207 个页面/状态）通过：U20 U12 U10 全部断言通过，小于 12px 的字 0
+- 通过：batch1、batch2、batch3、batch3_headless、batch5_headless（全部 192 条目 + 栏目 + 404 × 4 宽度 = 808 组）、batch6_headless、Python 单测、口语 62/62
+- 旧地址：8 个旧栏目页 350 个旧锚点全部跳到对应新页
+- 别名：「滚动时背景动得慢」→多层视差 第 1；「鼠标光晕」→卡片聚光跟随 第 1
+- 前后对比截图：盒子 /workspace/bench/audit-fix/（Mac 副本 ~/Downloads/设计意图测评台/audit-fix/）
+- 预览：http://localhost:4180/vibocoding-assistant/（build/audit-fix/preview.py，指向 dist）
+- 走查报告页已加「状态」列和「修复后复测」一节
 
 ## 剩余
-- 查清 batch4 无界面测试（U20 / U12 / U10）失败或卡住的原因并修复
-- （U13、U15、U23 已在第 2 批实施记录中，源码已完成）U08 需对照报告核实
-- 全量验证：1440/1024/768/390 全页、逐项复测、旧链接跳转、口语命中；前后对比截图；预览 4180；更新走查报告页；最终提交「audit-fixes final」
+- batch4 全量（不抽样）一次完整跑完后，做 final 提交
