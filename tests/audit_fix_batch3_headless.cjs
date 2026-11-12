@@ -46,12 +46,16 @@ const types = {'.html':'text/html','.css':'text/css','.js':'text/javascript','.j
       assert.equal(await page.locator('.entry-demo .demo-scope').first().evaluate(scope =>
         [...scope.shadowRoot.querySelectorAll('button,input,select,textarea')].some(node => node.disabled)),false);
       if (slug === 'button') {
-        const widths = await page.locator('.entry-demo .btn').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().width));
+        const demo = page.locator('.entry-demo .demo-scope').first();
+        const widths = await demo.evaluate(scope => [...scope.shadowRoot.querySelectorAll('.btn')]
+          .map(node => node.getBoundingClientRect().width));
+        assert.equal(widths.length,4);
         await choose('loading');
-        const loading = await page.locator('.entry-demo .btn').evaluateAll(nodes => nodes.map(node => ({
+        const loading = await demo.evaluate(scope => [...scope.shadowRoot.querySelectorAll('.btn')].map(node => ({
           width:node.getBoundingClientRect().width,label:node.textContent,busy:node.getAttribute('aria-busy'),disabled:node.disabled,
           spin:getComputedStyle(node.querySelector('.demo-loading-icon')).animationName
         })));
+        assert.equal(loading.length,widths.length);
         loading.forEach((node,index) => {
           assert.ok(Math.abs(node.width - widths[index]) < 1); assert.ok(node.disabled);
           assert.equal(node.busy,'true'); assert.match(node.label,/提交中…/); assert.equal(node.spin,'none');

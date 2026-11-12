@@ -134,8 +134,14 @@ function inspect() {
             const r = node.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2) === node;
           });
           assert.equal(hit,true,'Play target must stay above the stretched entry link');
-          const zoom = await page.locator('.mini-stage .demo-root').first().evaluate(node => Number(getComputedStyle(node).zoom));
-          assert.equal(zoom,1.35);
+          const preview = await page.locator('.mini-stage .demo-scope').first().evaluate(scope => {
+            const box = scope.closest('.mini-stage').getBoundingClientRect();
+            const content = scope.shadowRoot.querySelector('.demo-root').getBoundingClientRect();
+            return {ratio:content.width/box.width,inside:content.left >= box.left-1 && content.right <= box.right+1 &&
+              content.top >= box.top-1 && content.bottom <= box.bottom+1};
+          });
+          assert.ok(preview.ratio >= .85,JSON.stringify(preview));
+          assert.equal(preview.inside,true,'Preview content must fit inside its gallery cell');
         }
       }
       await context.close();

@@ -97,6 +97,9 @@ assert.equal(search.similar(entries,'buton')[0]?.zh,'按钮');
         for kind in ('ui','motion','guide','token','skill-reference'):
             demo_css = (ROOT / f'dist/assets/redesign/demo-{kind}.css').read_text()
             self.assertIn(':host(:not([data-interactive])) .demo-root', demo_css)
-            self.assertIn('zoom:1.35', demo_css)
+            self.assertNotIn('zoom:1.35', demo_css)
             self.assertIn('.scene-description', demo_css)
             self.assertIn('overflow-wrap:anywhere', demo_css)
+        runtime = (SOURCE / 'demo-runtime.js').read_text()
+        self.assertIn("body.style.width='312px'", runtime)
+        self.assertIn('Math.min(1.35,width/312', runtime)

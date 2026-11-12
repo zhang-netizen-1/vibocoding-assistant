@@ -75,6 +75,11 @@
 .demo-root .canvas .ctl { max-width: calc(100% - 28px); }
 .demo-root .canvas { padding-top: 52px; }
 .demo-root .stage { padding-top: 40px; }
+/* Solid-background labels retain their original typography and geometry. */
+.demo-root .fflabel { color:var(--demo-secondary); }
+.demo-root #taCountNum { color:var(--demo-secondary) !important; }
+.demo-root .chip button { color:var(--demo-secondary); }
+.demo-root .skill-card dt { color:#C4B5FD; }
 .demo-root .btn-pri:active,
 .demo-root .btn-pri[data-preview-active] { background: var(--demo-primary-active); }
 .demo-root .btn-ghost:hover,
@@ -108,12 +113,14 @@
 .demo-root .scene-description { white-space:normal;overflow-wrap:anywhere; }
 .demo-root :is(.tblfix-demo,.table-wrap,.mini-data-table) { max-width:100%;overflow:auto; }
 
-/* zoom participates in layout, so the surrounding stage can grow with the
-   1.35x preview. It never scales the stretched entry link or the play action. */
-:host(:not([data-interactive])) .demo-root { zoom:1.35; }
+/* demo-runtime sizes the 312px gallery layout with layout-aware zoom. The
+   surrounding stage can grow while the entry link and play action stay fixed. */
 :host(:not([data-interactive])) .demo-root :is(.canvas,.stage,.guide-card-stage) { min-height:160px;height:auto;padding:36px 8px 12px; }
 :host(:not([data-interactive])) .demo-root .canvas .ctl { display:none; }
 :host(:not([data-interactive])) .demo-root :is(.btn-row,.btns) { display:flex;flex-wrap:wrap;gap:6px; }
+/* Keep this after the gallery stage sizing, with matching specificity, so the
+   absolutely positioned hover card also has clearance inside thumbnails. */
+:host .demo-root .stage[data-effect="component-hover-preview"] { min-height:272px;justify-content:flex-start; }
 
 /* Native layout sizing, rather than enlarged pseudo-elements, prevents hit
    areas from overlapping. Inert gallery illustrations are not touch targets. */

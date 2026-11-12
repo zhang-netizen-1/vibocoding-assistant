@@ -132,12 +132,16 @@
       const stage=scope.closest('.mini-stage');
       if(!stage||!body)return;
       const style=getComputedStyle(stage),width=scope.clientWidth||stage.clientWidth;
-      const height=stage.clientHeight-parseFloat(style.paddingTop||0)-parseFloat(style.paddingBottom||0);
-      body.style.width='420px';body.style.zoom='1';
-      const natural=Math.max(224,body.scrollHeight||224);
-      const scale=Math.max(.1,Math.min(1,width/420,height>0?height/natural:1));
-      body.style.zoom=String(scale);
       scope.style.display='flex';scope.style.alignItems='center';scope.style.justifyContent='center';
+      body.style.width='312px';body.style.flexShrink='0';body.style.zoom='1';
+      const natural=body.scrollHeight||224;
+      // Let an auto-height cell grow at the requested width scale before
+      // measuring its height limit. Reading the old height would shrink every
+      // preview back down and can oscillate during ResizeObserver callbacks.
+      body.style.zoom=String(Math.min(1.35,width/312));
+      const height=stage.clientHeight-parseFloat(style.paddingTop||0)-parseFloat(style.paddingBottom||0);
+      const scale=Math.min(1.35,width/312,height>0?height/natural:1.35);
+      body.style.zoom=String(scale);
     }
     function preventExampleNavigation(event) {
       if (event.target.closest?.('a')) event.preventDefault();

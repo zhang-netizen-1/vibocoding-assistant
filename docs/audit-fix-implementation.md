@@ -259,3 +259,43 @@
 - `node tests/audit_fix_batch2.cjs` 通过，包含新增 404 页真实配置的搜索加载、结果链接与 Enter 跳转检查。`node --check tests/audit_fix_batch5_headless.cjs`、`git diff --check` 通过。
 - 新增 `tests/audit_fix_batch5_headless.cjs`，仅使用临时无界面 Chromium 配置和本地文件响应，检查 1440、1024、768、390px 的首页、五栏目、提示词写法、192 条目和三种深度错误网址，涵盖标题末行、页脚坐标、间距、计算字号与字重、链接高度、横向溢出及搜索跳转。脚本完成语法检查，实际渲染检查尚未运行成功。
 - 无界面 Chromium 启动探测返回 `bootstrap_check_in ... MachPortRendezvousServer ... Permission denied (1100)`。本批未获得浏览器渲染证据，以上视觉与真实浏览器交互项留给用户最终验收。在可启动无界面 Chromium 的环境中，可执行 `NODE_PATH=/Users/zhiguang/.npm/_npx/e3e9a1d1813bae49/node_modules node tests/audit_fix_batch5_headless.cjs`，运行报告写入 `output/playwright/audit-fix-batch5.json`。
+
+## 第 6 批 · 浏览器复测后的收尾
+
+日期为 2026-11-12，工作目录为 `~/Downloads/vibocoding-audit-fix`，分支为 `audit-fixes`。
+
+### 1. 修正三个无界面测试
+
+- `tests/audit_fix_batch1.cjs` 将实际悬停与按下检查中的次要按钮定位改为 `.btn-ghost[data-cmd="toast"]`，精确对应「次要按钮」。保留三种按钮默认、悬停、按下的全部颜色与位移断言。
+- `tests/audit_fix_batch3_headless.cjs` 仅从第一个条目演示的 `scope.shadowRoot.querySelectorAll('.btn')` 读取加载前后宽度，补充初始按钮数为 4、加载前后数量相等的断言。继续逐个检查宽度变化小于 1px、禁用、忙碌语义、加载文字和减弱动态下无旋转。
+- `tests/audit_fix_batch4_headless.cjs` 将固定 `computed zoom === 1.35` 改为实际渲染宽度与缩略格宽度之比至少 0.85，并检查内容四边均位于格子内。原有播放按钮命中、字号、布局、点击区和状态检查继续执行。
+- 三个脚本均通过 Node 语法检查。本次沙箱阻止无界面 Chromium 启动，实际页面断言待用户浏览器复测。
+
+### 2. U10 遗留 · 缩略格的实际放大
+
+- `site-src/redesign/demo-runtime.js` 将缩略演示布局宽度从 420px 改为 312px，关闭演示根元素的 flex 收缩，缩放上限为 1.35，并同时受可用宽度及高度限制。继续使用参与布局的 `zoom`。
+- 高度采用演示真实 `scrollHeight`，移除原先强制至少 224px 的测量下限，避免已适配为 160px 高的演示被再次缩小。先应用宽度允许的倍率，让自动高度舞台随内容增高，再读取高度上限，避免使用上一轮高度导致缩小或反复变化。
+- `site-src/redesign/demo-accessibility.css` 删除独立的 `zoom:1.35`，统一由运行时控制缩放。播放按钮及栏目链接沿用现有独立布局。
+- `tests/test_audit_fix_batch4.py` 将旧 CSS 固定倍率检查更新为单一运行时机制、312px 宽度与 1.35 上限检查，保留舞台可增高、底部 60px 空间和换行断言。
+- `tests/test_audit_fix_batch6.py` 直接执行真实 `fitGallery()` 函数，覆盖 140、336、436px 可用宽度，160、224、400px 内容高度，自动高度与受限高度、连续四次调用及再次调整宽度。验证倍率公式、尺寸边界和重复计算稳定性。
+- `tests/audit_fix_batch6_headless.cjs` 准备在 1440、768、390px 下检查五栏目全部缩略根元素边界、交互栏目首格宽度比和播放按钮实际命中。真实缩略观感、内容裁切和可点位置待浏览器复测。
+
+### 3. 悬停预览卡裁切
+
+- `site-src/redesign/demo-accessibility.css` 为 `component-hover-preview` 舞台设置 272px 最小高度，并将触发区域置于舞台上方。规则置于栏目缩略舞台规则之后，使用相同优先级，覆盖条目演示和缩略演示。
+- Python 回归检查最小高度至少 250px、顶部排列、CSS 顺序及三个实际入口的共用演示资产，涵盖 `interactions/component-hover-preview/`、`components/card/` 中的相关动效缩略和 `interactions/` 栏目。
+- 新增无界面脚本分别通过真实悬停和「▶ 播放」展开预览卡，准备检查卡片完整落在舞台、演示根元素及缩略格内，并距底边至少 16px。实际展开边界待浏览器复测。
+
+### 4. U05 遗留 · 纯色背景上的小字对比度
+
+- `site-src/guides.css` 仅将 `mini-layout-*`、`mini-interaction`、`mini-task`、`mini-page-*` 和 `mini-data-*` 中的浅暖灰文字改为 `#6B6960`，白底对比度为 5.51∶1，暖浅底 `#F5EFE9` 上为 4.82∶1。
+- `site-src/redesign/demo-accessibility.css` 将 AI 技能演示的 `.skill-card dt` 改为浅紫 `#C4B5FD`，在 `#232320` 上为 8.54∶1。浮动标签默认文字、字数计数和 `.chip button` 的关闭文字统一使用 `--demo-secondary`，在 `#F6F7F9` 上为 7.05∶1，在 `#E5E7EB` 上为 6.10∶1。浮动标签原有紫色聚焦规则继续生效。
+- 本项差异仅涉及颜色声明。Python 回归从生成 CSS 提取实际颜色并计算对比度，覆盖 18 组微缩文字选择器、四种纯色背景及四组技能和组件文字。无界面脚本另准备读取实际计算颜色和祖先背景进行对比度检查。浏览器计算样式待复测。
+
+### 本批验证结果与待验收项
+
+- `python3 scripts/build_site.py` 通过，生成 217 个页面、192 个统一条目。
+- `python3 -m unittest discover -s tests -p 'test_*.py'` 共 105 项通过，新增本批 4 项回归测试。口语搜索保持 62/62 命中前三。
+- `node tests/audit_fix_batch3.cjs` 通过，覆盖 10 个组件状态回调及减弱动态运行时生命周期。三个修正脚本、新增无界面脚本和运行时的 Node 语法检查通过，`git diff --check` 通过。
+- 无界面 Chromium 启动探测在进入页面前返回 `bootstrap_check_in ... MachPortRendezvousServer ... Permission denied (1100)`。真实浏览器渲染、悬停展开、缩略实际放大及点击命中尚未验证。可在允许启动无界面 Chromium 的环境中运行 `NODE_PATH=/Users/zhiguang/.npm/_npx/e41f203b7505f1fb/node_modules node tests/audit_fix_batch6_headless.cjs`，并重新执行本批修正的三个脚本。
+- 本批源码与自动化检查已完成，浏览器最终验收由用户执行。

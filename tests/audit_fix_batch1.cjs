@@ -96,7 +96,7 @@ const types = {'.html':'text/html', '.css':'text/css', '.js':'application/javasc
     assert.equal(colors.pressed[2].background,'rgb(127, 29, 29)');
     assert.notEqual(colors.hover[1].border,colors.pressed[1].border);
     await page.locator('[data-state="free"]').click();
-    for (const [i, selector] of ['.btn-pri','.btn-ghost','.btn-danger'].entries()) {
+    for (const [i, selector] of ['.btn-pri','.btn-ghost[data-cmd="toast"]','.btn-danger'].entries()) {
       const button = page.locator('.entry-demo .demo-scope').first().locator(selector);
       await button.hover();await page.waitForTimeout(180);
       const hover = await button.evaluate(node=>getComputedStyle(node).backgroundColor);
