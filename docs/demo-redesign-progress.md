@@ -79,3 +79,23 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
 
 ## 问用户
 - 条目页的演示区要不要整体加宽？要加宽就得改外框布局，比如收窄或下移右侧的使用卡。现在 1440 宽下舞台只有 725px，靠放大舞台里的内容来弥补。
+
+## 第 5 段（01:38–02:15）
+- 8c65abd（D 段）：
+  - 提示胶囊固定在舞台左下角，所有宽度都一样；带提示的 .canvas/.stage 撑满舞台高度，手机上底部留出 76px。
+  - ui 和 motion 两类的类型皮肤修好并恢复，demo-skins-wip/ 已删除。
+  - 抽了 37 条在 1440 和 390 下截图核对：没有重叠，也没有截断。改前改后对比图在 box：`contact_sheet_D1_kind.jpg` 到 `D4_kind.jpg`。
+- **192 条现在的状态**：
+  - 单独精修 14 条（见上文清单）；
+  - 类型级皮肤 172 条，统一了舞台、承托面、按钮、输入框、标签、圆角、阴影和紫色强调色；
+  - 6 个视觉材质类演示（basics/visual 下 minimal、editorial、organic 等）保留各自的风格。
+- **E 段 Codex 正在跑**：02:07 启动，perl alarm 26 分钟，**约 02:33 结束**。说明在 `demo-redesign-work/codex_brief_E.md`，日志在 `codex_log_E.txt`。这一段逐条精修首页入口和各分组首条，共 13 项约 17 条：
+  - components 下：states、card、toast、navbar、table、tabs、switch、select、hold-confirm；
+  - scenarios/landing；
+  - interactions 下：view-slide、view-curtain、media-wipe、media-blur、scroll-parallax、scroll-pin。
+  - **下一段开头**：先确认 E 段已结束（`pgrep -f "codex exec -C"`），再用 `shoot3.cjs` 拍改后截图，存到 `shots/after4`，改前截图是 `shots/before3`。用 `mksheet.sh` 做对比图，审完再提交。
+- 抽样里看到、还没处理的：
+  - 390 下 scroll-pin 的上沿被截掉一点；
+  - interactions/spec 是规范长页，不是演示，不用管；
+  - 类型级皮肤只算统一，离「极致」还远，ui 演示尤其明显（比如按钮组和标签只是换了色）。
+- 后面的安排：第 6 段（约 02:20–03:00）审 E 段并提交，然后继续 components 余下的 forms 和 feedback 分组。第 7 段（约 03:00–03:40）做 interactions 的 component、text、data、overlay 分组。最后一段（约 04:50–05:30）做完整验证：测试，全站页面在三种宽度下检查，旧链接跳转，口语别名命中。再做 16 组最佳改前改后对比，输出 `/workspace/bench/demo-redesign/morning_summary.jpg`。
