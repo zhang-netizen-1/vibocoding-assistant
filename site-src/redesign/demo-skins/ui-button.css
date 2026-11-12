@@ -14,7 +14,7 @@
 :host(.force-hover) .ds-button-demo .btn-danger,.ds-button-demo .btn-danger:hover:not(:disabled){background:#991b1b}
 :host(.force-pressed) .ds-button-demo .btn,.ds-button-demo .btn:active:not(:disabled){transform:scale(.98)}
 :host(.force-pressed) .ds-button-demo .btn-pri,.ds-button-demo .btn-pri:active:not(:disabled){background:var(--ds-accent-active)}
-:host(.force-pressed) .ds-button-demo .btn-ghost,.ds-button-demo .btn-ghost:active:not(:disabled){background:var(--ds-line);border-color:var(--ds-border)!important}
+:host(.force-pressed) .ds-button-demo .btn-ghost,.ds-button-demo .btn-ghost:active:not(:disabled){background:var(--ds-line);border-color:#4B5563!important}
 :host(.force-pressed) .ds-button-demo .btn-danger,.ds-button-demo .btn-danger:active:not(:disabled){background:#7f1d1d}
 .ds-button-demo .btn:focus-visible,:host(.force-focus) .ds-button-demo [data-simulated-focus]{outline:2px solid var(--ds-accent);outline-offset:2px}
 :host(.force-disabled) .ds-button-demo .btn:disabled,.ds-button-demo .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
