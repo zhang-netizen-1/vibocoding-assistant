@@ -1,0 +1,29 @@
+
+.ds-search-panel { width:min(100%,var(--ds-subject-width)); min-width:0; padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); box-shadow:var(--ds-shadow-1); text-align:left; color:var(--ds-ink); }
+.ds-search-panel header { margin-bottom:24px; }
+.ds-search-panel header strong { display:block; font:600 16px/1.5 var(--ds-font); }
+.ds-search-panel header p,.ds-search-panel .ds-note { margin:8px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-search-panel :is(input,button,label) { font-family:inherit; }
+.ds-search-panel :is(input,button):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-search-panel :is(input,button):disabled { opacity:.45; cursor:not-allowed; }
+.ds-search-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger); }
+@container demo-stage (max-width:480px) { .ds-search-panel { padding:20px 16px; } }
+
+
+.ds-search-panel .ds-search-label { display:block; margin-bottom:8px; font:500 14px/1.5 var(--ds-font); }
+.demo-root .ds-search-panel .searchbox { width:100%; gap:8px; min-height:48px; padding:4px 12px 4px 4px; border:1px solid var(--ds-border); border-radius:8px; box-shadow:var(--ds-shadow-1); }
+.ds-search-panel .searchbox:hover:not(:has(:disabled)) { background:var(--ds-fill); }
+.ds-search-panel .searchbox:focus-within { outline:2px solid var(--ds-accent); outline-offset:2px; box-shadow:none; }
+.ds-search-panel .searchbox button { width:44px; height:44px; padding:0; border-radius:6px; font-size:16px; color:var(--ds-ink-2); }
+.ds-search-panel .searchbox button::before { content:none; }
+.ds-search-panel .searchbox button:hover:not(:disabled) { background:var(--ds-line); }
+.ds-search-panel .searchbox input { min-height:44px; font:400 14px/1.5 var(--ds-font); }
+.ds-search-panel .demo-field-state { flex:1; }
+.ds-search-panel .demo-field-error { font-size:12px; }
+
+/* Native controls retain the same feedback in free interaction and fixed states. */
+.ds-search-panel :is(input,button) { transition:background-color var(--ds-dur-fast) var(--ds-ease-standard),box-shadow var(--ds-dur-fast) var(--ds-ease-standard); }
+.ds-search-panel :is(input,button):disabled:hover { box-shadow:none; }
+.ds-search-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
+.ds-search-panel :is(input,button)[aria-invalid="true"]~.ds-note { color:var(--ds-danger); }
+@media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-search-panel :is(input,button) { transition:none; transform:none; } }

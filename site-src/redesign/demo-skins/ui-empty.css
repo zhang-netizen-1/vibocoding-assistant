@@ -1,0 +1,26 @@
+
+.ds-empty-panel { width:min(100%,var(--ds-subject-width)); min-width:0; padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); box-shadow:var(--ds-shadow-1); text-align:left; color:var(--ds-ink); }
+.ds-empty-panel header { margin-bottom:24px; }
+.ds-empty-panel header strong { display:block; font:600 16px/1.5 var(--ds-font); }
+.ds-empty-panel header p,.ds-empty-panel .ds-note { margin:8px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-empty-panel :is(input,button,label) { font-family:inherit; }
+.ds-empty-panel :is(input,button):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-empty-panel :is(input,button):disabled { opacity:.45; cursor:not-allowed; }
+.ds-empty-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger); }
+@container demo-stage (max-width:480px) { .ds-empty-panel { padding:20px 16px; } }
+
+
+.demo-root .ds-empty-panel .empty { width:100%; padding:8px 0 0; border:0; border-radius:0; background:transparent; color:var(--ds-ink); text-align:center; box-shadow:none; }
+.ds-empty-panel .empty .ic { width:64px; height:64px; display:grid; place-items:center; margin:0 auto 16px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-fill); font-size:32px; }
+.ds-empty-panel .empty p { margin:0 0 8px; color:var(--ds-ink); font:500 14px/1.5 var(--ds-font); }
+.ds-empty-panel .ds-empty-description { display:block; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.demo-root .ds-empty-panel .btn { margin-top:24px; min-height:48px; padding:12px 24px; border:1px solid var(--ds-accent); border-radius:8px; background:var(--ds-accent); color:var(--ds-surface); font:500 14px/1.5 var(--ds-font); box-shadow:var(--ds-shadow-1); }
+.ds-empty-panel .btn:hover:not(:disabled) { background:var(--ds-accent-hover); box-shadow:var(--ds-shadow-2); }
+.ds-empty-panel .btn:active:not(:disabled) { background:var(--ds-accent-active); transform:scale(.98); }
+
+/* Native controls retain the same feedback in free interaction and fixed states. */
+.ds-empty-panel :is(input,button) { transition:background-color var(--ds-dur-fast) var(--ds-ease-standard),box-shadow var(--ds-dur-fast) var(--ds-ease-standard); }
+.ds-empty-panel :is(input,button):disabled:hover { box-shadow:none; }
+.ds-empty-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
+.ds-empty-panel :is(input,button)[aria-invalid="true"]~.ds-note { color:var(--ds-danger); }
+@media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-empty-panel :is(input,button) { transition:none; transform:none; } }

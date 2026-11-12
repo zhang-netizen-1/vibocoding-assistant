@@ -1,0 +1,25 @@
+
+.ds-stepper-panel { width:min(100%,var(--ds-subject-width)); min-width:0; padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); box-shadow:var(--ds-shadow-1); text-align:left; color:var(--ds-ink); }
+.ds-stepper-panel header { margin-bottom:24px; }
+.ds-stepper-panel header strong { display:block; font:600 16px/1.5 var(--ds-font); }
+.ds-stepper-panel header p,.ds-stepper-panel .ds-note { margin:8px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-stepper-panel :is(input,button,label) { font-family:inherit; }
+.ds-stepper-panel :is(input,button):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-stepper-panel :is(input,button):disabled { opacity:.45; cursor:not-allowed; }
+.ds-stepper-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger); }
+@container demo-stage (max-width:480px) { .ds-stepper-panel { padding:20px 16px; } }
+
+
+.ds-stepper-panel .ds-field-label { display:block; margin-bottom:8px; font:500 14px/1.5 var(--ds-font); }
+.demo-root .ds-stepper-panel .stepper { display:flex; width:100%; padding:4px; gap:8px; border:1px solid var(--ds-border); border-radius:8px; overflow:visible; box-shadow:var(--ds-shadow-1); }
+.demo-root .ds-stepper-panel .stepper button { width:48px; height:48px; flex:none; border:0; border-radius:6px; background:var(--ds-fill); color:var(--ds-ink); font-size:16px; }
+.ds-stepper-panel .stepper button:hover:not(:disabled) { background:var(--ds-line); }
+.ds-stepper-panel .stepper button:active:not(:disabled) { background:var(--ds-border); transform:scale(.98); }
+.demo-root .ds-stepper-panel .stepper input { flex:1; width:0; min-width:0; height:48px; border:0; border-radius:6px; background:var(--ds-surface); color:var(--ds-ink); font:500 14px/1.5 var(--ds-font); font-variant-numeric:tabular-nums; }
+
+/* Native controls retain the same feedback in free interaction and fixed states. */
+.ds-stepper-panel :is(input,button) { transition:background-color var(--ds-dur-fast) var(--ds-ease-standard),box-shadow var(--ds-dur-fast) var(--ds-ease-standard); }
+.ds-stepper-panel :is(input,button):disabled:hover { box-shadow:none; }
+.ds-stepper-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
+.ds-stepper-panel :is(input,button)[aria-invalid="true"]~.ds-note { color:var(--ds-danger); }
+@media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-stepper-panel :is(input,button) { transition:none; transform:none; } }

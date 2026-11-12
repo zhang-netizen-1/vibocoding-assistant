@@ -292,3 +292,27 @@ class RedesignTokensTest(unittest.TestCase):
             if stage >= 640:
                 self.assertGreaterEqual(width/stage,.55)
                 self.assertLessEqual(width/stage,.66)
+
+
+class BatchFTokenTest(unittest.TestCase):
+    def test_f_individual_skins_keep_geometry_states_and_tokens(self):
+        names = ('checkbox', 'radio', 'slider', 'otp', 'search', 'segmented',
+                 'password-strength', 'tag-input', 'stepper', 'rating', 'upload',
+                 'combobox', 'date', 'form', 'alert', 'empty', 'loader', 'drawer', 'popover')
+        skins = REDESIGN / 'demo-skins'
+        for name in names:
+            with self.subTest(name=name):
+                css = (skins / ('ui-' + name + '.css')).read_text()
+                self.assertIn('width:min(100%,var(--ds-subject-width))', css)
+                self.assertIn('border-radius:16px', css)
+                self.assertIn('var(--ds-shadow-1)', css)
+                self.assertIn(':focus-visible', css)
+                self.assertIn(':disabled', css)
+                self.assertIn('[aria-invalid="true"]', css)
+                self.assertIn('@container demo-stage (max-width:480px)', css)
+                self.assertNotRegex(css, r'(?<![\w-])font-size:\s*(?:[0-9]|1[01])px')
+                self.assertNotRegex(css, r'#[0-9a-fA-F]{3,8}|https?://|@import|@font-face')
+        self.assertIn('repeat(3,minmax(44px,1fr))', (skins / 'ui-otp.css').read_text())
+        self.assertIn('margin-bottom:168px', (skins / 'ui-popover.css').read_text())
+        self.assertIn('var(--ds-shadow-3)', (skins / 'ui-drawer.css').read_text())
+        self.assertIn('animation:none', (skins / 'ui-loader.css').read_text())

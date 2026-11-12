@@ -666,8 +666,8 @@ class BatchCKindSkinTest(unittest.TestCase):
             else:
                 skips+=1
                 self.assertIn(entry['slug'],self.demos.KIND_SKIN_SKIPS.get(kind,()))
-        self.assertEqual(counts,{'ui':54,'motion':68,'guide':21,'token':4,'skill-reference':9})
-        self.assertEqual(samples,30)
+        self.assertEqual(counts,{'ui':35,'motion':68,'guide':21,'token':4,'skill-reference':9})
+        self.assertEqual(samples,49)
         self.assertEqual(skips,6)
         self.assertEqual(sum(counts.values())+samples+skips,192)
 
@@ -794,3 +794,76 @@ class BatchESkinTest(unittest.TestCase):
         self.assertEqual(hold.one(cls='holdbtn').attrs['id'], 'holdBtn')
         self.assertEqual(hold.one(cls='hold-alt').attrs['data-arg'], '已通过普通按钮删除（演示）')
         self.assertIsNotNone(root('toast').one(cls='ds-toast-output').attrs.get('data-toast-description'))
+
+
+class BatchFSkinTest(unittest.TestCase):
+    setUpClass = classmethod(DemoSpecBuildTest.setUpClass.__func__)
+    SLUGS = ('checkbox', 'radio', 'slider', 'otp', 'search', 'segmented',
+             'password-strength', 'tag-input', 'stepper', 'rating', 'upload',
+             'combobox', 'date', 'form', 'alert', 'empty', 'loader', 'drawer', 'popover')
+
+    def rendered(self, slug):
+        entry = next(row for row in self.entries if row['slug'] == slug)
+        markup = self.demos.markup(entry['demo'], '../../assets/redesign/', True, slug)
+        return entry, self.Document(markup).root
+
+    def test_f_skin_publication_source_contracts_and_hint_parent(self):
+        for slug in self.SLUGS:
+            with self.subTest(slug=slug):
+                entry, result = self.rendered(slug)
+                template = result.one('template')
+                name = 'demo-skins/ui-' + slug + '.css'
+                self.assertEqual(template.attrs['data-skin-css'], '../../assets/redesign/' + name)
+                self.assertNotIn('data-kind-css', template.attrs)
+                self.assertIn('data-ds-sample', result.one('article').attrs)
+                nodes = result.find_all()
+                source = self.Document(entry['demo']['html']).root
+                for original in source.find_all():
+                    classes = set(original.attrs.get('class', '').split())
+                    protected = {key: value for key, value in original.attrs.items()
+                                 if key == 'id' or key.startswith(('data-', 'aria-')) or
+                                 key in ('role', 'tabindex', 'type', 'name', 'value', 'min', 'max',
+                                         'maxlength', 'inputmode', 'autocomplete', 'list', 'for',
+                                         'checked', 'disabled', 'hidden', 'placeholder')}
+                    candidates = [node for node in nodes if node.tag == original.tag and
+                                  classes <= set(node.attrs.get('class', '').split())]
+                    self.assertTrue(any(all(key in node.attrs and node.attrs[key] == value
+                                           for key, value in protected.items()) for node in candidates),
+                                    (slug, original.tag, protected))
+                    for child in original.children:
+                        if isinstance(child, str) and child.strip():
+                            self.assertIn(child.strip(), result.text(), slug)
+                hints = result.find_all(cls='ds-hint')
+                self.assertEqual(len(hints), 1)
+                self.assertIn(hints[0], result.one(cls='canvas').children)
+                css = (ROOT / 'site-src/redesign' / name).read_text()
+                self.assertNotIn('.ds-hint', css)
+                self.assertEqual((DIST / 'assets/redesign' / name).read_text(),
+                                 self.demos.assets(self.entries)[name])
+
+    def test_f_control_labels_and_original_values(self):
+        for slug in ('slider', 'search', 'password-strength', 'tag-input', 'stepper', 'date', 'form'):
+            _, root = self.rendered(slug)
+            labels = {node.attrs.get('for') for node in root.find_all('label')}
+            for field in root.find_all('input'):
+                self.assertIn(field.attrs.get('id'), labels, slug)
+                self.assertIn('aria-describedby', field.attrs, slug)
+        _, otp = self.rendered('otp')
+        self.assertEqual(len(otp.one(cls='otp-row').find_all('input')), 6)
+        self.assertEqual([node.attrs['aria-label'] for node in otp.one(cls='otp-row').find_all('input')],
+                         ['第 1 位', '第 2 位', '第 3 位', '第 4 位', '第 5 位', '第 6 位'])
+        _, combo = self.rendered('combobox')
+        self.assertEqual([node.attrs['value'] for node in combo.find_all('option')], ['北京', '上海', '深圳', '广州'])
+        _, alerts = self.rendered('alert')
+        self.assertEqual([node.one('strong').text() for node in alerts.find_all(cls='alert')],
+                         ['ℹ️ 这是信息提示', '⚠️ 这是一条警告', '❌ 这是一条错误', '✓ 操作已完成'])
+
+    def test_f_overlays_keep_original_commands_and_single_instances(self):
+        _, drawer = self.rendered('drawer')
+        for identifier in ('dmask', 'dpanel'):
+            self.assertEqual(len([node for node in drawer.find_all() if node.attrs.get('id') == identifier]), 1)
+        self.assertEqual(drawer.one(cls='drawer-mask').attrs['data-cmd'], 'closeDrawer')
+        self.assertEqual(drawer.one(cls='drawer-head').one('button').attrs['data-cmd'], 'closeDrawer')
+        _, popover = self.rendered('popover')
+        self.assertIn('hidden', popover.one(cls='popover-box').attrs)
+        self.assertEqual(popover.one(cls='popover-demo').one('button').attrs['aria-controls'], 'popover-box')

@@ -1,0 +1,27 @@
+
+.ds-otp-panel { width:min(100%,var(--ds-subject-width)); min-width:0; padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); box-shadow:var(--ds-shadow-1); text-align:left; color:var(--ds-ink); }
+.ds-otp-panel header { margin-bottom:24px; }
+.ds-otp-panel header strong { display:block; font:600 16px/1.5 var(--ds-font); }
+.ds-otp-panel header p,.ds-otp-panel .ds-note { margin:8px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-otp-panel :is(input,button,label) { font-family:inherit; }
+.ds-otp-panel :is(input,button):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-otp-panel :is(input,button):disabled { opacity:.45; cursor:not-allowed; }
+.ds-otp-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger); }
+@container demo-stage (max-width:480px) { .ds-otp-panel { padding:20px 16px; } }
+
+
+.ds-otp-panel .ds-otp-label { margin:0 0 12px; font:500 14px/1.5 var(--ds-font); }
+.ds-otp-panel .otp-demo { display:grid; gap:12px; width:100%; }
+.ds-otp-panel .otp-row { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px; width:100%; }
+.demo-root .ds-otp-panel .otp-row input { width:100%; min-width:0; height:48px; border:1px solid var(--ds-border); border-radius:8px; color:var(--ds-ink); background:var(--ds-surface); font:600 16px/1.5 var(--ds-font); box-shadow:var(--ds-shadow-1); }
+.ds-otp-panel .otp-row input:hover:not(:disabled) { background:var(--ds-fill); }
+.ds-otp-panel .otp-row input:focus { outline:2px solid var(--ds-accent); outline-offset:2px; box-shadow:none; }
+.ds-otp-panel .otp-hint { margin:0; font:400 12px/1.5 var(--ds-font); color:var(--ds-ink-2); }
+@container demo-stage (max-width:480px) { .ds-otp-panel .otp-row { grid-template-columns:repeat(3,minmax(44px,1fr)); } }
+
+/* Native controls retain the same feedback in free interaction and fixed states. */
+.ds-otp-panel :is(input,button) { transition:background-color var(--ds-dur-fast) var(--ds-ease-standard),box-shadow var(--ds-dur-fast) var(--ds-ease-standard); }
+.ds-otp-panel :is(input,button):disabled:hover { box-shadow:none; }
+.ds-otp-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
+.ds-otp-panel :is(input,button)[aria-invalid="true"]~.ds-note { color:var(--ds-danger); }
+@media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-otp-panel :is(input,button) { transition:none; transform:none; } }

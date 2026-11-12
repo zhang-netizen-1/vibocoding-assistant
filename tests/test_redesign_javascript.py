@@ -32,12 +32,97 @@ class RedesignJavaScriptTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             fixture=Path(folder)/'demos.json'
             fixture.write_text(json.dumps(demos.smoke_fixture(entries.load_entries()),ensure_ascii=False))
-            result=subprocess.run(['node',str(ROOT/'site-src/redesign/demo-smoke.cjs'),str(fixture)],cwd=ROOT,text=True,capture_output=True)
+            runner = Path(folder) / 'demo-smoke.cjs'
+            runner.write_text((ROOT / 'site-src/redesign/demo-smoke.cjs').read_text() + r'''
+const checks = interactiveModel('c-checkbox');
+const all = checks.doc.getElementById('ckAll');
+const children = checks.root.querySelectorAll('.ck-child');
+assert.equal(all.indeterminate, true);
+all.checked = true;
+checks.fire(all, 'change');
+assert(children.every(child => child.checked));
+children[0].checked = false;
+checks.fire(children[0], 'change');
+assert.equal(all.indeterminate, true);
+assert.equal(all.checked, false);
+
+const slider = interactiveModel('c-slider');
+const range = slider.root.querySelector('[data-cmd="rangeLabel"]');
+range.value = '73';
+slider.fire(range, 'input');
+assert.equal(range.nextElementSibling.textContent, '73%');
+
+const otp = interactiveModel('c-otp');
+const cells = otp.doc.getElementById('otpRow').querySelectorAll('input');
+otp.fire(cells[0], 'paste', {clipboardData:{getData:() => '123456'}});
+assert.equal(cells.map(cell => cell.value).join(''), '123456');
+assert.equal(otp.focused, cells[5]);
+assert.equal(otp.root.querySelector('.otp-hint').textContent, '已填完，可提交。');
+cells[5].value = '';
+otp.fire(cells[5], 'keydown', {key:'Backspace'});
+assert.equal(otp.focused, cells[4]);
+assert.equal(cells[4].value, '');
+
+const password = interactiveModel('c-password-strength');
+const passwordInput = password.doc.getElementById('pwInput');
+for (const [value, level] of [['', '0'], ['abcdefgh', '1'], ['abc12345', '2'], ['Abcd1234!', '3'], ['Project2026!', '4']]) {
+  passwordInput.value = value;
+  password.fire(passwordInput, 'input');
+  assert.equal(password.root.querySelector('.pw-demo').dataset.level, level);
+}
+
+const tags = interactiveModel('c-tag-input');
+const tagInput = tags.doc.getElementById('tagInput');
+tagInput.value = '提案';
+tags.fire(tagInput, 'keydown', {key:'Enter'});
+assert.equal(tags.root.querySelectorAll('.tagchip').length, 2);
+tagInput.value = '提案';
+tags.fire(tagInput, 'keydown', {key:'Enter'});
+assert.equal(tags.root.querySelectorAll('.tagchip').length, 2);
+tags.fire(tags.root.querySelectorAll('.tagx').at(-1), 'click');
+assert.equal(tags.root.querySelectorAll('.tagchip').length, 1);
+
+const stepper = interactiveModel('c-stepper');
+stepper.fire(stepper.root.querySelector('[data-arg="1"]'), 'click');
+assert.equal(Number(stepper.doc.getElementById('num').value), 3);
+stepper.doc.getElementById('num').value = '0';
+stepper.fire(stepper.root.querySelector('[data-arg="-1"]'), 'click');
+assert.equal(Number(stepper.doc.getElementById('num').value), 0);
+
+const rating = interactiveModel('c-rating');
+rating.fire(rating.root.querySelectorAll('.st')[3], 'click');
+assert.equal(rating.root.querySelectorAll('.st.on').length, 4);
+assert.equal(rating.root.querySelectorAll('.st[aria-pressed="true"]').length, 1);
+
+const upload = interactiveModel('c-upload');
+const file = upload.doc.getElementById('filei');
+file.files = [{name:'项目资料.pdf'}];
+upload.fire(file, 'change');
+assert.equal(upload.doc.getElementById('dz-text').textContent, '已选择：项目资料.pdf（未上传；点击可重选）');
+
+const drawer = interactiveModel('c-drawer');
+drawer.fire(drawer.root.querySelector('[data-cmd="openDrawer"]'), 'click');
+assert(drawer.doc.getElementById('dmask').classList.contains('show'));
+drawer.fire(drawer.root.querySelector('.drawer-head button'), 'click');
+assert(!drawer.doc.getElementById('dmask').classList.contains('show'));
+
+const popover = interactiveModel('c-popover');
+const popoverTrigger = popover.doc.getElementById('popover-trigger');
+popover.fire(popoverTrigger, 'click');
+assert.equal(popover.doc.getElementById('popover-box').hidden, false);
+assert.equal(popoverTrigger.getAttribute('aria-expanded'), 'true');
+popover.fire(popoverTrigger, 'click');
+assert.equal(popover.doc.getElementById('popover-box').hidden, true);
+assert.equal(popoverTrigger.getAttribute('aria-expanded'), 'false');
+console.log('Batch F: checkbox, slider, OTP paste/backspace, five password levels, tag dedup/removal, stepper bounds, rating, file choice, drawer and popover passed.');
+''')
+            result=subprocess.run(['node',str(runner),str(fixture)],cwd=ROOT,text=True,capture_output=True)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
         self.assertIn('194',result.stdout)
         self.assertIn('Command palette: 70 real candidates',result.stdout)
         self.assertIn('Motion modal: local sibling inert',result.stdout)
         self.assertIn('Batch B: skeleton loading/reduced motion',result.stdout)
+        self.assertIn('Batch F: checkbox, slider, OTP paste/backspace', result.stdout)
 
     def test_real_index_matching_ranking_and_near_names(self):
         code = r'''

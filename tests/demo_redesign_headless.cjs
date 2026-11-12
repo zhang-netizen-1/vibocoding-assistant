@@ -24,7 +24,10 @@ const routes = [
   'components/navbar/', 'components/table/', 'components/tabs/', 'components/switch/',
   'components/select/', 'components/hold-confirm/', 'interactions/view-slide/',
   'interactions/view-curtain/', 'interactions/media-wipe/', 'interactions/media-blur/',
-  'interactions/scroll-parallax/', 'interactions/scroll-pin/'
+  'interactions/scroll-parallax/', 'interactions/scroll-pin/',
+  ...['checkbox','radio','slider','otp','search','segmented','password-strength','tag-input',
+      'stepper','rating','upload','combobox','date','form','alert','empty','loader','drawer','popover']
+    .map(slug => `components/${slug}/`)
 ];
 const galleries = ['basics/', 'components/', 'interactions/', 'scenarios/', 'ai/'];
 const report = {started: new Date().toISOString(), checks: [], failures: [], pageErrors: [], resourceErrors: [], screenshots: [], galleries: []};
@@ -305,10 +308,118 @@ async function batchEChecks(page, route, width) {
   assert.equal(audit.pageOverflow,false,JSON.stringify({route,width,audit}));
   assert.deepEqual(audit.failures,[],JSON.stringify({route,width,audit}));
 }
+async function batchFChecks(page, route, width) {
+  const slug = route.split('/')[1];
+  const names = ['checkbox','radio','slider','otp','search','segmented','password-strength',
+    'tag-input','stepper','rating','upload','combobox','date','form','alert','empty','loader','drawer','popover'];
+  if (!route.startsWith('components/') || !names.includes(slug)) return;
+  const scope = page.locator('.demo-scope[data-interactive]').first();
+  if (slug === 'checkbox') {
+    assert.equal(await scope.locator('#ckAll').evaluate(node => node.indeterminate), true);
+    await scope.locator('.ds-check-parent').click();
+    assert.equal(await scope.locator('.ck-child:checked').count(), 3);
+    await scope.locator('.ds-check-children .check').first().click();
+    assert.equal(await scope.locator('#ckAll').evaluate(node => node.indeterminate), true);
+  }
+  if (slug === 'radio') {
+    await scope.locator('.radio-group .check').nth(1).click();
+    assert.equal(await scope.locator('input[name="plan"]:checked').count(), 1);
+    assert.equal(await scope.locator('input[name="plan"]').nth(1).isChecked(), true);
+  }
+  if (slug === 'slider') {
+    await scope.locator('input[type="range"]').fill('64');
+    assert.equal(await scope.locator('.ds-volume-control span').textContent(), '64%');
+  }
+  if (slug === 'otp') {
+    const cells = scope.locator('.otp-row input');
+    for (let index = 0; index < 6; index++) await cells.nth(index).fill(String(index + 1));
+    assert.equal(await scope.locator('.otp-hint').textContent(), '已填完，可提交。');
+    const rectangles = await cells.evaluateAll(nodes => nodes.map(node => {
+      const box = node.getBoundingClientRect();
+      return {width:box.width,height:box.height};
+    }));
+    assert.ok(rectangles.every(box => box.width >= 44 && box.height >= 44), JSON.stringify(rectangles));
+  }
+  if (slug === 'search') {
+    await scope.locator('.searchbox input').fill('品牌提案');
+    await scope.locator('.searchbox input').press('Enter');
+    assert.match(await scope.locator('.demo-status').textContent(), /品牌提案/);
+  }
+  if (slug === 'segmented') {
+    await scope.locator('.options label').nth(1).click();
+    assert.equal(await scope.locator('input[value="grid"]').isChecked(), true);
+  }
+  if (slug === 'password-strength') {
+    await scope.locator('#pwInput').fill('Project2026!');
+    assert.equal(await scope.locator('.pw-demo').getAttribute('data-level'), '4');
+  }
+  if (slug === 'tag-input') {
+    await scope.locator('#tagInput').fill('提案');
+    await scope.locator('#tagInput').press('Enter');
+    assert.equal(await scope.locator('.tagchip').count(), 2);
+    await scope.locator('.tagx').last().click();
+    assert.equal(await scope.locator('.tagchip').count(), 1);
+  }
+  if (slug === 'stepper') {
+    await scope.locator('[data-arg="1"]').click();
+    assert.equal(await scope.locator('#num').inputValue(), '3');
+    await scope.locator('[data-arg="-1"]').click();
+    assert.equal(await scope.locator('#num').inputValue(), '2');
+  }
+  if (slug === 'rating') {
+    await scope.locator('.st').nth(3).click();
+    assert.equal(await scope.locator('.st.on').count(), 4);
+    assert.equal(await scope.locator('.st[aria-pressed="true"]').count(), 1);
+  }
+  if (slug === 'upload') {
+    await scope.locator('#filei').setInputFiles({name:'项目资料.txt',mimeType:'text/plain',buffer:Buffer.from('项目资料')});
+    assert.match(await scope.locator('#dz-text').textContent(), /项目资料.txt/);
+  }
+  if (slug === 'combobox') {
+    await scope.locator('input[list="city-options"]').fill('上海');
+    assert.equal(await scope.locator('input[list="city-options"]').inputValue(), '上海');
+  }
+  if (slug === 'date') {
+    await scope.locator('input[type="date"]').fill('2026-11-20');
+    assert.equal(await scope.locator('input[type="date"]').inputValue(), '2026-11-20');
+  }
+  if (slug === 'form') {
+    await scope.locator('#ds-register-name').fill('设计工作室');
+    await scope.locator('#ds-register-password').fill('Project2026!');
+    await scope.locator('[data-cmd="demoRegister"]').click();
+    assert.equal(await scope.locator('.demo-status').textContent(), '模拟提交完成，未创建账号');
+  }
+  if (slug === 'alert') assert.equal(await scope.locator('.alert').count(), 4);
+  if (slug === 'empty') {
+    await scope.locator('[data-cmd="toast"]').click();
+    assert.equal(await scope.locator('.demo-status').textContent(), '去创建 ✓');
+  }
+  if (slug === 'loader') assert.equal(await scope.locator('.spinner').count(), 1);
+  if (slug === 'drawer') {
+    await scope.locator('[data-cmd="openDrawer"]').click();
+    await page.waitForTimeout(400);
+    const bounds = await scope.evaluate(node => {
+      const root = node.shadowRoot.querySelector('.ds-stage').getBoundingClientRect();
+      const panel = node.shadowRoot.querySelector('.drawer-panel').getBoundingClientRect();
+      return {left:panel.left-root.left,right:root.right-panel.right,top:panel.top-root.top,bottom:root.bottom-panel.bottom};
+    });
+    assert.ok(Object.values(bounds).every(value => value >= -.5), JSON.stringify(bounds));
+    await page.keyboard.press('Escape');
+    assert.equal(await scope.locator('#dmask').evaluate(node => node.classList.contains('show')), false);
+  }
+  if (slug === 'popover') {
+    await kindGeometryChecks(page, route);
+    await page.keyboard.press('Escape');
+    assert.equal(await scope.locator('#popover-trigger').getAttribute('aria-expanded'), 'false');
+  }
+  const audit = await page.evaluate(layoutAudit);
+  assert.equal(audit.pageOverflow, false, JSON.stringify({route,width,audit}));
+  assert.deepEqual(audit.failures, [], JSON.stringify({route,width,audit}));
+}
 async function specimenGeometry(page) {
   const result=await page.locator('.demo-scope[data-interactive]').first().evaluate(scope=>{
     const root=scope.shadowRoot.querySelector('.ds-stage');
-    const subject=root.querySelector('.ds-surface,.lift-card,.mini-scroll,.carousel,.token-demo,.mini-page,.skill-card,.ds-states-panel,.card2,.ds-toast-panel,.ds-navbar-panel,.ds-table-panel,.ds-tabs-panel,.ds-switch-panel,.ds-select-panel,.ds-hold-panel,.scene-window,.scene-curtain,.art');
+    const subject=root.querySelector('.ds-surface,.lift-card,.mini-scroll,.carousel,.token-demo,.mini-page,.skill-card,.ds-states-panel,.card2,.ds-toast-panel,.ds-navbar-panel,.ds-table-panel,.ds-tabs-panel,.ds-switch-panel,.ds-select-panel,.ds-hold-panel,.scene-window,.scene-curtain,.art,.canvas>section[class^="ds-"]');
     const hint=root.querySelector('.ds-hint');
     const r=root.getBoundingClientRect(),s=subject.getBoundingClientRect(),h=hint?.getBoundingClientRect();
     const style=getComputedStyle(root);
@@ -507,6 +618,7 @@ function catalogInventory() {
         await batchBChecks(page,route,label,width===390);
         await batchCChecks(page,route);
         await batchEChecks(page,route,width);
+        await batchFChecks(page,route,width);
       });
       await check(`${label}: screenshot`, async () => {
         const file=path.join(shots,`${route.replaceAll('/','-').replace(/-$/,'')}-${width}.png`);
