@@ -207,9 +207,8 @@ class SiteBuildTest(unittest.TestCase):
 
     def test_global_search_index_matches_real_anchors(self):
         home = (DIST / "index.html").read_text(encoding="utf-8")
-        match = re.search(r'<script type="application/json" id="redesign-search-index">(.*?)</script>', home, re.S)
-        self.assertIsNotNone(match)
-        entries = json.loads(match.group(1))["entries"]
+        self.assertNotIn('redesign-search-index', home)
+        entries = json.loads((DIST / 'assets/search-index.json').read_text())["entries"]
         unified = json.loads((ROOT / "build/entries.json").read_text())
         self.assertEqual(len(entries), len(unified))
         self.assertEqual(len({entry["href"] for entry in entries}), len(unified))
@@ -301,10 +300,13 @@ class SiteBuildTest(unittest.TestCase):
             self.assertEqual(doc.one(cls='definition').text(),entry['definition'].splitlines()[0])
             points=doc.find_all(cls='entry-points')
             self.assertEqual([n.text() for n in points[0].find_all('li')] if points else [],entry['definition'].splitlines()[1:])
-            index=json.loads(next(n for n in doc.find_all('script') if n.attrs.get('id')=='redesign-search-index').text())
+            dialog=next(n for n in doc.find_all('dialog') if n.attrs.get('id')=='search-dialog')
+            index_path=(path.parent/urlsplit(dialog.attrs['data-index-url']).path).resolve()
+            index=json.loads(index_path.read_text())
             self.assertEqual(len(index['entries']),192)
             for item in [*index['entries'],*index['columns']]:
-                target=(path.parent/urlsplit(item['href']).path).resolve()
+                href=dialog.attrs['data-site-root']+item['href'][2:]
+                target=(path.parent/urlsplit(href).path).resolve()
                 self.assertFalse(item['href'].startswith('/'))
                 if target.is_dir():target/='index.html'
                 self.assertTrue(target.is_file(),(path,item['href']))

@@ -27,7 +27,7 @@ def generated_pages(entries):
 
 
 def generated_files(entries):
-    return generated_pages(entries) + [f'assets/redesign/{name}' for name in (*ASSETS, *demos.assets(entries))]
+    return generated_pages(entries) + ['assets/search-index.json'] + [f'assets/redesign/{name}' for name in (*ASSETS, *demos.assets(entries))]
 
 
 
@@ -122,13 +122,19 @@ def motion_links(entry, page, entries, tax):
     return ''.join(parts)
 
 
-def shell(page, title, body, entries, tax, entry=False):
+def search_index_json(entries, tax):
     columns = {c['slug']: c for c in tax['columns']}
     order = list(tax['anchors'])
     ordered = sorted(entries, key=lambda e: (columns[e['column']]['order'], next(i for i,g in enumerate(columns[e['column']]['groups']) if g['slug'] == e['group']), (order.index(e['id']) if e['id'] in order else len(order))))
     index = [dict(aliases=e.get('aliases', []), zh=e['zh'], en=e['en'], terms=e['terms'], definition=e['definition'], prompt=copy_payload(e),
-                  column=columns[e['column']]['name'], group=next(g['name'] for g in columns[e['column']]['groups'] if g['slug'] == e['group']), href=relative(page, entry_destination(e))) for e in ordered]
-    data = json.dumps(dict(entries=index, columns=[dict(name=c['name'], href=relative(page, column_destination(c['slug']))) for c in tax['columns']], examples=EXAMPLES), ensure_ascii=False, separators=(',', ':')).replace('<', '\u003c')
+                  column=columns[e['column']]['name'], group=next(g['name'] for g in columns[e['column']]['groups'] if g['slug'] == e['group']),
+                  thumbnail=e['column'], href=relative('index.html', entry_destination(e))) for e in ordered]
+    return json.dumps(dict(entries=index, columns=[dict(name=c['name'], href=relative('index.html', column_destination(c['slug']))) for c in tax['columns']], examples=EXAMPLES), ensure_ascii=False, separators=(',', ':'))
+
+
+def shell(page, title, body, entries, tax, entry=False):
+    index_version = hashlib.sha256(search_index_json(entries, tax).encode()).hexdigest()[:8]
+    index_url = relative(page, 'assets/search-index.json') + '?v=' + index_version
     selected = [e for e in entries if entry_destination(e) + 'index.html' == page] if entry else [e for e in entries if page == e['column'] + '/index.html']
     bundle_names = set()
     for item in selected:
@@ -148,7 +154,7 @@ def shell(page, title, body, entries, tax, entry=False):
     css += ''.join(asset_tag(name) for name in sorted(bundle_names) if name.endswith('.css'))
     js = ''.join(asset_tag(name) for name in ('demo-runtime.js', *sorted(name for name in bundle_names if name.endswith('.js') and name != 'demo-runtime.js'), 'search.js', 'site.js'))
     return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="查看界面效果的中英文名称与演示，复制原始实现提示词。"><title>{escape(title)} · Vibe Design 速查</title><link rel="icon" href="{relative(page, "assets/favicon.svg")}">{css}{js}</head><body{' class="entry-active"' if entry else ''}>{header(page,tax)}<main class="wrap view" id="main" tabindex="-1">{body}</main><footer class="wrap footer">Vibe Design 速查 · <a href="{relative(page,'bench/')}">测评结果</a></footer>
-<dialog class="overlay search-dialog" id="search-dialog" aria-label="搜索条目"><div class="search-top"><label class="sr" for="search-input">搜索中文名、英文名或已有词</label><input id="search-input" type="search" placeholder="用你自己的说法搜，比如：鼠标放上去浮起来" autocomplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="grid" aria-expanded="false" aria-describedby="search-help"><button class="close-button" data-close="search-dialog">关闭</button></div><div class="search-body" id="search-body"></div><p class="search-help" id="search-help">↑↓ 选择条目 · Enter 打开 · Tab 选择操作 · Esc 关闭</p></dialog><div class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></div><script type="application/json" id="redesign-search-index">{data}</script></body></html>'''
+<dialog class="overlay search-dialog" id="search-dialog" aria-label="搜索条目" data-index-url="{index_url}" data-site-root="{relative(page, '')}"><div class="search-top"><label class="sr" for="search-input">搜索中文名、英文名或已有词</label><input id="search-input" type="search" placeholder="用你自己的说法搜，比如：鼠标放上去浮起来" autocomplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="grid" aria-expanded="false" aria-describedby="search-help"><button class="close-button" data-close="search-dialog">关闭</button></div><div class="search-body" id="search-body"></div><p class="search-help" id="search-help">↑↓ 选择条目 · Enter 打开 · Tab 选择操作 · Esc 关闭</p></dialog><div class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></div></body></html>'''
 
 
 def home(entries, tax):
@@ -291,6 +297,7 @@ def prompt_writing_page(entries, tax):
 def build(output, entries, tax):
     assets = output / 'assets/redesign'
     assets.mkdir(parents=True)
+    (output / 'assets/search-index.json').write_text(search_index_json(entries, tax), encoding='utf-8')
     contents = {name:(HERE/name).read_text(encoding='utf-8') for name in ASSETS}
     contents.update(demos.assets(entries))
     for name, content in contents.items():

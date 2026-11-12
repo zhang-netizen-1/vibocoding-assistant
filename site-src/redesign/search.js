@@ -91,8 +91,30 @@ const VibeSearch = (() => {
     return row.alias ? '也叫：' + row.alias : '';
   }
   function similar(entries, query) {
-    const queryChars = new Set(normalize(query));
-    return entries.map((entry,index) => ({entry,index,score:[...new Set(normalize(entry.zh + entry.en))].filter(char => queryChars.has(char)).length})).sort((a,b) => b.score-a.score || a.index-b.index).slice(0,3).map(row => row.entry);
+    const q = normalize(query);
+    if (q.length < 3) return [];
+    function similarity(name) {
+      const value = normalize(name);
+      if (Math.abs(q.length - value.length) > 1) return 0;
+      let previous = Array.from({length:value.length + 1}, (_,index) => index);
+      for (let i = 1; i <= q.length; i++) {
+        const current = [i];
+        for (let j = 1; j <= value.length; j++) {
+          current[j] = Math.min(current[j-1] + 1, previous[j] + 1, previous[j-1] + Number(q[i-1] !== value[j-1]));
+        }
+        previous = current;
+      }
+      const distance = previous[value.length];
+      // At most one edit, with at least two thirds of the name preserved.
+      return distance <= 1 ? 1 - distance / Math.max(q.length,value.length) : 0;
+    }
+    return entries.map((entry,index) => {
+      const names = [entry.zh, ...String(entry.en || '').split('/'), ...(entry.aliases || [])];
+      const score = Math.max(...names.map(similarity));
+      return {entry,index,score};
+    })
+      .filter(row => row.score >= 2/3)
+      .sort((a,b) => b.score-a.score || a.index-b.index).slice(0,3).map(row => row.entry);
   }
   return {normalize,rank,match,similar,aliasLabel};
 })();

@@ -1,8 +1,8 @@
 'use strict';
 (() => {
   const $ = selector => document.querySelector(selector), $$ = selector => [...document.querySelectorAll(selector)];
-  const data = JSON.parse($('#redesign-search-index').textContent);
   const search = $('#search-dialog'), drawer = $('#directory'), input = $('#search-input'), body = $('#search-body');
+  let data = null, indexRequest = null, indexFailed = false;
   const mobile = matchMedia('(max-width:760px)'), reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const escape = text => String(text).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   let announceTimer;
@@ -46,10 +46,10 @@
     scrollTo({top:savedScroll,behavior:'instant'});
   }
   function openSearch(query = '', trigger = document.activeElement) {
-    if (search.open) { input.value = query; renderSearch(); input.focus(); return; }
+    if (search.open) { input.value = query; loadSearchIndex(); renderSearch(); input.focus(); return; }
     if (drawer.open) { drawer.close(); returnFocus = $('#directory-toggle'); }
     else returnFocus = trigger;
-    stopAllCards(); closeMenu(); lock(); search.showModal(); input.value = query; renderSearch(); input.focus();
+    stopAllCards(); closeMenu(); lock(); search.showModal(); input.value = query; loadSearchIndex(); renderSearch(); input.focus();
   }
   search.addEventListener('close', () => { if (!drawer.open) unlock(); returnFocus?.focus({preventScroll:true}); });
   function openDrawer() { stopAllCards(); closeMenu(); lock(); drawer.showModal(); $('#directory-toggle').setAttribute('aria-expanded','true'); }
@@ -64,18 +64,50 @@
   drawer.querySelectorAll('a').forEach(link => link.addEventListener('click', () => drawer.close()));
 
   let selected = 0, results = [];
+  function loadSearchIndex() {
+    if (data || indexRequest) return;
+    indexFailed = false;
+    indexRequest = fetch(search.dataset.indexUrl)
+      .then(response => {
+        if (!response.ok) throw new Error('Search index unavailable');
+        return response.json();
+      })
+      .then(index => {
+        if (![index.entries,index.columns,index.examples].every(Array.isArray)) throw new Error('Invalid search index');
+        const localize = item => ({...item, href:search.dataset.siteRoot + item.href.slice(2)});
+        data = {...index, entries:index.entries.map(localize), columns:index.columns.map(localize)};
+      })
+      .catch(() => { indexFailed = true; })
+      .finally(() => { indexRequest = null; if (search.open) renderSearch(); });
+  }
   const queryButtons = () => data.examples.map(query => `<button class="chip" data-query="${escape(query)}">${escape(query)}</button>`).join('');
+  function thumbnail(entry) {
+    const kinds = ['basics','components','interactions','scenarios','ai'];
+    const kind = kinds.includes(entry.thumbnail) ? entry.thumbnail : 'fallback';
+    const content = kind === 'fallback' ? escape(entry.column.slice(0,1)) : '<i></i><i></i><i></i>';
+    return `<span class="result-thumb result-thumb-${kind}" aria-hidden="true">${content}</span>`;
+  }
   function renderSearch() {
     input.removeAttribute('aria-activedescendant');
     input.removeAttribute('aria-controls');
     input.setAttribute('aria-expanded', 'false');
-    const query = input.value.trim(); selected = 0; results = query ? VibeSearch.match(data.entries,query) : [];
+    selected = 0; results = [];
+    body.setAttribute('aria-busy',String(!data && !indexFailed));
+    if (!data) {
+      body.innerHTML = indexFailed
+        ? '<p role="status">搜索加载失败，请重试。</p><button data-search-retry>重试</button>'
+        : '<p role="status">正在加载…</p>';
+      return;
+    }
+    const query = input.value.trim(); results = query ? VibeSearch.match(data.entries,query) : [];
     if (!query) { body.innerHTML = `<h2 class="common-title">常用搜法</h2><div class="chips">${queryButtons()}</div>`; return; }
     if (!results.length) {
-      body.innerHTML = `<h2 class="empty-title">没有找到「${escape(query)}」</h2><div class="empty-grid"><section class="empty-block"><h3>相近的名称</h3>${VibeSearch.similar(data.entries,query).map(entry => `<a href="${escape(entry.href)}">${escape(entry.zh)} <span class="english">${escape(entry.en)}</span></a>`).join('')}</section><section class="empty-block"><h3>换个说法</h3><p>描述它怎么动或在哪里，比如「滑入」「弹出」「浮起来」。</p></section><section class="empty-block"><h3>按栏目找</h3>${data.columns.map(column => `<a href="${escape(column.href)}">${escape(column.name)}</a>`).join('')}</section></div>`;
+      const nearby = VibeSearch.similar(data.entries,query);
+      const similar = nearby.length ? `<section class="empty-block"><h3>相近的名称</h3>${nearby.map(entry => `<a href="${escape(entry.href)}">${escape(entry.zh)} <span class="english">${escape(entry.en)}</span></a>`).join('')}</section>` : '';
+      body.innerHTML = `<h2 class="empty-title">没有找到「${escape(query)}」</h2><div class="empty-grid">${similar}<section class="empty-block"><h3>换个说法</h3><p>描述它怎么动或在哪里，比如「滑入」「弹出」「浮起来」。</p></section><section class="empty-block"><h3>按栏目找</h3>${data.columns.map(column => `<a href="${escape(column.href)}">${escape(column.name)}</a>`).join('')}</section></div>`;
       announce(`没有找到「${query}」`); return;
     }
-    body.innerHTML = `<p class="result-count">找到 ${results.length} 条结果</p><div id="result-list" role="grid" aria-label="搜索结果">${results.map((row,index) => `<div class="result-row${index === 0 ? ' selected' : ''}" id="result-${index}" role="row" aria-selected="${index === 0}"><div class="result-info" role="gridcell"><span class="result-name">${escape(row.entry.zh)}</span><span class="english">${escape(row.entry.en)}</span>${row.alias ? `<p class="result-alias">${escape(VibeSearch.aliasLabel(row))}</p>` : ''}<p class="result-definition">${escape(row.entry.definition.split('\n')[0])}</p><p class="result-meta">${escape(row.entry.column)} · ${escape(row.entry.group)}</p></div><div class="result-actions" role="gridcell"><a href="${escape(row.entry.href)}" aria-label="打开${escape(row.entry.zh)}">打开</a><button class="copy-btn" data-copy-result="${row.index}" aria-label="复制${escape(row.entry.zh)}提示词">复制提示词</button></div></div>`).join('')}</div>`;
+    body.innerHTML = `<p class="result-count">找到 ${results.length} 条结果</p><div id="result-list" role="grid" aria-label="搜索结果">${results.map((row,index) => `<div class="result-row${index === 0 ? ' selected' : ''}" id="result-${index}" role="row" aria-selected="${index === 0}"><div class="result-visual" role="gridcell">${thumbnail(row.entry)}</div><div class="result-info" role="gridcell"><a class="result-name" href="${escape(row.entry.href)}">${escape(row.entry.zh)}</a><span class="english">${escape(row.entry.en)}</span>${row.alias ? `<p class="result-alias">${escape(VibeSearch.aliasLabel(row))}</p>` : ''}<p class="result-definition">${escape(row.entry.definition.split('\n')[0])}</p><p class="result-meta">${escape(row.entry.column)} · ${escape(row.entry.group)}</p></div><div class="result-actions" role="gridcell"><a href="${escape(row.entry.href)}" tabindex="-1" aria-label="打开${escape(row.entry.zh)}">打开</a><button class="copy-btn" data-copy-result="${row.index}" aria-label="复制${escape(row.entry.zh)}提示词">复制提示词</button></div></div>`).join('')}</div>`;
     input.setAttribute('aria-expanded','true');
     input.setAttribute('aria-controls','result-list');
     input.setAttribute('aria-activedescendant','result-0');
@@ -83,13 +115,20 @@
   }
   input.addEventListener('input',renderSearch);
   search.addEventListener('keydown', event => {
-    if (!results.length || event.isComposing) return;
+    if (event.isComposing) return;
+    if (event.key === 'Escape') { event.preventDefault(); search.close(); return; }
+    if (!results.length) return;
     if (['ArrowDown','ArrowUp'].includes(event.key) && event.target === input) {
       event.preventDefault(); selected = (selected + (event.key === 'ArrowDown' ? 1 : results.length - 1)) % results.length;
       $$('.result-row').forEach((row,index) => { row.classList.toggle('selected',index === selected); row.setAttribute('aria-selected',String(index === selected)); });
       input.setAttribute('aria-activedescendant','result-' + selected);
       $('#result-' + selected).scrollIntoView({block:'nearest'}); announce(`已选择 ${results[selected].entry.zh}，按 Enter 打开`);
     } else if (event.key === 'Enter' && event.target === input) { event.preventDefault(); location.assign(results[selected].entry.href); }
+  });
+
+  search.addEventListener('click', event => {
+    const button = event.target.closest('[data-copy-result]');
+    if (button) { event.stopPropagation(); copy(button,data.entries[Number(button.dataset.copyResult)].prompt); }
   });
 
   async function writeClipboard(text) {
@@ -124,7 +163,7 @@
     if (button.hasAttribute('data-query')) openSearch(button.dataset.query,button);
     if (button.matches('.spec-group .copy-prompt')) copy(button,button.previousElementSibling.textContent);
     if (button.hasAttribute('data-copy-source')) copy(button,document.getElementById(button.dataset.copySource).textContent);
-    if (button.hasAttribute('data-copy-result')) copy(button,data.entries[Number(button.dataset.copyResult)].prompt);
+    if (button.hasAttribute('data-search-retry')) { loadSearchIndex(); renderSearch(); }
     if (button.hasAttribute('data-copy-link')) copy(button,location.href.split('#')[0]);
     if (button.hasAttribute('data-show-acceptance')) { const details = $('#acceptance'); details.open = true; details.scrollIntoView({block:'start'}); details.querySelector('summary').focus(); }
   });

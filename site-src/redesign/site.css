@@ -55,3 +55,46 @@
 .entry-aliases { flex-basis: 100%; margin: 0; color: var(--secondary); overflow-wrap: anywhere; }
 
 .result-definition { margin: 4px 0; color: var(--secondary); font-size: 14px; overflow-wrap: anywhere; }
+
+/* Search rows share the gallery's stretched-link pattern. */
+.result-row{position:relative;cursor:pointer}
+.result-row:hover,.result-row:focus-within{background:var(--stage)}
+.result-name{color:var(--ink);overflow-wrap:anywhere}
+.result-name::after{content:'';position:absolute;inset:0;border-radius:8px}
+.result-name:focus-visible{outline:none}
+.result-name:focus-visible::after{outline:2px solid var(--blue);outline-offset:-2px}
+.result-actions{position:relative;z-index:2}
+.result-actions{pointer-events:none}
+.result-actions a,.result-actions button{pointer-events:auto}
+.result-visual{flex:none}
+.result-thumb{position:relative;display:flex;align-items:center;justify-content:center;width:56px;height:56px;overflow:hidden;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--secondary);pointer-events:none}
+.result-thumb i{position:absolute;display:block;border:1px solid var(--control);border-radius:3px;background:var(--white)}
+.result-thumb-basics i{width:14px;height:28px;top:13px;left:9px}
+.result-thumb-basics i:nth-child(2){left:29px;height:12px}
+.result-thumb-basics i:nth-child(3){left:29px;top:29px;height:12px}
+.result-thumb-components i{width:34px;height:10px;left:10px;top:10px}
+.result-thumb-components i:nth-child(2){top:24px}
+.result-thumb-components i:nth-child(3){top:38px;width:20px;background:var(--secondary)}
+.result-thumb-interactions i{width:26px;height:22px;left:8px;top:8px}
+.result-thumb-interactions i:nth-child(2){left:14px;top:16px}
+.result-thumb-interactions i:nth-child(3){left:20px;top:24px}
+.result-thumb-scenarios i{inset:9px;border-radius:2px}
+.result-thumb-scenarios i:nth-child(2){inset:16px 9px auto;height:1px;border:0;background:var(--control)}
+.result-thumb-scenarios i:nth-child(3){inset:22px 15px 15px}
+.result-thumb-ai i{width:30px;height:3px;left:12px;top:15px;border:0;background:var(--control)}
+.result-thumb-ai i:nth-child(2){top:25px}
+.result-thumb-ai i:nth-child(3){top:35px;width:18px}
+@media(max-width:760px){
+  .result-row{display:grid;grid-template-columns:56px minmax(0,1fr);align-items:start}
+  .result-info{width:auto}
+  .result-actions{grid-column:2;min-width:0}
+}
+@media(max-width:1023px), (hover:none), (pointer:coarse){.search-help{display:none}}
+
+/* Keep the primary action above an independently scrolling acceptance list. */
+@media(min-width:1024px){
+  .use-card{display:flex;flex-direction:column;max-height:calc(100dvh - var(--nav-height) - 32px)}
+  .use-card>h2,.use-card>.btn-primary,.use-card>.use-actions,.use-card>.bench-badge{flex-shrink:0}
+  .use-card .criteria[open]{min-height:0;overflow:auto;overscroll-behavior:contain}
+  .use-card .criteria summary{position:sticky;top:0;background:var(--white);z-index:1}
+}

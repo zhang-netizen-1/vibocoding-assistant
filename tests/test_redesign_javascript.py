@@ -51,7 +51,8 @@ assert.equal(search.match(entries,'霓虹灯').length,0);
 assert.equal(search.match(entries,'提交反馈状态链')[0].entry.slug,'submit');
 assert.equal(search.match(entries,'删除退出与撤销')[0].entry.slug,'undo');
 assert.equal(search.match(entries,'').length,0);
-assert.equal(search.similar(entries,'霓虹灯').length,3);
+assert.deepEqual(search.similar(entries,'霓虹灯'),[]);
+assert.equal(search.similar(entries,'交叉淡华')[0].zh,'交叉淡化');
 const sample = [
  {zh:'q',en:'Other',terms:'',definition:''},
  {zh:'其他',en:'Q',terms:'',definition:''},
@@ -92,8 +93,7 @@ console.log('Search matching and ranking passed');
         self.assertIn('aria-selected="${index === 0}"',script)
         home=(ROOT/'dist/index.html').read_text()
         self.assertIn('role="combobox"',home)
-        import re
-        data=json.loads(re.search(r'id="redesign-search-index">(.*?)</script>',home,re.S)[1])
+        data=json.loads((ROOT/'dist/assets/search-index.json').read_text())
         original=json.loads((ROOT/'build/entries.json').read_text())
         for row in data['entries']:
             entry = next(e for e in original if e['zh'] == row['zh'] and e['en'] == row['en'])
@@ -200,8 +200,7 @@ for (const count of [0,1,2]) {
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const search = require('./dist/assets/redesign/search.js');
-const html = fs.readFileSync('dist/index.html','utf8');
-const entries = JSON.parse(html.match(/id="redesign-search-index">(.*?)<\/script>/s)[1]).entries;
+const entries = JSON.parse(fs.readFileSync('dist/assets/search-index.json','utf8')).entries;
 for (const [query,keys] of [
  ['开关按钮',['components/switch']],
  ['侧边滑出来的面板',['components/drawer','interactions/overlay-drawer']],
@@ -253,8 +252,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const search = require('./site-src/redesign/search.js');
 const entries = JSON.parse(fs.readFileSync('build/entries.json','utf8'));
-const html = fs.readFileSync('dist/index.html','utf8');
-const index = JSON.parse(html.match(/id="redesign-search-index">(.*?)<\/script>/s)[1]).entries;
+const index = JSON.parse(fs.readFileSync('dist/assets/search-index.json','utf8')).entries;
 for (const [query,slug] of [['浮起来','component-lift'],['弹出来的小黑框','tooltip'],['点了会变的按钮','button']]) {
  const expected = entries.find(entry=>entry.slug === slug);
  const result = search.match(index,query);
