@@ -11,14 +11,14 @@ SPEC.loader.exec_module(AUDIT)
 class DemoAuditTest(unittest.TestCase):
     def test_all_entries_have_evidence_and_migration_strategy(self):
         rows = AUDIT.audit()
-        self.assertEqual(len(rows), 187)
+        self.assertEqual(len(rows), 192)
         for e, category, evidence in rows:
             self.assertIn(category, ('纯 CSS 动画', '需要 JS 驱动', '依赖鼠标指针', '静态演示', '原生交互', 'CSS 滚动布局'))
             self.assertTrue(evidence)
         report = AUDIT.report()
         self.assertEqual((ROOT / 'docs/phase1-demo-audit.md').read_text(), report)
         self.assertNotIn('需人工确认', report)
-        self.assertEqual(sum(line.startswith('| ') for line in report.splitlines()), 188)
+        self.assertEqual(sum(line.startswith('| ') for line in report.splitlines()), len(rows) + 1)
         by_anchor = {a: category for e, category, _ in rows for a in e['old_anchors']}
         self.assertEqual(by_anchor['e-component-tilt'], '依赖鼠标指针')
         self.assertEqual(by_anchor['c-split-button'], '需要 JS 驱动')

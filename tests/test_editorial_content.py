@@ -1,0 +1,300 @@
+"""Editorial overlay validation, without touching original source content."""
+import copy
+from collections import Counter
+import re
+import importlib.util
+from pathlib import Path
+import unittest
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent/'site-src'))
+
+ROOT = Path(__file__).resolve().parent.parent
+SPEC = importlib.util.spec_from_file_location('editorial_entries', ROOT/'site-src/entries.py')
+MODULE = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(MODULE)
+
+
+def sample():
+    return dict(aliases=['轻点执行', '执行控件', '主操作入口'], when_use='提交、保存时使用。',
+                when_avoid='页面跳转使用链接。', prompt_edit='找到按钮后统一修改。',
+                prompt_new='实现按钮。', acceptance=['焦点环对比度至少 3:1。', '状态切换时尺寸不变。', '加载期间不重复提交。'], reviewed=False)
+
+
+class EditorialTest(unittest.TestCase):
+    def setUp(self):
+        self.entries = MODULE.load_entries(content={}, strict=False)
+        self.key = 'components/button'
+
+    def test_empty_overlay_is_lossless(self):
+        self.assertEqual(MODULE.apply_content(self.entries, {}, strict=False), self.entries)
+
+    def test_overlay_preserves_source_prompt_and_uses_editorial_acceptance(self):
+        original = copy.deepcopy(self.entries)
+        edited = MODULE.apply_content(original, {self.key: sample()}, strict=False)
+        button = next(e for e in edited if e['column'] == 'components' and e['slug'] == 'button')
+        self.assertEqual(button['prompt'], sample()['prompt_edit'])
+        self.assertEqual(button['acceptance'], sample()['acceptance'])
+        self.assertEqual(button['prompt_original'], next(e for e in original if e['column'] == 'components' and e['slug'] == 'button')['prompt'])
+        self.assertNotIn('prompt_original', original[0])
+
+    def test_invalid_editorial_fields_are_rejected(self):
+        mutations = [dict(aliases=['a', 'b']), dict(aliases=['a', 'a', 'b']),
+                     dict(aliases=['按钮', 'b', 'c']), dict(aliases=['Button', 'b', 'c']),
+                     dict(acceptance=['一条']), dict(acceptance=['好看', '两条', '三条']),
+                     dict(prompt_edit=' '), dict(prompt_new=''), dict(when_use=''),
+                     dict(when_avoid=''), dict(reviewed=None), dict(aliases='abc')]
+        for mutation in mutations:
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                MODULE.apply_content(self.entries, {self.key: {**sample(), **mutation}}, strict=False)
+
+    def test_alias_conflict_reports_both_entries_and_strict_requires_all(self):
+        with self.assertRaisesRegex(ValueError, 'components/button.*components/input'):
+            MODULE.apply_content(self.entries, {self.key: sample(), 'components/input': sample()}, strict=False)
+        with self.assertRaisesRegex(ValueError, '192'):
+            MODULE.apply_content(self.entries, {}, strict=True)
+        with self.assertRaisesRegex(ValueError, 'unknown'):
+            MODULE.apply_content(self.entries, {'components/unknown': sample()}, strict=False)
+
+
+class EditorialPageTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        spec = importlib.util.spec_from_file_location('editorial_templates', ROOT/'site-src/redesign/templates.py')
+        cls.templates = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.templates)
+        cls.raw = MODULE.load_entries(content={}, strict=False)
+        cls.tax = MODULE.taxonomy()
+
+    def edited(self, key='components/button'):
+        fields = sample()
+        fields['params'] = ['点击区域：24×24px 起，手机 44×44px，便于点选。']
+        return MODULE.apply_content(self.raw, {key: fields}, strict=False)
+
+    def test_both_payloads_include_numbered_acceptance_and_validation(self):
+        for key in ('components/button', 'interactions/submit', 'interactions/undo'):
+            edited = self.edited(key)
+            entry = next(e for e in edited if e['column']+'/'+e['slug'] == key)
+            for version in ('prompt_edit', 'prompt_new'):
+                expected = entry[version] + '\n\n验收要求：\n' + '\n'.join(f'{i}. {text}' for i,text in enumerate(entry['acceptance'], 1)) + '\n\n完成后列出改了哪些文件，并说明以上 3 条各自是怎么验证的。'
+                self.assertEqual(self.templates.copy_payload(entry, version), expected)
+                self.assertNotIn(entry.get('prompt_secondary', 'UNUSED'), expected)
+
+    def test_editorial_page_controls_and_collapsed_criteria(self):
+        from html import unescape
+        import re
+        edited = self.edited()
+        entry = next(e for e in edited if e['column'] == 'components' and e['slug'] == 'button')
+        html = self.templates.detail(entry, edited, self.tax)
+        self.assertIn('也叫：轻点执行、执行控件、主操作入口', html)
+        self.assertIn('关键参数', html)
+        self.assertIn('共 3 条验收要求，见使用卡；复制提示词时自动包含', html)
+        self.assertIn('复制这一版', html)
+        prompt_sections = MODULE.Document(html).root.find_all('section', 'prompt-box')
+        self.assertTrue(any(section.find_all('details', 'new-section') for section in prompt_sections))
+        self.assertIn('data-copy-source="copy-new-prompt"', html)
+        self.assertNotIn('open', re.search(r'<details class="criteria"[^>]*>', html)[0])
+        self.assertNotIn('open', re.search(r'<details class="entry-section new-section"[^>]*>', html)[0])
+        payload = re.search(r'id="copy-new-prompt" hidden>(.*?)</pre>', html, re.S)[1]
+        self.assertEqual(unescape(payload), self.templates.copy_payload(entry, 'prompt_new'))
+        self.assertIn('<div class="bottom-bar"><button data-show-acceptance>验收要求</button>', html)
+        self.assertEqual(html.count('复制这条'), 3)
+
+    def test_unedited_entry_keeps_original_optional_sections(self):
+        entry = next(e for e in self.raw if e['column'] == 'components' and e['slug'] == 'input')
+        html = self.templates.detail(entry, self.raw, self.tax)
+        self.assertNotIn('copy-new-prompt', html)
+        self.assertNotIn('见使用卡', html)
+        self.assertNotIn('entry-aliases', html)
+        self.assertEqual(self.templates.copy_payload(entry), entry['prompt'])
+
+
+class SampleContentTest(unittest.TestCase):
+    def test_ten_samples_are_complete_and_unreviewed(self):
+        keys = ('components/button','components/input','components/tooltip','components/modal',
+                'interactions/component-lift','interactions/view-crossfade','interactions/submit',
+                'basics/grid','scenarios/settings','ai/webapp-testing')
+        content = MODULE.load_content()
+        for key in keys:
+            self.assertIn(key, content)
+            self.assertIs(content[key]['reviewed'], False)
+            for field in ('prompt_edit', 'prompt_new'):
+                self.assertNotIn('验收要求', content[key][field])
+                self.assertNotIn('边界与验收', content[key][field])
+        MODULE.apply_content(MODULE.load_entries(content={}, strict=False), {key: content[key] for key in keys}, strict=False)
+
+    def test_benchmark_criteria_and_original_skill_install_prompt(self):
+        import json
+        content = MODULE.load_content()
+        narrative = json.loads((ROOT/'site-src/bench/data/narrative.json').read_text())
+        for name,column,slug in (('button','components','button'),('grid','basics','grid')):
+            criteria = content[column+'/'+slug]['acceptance']
+            for fix in narrative['entries'][name]['fixes']:
+                self.assertIn(fix['sentence'], criteria)
+        self.assertEqual(len(content['components/button']['acceptance']),5)
+        skill = next(e for e in MODULE.load_entries(content={}, strict=False) if e['slug'] == 'webapp-testing')
+        self.assertEqual(content['ai/webapp-testing']['prompt_new'], skill['prompt'])
+        crossfade = ' '.join(content['interactions/view-crossfade']['acceptance'])
+        for term in ('400ms','平滑曲线','分段直线','叠影','冻结'):
+            self.assertIn(term, crossfade)
+
+
+class ComponentsContentTest(unittest.TestCase):
+    def test_all_75_components_have_reviewable_content(self):
+        entries = MODULE.load_entries()
+        content = MODULE.load_content()
+        components = [e for e in entries if e['column'] == 'components']
+        self.assertEqual(len([key for key in content if key.startswith('components/')]),75)
+        for entry in components:
+            with self.subTest(slug=entry['slug']):
+                self.assertIs(entry['reviewed'], False)
+                self.assertTrue(entry['prompt_edit'].startswith('在当前项目中找到所有') or entry['prompt_edit'].startswith('先在当前项目中找到所有'))
+                for field in ('prompt_edit','prompt_new'):
+                    self.assertNotIn('验收', entry[field])
+                for criterion in entry['acceptance']:
+                    self.assertNotRegex(criterion, '好看|流畅|合适|自然|友好|美观')
+                if entry.get('params'):
+                    self.assertTrue(2 <= len(entry['params']) <= 4)
+        MODULE.apply_content(MODULE.load_entries(content={}, strict=False), content)
+
+
+class InteractionsContentTest(unittest.TestCase):
+    def test_all_84_interactions_have_complete_content(self):
+        content = MODULE.load_content()
+        raw = MODULE.load_entries(content={}, strict=False)
+        interactions = [entry for entry in raw if entry['column'] == 'interactions']
+        self.assertEqual(len(interactions), 84)
+        self.assertEqual(sum(key.startswith('interactions/') for key in content), 84)
+        for entry in interactions:
+            key = 'interactions/' + entry['slug']
+            with self.subTest(key=key):
+                fields = content[key]
+                self.assertIs(fields['reviewed'], False)
+                for field in ('prompt_edit', 'prompt_new'):
+                    self.assertNotIn('验收', fields[field])
+                self.assertTrue(2 <= len(fields.get('params', [])) <= 4)
+        MODULE.apply_content(raw, content)
+
+    def test_motion_content_has_timing_and_specific_reduced_motion_alternative(self):
+        content = MODULE.load_content()
+        for entry in MODULE.load_entries(content={}, strict=False):
+            if entry['column'] != 'interactions' or entry['demo']['kind'] != 'motion':
+                continue
+            with self.subTest(slug=entry['slug']):
+                criteria = content['interactions/' + entry['slug']]['acceptance']
+                self.assertTrue(any('ms' in text and '平滑曲线' in text
+                                    and '不用分段直线拼接' in text for text in criteria))
+                reduced = [text for text in criteria if 'prefers-reduced-motion' in text]
+                self.assertEqual(len(reduced), 1)
+                self.assertNotIn('直接显示目标状态', reduced[0])
+                self.assertNotIn('跟手部分', ' '.join(criteria))
+
+    def test_interactions_and_ai_have_three_globally_unique_sentences(self):
+        content = MODULE.load_content()
+        def sentences(fields):
+            return [sentence.strip() for text in fields['acceptance']
+                    for sentence in re.split(r'[。！？]+', text) if sentence.strip()]
+        counts = Counter(sentence for fields in content.values() for sentence in sentences(fields))
+        for key, fields in content.items():
+            if key.split('/')[0] not in ('interactions', 'ai'):
+                continue
+            with self.subTest(key=key):
+                self.assertTrue(4 <= len(fields['acceptance']) <= 6)
+                unique = {sentence for sentence in sentences(fields) if counts[sentence] == 1}
+                self.assertGreaterEqual(len(unique), 3, f'{key}: only {len(unique)} unique sentences')
+                if key.startswith('interactions/'):
+                    # Exclude timing/easing and reduced-motion boilerplate even when uniquely worded.
+                    specific = [text for text in fields['acceptance']
+                                if 'prefers-reduced-motion' not in text and '平滑曲线' not in text]
+                    self.assertGreaterEqual(sum(counts[sentence] == 1
+                                                for sentence in sentences({'acceptance': specific})), 3)
+                if key.startswith('ai/'):
+                    # An installation sentence containing a skill name is not a usage result.
+                    results = [text for text in fields['acceptance'] if not text.startswith('安装完成后')]
+                    result_sentences = sentences({'acceptance': results})
+                    self.assertGreaterEqual(sum(counts[sentence] == 1 for sentence in result_sentences), 3)
+
+    def test_no_acceptance_sentence_occurs_more_than_ten_times_sitewide(self):
+        counts = Counter(sentence.strip() for fields in MODULE.load_content().values()
+                         for text in fields['acceptance'] for sentence in re.split(r'[。！？]+', text)
+                         if sentence.strip())
+        self.assertEqual({text: count for text, count in counts.items() if count > 10}, {})
+
+
+class StrictContentTest(unittest.TestCase):
+    def test_strict_mode_is_enabled_by_default(self):
+        self.assertIs(MODULE.STRICT_CONTENT, True)
+        entries = MODULE.load_entries()
+        self.assertEqual(len(entries), 192)
+        content = MODULE.load_content()
+        self.assertEqual(len(content), 192)
+        for entry in entries:
+            fields = content[entry['column'] + '/' + entry['slug']]
+            for field in ('aliases', 'when_use', 'when_avoid', 'params', 'prompt_edit', 'prompt_new', 'acceptance', 'reviewed'):
+                self.assertIn(field, fields)
+            for field in ('prompt_edit', 'prompt_new'):
+                self.assertNotIn('验收', fields[field])
+            self.assertIs(fields['reviewed'], False)
+
+    def test_every_missing_field_and_missing_entry_is_rejected(self):
+        raw = MODULE.load_entries(content={}, strict=False)
+        content = MODULE.load_content()
+        for field in ('aliases', 'when_use', 'when_avoid', 'params', 'prompt_edit', 'prompt_new', 'acceptance', 'reviewed'):
+            edited = copy.deepcopy(content)
+            del edited['components/button'][field]
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, 'components/button.*' + field):
+                MODULE.apply_content(raw, edited)
+        del content['components/button']
+        with self.assertRaisesRegex(ValueError, '192.*components/button'):
+            MODULE.apply_content(raw, content)
+
+    def test_build_entry_point_fails_for_incomplete_content(self):
+        import subprocess
+        code = '''import runpy
+build = runpy.run_path('scripts/build_site.py')
+adapter = build['ENTRY_ADAPTER']
+content = adapter.load_content()
+del content['components/button']['prompt_new']
+adapter.load_content = lambda: content
+build['build']()
+'''
+        result = subprocess.run([sys.executable, '-c', code], cwd=ROOT, text=True, capture_output=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('components/button: prompt_new', result.stderr)
+
+    def test_all_skill_install_prompts_are_preserved(self):
+        content = MODULE.load_content()
+        raw = MODULE.load_entries(content={}, strict=False)
+        skills = [entry for entry in raw if entry['column'] == 'ai']
+        self.assertEqual(len(skills), 10)
+        for entry in skills:
+            with self.subTest(slug=entry['slug']):
+                self.assertEqual(content['ai/' + entry['slug']]['prompt_new'], entry['prompt'])
+                self.assertIn('当前项目', content['ai/' + entry['slug']]['prompt_edit'])
+
+    def test_layout_and_page_criteria_keep_source_checkpoints(self):
+        content = MODULE.load_content()
+        raw = MODULE.load_entries(content={}, strict=False)
+        for entry in raw:
+            if entry['column'] not in ('basics', 'scenarios'):
+                continue
+            with self.subTest(slug=entry['slug']):
+                criteria = ' '.join(content[entry['column'] + '/' + entry['slug']]['acceptance'])
+                if entry['group'] != 'tokens':
+                    self.assertIn('390px', criteria)
+                if not (entry['column'] == 'basics' and entry['slug'] == 'grid'):
+                    for checkpoint in entry['acceptance']:
+                        expected = checkpoint.replace('自然形状', '有机形状')
+                        self.assertIn(expected, criteria)
+                if entry['column'] == 'basics' and entry['group'] == 'visual':
+                    self.assertIn('4.5:1', criteria)
+                    self.assertRegex(criteria, r'14px|16px')
+
+    def test_strict_params_allow_empty_and_reject_one_or_five(self):
+        raw = MODULE.load_entries(content={}, strict=False)
+        content = MODULE.load_content()
+        content['components/button']['params'] = []
+        MODULE.apply_content(raw, content)
+        for params in (['仅一项'], ['参数'] * 5):
+            content['components/button']['params'] = params
+            with self.subTest(params=params), self.assertRaisesRegex(ValueError, 'components/button.*params'):
+                MODULE.apply_content(raw, content)

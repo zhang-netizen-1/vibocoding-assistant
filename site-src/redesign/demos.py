@@ -13,7 +13,7 @@ import re
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-KINDS = ('ui', 'motion', 'guide', 'skill-reference')
+KINDS = ('ui', 'motion', 'guide', 'skill-reference', 'token')
 
 
 def _styles(source):
@@ -203,7 +203,7 @@ def _classification():
     spec = importlib.util.spec_from_file_location('demo_source_audit', ROOT / 'scripts/audit_demos.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return {entry['old_anchors'][0]:category for entry,category,_ in module.audit()}
+    return {entry['id']:category for entry,category,_ in module.audit()}
 
 
 def _source_anchor(demo):
@@ -213,6 +213,8 @@ def _source_anchor(demo):
         return _ui_inventory()[0].get(demo['html'], '')
     if demo['kind'] == 'guide':
         return 'g-' + demo['section'] + '-' + demo['key']
+    if demo['kind'] == 'token':
+        return 't-' + demo['key']
     return ''
 
 
@@ -245,6 +247,8 @@ def markup(demo, prefix, interactive=False):
         if interactive:
             # These are preview controls, not new entry copy.
             content += '<div class="demo-controls"><button type="button" data-guide-mode="0">初始状态</button><button type="button" data-guide-mode="1">切换状态</button></div>'
+    elif kind == 'token':
+        cls = 'site-tokens'
     else:
         cls = 'site-skills'
         tree = Document(content).root
@@ -281,6 +285,8 @@ def _assets():
         'demo-ui.css': css(ui), 'demo-motion.css': css(motion),
         'demo-guide.css': css('<style>' + (ROOT / 'site-src/guides.css').read_text() + (ROOT / 'site-src/visual-styles.css').read_text() + '</style>'),
         'demo-skill-reference.css': css('<style>' + (ROOT / 'site-src/skills.css').read_text() + '</style>'),
+        'demo-token.js': (HERE / 'token-demo.js').read_text(),
+        'demo-token.css': SHADOW_BASE + (HERE / 'token-demo.css').read_text(),
         'demos.css': '.demo-scope{display:block;position:relative;min-width:0;width:100%;isolation:isolate}.demo-secondary{margin-top:16px}.demo-scope>template{display:none}\n',
     }
     for page in ('motion-demo-gallery', 'motion-demo-detail'):
@@ -294,12 +300,12 @@ def smoke_fixture(entries):
     """Serializable real-source DOMs for demo-smoke.cjs initialization checks."""
     from entries import Document
     def node_data(node):
-        return dict(tag=node.tag, attrs=node.attrs, children=[node_data(child) for child in node.children if hasattr(child, 'tag')])
+        return dict(tag=node.tag, attrs={key:('' if value is None else value) for key,value in node.attrs.items()}, children=[node_data(child) for child in node.children if hasattr(child, 'tag')])
     rows = []
     for entry in entries:
         demos = [entry['demo']] + ([entry['demo']['secondary']] if entry['demo'].get('secondary') else [])
         for demo in demos:
             source = Document(markup({k:v for k,v in demo.items() if k != 'secondary'}, './', True)).root
             article = source.one('article')
-            rows.append(dict(kind=demo['kind'],section=demo.get('section',''),anchor=_source_anchor(demo) or entry['old_anchors'][0],node=node_data(article)))
+            rows.append(dict(kind=demo['kind'],section=demo.get('section',''),anchor=_source_anchor(demo) or entry['id'],node=node_data(article)))
     return dict(demos=rows, sources={kind:_assets()[f'demo-{kind}.js'] for kind in KINDS})

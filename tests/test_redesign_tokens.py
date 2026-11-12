@@ -31,7 +31,12 @@ class RedesignTokensTest(unittest.TestCase):
     def test_light_only_and_separate_demo_colors(self):
         for path in REDESIGN.glob('*.css'):
             css = path.read_text()
-            self.assertNotRegex(css.lower(), r'dark|@import|https?://|@font-face')
+            self.assertNotRegex(css.lower(), r'@import|https?://|@font-face')
+            if path.name == 'token-demo.css':
+                self.assertIn('.theme-sample[data-theme=dark]', css)
+                self.assertNotRegex(css, r':root|prefers-color-scheme|body\[')
+            else:
+                self.assertNotIn('dark', css.lower())
             if 'demo' in path.name:
                 self.assertNotIn('#1d4ed8', css.lower())
         tokens = (REDESIGN / 'tokens.css').read_text()

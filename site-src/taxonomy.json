@@ -4,13 +4,13 @@
       "slug": "basics",
       "name": "设计基础",
       "order": 1,
-      "expected": 12,
+      "expected": 17,
       "groups": [
         {
           "slug": "tokens",
           "name": "基础令牌",
           "order": 1,
-          "expected": 0
+          "expected": 5
         },
         {
           "slug": "visual",

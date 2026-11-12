@@ -29,6 +29,8 @@ def assets():
 
 def automatic_classify(demo, sources):
     kind = demo['kind']
+    if kind == 'token':
+        return '需要 JS 驱动', 'token-demo.js 通过局部输入事件更新色值、字号、间距、圆角阴影或演示主题'
     if kind == 'skill-reference':
         return '需人工确认', '来源是技能说明卡，没有独立交互演示，不推断为动画'
     css, js = sources[kind]
@@ -270,7 +272,9 @@ def classify(demo, sources, anchor=None):
 
 
 def implementation_plan(entry, category):
-    decision = REVIEWED.get(entry['old_anchors'][0])
+    if entry['demo']['kind'] == 'token':
+        return ('保留初始示例，列表退出后复位', '当前演示局部输入更新，预览切到对照档', '原生颜色或下拉控件可点按和键盘操作；减弱动态取消过渡')
+    decision = REVIEWED.get(entry['id'])
     if decision:
         return decision[2:]
     if category == '纯 CSS 动画':
@@ -293,7 +297,7 @@ def audit():
     sources = assets()
     rows = []
     for entry in entries:
-        category, evidence = classify(entry['demo'], sources, entry['old_anchors'][0])
+        category, evidence = classify(entry['demo'], sources, entry['id'])
         if 'secondary' in entry['demo']:
             second, why = classify(entry['demo']['secondary'], sources)
             evidence += '；第二演示：' + second + '（' + why + '）'
@@ -302,7 +306,7 @@ def audit():
             elif second == '需要 JS 驱动':
                 category = second
         rows.append((entry, category, evidence))
-    covered = {e['old_anchors'][0] for e, _, _ in rows}
+    covered = {e['id'] for e, _, _ in rows}
     if not ORIGINAL_REVIEW_ANCHORS <= covered:
         raise ValueError('Reviewed source anchors disappeared')
     if any(category == '需人工确认' for _, category, _ in rows):

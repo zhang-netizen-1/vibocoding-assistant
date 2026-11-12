@@ -1,0 +1,242 @@
+[
+  {
+    "query": "按钮",
+    "expected": "components/button"
+  },
+  {
+    "query": "Button",
+    "expected": "components/button"
+  },
+  {
+    "query": "浮起来",
+    "expected": "interactions/component-lift"
+  },
+  {
+    "query": "小黑框",
+    "expected": "components/tooltip"
+  },
+  {
+    "query": "弹窗",
+    "expected": "components/modal"
+  },
+  {
+    "query": "Toggle",
+    "expected": "components/switch"
+  },
+  {
+    "query": "水波纹",
+    "expected": "interactions/component-ripple"
+  },
+  {
+    "query": "加载占位",
+    "expected": "components/skeleton"
+  },
+  {
+    "query": "淡入淡出",
+    "expected": "interactions/view-crossfade"
+  },
+  {
+    "query": "提交中",
+    "expected": "interactions/submit"
+  },
+  {
+    "query": "鼠标放上去浮起来",
+    "expected": "interactions/component-lift"
+  },
+  {
+    "query": "弹出来的小黑框",
+    "expected": "components/tooltip"
+  },
+  {
+    "query": "Crossfade",
+    "expected": "interactions/view-crossfade"
+  },
+  {
+    "query": "点了会变的按钮",
+    "expected": "components/button"
+  },
+  {
+    "query": "输入东西的框",
+    "expected": "components/input"
+  },
+  {
+    "query": "多行文本",
+    "expected": "components/textarea"
+  },
+  {
+    "query": "面包屑",
+    "expected": "components/breadcrumb"
+  },
+  {
+    "query": "右键出来的菜单",
+    "expected": "components/context-menu"
+  },
+  {
+    "query": "键盘搜功能",
+    "expected": "components/cmdk"
+  },
+  {
+    "query": "能拖文件上传的区域",
+    "expected": "components/upload"
+  },
+  {
+    "query": "一直往下加载",
+    "expected": "components/infinite-scroll"
+  },
+  {
+    "query": "密码能不能用",
+    "expected": "components/password-strength"
+  },
+  {
+    "query": "卡片一列变多列",
+    "expected": "basics/grid"
+  },
+  {
+    "query": "左边导航右边内容",
+    "expected": "basics/sidebar"
+  },
+  {
+    "query": "左右两栏",
+    "expected": "basics/split"
+  },
+  {
+    "query": "根据容器宽度调整",
+    "expected": "basics/container"
+  },
+  {
+    "query": "列表紧凑一点",
+    "expected": "basics/density"
+  },
+  {
+    "query": "标题吸在顶部",
+    "expected": "basics/sticky"
+  },
+  {
+    "query": "毛玻璃",
+    "expected": "basics/glass"
+  },
+  {
+    "query": "硬边框大阴影",
+    "expected": "basics/brutalist"
+  },
+  {
+    "query": "产品介绍页",
+    "expected": "scenarios/landing"
+  },
+  {
+    "query": "看数据的总览页",
+    "expected": "scenarios/dashboard"
+  },
+  {
+    "query": "搜索结果页面",
+    "expected": "scenarios/list"
+  },
+  {
+    "query": "商品详情页",
+    "expected": "scenarios/detail"
+  },
+  {
+    "query": "账户设置页面",
+    "expected": "scenarios/settings"
+  },
+  {
+    "query": "分几步填表",
+    "expected": "scenarios/wizard"
+  },
+  {
+    "query": "seTTings Page",
+    "expected": "scenarios/settings"
+  },
+  {
+    "query": "网页视觉设计技能",
+    "expected": "ai/frontend-design"
+  },
+  {
+    "query": "搜配色和字体",
+    "expected": "ai/ui-ux-pro-max"
+  },
+  {
+    "query": "提取项目设计规范",
+    "expected": "ai/create-design-md"
+  },
+  {
+    "query": "检查键盘能不能操作",
+    "expected": "ai/fixing-accessibility"
+  },
+  {
+    "query": "动画卡顿怎么查",
+    "expected": "ai/fixing-motion-performance"
+  },
+  {
+    "query": "pLAyWright验收",
+    "expected": "ai/webapp-testing"
+  },
+  {
+    "query": "输入完自己保存",
+    "expected": "interactions/auto-save"
+  },
+  {
+    "query": "删除后反悔",
+    "expected": "interactions/undo"
+  },
+  {
+    "query": "输入错了马上提示",
+    "expected": "interactions/validation"
+  },
+  {
+    "query": "一起选好多条",
+    "expected": "interactions/bulk"
+  },
+  {
+    "query": "按下去弹回来",
+    "expected": "interactions/component-press"
+  },
+  {
+    "query": "往下滚才出现",
+    "expected": "interactions/scroll-reveal"
+  },
+  {
+    "query": "数字从零往上跳",
+    "expected": "interactions/data-count"
+  },
+  {
+    "query": "配色",
+    "expected": "basics/color"
+  },
+  {
+    "query": "对比度",
+    "expected": "basics/color"
+  },
+  {
+    "query": "字号",
+    "expected": "basics/typography"
+  },
+  {
+    "query": "行高",
+    "expected": "basics/typography"
+  },
+  {
+    "query": "留白",
+    "expected": "basics/spacing"
+  },
+  {
+    "query": "间距规范",
+    "expected": "basics/spacing"
+  },
+  {
+    "query": "投影",
+    "expected": "basics/radius-shadow"
+  },
+  {
+    "query": "阴影",
+    "expected": "basics/radius-shadow"
+  },
+  {
+    "query": "暗黑模式",
+    "expected": "basics/dark-mode"
+  },
+  {
+    "query": "夜间模式",
+    "expected": "basics/dark-mode"
+  }
+]

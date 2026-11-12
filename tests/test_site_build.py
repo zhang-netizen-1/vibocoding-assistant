@@ -73,7 +73,7 @@ class SiteBuildTest(unittest.TestCase):
         spec.loader.exec_module(builder)
         entries = json.loads((ROOT / "build/entries.json").read_text())
         self.assertEqual(files, builder.expected_build_files(entries))
-        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 7 + len(entries))
+        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 8 + len(entries))
 
     def test_bench_pages_navigation_badges_and_local_references(self):
         paths = [DIST / "bench" / "index.html", *(DIST / "bench" / slug / "index.html" for slug in ("button", "crossfade", "grid"))]
@@ -214,7 +214,7 @@ class SiteBuildTest(unittest.TestCase):
         self.assertEqual(len(entries), len(unified))
         self.assertEqual(len({entry["href"] for entry in entries}), len(unified))
         counts = {category: sum(entry["column"] == category for entry in entries) for category in {entry["column"] for entry in entries}}
-        self.assertEqual(counts, {"设计基础": 12, "组件": 75, "交互与动效": 84, "页面与场景": 6, "AI 实现": 10})
+        self.assertEqual(counts, {"设计基础": 17, "组件": 75, "交互与动效": 84, "页面与场景": 6, "AI 实现": 10})
         for entry in entries:
             url = urlsplit(entry["href"])
             target = DIST / unquote(url.path)
@@ -224,7 +224,11 @@ class SiteBuildTest(unittest.TestCase):
             if url.fragment:
                 self.assertIn(url.fragment, parse(target).ids, entry["href"])
             self.assertTrue(entry["zh"])
-        self.assertEqual([e["prompt"] for e in entries], [e["prompt"] + ("\n\n" + e["prompt_secondary"] if e.get("prompt_secondary") else "") for e in unified])
+        for row in entries:
+            target = DIST / unquote(urlsplit(row['href']).path) / 'index.html'
+            payload = re.search(r'<pre class="sr" id="copy-prompt" hidden>(.*?)</pre>', target.read_text(), re.S)
+            self.assertEqual(row['prompt'], unescape(payload[1]))
+        self.assertEqual(list(dict.fromkeys(e['column'] for e in entries)), ['设计基础','组件','交互与动效','页面与场景','AI 实现'])
 
     def test_redesign_all_entries_and_local_routes(self):
         spec = importlib.util.spec_from_file_location('templates_test', ROOT/'site-src/redesign/templates.py')
@@ -267,7 +271,8 @@ class SiteBuildTest(unittest.TestCase):
                 self.assertIn(criterion,unescape(payload[1]))
             self.assertEqual('id="acceptance"' in page,bool(entry['acceptance']))
             if entry.get('prompt_secondary'):
-                self.assertIn(escape(entry['prompt_secondary']),page)
+                if not entry.get('prompt_edit'):
+                    self.assertIn(escape(entry['prompt_secondary']),page)
                 self.assertEqual(page.count(' data-interactive'),2)
 
     def test_all_column_galleries_and_source_markup(self):
@@ -282,7 +287,7 @@ class SiteBuildTest(unittest.TestCase):
             self.assertEqual(len(cards),column['expected'])
             self.assertEqual(doc.find_all('article','simple-card'),[])
             self.assertEqual(doc.find_all(cls='prompt-text'),[])
-            self.assertNotIn('提示词写法',html)
+            self.assertIn('提示词写法', html)
             for group in column['groups']:
                 self.assertIn('id="group-'+group['slug']+'"',html)
         command_page=parse(DIST/'components/cmdk/index.html')
@@ -297,7 +302,7 @@ class SiteBuildTest(unittest.TestCase):
             points=doc.find_all(cls='entry-points')
             self.assertEqual([n.text() for n in points[0].find_all('li')] if points else [],entry['definition'].splitlines()[1:])
             index=json.loads(next(n for n in doc.find_all('script') if n.attrs.get('id')=='redesign-search-index').text())
-            self.assertEqual(len(index['entries']),187)
+            self.assertEqual(len(index['entries']),192)
             for item in [*index['entries'],*index['columns']]:
                 target=(path.parent/urlsplit(item['href']).path).resolve()
                 self.assertFalse(item['href'].startswith('/'))
