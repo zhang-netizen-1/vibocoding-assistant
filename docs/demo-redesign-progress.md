@@ -165,3 +165,17 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
   - Codex T2（插件关，cua_repl 0 次）做了静态修复：morph/magnetic/ripple 窄格收缩、悬停预览弹层位置、lift 顶部留白；demo_redesign_headless 的样式链断言改为按 skin 文件是否存在来要求，并改成严格 deepEqual。单测 147 项仍全过。
   - 修复后重跑 demo_redesign_headless 与 batch6 时两者并发、被 280 秒超时打断，结果无效，**需要单独顺序重跑确认**。
   - 下一步：顺序重跑 `tests/demo_redesign_headless.cjs`、`audit_fix_batch6_headless.cjs`、`audit_fix_batch4_headless.cjs`（各给 ≥15 分钟，且期间不要重新构建）；修 button/search/tabs 触屏点击区。
+
+## 第 11 段（04:48–05:25）
+- 触屏点击区问题定位：不是尺寸规则缺失，是点状态按钮时演示重挂载，把已加载的样式表 `<link>` 重新 append，浏览器丢弃后重新拉取，测试在无缓存时量到无样式按钮（25px）。真实用户在慢网下也会看到一帧无样式闪烁。
+- 97075e7：`demo-runtime.js` 重挂载时保留已连接的 link 不移动。无可见外观变化，所以 morning_summary 不需要重拍。
+- 结果：单测 147/147；batch4 完整无头 1473/1473 通过（小于 12px 的文字 0 段）。
+- demo_redesign_headless → batch6 正在后台按顺序跑（期间不重新构建），结果写在 Mac `/tmp/r2.txt`，日志 `/tmp/r2_dr.log`、`/tmp/r2_b6.log`。
+- 本段没有跑 Codex。caffeinate 原进程 06:06 到期，04:49 已另起一个 `caffeinate -i -t 12060`，持续到约 08:10。
+
+## 第 12 段（05:25–06:02）
+- 上一轮结果：batch4 通过；demo_redesign 4 项失败（component-lift 触屏点按、basics/components/interactions 三个画廊在 390 下 11 个缩略格横向溢出）；batch6 通过。
+- Codex T3（插件关，cua_repl 0 次）：11 个缩略格加 `@container demo-stage (max-width:240px)` 收缩规则，只影响窄格，1440 外观不变（总览图无需重拍）。
+- component-lift：功能正常（点按切换 touch-open 和 aria-pressed），失败来自测试取样时机；测试改为等点击生效后再取样，并把亚像素过渡尾巴视为静止。
+- 9a7cc88 提交。最终：单测 147/147；demo_redesign 1887/1887；batch6 通过；batch4 1473/1473（上一轮，之后只改了 240px 以下容器规则和测试）。
+- 晨间报告：box `/workspace/bench/demo-redesign/morning_report.md`。
