@@ -1,7 +1,7 @@
 /* Headless-only acceptance check. Build dist first; this script never builds it.
  * NODE_PATH=/Users/zhiguang/Downloads/Kreator/node_modules node tests/demo_redesign_headless.cjs
  * DEMO_URL may point at an existing local server (including its deployment prefix).
- * SHOTS_DIR overrides the sandbox-safe output/demo-redesign/C screenshot folder.
+ * SHOTS_DIR overrides the sandbox-safe output/demo-redesign/D screenshot folder.
  */
 'use strict';
 const assert = require('node:assert/strict');
@@ -13,7 +13,7 @@ try { playwright = require('playwright'); }
 catch { playwright = require('/Users/zhiguang/Downloads/Kreator/node_modules/playwright'); }
 const workspace = path.resolve(__dirname, '..');
 const dist = path.join(workspace, 'dist');
-const shots = path.resolve(process.env.SHOTS_DIR || path.join(workspace, 'output/demo-redesign/C'));
+const shots = path.resolve(process.env.SHOTS_DIR || path.join(workspace, 'output/demo-redesign/D'));
 const reportPath = path.join(workspace, 'output/demo-redesign/headless-report.json');
 const routes = [
   'components/button/', 'components/input/', 'interactions/component-lift/', 'interactions/view-crossfade/',
@@ -85,6 +85,20 @@ function layoutAudit() {
       if (!visible(stage)) continue;
       if (stage.scrollWidth > stage.clientWidth + 2)
         failures.push({index, issue:'stage horizontal overflow', selector:stage.className, scroll:stage.scrollWidth, client:stage.clientWidth});
+    }
+    for (const hint of root.querySelectorAll('.ds-hint')) {
+      if (!visible(hint)) continue;
+      const h=hint.getBoundingClientRect(), parent=hint.parentElement;
+      if (Math.abs(h.left-r.left-13)>1.1 || Math.abs(r.bottom-h.bottom-13)>1.1)
+        failures.push({index, issue:'hint detached from stage bottom', left:h.left-r.left, bottom:r.bottom-h.bottom});
+      if (getComputedStyle(parent).position !== 'relative')
+        failures.push({index, issue:'hint parent lost positioning context', selector:parent.className});
+      for (const subject of parent.children) {
+        if (subject.classList.contains('ds-hint') || !visible(subject)) continue;
+        const s=subject.getBoundingClientRect();
+        if (s.bottom>h.top-11.5)
+          failures.push({index, issue:'subject enters hint clearance', selector:subject.className, clearance:h.top-s.bottom});
+      }
     }
     failures.slice(failureStart).forEach(failure => {failure.slug = slug;});
     for (const img of shadow.querySelectorAll('img')) images.push({index, slug, src:img.currentSrc || img.src, complete:img.complete && img.naturalWidth > 0});
@@ -223,7 +237,8 @@ async function specimenGeometry(page) {
     const hint=root.querySelector('.ds-hint');
     const r=root.getBoundingClientRect(),s=subject.getBoundingClientRect(),h=hint?.getBoundingClientRect();
     const style=getComputedStyle(root);
-    const inner=r.width-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-2;
+    const frame=subject.parentElement, frameStyle=getComputedStyle(frame);
+    const inner=frame.clientWidth-parseFloat(frameStyle.paddingLeft)-parseFloat(frameStyle.paddingRight);
     return {stage:r.width,subject:s.width,ratio:s.width/inner,left:s.left-r.left,right:r.right-s.right,
       typeBody:style.getPropertyValue('--ds-demo-body').trim(),typeHeading:style.getPropertyValue('--ds-demo-heading').trim(),typeButton:style.getPropertyValue('--ds-demo-button').trim(),hasHint:!!h,hintLeft:h?h.left-r.left:null,hintBottom:h?r.bottom-h.bottom:null,hintRight:h?r.right-h.right:null,clearance:h?h.top-s.bottom:null};
   });
@@ -338,6 +353,35 @@ async function reducedChecks(page, url, label) {
   if (url.includes('view-crossfade')) await crossfadeChecks(page,`${label}: reduce`);
   await page.emulateMedia({reducedMotion:'no-preference'});
 }
+async function kindGeometryChecks(page, route) {
+  const states={
+    'components/dropdown/':['.dropdown > button','.dd-menu'],
+    'components/popover/':['#popover-trigger','.popover-box'],
+    'components/split-button/':['#splitCaret','.split-menu'],
+    'interactions/overlay-menu/':['[data-action="toggle"]','.menu-items'],
+    'interactions/component-hover-preview/':['.hvp-link','.hvp-pop']
+  };
+  const state=states[route];
+  if (!state) return;
+  const scope=page.locator('.demo-scope[data-interactive]').first();
+  const trigger=scope.locator(state[0]);
+  if(route.includes('hover-preview')) {
+    await page.keyboard.press('Tab');
+    await trigger.focus();
+  } else await trigger.click();
+  await page.waitForTimeout(600);
+  const rectangle=await scope.evaluate((scope,selector)=>{
+    const root=scope.shadowRoot.querySelector('.ds-stage');
+    const popup=root.querySelector(selector), hint=root.querySelector('.ds-hint');
+    const p=popup.getBoundingClientRect(),h=hint.getBoundingClientRect(),r=root.getBoundingClientRect();
+    const style=getComputedStyle(popup);
+    return {height:p.height,opacity:Number(style.opacity),display:style.display,
+      clearance:h.top-p.bottom,left:p.left-r.left,right:r.right-p.right};
+  },state[1]);
+  assert.ok(rectangle.height>0&&rectangle.opacity>.98&&rectangle.display!=='none',JSON.stringify(rectangle));
+  assert.ok(rectangle.clearance>=11.5&&rectangle.left>=.5&&rectangle.right>=.5,JSON.stringify(rectangle));
+  return rectangle;
+}
 function catalogInventory() {
   const details = [];
   function walk(directory) {
@@ -347,7 +391,8 @@ function catalogInventory() {
       else if(entry.isFile() && entry.name==='index.html') {
         const source=fs.readFileSync(file,'utf8');
         const count=[...source.matchAll(/<div\b[^>]*class="demo-scope"[^>]*data-interactive\b/g)].length;
-        if(count) details.push({route:path.relative(dist,path.dirname(file)).split(path.sep).join('/')+'/',demos:count});
+        const kind=source.match(/<div\b[^>]*class="demo-scope"[^>]*data-demo-kind="([^"]+)"[^>]*data-interactive\b/)?.[1];
+        if(count) details.push({route:path.relative(dist,path.dirname(file)).split(path.sep).join('/')+'/',demos:count,kind});
       }
     }
   }
@@ -392,6 +437,18 @@ function catalogInventory() {
         await page.screenshot({path:file,fullPage:true}); report.screenshots.push(file);
       });
       await check(`${label}: reduced motion`, () => reducedChecks(page,url,label));
+    }
+    for(const detail of inventory.filter(row=>['ui','motion'].includes(row.kind)&&!routes.includes(row.route))) {
+      await check(`${width} ${detail.route}: kind skin geometry`,async()=>{
+        await ready(page,new URL(detail.route,base).href);
+        const audit=await page.evaluate(layoutAudit);
+        assert.equal(audit.pageOverflow,false); assert.deepEqual(audit.failures,[]);
+        verifyChains(audit.chains);
+        const opened=await kindGeometryChecks(page,detail.route);
+        const active=await page.evaluate(layoutAudit);
+        assert.equal(active.pageOverflow,false); assert.deepEqual(active.failures,[]);
+        return {demos:audit.scopeCount,opened};
+      });
     }
     let entries=0, demoCount=0;
     for (const route of galleries) await check(`${width} ${route}: all gallery demos`, async () => {

@@ -1,1 +1,14 @@
-/* 类型级皮肤（motion）暂停：提示胶囊与内容重叠、手机端遮挡，原稿见 ../demo-skins-wip/_kind-motion.css，修好后恢复。 */
+/* Painted scenes, cursor planes, scrollports, masks and 3D faces retain their geometry. */
+.demo-root[data-ds-kind="motion"] > .stage { color:var(--ds-ink); font-family:var(--ds-font); }
+[data-ds-kind="motion"] :is(.micro-card,.press-card,.stagger-box,.sort-list,.shake-demo,.extra-scene):not(.ds-hint) { background:var(--ds-surface); color:var(--ds-ink); border:1px solid var(--ds-line); border-radius:16px; box-shadow:var(--ds-shadow-1); }
+[data-ds-kind="motion"] :is(.extra-heading,.overlay-preview-title) { color:var(--ds-ink); font-size:16px; line-height:1.5; }
+[data-ds-kind="motion"] :is(.extra-heading small,.extra-heading p,.micro-card span) { color:var(--ds-ink-2); font-size:12px; line-height:1.5; }
+[data-ds-kind="motion"] :is(.press-card,.magnet-btn,.ripple-btn,.mini-btn,.extra-scene button) { border-radius:8px; font-family:var(--ds-font); font-size:15px; }
+[data-ds-kind="motion"] :is(.press-card,.magnet-btn,.ripple-btn,.mini-btn) { background:var(--ds-accent); color:var(--ds-surface); }
+[data-ds-kind="motion"] :is(.sort-list>div,.drag-list>div,.filter-card,.extra-task) { border-color:var(--ds-line); border-radius:8px; background:var(--ds-fill); color:var(--ds-ink); }
+[data-ds-kind="motion"] :is(.extra-tab.active,.extra-filter.active) { background:var(--ds-accent-50); color:var(--ds-accent); }
+
+/* 39px popup offset + 10px padding + three 44px touch targets. */
+[data-ds-kind="motion"] .mini-menu:has(> .menu-items:not([hidden])) { min-height:181px; }
+/* The preview ends at 146px below its positioned parent's top edge. */
+[data-ds-kind="motion"] .hvp-stage { min-height:152px; }

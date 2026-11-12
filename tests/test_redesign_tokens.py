@@ -192,6 +192,70 @@ class RedesignTokensTest(unittest.TestCase):
         guide=(REDESIGN/'demo-skins/_kind-guide.css').read_text()
         self.assertIn('[data-demo="sticky"] .mini-layout { height:260px; overflow-y:auto;',guide)
 
+    def test_hint_parent_fills_stage_without_losing_positioning_context(self):
+        css=(REDESIGN/'demo-spec.css').read_text()
+        selector='.demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage):has(> .ds-hint)'
+        self.assertIn(selector,css)
+        body=css.split(selector,1)[1].split('}',1)[0]
+        for declaration in ('position:relative','flex:1 1 auto','min-height:100%',
+                            'padding-bottom:56px!important','align-content:center','overflow:visible'):
+            self.assertIn(declaration,body)
+        self.assertIn('.demo-root.ds-stage:has(> :is(.canvas,.stage,.guide-card-stage) > .ds-hint)',css)
+        self.assertNotRegex(css,r'data-ds-sample[^{}]*>[^{}]*\{[^}]*position:static')
+        a11y=(REDESIGN/'demo-accessibility.css').read_text()
+        self.assertNotRegex(a11y,r'ds-(?:button|input|lift|crossfade)-demo[^{}]*\{[^}]*position:static')
+
+    def test_ui_and_motion_kind_surfaces_exclude_hint_containers(self):
+        skins=REDESIGN/'demo-skins'
+        self.assertFalse((REDESIGN/'demo-skins-wip').exists())
+        for kind in ('ui','motion'):
+            css=(skins/('_kind-'+kind+'.css')).read_text()
+            self.assertIn('var(--ds-surface)',css)
+            self.assertIn(':not(.ds-hint)',css)
+            for selectors,body in re.findall(r'([^{}]+)\{([^{}]*)\}',css):
+                if re.search(r'>\s*\.(canvas|stage)\s*$',selectors.strip()):
+                    self.assertNotIn('background:var(--ds-surface)',body)
+                    self.assertNotIn('box-shadow:var(--ds-shadow-',body)
+            self.assertNotIn('position:static',css)
+
+    def test_floating_subjects_reserve_their_open_rectangles(self):
+        ui=(REDESIGN/'demo-skins/_kind-ui.css').read_text()
+        motion=(REDESIGN/'demo-skins/_kind-motion.css').read_text()
+        for selector,height in (('.dropdown.open',176),
+                                ('.popover-demo:has(> .popover-box:not([hidden]))',144),
+                                ('.splitbtn-demo:has(> .split-menu:not([hidden]))',152)):
+            body=ui.split(selector,1)[-1].split('}',1)[0]
+            self.assertIn('margin-bottom:'+str(height)+'px',body)
+        for selector,height in (('.mini-menu:has(> .menu-items:not([hidden]))',181),('.hvp-stage',152)):
+            body=motion.split(selector,1)[-1].split('}',1)[0]
+            self.assertIn('min-height:'+str(height)+'px',body)
+        # Existing positioned popup rectangles at the two requested widths.
+        self.assertLessEqual(6+3*(14*1.6+18)+(18+12)+14,176)
+        self.assertLessEqual(9+28+4*13*1.6+5,144)
+        self.assertLessEqual(5+3*44+12,152)
+        self.assertEqual(39+3*44+10,181)
+        self.assertLessEqual(76+24+13*1.6+5+12*1.6,152)
+
+    def test_hint_rectangle_clearance_at_both_requested_widths(self):
+        css=(REDESIGN/'demo-spec.css').read_text()
+        self.assertIn('padding-bottom:76px!important',css.split('@container demo-stage (max-width:380px)',1)[-1])
+        for stage,inset,reserve,lines,ratio in ((725.333,32,56,1,.625),(358,16,76,2,.75)):
+            hint_height=lines*12*1.5+2*6+2
+            for subject_height in (44,48,120,260,600,1200):
+                with self.subTest(stage=stage,subject_height=subject_height):
+                    # Auto height grows with intrinsic content. Border-box wrapper
+                    # fills the parent's content box and keeps its own padding.
+                    inside=max(max(320 if stage>640 else 260,stage*ratio)-2,
+                               inset+subject_height+reserve)
+                    available=inside-inset-reserve
+                    subject_top=1+inset+(available-subject_height)/2
+                    subject_bottom=subject_top+subject_height
+                    hint_top=1+inside-12-hint_height
+                    self.assertGreaterEqual(hint_top-subject_bottom,12)
+                    self.assertLessEqual(subject_bottom,1+inside-reserve)
+                    self.assertEqual(1+inside-(hint_top+hint_height),12)
+                    self.assertGreaterEqual(subject_top,1+inset)
+
     def test_c_samples_use_scoped_light_surfaces(self):
         skins=REDESIGN/'demo-skins'
         for name in ('token-color','ui-color','guide-dashboard','skill-reference-frontend-design'):

@@ -5,6 +5,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 import importlib.util
 import json
+import math
 import re
 import subprocess
 import sys
@@ -643,6 +644,13 @@ class BatchCKindSkinTest(unittest.TestCase):
                 self.assertEqual(len(root.one(cls='skill-tags').find_all('span')),2)
 
     def test_kind_skin_coverage_and_special_style_exclusions(self):
+        assets=self.demos.assets(self.entries)
+        for kind in ('ui','motion'):
+            name='demo-skins/_kind-'+kind+'.css'
+            self.assertIn(':not(.ds-hint)',assets[name])
+            self.assertIn('var(--ds-surface)',assets[name])
+            self.assertGreater(len(assets[name].splitlines()),10)
+            self.assertEqual((DIST/'assets/redesign'/name).read_text(),assets[name])
         counts={kind:0 for kind in self.demos.KINDS}
         samples=skips=0
         for entry in self.entries:
@@ -662,6 +670,29 @@ class BatchCKindSkinTest(unittest.TestCase):
         self.assertEqual(samples,14)
         self.assertEqual(skips,6)
         self.assertEqual(sum(counts.values())+samples+skips,192)
+
+    def test_all_hint_texts_fit_reserved_bottom_rectangles(self):
+        count=0
+        for entry in self.entries:
+            demos=[entry['demo']]+([entry['demo']['secondary']] if entry['demo'].get('secondary') else [])
+            for demo in demos:
+                root=self.Document(self.demos.markup(demo,'../../assets/redesign/',True,entry['slug'])).root.one('article')
+                wrappers=[node for node in root.children if hasattr(node,'attrs') and
+                          set(node.attrs.get('class','').split()) & {'canvas','stage','guide-card-stage'}]
+                for hint in root.find_all(cls='ds-hint'):
+                    count+=1
+                    self.assertTrue(any(hint in node.children for node in wrappers),entry['slug'])
+                    # Bound each character by one fullwidth 12px glyph, including
+                    # hidden pointer/touch alternatives. Subtract edge offsets,
+                    # capsule padding/border, and the icon plus its 8px gap.
+                    text=hint.text().removeprefix('↖')
+                    for width,reserve,max_lines in ((725.333,56,1),(358,76,2)):
+                        available=width-2-24-26-20
+                        lines=max(1,math.ceil(len(text)*12/available))
+                        self.assertLessEqual(lines,max_lines,(entry['slug'],width))
+                        height=lines*18+14
+                        self.assertGreaterEqual(reserve-12-height,12,(entry['slug'],width))
+        self.assertEqual(count,150)
 
     def test_reveal_starts_with_a_visible_card_and_grid_keeps_all_data(self):
         skins=ROOT/'site-src/redesign/demo-skins'

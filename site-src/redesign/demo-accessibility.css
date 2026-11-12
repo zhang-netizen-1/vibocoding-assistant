@@ -153,5 +153,3 @@
 .demo-root.ds-stage .ds-hint ~ .ds-hint {display:none}
 @media(max-width:767px){:host([data-interactive]) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:44px}}
 
-/* Sample hint positioning and reserved space are owned by demo-spec.css. */
-.demo-root.ds-stage[data-ds-sample] :is(.ds-button-demo,.ds-input-demo,.ds-lift-demo,.ds-crossfade-demo){position:static;padding-bottom:0}

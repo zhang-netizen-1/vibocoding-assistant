@@ -38,6 +38,7 @@
   font-family:var(--ds-font); font-variant-numeric:tabular-nums;
 }
 .demo-root.ds-stage {
+  --ds-stage-inset:32px;
   position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center;
   gap:24px; width:100%; min-width:0; min-height:max(320px,62.5cqi); height:auto; aspect-ratio:auto;
   padding:32px 32px 76px; border:1px solid var(--ds-line); border-radius:12px;
@@ -49,8 +50,19 @@
   background:none; background-image:none; border:0; border-radius:0; box-shadow:none;
   padding:0; overflow:visible; flex-shrink:0;
 }
-.demo-root.ds-stage > :is(.canvas,.stage):has(> .ds-hint) {
-  padding-bottom:56px!important; row-gap:12px; flex-wrap:wrap;
+:host([data-interactive]) .demo-root.ds-stage:has(> :is(.canvas,.stage,.guide-card-stage) > .ds-hint) {
+  padding:0!important;
+}
+:host([data-interactive]) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage):has(> .ds-hint) {
+  position:relative; display:flex; flex:1 1 auto; min-height:100%; box-sizing:border-box;
+  align-items:center; justify-content:center; align-content:center;
+  padding:var(--ds-stage-inset); padding-bottom:56px!important;
+  row-gap:12px; flex-wrap:wrap; overflow:visible;
+}
+/* Controls and live feedback precede the filling subject and its bottom hint. */
+:host([data-interactive]) .demo-root.ds-stage:has(> :is(.canvas,.stage,.guide-card-stage) > .ds-hint) > :is(.demo-controls,.demo-status) {
+  order:-1; flex-shrink:0; margin:var(--ds-stage-inset) var(--ds-stage-inset) 0;
+  max-width:calc(100% - 2 * var(--ds-stage-inset));
 }
 .demo-root.ds-stage > :is(.canvas,.stage) > * { flex-shrink:0; }
 .ds-surface { width:min(100%,var(--ds-subject-width)); box-sizing:border-box; background:var(--ds-surface); border:1px solid rgb(17 24 39 / .08); border-radius:16px; box-shadow:var(--ds-shadow-1); padding:24px; min-width:0; max-width:100%; }
@@ -76,10 +88,10 @@
 :host(:not([data-interactive])) .ds-stage > :is(.canvas,.stage,.guide-card-stage) { min-height:0; padding:0; }
 :host(:not([data-interactive])) .ds-hint { display:none; }
 @media(min-width:768px) and (max-width:1023px) {
-  :host([data-interactive]) .demo-root.ds-stage { aspect-ratio:auto; min-height:max(300px,66.667cqi); padding:24px 24px 76px; }
+  :host([data-interactive]) .demo-root.ds-stage { --ds-stage-inset:24px; aspect-ratio:auto; min-height:max(300px,66.667cqi); padding:24px 24px 76px; }
 }
 @media(max-width:767px) {
-  :host([data-interactive]) .demo-root.ds-stage { aspect-ratio:auto; min-height:max(260px,75cqi); padding:16px 16px 76px; }
+  :host([data-interactive]) .demo-root.ds-stage { --ds-stage-inset:16px; aspect-ratio:auto; min-height:max(260px,75cqi); padding:16px 16px 76px; }
   :host([data-interactive]) .ds-stage :is(button,input:not([type=checkbox]):not([type=radio]),select,textarea) { min-height:44px; }
   :host([data-interactive]) .ds-stage :is(button,[role=button]) { min-width:44px; }
   .ds-surface { padding:16px; }
@@ -105,12 +117,12 @@
   }
 }
 
-/* Sample wrappers keep every hint relative to the outer stage. The bottom
-   padding reserves 64px for a two-line capsule plus its 12px edge offset. */
-.demo-root.ds-stage[data-ds-sample] > :is(.canvas,.stage,.guide-card-stage) {
-  position:static; padding-bottom:0;
+/* Narrow stages reserve enough room for a two-line capsule. */
+@container demo-stage (max-width:380px) {
+  :host([data-interactive]) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage):has(> .ds-hint) {
+    padding-bottom:76px!important;
+  }
 }
-.demo-root.ds-stage[data-ds-sample] .ds-hint { flex-basis:auto; }
 
 .ds-stage[data-ds-sample] :is(.ds-button-heading,.ds-lift-details,.ds-scene-copy) { gap:8px; }
 .ds-stage[data-ds-sample] .ds-button-grid { gap:12px; }
