@@ -189,7 +189,7 @@
     const scope = card.querySelector('.demo-scope'); controller = window.VibeDemos.init(scope); controller.preview();
     // A full original action runs once; restart only while hover/focus is held.
     const duration = scope.dataset.demoKey === 'text-text-morph' ? 3000 : 2400;
-    if (!reduced.matches) cardTimer = setTimeout(() => { const replay = activeCard === card && !once; stopAllCards(); if (replay) playCard(card); },duration);
+    if (!reduced.matches) cardTimer = setTimeout(() => { const replay = activeCard === card && !once; stopAllCards(); if (replay) { activeCard = card; cardTimer = setTimeout(() => playCard(card),1200); } },duration);
   }
   window.VibeDemos.mountAll();
   $$('.gallery-card').forEach(card => {
@@ -211,7 +211,7 @@
       const values = [...controller.root.querySelectorAll(fieldSelector)].map(field => field.value);
       const checkSelector = 'input[type="checkbox"],input[type="radio"]';
       const checks = [...controller.root.querySelectorAll(checkSelector)].map(field => ({checked:field.checked,indeterminate:field.indeterminate}));
-      const buttonWidths = [...controller.root.querySelectorAll('.btn')].map(button => button.getBoundingClientRect().width);
+      const buttonWidths = [...controller.root.querySelectorAll('.btn')].map(button => button.offsetWidth);
       controller.restore();
       options.forEach(button => {
         button.setAttribute('aria-pressed',String(button === option));
@@ -247,6 +247,7 @@
           });
         }
       }
+      if (state === 'success') {root.querySelectorAll('.btn').forEach(button => {button.textContent = '已完成';});}
       if (state === 'error') {
         const errors = {姓名:'请输入姓名，例如「张三」。', 邮箱:'邮箱格式有误，请填写 name@example.com。',
           备注:'请填写 1–80 字的备注。', 城市:'请选择一个可用的城市。', 搜索词:'请输入有效搜索词，例如「按钮」。'};

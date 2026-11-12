@@ -3,7 +3,7 @@
 :host(.force-hover) .btn-pri {background:var(--demo-primary-hover)}
 :host(.force-hover) .btn-ghost {background:var(--demo-soft)}
 :host(.force-hover) .btn-danger {background:var(--demo-danger-hover)}
-:host(.force-pressed) .btn {transform:translateY(1px)}
+:host(.force-pressed) .btn {transform:scale(.98)}
 :host(.force-pressed) .btn-pri {background:var(--demo-primary-active)}
 :host(.force-pressed) .btn-ghost {background: var(--demo-line);border-color:var(--demo-ink)!important}
 :host(.force-pressed) .btn-danger {background:var(--demo-danger-active)}
@@ -24,7 +24,7 @@
 :host(.force-disabled) .canvas :is(button,input,select,textarea),
 :host(.force-disabled) .canvas :is(.check,.switch,.switch .slider,.searchbox) {cursor:not-allowed}
 :host(.force-disabled) .canvas :is(button,input,select,textarea):disabled {
-  opacity:1;color:var(--demo-secondary);-webkit-text-fill-color:var(--demo-secondary);
+  opacity:.45;color:var(--demo-secondary);-webkit-text-fill-color:var(--demo-secondary);
   background:var(--demo-soft);border-color:var(--demo-border)!important;
 }
 :host(.force-disabled) .canvas .check {color:var(--demo-secondary)}
@@ -39,9 +39,16 @@
 :host(.force-loading) .btn-pri {background:var(--demo-primary)}
 :host(.force-loading) .btn-ghost {background:var(--demo-white);color:var(--demo-ink)}
 :host(.force-loading) .btn-danger {background:var(--demo-danger)}
-.demo-loading-icon {display:inline-block;flex:none;width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:demo-loading-spin .8s linear infinite}
+.demo-loading-icon {display:inline-block;flex:none;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:demo-loading-spin .8s linear infinite}
 @keyframes demo-loading-spin {to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.demo-loading-icon {animation:none}}
 .demo-field-state {display:flex;flex-direction:column;gap:6px;max-width:100%;min-width:0}
 .demo-field-error {font-size:13px;line-height:1.5;color:var(--demo-danger);margin:0;max-width:280px}
 :host(.force-error) :is(input.i,textarea.i,select.i,.searchbox) {border-color:var(--demo-danger)!important;box-shadow:none}
+
+:host(.force-success) .btn {border-color:var(--ds-success)!important;background:var(--ds-success-soft);color:var(--ds-success)}
+:host(.force-success) :is(input.i,textarea.i) {border-color:var(--ds-success)!important}
+:host(.force-hover) input.i {border-color:var(--ds-ink)!important}
+:host(.force-pressed) input.i {border-color:var(--ds-accent)!important;background:var(--ds-accent-50)}
+:host(.force-focus) .floatfield .fflabel {top:0;transform:translateY(-50%) scale(.923)}
+@media(prefers-reduced-motion:reduce){:host(:not([data-demo-motion-once])) .btn{transform:none!important}}

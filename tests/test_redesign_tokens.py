@@ -80,3 +80,39 @@ class RedesignTokensTest(unittest.TestCase):
         self.assertIn('outline: 2px solid var(--blue)', base)
         self.assertIn('outline-offset: 2px', base)
         self.assertEqual(re.findall(r'--text-[\w-]+: (\d+)px', tokens), ['12','13','14','16','18','22','28','36'])
+
+    def test_demo_spec_tokens_and_stage_are_separate_from_shell(self):
+        css = (REDESIGN / 'demo-spec.css').read_text()
+        colors = dict(re.findall(r'(--ds-[\w-]+):\s*(#[\da-fA-F]{6})', css))
+        for key, value in {'stage':'#F7F7F8','ink':'#111827','ink-2':'#4B5563',
+                           'border':'#868E9C','accent':'#6D28D9','accent-hover':'#5B21B6',
+                           'accent-active':'#4C1D95','success':'#047857','danger':'#B91C1C'}.items():
+            self.assertEqual(colors['--ds-' + key], value)
+        for name in ['caption','label','body','strong','title','display']:
+            self.assertRegex(css, '--ds-text-' + name + r':\d+px')
+            self.assertIn('--ds-text-' + name + '-line-height:', css)
+            self.assertIn('--ds-text-' + name + '-weight:', css)
+        for name in ['1','2','3']:
+            value = re.search('--ds-shadow-' + name + ':([^;]+)', css)[1]
+            self.assertEqual(value.count('rgb('),2)
+        for name in ['instant','fast','base','slow','scene']:
+            self.assertIn('--ds-dur-' + name + ':',css)
+        for name in ['standard','out','in','spring']:
+            self.assertIn('--ds-ease-' + name + ':',css)
+        for cls in ['stage','surface','hint','caption','img']:
+            self.assertIn('.ds-' + cls,css)
+        for ratio in ['16/10','3/2','4/3']:
+            self.assertIn('aspect-ratio:' + ratio,css)
+        self.assertIn('0 0/24px 24px',css)
+        self.assertIn('overflow:visible',css)
+        self.assertNotIn('demo-spec.css', (REDESIGN/'templates.py').read_text().split('ASSETS =',1)[-1].split('\n\n',1)[0])
+
+    def test_demo_spec_contrast_pairs(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            contrast = runpy.run_path(str(ROOT/'docs/style-research/contrast.py'))['cr']
+        css = (REDESIGN/'demo-spec.css').read_text()
+        colors=dict(re.findall(r'--ds-([\w-]+):\s*(#[\da-fA-F]{6})',css))
+        for fg,bg,minimum in [('ink-2','stage',7),('ink-3','surface',4.5),
+                               ('surface','accent',7),('border','surface',3),
+                               ('success','success-soft',4.5),('danger','danger-soft',4.5)]:
+            self.assertGreaterEqual(contrast(colors[fg],colors[bg]),minimum,(fg,bg))

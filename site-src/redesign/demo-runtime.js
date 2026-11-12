@@ -85,14 +85,17 @@
     function mount() {
       // Keep already-loaded stylesheet links across remounts (replay, reset,
       // state changes) so the rebuilt demo never renders unstyled for a frame.
-      let link = shadow.querySelector('link[data-demo-sheet="demo"]');
-      if (link) Array.from(shadow.children).forEach(node => {if (!node.hasAttribute('data-demo-sheet')) node.remove();});
-      else shadow.replaceChildren();
-      if (!link) {
-        link = nativeDocument.createElement('link');link.rel = 'stylesheet';link.href = template.dataset.demoCss;link.dataset.demoSheet = 'demo';
-        shadow.append(link);
-        if(template.dataset.stateCss){const states=nativeDocument.createElement('link');states.rel='stylesheet';states.href=template.dataset.stateCss;states.dataset.demoSheet='state';shadow.append(states);}
-      }
+      const sheets = [
+        ['demo', template.dataset.demoCss], ['spec', template.dataset.specCss],
+        ['skin', template.dataset.skinCss], ['a11y', template.dataset.a11yCss],
+        ['state', template.dataset.stateCss]
+      ].filter(([, href]) => href);
+      Array.from(shadow.children).forEach(node => {if (!node.hasAttribute('data-demo-sheet')) node.remove();});
+      sheets.forEach(([name, href]) => {
+        let sheet = shadow.querySelector(`link[data-demo-sheet="${name}"]`);
+        if (!sheet) { sheet = nativeDocument.createElement('link'); sheet.rel = 'stylesheet'; sheet.href = href; sheet.dataset.demoSheet = name; }
+        shadow.append(sheet);
+      });
       shadow.append(template.content.cloneNode(true));
       body = shadow.querySelector('.demo-root');
       scope.removeAttribute('data-demo-playing');
@@ -106,13 +109,30 @@
       particlePreview(false);
       fitGallery();
       const onSheet = () => {
-        if (!shadow.contains(link)) return;
+        if (!body?.isConnected) return;
         if (!scope.hasAttribute('data-demo-playing')) primeVirtualList();
         fitGallery();
         if (scope.hasAttribute('data-demo-motion-once')) scheduleMotionEnd();
         if (scope.hasAttribute('data-demo-motion-step')) renderManualPhase();
       };
-      if (link.sheet) queueMicrotask(onSheet); else link.addEventListener('load', onSheet, {once:true});
+      shadow.querySelectorAll('link[data-demo-sheet]').forEach(sheet => {
+        if (sheet.sheet) queueMicrotask(onSheet); else sheet.addEventListener('load', onSheet, {once:true});
+      });
+      shadow.querySelectorAll('img').forEach(img => {
+        if (img.complete) queueMicrotask(fitGallery); else img.addEventListener('load', fitGallery, {once:true});
+      });
+      const lift = shadow.querySelector('.lift-card');
+      if (lift && scope.hasAttribute('data-interactive')) {
+        lift.setAttribute('aria-pressed','false');
+        lift.addEventListener('click', event => {
+          if (event.pointerType === 'mouse' && !nativeWindow.matchMedia('(hover:none)').matches) return;
+          const open = lift.classList.toggle('touch-open');
+          lift.setAttribute('aria-pressed', String(open));
+        });
+      }
+      if (nativeWindow.matchMedia('(hover:none), (pointer:coarse)').matches) {
+        shadow.querySelectorAll('[data-touch-hint]').forEach(hint => {hint.textContent = hint.dataset.touchHint;});
+      }
       const miniStage=scope.closest('.mini-stage');
       if(miniStage&&typeof ResizeObserver!=='undefined'){let lastWidth=-1;const observer=new ResizeObserver(entries=>{if(!scope.isConnected){observer.disconnect();return;}const w=Math.round(entries[entries.length-1].contentRect.width);if(w===lastWidth)return;lastWidth=w;fitGallery();});observer.observe(miniStage);cleanup.push(()=>observer.disconnect());}
     }
@@ -138,17 +158,12 @@
     function fitGallery() {
       const stage=scope.closest('.mini-stage');
       if(!stage||!body)return;
-      const style=getComputedStyle(stage),width=scope.clientWidth||stage.clientWidth;
+      const width = Math.max(1, scope.clientWidth || stage.clientWidth);
+      // Use available width as the layout width. Content grows vertically;
+      // avoiding downscaling also keeps all thumbnail labels at least 12px.
       scope.style.display='flex';scope.style.alignItems='center';scope.style.justifyContent='center';
-      body.style.width='312px';body.style.flexShrink='0';body.style.zoom='1';
-      const natural=body.scrollHeight||224;
-      // Let an auto-height cell grow at the requested width scale before
-      // measuring its height limit. Reading the old height would shrink every
-      // preview back down and can oscillate during ResizeObserver callbacks.
-      body.style.zoom=String(Math.min(1.35,width/312));
-      const height=stage.clientHeight-parseFloat(style.paddingTop||0)-parseFloat(style.paddingBottom||0);
-      const scale=Math.min(1.35,width/312,height>0?height/natural:1.35);
-      body.style.zoom=String(scale);
+      body.style.width=`${width}px`;body.style.flexShrink='0';body.style.zoom='1';
+
     }
     function preventExampleNavigation(event) {
       if (event.target.closest?.('a')) event.preventDefault();

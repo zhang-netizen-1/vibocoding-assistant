@@ -39,9 +39,10 @@ class PageParser(HTMLParser):
             commands=json.loads(attributes["data-demo-commands"])
             self.commands.extend(commands)
             self.references.extend(command["href"] for command in commands)
-        self.references.extend(attributes[key] for key in ("href", "src", "data-demo-css", "data-state-css") if attributes.get(key))
+        self.references.extend(attributes[key] for key in ("href", "src", "data-demo-css", "data-state-css", "data-spec-css", "data-skin-css", "data-a11y-css") if attributes.get(key))
         if tag == "img":
             self.images.append(attributes)
+            self.references.extend(candidate.strip().split()[0] for candidate in attributes.get('srcset', '').split(',') if candidate.strip())
         if tag == "a" and "/demos/" in attributes.get("href", ""):
             self.demo_links.append(attributes)
         if attributes.get("id"):
@@ -446,3 +447,119 @@ class SiteBuildTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class DemoSpecBuildTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import sys
+        sys.path.insert(0, str(ROOT/'site-src'))
+        import entries
+        spec=importlib.util.spec_from_file_location('demo_spec_contracts',ROOT/'site-src/redesign/demos.py')
+        cls.demos=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.demos)
+        cls.entries=entries.load_entries()
+        cls.Document=entries.Document
+
+    def test_all_194_demos_receive_public_spec_and_keep_source_identity(self):
+        total=0
+        for entry in self.entries:
+            demos=[entry['demo']]+([entry['demo']['secondary']] if entry['demo'].get('secondary') else [])
+            for demo in demos:
+                html=self.demos.markup(demo,'../../assets/redesign/',True,entry['slug'])
+                tree=self.Document(html).root
+                template=tree.one('template')
+                article=tree.one('article')
+                self.assertIn('ds-stage',article.attrs['class'].split())
+                self.assertEqual(template.attrs['data-spec-css'],'../../assets/redesign/demo-spec.css')
+                self.assertEqual(template.attrs['data-a11y-css'],'../../assets/redesign/demo-accessibility.css')
+                anchor=self.demos._source_anchor(demo)
+                if anchor:self.assertEqual(article.attrs['id'],anchor)
+                total+=1
+        self.assertEqual(total,194)
+
+    def test_four_skin_contracts_and_relative_image_urls_at_every_depth(self):
+        for slug in ['button','input','component-lift','view-crossfade']:
+            entry=next(e for e in self.entries if e['slug']==slug)
+            for prefix in ['./assets/redesign/','../assets/redesign/','../../assets/redesign/','../../../assets/redesign/']:
+                html=self.demos.markup(entry['demo'],prefix,True,slug)
+                root=self.Document(html).root
+                template=root.one('template')
+                self.assertEqual(template.attrs['data-skin-css'],prefix+'demo-skins/'+entry['demo']['kind']+'-'+slug+'.css')
+                self.assertNotIn('{{demo-assets}}',html)
+                for image in root.find_all('img'):
+                    import posixpath
+                    expected=posixpath.normpath(prefix+'../../demo-assets')+'/'
+                    self.assertTrue(image.attrs['src'].startswith(expected))
+                    self.assertIn('640w',image.attrs['srcset'])
+                    self.assertIn('1280w',image.attrs['srcset'])
+                    for candidate in image.attrs['srcset'].split(','):
+                        self.assertTrue(candidate.strip().startswith(expected))
+            source=self.Document(self.demos.markup(entry['demo'],'./',True,slug)).root
+            if slug=='button':
+                buttons=source.find_all('button',cls='btn')
+                self.assertEqual(len(buttons),4)
+                self.assertEqual([b.attrs.get('data-arg') for b in buttons[:3]],['点击了主要按钮','这是次要按钮','确认删除？'])
+                self.assertEqual(buttons[3].attrs['id'],'copyDemoBtn')
+            elif slug=='input':
+                self.assertEqual([n.attrs['aria-label'] for n in source.find_all('input')],['姓名','邮箱'])
+                floating=source.one(cls='floatfield')
+                nodes=[n for n in floating.children if hasattr(n,'tag')]
+                self.assertEqual([n.tag for n in nodes],['input','span'])
+                self.assertEqual(nodes[0].attrs['placeholder'],' ')
+                self.assertIn('fflabel',nodes[1].attrs['class'])
+            elif slug=='component-lift':
+                self.assertEqual(source.one(cls='stage').attrs['data-effect'],slug)
+                self.assertEqual(source.one(cls='lift-card').tag,'button')
+                self.assertEqual(len(source.find_all('img')),1)
+            else:
+                stack=source.one(cls='scene-stack')
+                self.assertEqual(len(stack.find_all(cls='mini-view')),2)
+                self.assertEqual(len(stack.find_all('img')),2)
+                self.assertEqual(source.one('button').attrs['data-action'],'next')
+
+    def test_manifest_images_are_byte_identical_and_have_declared_sizes(self):
+        manifest=json.loads((ROOT/'site-src/demo-assets/manifest.json').read_text())
+        for image in manifest['images']:
+            for width,name in image['files'].items():
+                raw=(ROOT/'site-src/demo-assets'/name).read_bytes()
+                self.assertEqual(raw,(DIST/'demo-assets'/name).read_bytes())
+                self.assertEqual(raw[:4],b'RIFF')
+                self.assertEqual(raw[8:12],b'WEBP')
+                if raw[12:16]==b'VP8X':
+                    actual=(int.from_bytes(raw[24:27],'little')+1,int.from_bytes(raw[27:30],'little')+1)
+                elif raw[12:16]==b'VP8 ':
+                    self.assertEqual(raw[23:26],b'\x9d\x01\x2a')
+                    actual=(int.from_bytes(raw[26:28],'little') & 0x3fff,int.from_bytes(raw[28:30],'little') & 0x3fff)
+                else:
+                    self.fail(f'Unverified WebP encoding: {name}')
+                self.assertEqual(actual[0],int(width))
+                expected=round(image['height']*int(width)/image['width'])
+                self.assertLessEqual(abs(actual[1]-expected),1)
+
+    def test_public_sheets_are_not_embedded_in_kind_styles(self):
+        assets=self.demos.assets(self.entries)
+        for kind in self.demos.KINDS:
+            self.assertNotIn('Opaque backing preserves hint contrast',assets['demo-'+kind+'.css'])
+            self.assertNotIn('--ds-dur-scene:',assets['demo-'+kind+'.css'])
+        runtime=assets['demo-runtime.js']
+        positions=[runtime.index("['"+key+"', template.dataset.") for key in ['demo','spec','skin','a11y','state']]
+        self.assertEqual(positions,sorted(positions))
+        for name in ['demo-spec.css','demo-accessibility.css']:
+            self.assertIn(name,assets)
+
+    def test_reduced_motion_gate_is_idempotent_and_preserves_function_selectors(self):
+        gate=':host(:not([data-demo-motion-once]):not([data-demo-motion-step]))'
+        original='@media(prefers-reduced-motion:reduce){'+gate+' .lift-card{transform:none}.ds-stage :is(button,[role=button]):active{transform:none}}'
+        result=self.demos._gate_reduced_motion(original)
+        self.assertNotIn(gate+' '+gate,result)
+        self.assertIn('.ds-stage :is(button,[role=button]):active{',result)
+        self.assertEqual(result,self.demos._gate_reduced_motion(result))
+
+    def test_closed_drawer_is_contained_without_clipping_demo_content(self):
+        entry=next(e for e in self.entries if e['column']=='components' and e['slug']=='drawer')
+        markup=self.demos.markup(entry['demo'],'../../assets/redesign/',True,entry['slug'])
+        root=self.Document(markup).root
+        overlay=root.one(cls='ds-overlays')
+        nodes=[n for n in overlay.children if hasattr(n,'tag')]
+        self.assertEqual([node.attrs['id'] for node in nodes],['dmask','dpanel'])
+        self.assertIn('overflow:clip',(ROOT/'site-src/redesign/demo-spec.css').read_text().split('.ds-stage > .ds-overlays')[1].split('}')[0])

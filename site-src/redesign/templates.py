@@ -182,12 +182,12 @@ def not_found_page(entries, tax):
     return shell(page, '页面不存在', body, entries, tax)
 
 
-def demo_scope(demo, page, interactive=False):
+def demo_scope(demo, page, interactive=False, slug=''):
     attrs = ' data-interactive' if interactive else ' inert aria-hidden="true"'
-    markup = demos.markup({k:v for k,v in demo.items() if k != 'secondary'}, relative(page, "assets/redesign/") + '/', interactive)
+    markup = demos.markup({k:v for k,v in demo.items() if k != 'secondary'}, relative(page, "assets/redesign/") + '/', interactive, slug)
     if interactive and page.startswith('components/') and page.split('/')[1] in states.STATES:
         markup = markup.replace('data-demo-template ', f'data-demo-template data-state-css="{relative(page, "assets/redesign/states.css")}" ', 1)
-    return f'<div class="demo-scope" data-demo-kind="{demo["kind"]}" data-demo-key="{escape(demo.get("key", ""))}" data-demo-section="{demo.get("section", "")}"{attrs}>{markup}</div>'
+    return f'<div class="demo-scope" data-demo-kind="{demo["kind"]}" data-demo-slug="{escape(slug)}" data-demo-key="{escape(demo.get("key", ""))}" data-demo-section="{demo.get("section", "")}"{attrs}>{markup}</div>'
 
 
 
@@ -196,7 +196,7 @@ def gallery_card(e, page, compact=False):
     caption = f'<strong>{escape(e["zh"])}</strong><span class="english">{escape(e["en"])}</span><p>{escape(e["definition"].splitlines()[0])}</p>'
     if compact:
         caption = f'<strong>{escape(e["zh"])}</strong><span class="english">{escape(e["en"])}</span>'
-    return f'''<article class="gallery-card" data-demo-key="{e['slug']}"><div class="mini-stage">{demo_scope(e['demo'], page)}<button class="play-button" aria-label="播放{escape(e['zh'])}演示" aria-pressed="false">▶ 播放</button><span class="reduced-link">看演示 →</span></div><a class="gallery-link" href="{target}"><div class="gallery-caption">{caption}</div></a></article>'''
+    return f'''<article class="gallery-card" data-demo-key="{e['slug']}"><div class="mini-stage">{demo_scope(e['demo'], page, slug=e['slug'])}<button class="play-button" aria-label="播放{escape(e['zh'])}演示" aria-pressed="false">▶ 播放</button><span class="reduced-link">看演示 →</span></div><a class="gallery-link" href="{target}"><div class="gallery-caption">{caption}</div></a></article>'''
 
 
 def column_page(slug, entries, tax):
@@ -248,7 +248,7 @@ def detail(e, entries, tax):
     use_card = f'<aside class="use-card" aria-labelledby="use-card-title"><h2 id="use-card-title">使用卡</h2>{copy_button("copy-prompt",primary=True)}{criteria}<div class="use-actions">{copy_button("entry-english","复制英文名")}<button class="copy-btn" data-copy-link>复制本页链接</button></div>{bench}</aside>'
     def demonstration(demo):
         controls = '<div class="demo-controls"><button type="button" data-demo-replay>重播</button><button type="button" data-demo-slow aria-pressed="false">慢放 0.25 倍</button><button type="button" data-demo-step hidden>下一步</button><span class="reduced-note small" hidden>已开启减弱动态：点播放看一次</span></div>' if demo['kind'] in ('motion', 'ui', 'guide', 'token') else ''
-        return '<div class="entry-demo"><div class="demo-stage">' + demo_scope(demo, page, True) + '</div>' + controls + '</div>'
+        return '<div class="entry-demo"><div class="demo-stage">' + demo_scope(demo, page, True, e['slug']) + '</div>' + controls + '</div>'
     demonstrations = demonstration(e['demo'])
     if e.get('demo_hint'):
         demonstrations += f'<p class="small demo-hint">{escape(e["demo_hint"])}</p>'
@@ -314,6 +314,7 @@ def build(output, entries, tax):
     contents = {name:(HERE/name).read_text(encoding='utf-8') for name in ASSETS}
     contents.update(demos.assets(entries))
     for name, content in contents.items():
+        (assets/name).parent.mkdir(parents=True, exist_ok=True)
         (assets/name).write_text(content, encoding='utf-8')
     pages = {'index.html':home(entries,tax), '404.html':not_found_page(entries,tax), 'interactions/spec/index.html':spec_page(entries,tax), 'ai/prompt-writing/index.html':prompt_writing_page(entries,tax)}
     pages.update({f'{column["slug"]}/index.html':column_page(column['slug'],entries,tax) for column in tax['columns']})

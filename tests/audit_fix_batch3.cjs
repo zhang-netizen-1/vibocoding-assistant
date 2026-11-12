@@ -16,16 +16,18 @@ class Element {
   }
   setAttribute(key, value) { this.attributes.set(key,String(value)); }
   getAttribute(key) { return this.attributes.get(key) ?? null; }
-  hasAttribute(key) { return this.attributes.has(key); }
+  hasAttribute(key) { return this.attributes.has(key) || (key.startsWith('data-') && key.slice(5).replace(/-([a-z])/g,(_,c)=>c.toUpperCase()) in this.dataset); }
   removeAttribute(key) { this.attributes.delete(key); }
   addEventListener(type, fn) { this.listeners.set(type,[...(this.listeners.get(type) || []),fn]); }
   fire(type) { for (const fn of this.listeners.get(type) || []) fn(); }
-  append(...children) { this.children.push(...children); }
+  append(...children) { children.forEach(child => {child.remove();child.parentElement=this;this.children.push(child);}); }
+  remove() {if(this.parentElement)this.parentElement.children=this.parentElement.children.filter(child=>child!==this);this.parentElement=null;}
   before(wrapper) { this.wrapper = wrapper; }
   closest() { return null; }
   querySelectorAll() { return []; }
   querySelector() { return null; }
-  getBoundingClientRect() { return {width:94,height:40}; }
+  get offsetWidth() { return 94; }
+  getBoundingClientRect() { return {width:94 * .98,height:40}; }
   dispatchEvent() {}
 }
 
@@ -132,8 +134,8 @@ function scopeFixture(interactive = true, withFrame = false) {
     frame.src = './gallery.html'; frame.setAttribute('src','./gallery.html');
     frame.contentDocument = {querySelector:() => ({click() {frame.advances = (frame.advances || 0) + 1;}})};
   }
-  shadow.querySelectorAll = selector => selector === 'iframe' && frame ? [frame] : [];
-  shadow.querySelector = selector => selector === '.demo-root' ? shadow.body : selector === 'iframe' ? frame : null;
+  shadow.querySelectorAll = selector => selector === 'iframe' && frame ? [frame] : selector === 'link[data-demo-sheet]' ? shadow.children.filter(node=>node.tagName==='LINK') : [];
+  shadow.querySelector = selector => selector === '.demo-root' ? shadow.body : selector === 'iframe' ? frame : selector.startsWith('link[data-demo-sheet=') ? shadow.children.find(node=>node.dataset.demoSheet===selector.match(/="([^"]+)"/)[1]) || null : null;
   shadow.contains = child => shadow.children.includes(child);
   template.dataset.demoLoop = 'true';
   scope.children = [template]; scope.attachShadow = () => shadow; scope.shadowRoot = shadow;

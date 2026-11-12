@@ -64,7 +64,7 @@
   background: var(--demo-primary);
 }
 .demo-root :is(.stage-label, .canvas .ctl, .gesture-note, .preview-label, .scroll-top, .compare-label, .carousel-status, .shared-origin-label, .shared-destination-label, .rubber-zone small, .magnet-note, .cf-hint, .trail-hint, .eyes-note, .uline-note, .taghint, .ie-hint, .otp-hint, .tblhint, .hold-alt, .extra-magnifier-art small, .extra-timeline-label, .obj-card span, .pull-indicator) {
-  font-size: 13px !important;
+  font-size: 12px !important;
   line-height: 1.5;
   color: #4B5563 !important;
 }
@@ -73,8 +73,8 @@
   background: var(--demo-stage);
 }
 .demo-root .canvas .ctl { max-width: calc(100% - 28px); }
-.demo-root .canvas { padding-top: 52px; }
-.demo-root .stage { padding-top: 40px; }
+.demo-root:not(.ds-stage) .canvas { padding-top: 52px; }
+.demo-root:not(.ds-stage) .stage { padding-top: 40px; }
 /* Solid-background labels retain their original typography and geometry. */
 .demo-root .fflabel { color:var(--demo-secondary); }
 .demo-root #taCountNum { color:var(--demo-secondary) !important; }
@@ -113,9 +113,8 @@
 .demo-root .scene-description { white-space:normal;overflow-wrap:anywhere; }
 .demo-root :is(.tblfix-demo,.table-wrap,.mini-data-table) { max-width:100%;overflow:auto; }
 
-/* demo-runtime sizes the 312px gallery layout with layout-aware zoom. The
-   surrounding stage can grow while the entry link and play action stay fixed. */
-:host(:not([data-interactive])) .demo-root :is(.canvas,.stage,.guide-card-stage) { min-height:160px;height:auto;padding:36px 8px 12px; }
+/* Legacy fallback. Unified stages use their actual available width. */
+:host(:not([data-interactive])) .demo-root:not(.ds-stage) :is(.canvas,.stage,.guide-card-stage) { min-height:160px;height:auto;padding:36px 8px 12px; }
 :host(:not([data-interactive])) .demo-root .canvas .ctl { display:none; }
 :host(:not([data-interactive])) .demo-root :is(.btn-row,.btns) { display:flex;flex-wrap:wrap;gap:6px; }
 /* Keep this after the gallery stage sizing, with matching specificity, so the
@@ -146,3 +145,14 @@
 @media(hover:none), (pointer:coarse) {
   .demo-root :is(kbd,.cmdk-foot,.demo-shortcut-hint) { display:none; }
 }
+
+/* Public hint geometry wins over legacy backing and placement. */
+.demo-root.ds-stage .ds-hint {font-size:12px!important;color:var(--ds-ink-2)!important;background:var(--ds-surface)}
+.demo-root.ds-stage .ds-hint ~ .ds-hint {display:none}
+@media(max-width:767px){:host([data-interactive]) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:44px}}
+
+/* Sample content reserves room for hints anchored to the public stage. */
+.demo-root.ds-stage :is(.ds-button-demo,.ds-input-demo,.ds-lift-demo,.ds-crossfade-demo){position:static;padding-bottom:48px}
+.demo-root.ds-stage .ds-hint{position:absolute;inset:auto auto 16px 16px;max-width:calc(100% - 32px);margin:0;align-self:auto}
+@media(max-width:767px){:host([data-interactive]) .demo-root.ds-stage :is(.ds-button-demo,.ds-input-demo,.ds-lift-demo,.ds-crossfade-demo){padding-bottom:64px}}
+:host(:not([data-interactive])) .demo-root.ds-stage :is(.ds-button-demo,.ds-input-demo,.ds-lift-demo,.ds-crossfade-demo){padding-bottom:0}

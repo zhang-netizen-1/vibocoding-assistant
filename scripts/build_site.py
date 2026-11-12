@@ -42,6 +42,23 @@ import redirects
 LEGACY_ASSETS = ("favicon.svg", "bench.css")
 
 
+def demo_image_files():
+    """Manifest allowlist: never publish private originals or adjacent files."""
+    source = SITE_SOURCE / 'demo-assets'
+    images = json.loads((source / 'manifest.json').read_text())['images']
+    names = ['manifest.json']
+    for image in images:
+        if set(image['files']) != {'640', '1280'}:
+            raise ValueError(f"Missing image width: {image['id']}")
+        for name in image['files'].values():
+            if Path(name).name != name or not (source / name).is_file():
+                raise ValueError(f'Invalid demo image: {name}')
+            names.append(name)
+    if len(names) != len(set(names)):
+        raise ValueError('Duplicate demo image file')
+    return names
+
+
 def expected_build_files(entries):
     bench = SITE_SOURCE / "bench"
     files = {MARKER, "index.html", "skills/index.html", *(f"{section}/index.html" for section, *_ in PAGES), *(f"{slug}/index.html" for slug in GUIDES), *(f"assets/{name}" for name in LEGACY_ASSETS)}
@@ -51,6 +68,7 @@ def expected_build_files(entries):
     files.update(f"bench/assets/img/{path.name}" for path in (bench/"img").glob("*.jpg"))
     files.update(f"bench/{path.relative_to(bench)}" for path in (bench/"demos").rglob("*.html"))
     files.update(REDESIGN.generated_files(entries))
+    files.update('demo-assets/' + name for name in demo_image_files())
     return files
 
 
@@ -121,6 +139,10 @@ def build() -> None:
     subprocess.run([sys.executable, str(ROOT / "动效速查-src" / "build_motion_glossary.py")], check=True, cwd=ROOT)
     entries = ENTRY_ADAPTER.write_entries()
     prepare_output()
+    image_output = OUTPUT / 'demo-assets'
+    image_output.mkdir()
+    for name in demo_image_files():
+        shutil.copy2(SITE_SOURCE / 'demo-assets' / name, image_output / name)
     assets = OUTPUT / "assets"
     assets.mkdir()
     for name in LEGACY_ASSETS:
