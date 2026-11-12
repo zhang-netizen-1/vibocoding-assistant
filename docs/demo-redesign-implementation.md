@@ -358,3 +358,62 @@ node tests/demo_redesign_headless.cjs
 | 浏览器 1440 / 390 | Chromium 启动被沙箱拒绝，实际渲染待验 |
 
 执行期间使用 `output/demo-redesign/D/run.py` 包装构建和测试子进程，24 分钟后拒绝启动工作，26 分钟截止时强制结束对应进程组。本段全部工作在 24 分钟时限内结束。
+
+# 演示重做 E 段实施记录
+
+日期为 2026-11-13。本段按清单顺序完成 16 个 slug，每个条目各有独立 CSS 与 HTML 皮肤，共新增 32 份皮肤文件。六批分别完成 3、3、3、3、2、2 项，每批末尾均构建通过，最终重新构建与验证通过。生成站点仍为 217 页、192 条目，194 份主演示及 secondary 保留来源身份。
+
+## 完成的 slug 清单
+
+| 顺序 | 路径 / slug | 皮肤 | 精修内容 |
+|---|---|---|---|
+| 1 | `components/states` | `ui-states.css/html` | 保留全部 12 态及原标签顺序，统一按钮尺寸，12px 灰色状态标签，桌面四列、手机三列、窄缩略图两列网格 |
+| 2 | `scenarios/landing` | `guide-landing.css/html` | 中文创作工具落地页，价值说明、主动作、工作室图片与三个创作步骤，保留状态切换与窄版机制 |
+| 3 | `components/card` | `ui-card.css/html` | 工作室实图、阅读信息、中文标题与说明，16px 外圆角和双层静止 / 悬停阴影 |
+| 4 | `components/toast` | `ui-toast.css/html` | 触发后使用白底、shadow-3、成功图标、原提示标题及说明，连续触发复用同一反馈输出 |
+| 5 | `components/navbar` | `ui-navbar.css/html` | 中文站点名称、当前入口、登录入口和内容层级，保留 `.navbar`、`.brandw`、`.links` 及原导航项 |
+| 6 | `components/table` | `ui-table.css/html` | 成员表格承托面、表头、成员头像字、在线状态和页脚说明，保留原行列数据 |
+| 7 | `components/tabs` | `ui-tabs.css/html` | 白色信息面板、等宽标签、紫色选中指示、稳定内容区，保留全部 tab ID、键盘关系及命令 |
+| 8 | `components/switch` | `ui-switch.css/html` | 加入「自动保存」标签和说明，关联可读标签、44px 点击区、焦点环和原开启 / 关闭反馈 |
+| 9 | `components/select` | `ui-select.css/html` | 城市选择表单、常驻标签和说明，保留原生选择器、全部原选项与键盘交互 |
+| 10 | `components/hold-confirm` | `ui-hold-confirm.css/html` | 草稿上下文、危险操作按钮、进度填充、取消说明与等价入口，保留原长按时序及键盘处理 |
+| 11 | `interactions/view-slide` | `motion-view-slide.css/html` | 庭院与湖景双图、底部文字遮罩，保留双面板、200% 轨道和前进 / 返回方向切换 |
+| 12 | `interactions/view-curtain` | `motion-view-curtain.css/html` | 庭院主图与湖景图片幕布，保留原 curtain 遮罩动画和重播机制 |
+| 13 | `interactions/media-wipe` | `motion-media-wipe.css/html` | 庭院实图、中文标题和原说明，保留原遮罩揭示动画 |
+| 14 | `interactions/media-blur` | `motion-media-blur.css/html` | 客厅实图、中文标题和原说明，保留原模糊到清晰动画 |
+| 15 | `interactions/scroll-parallax` | `motion-scroll-parallax.css/html` | 同源庭院图片的远景层与渐变蒙版前景层，保留两层原滚动速度、滚动容器与进度条 |
+| 16 | `interactions/scroll-pin` | `motion-scroll-pin.css/html` | 三幅庭院图片按原滚动进度切换，保留 sticky 场景、三幕文字及退出路径，减弱动态下使用流式位置 |
+
+跳过条目为零。1440 / 390 的浏览器视觉验收仍待完成，具体阻塞见下文。
+
+## 规格与范围核对
+
+主体沿用 `--ds-subject-width`。以现有 1440px 页面对应的 725.333px 舞台计算，主体约 435.16px，占舞台约 60%。390px 页面对应 358px 舞台，主体不超过 320px，两侧各至少 19px。内容采用自然高度，长内容使舞台增高。以上为样式规则与尺寸推算，浏览器最终像素边界仍待验收。
+
+皮肤使用现有中文字体栈、中性底色、紫色强调、语义色、16 / 12 / 8px 圆角和双层阴影。状态网格使用标题、按钮、标签三级字阶。图片主体使用标题、正文和舞台提示三级字阶。图片来自现有 `site-src/demo-assets/`，均提供 640 / 1280 的 srcset、中文替代文本或装饰图空替代文本、主色占位、cover 裁切与内描边。视差前景使用同一张原图的蒙版层，未生成独立抠图资产。
+
+Toast 原运行时只输出纯文本。本段在 `demo-runtime.js` 中增加可选 `.ds-toast-output` 容器，仅该皮肤提供此容器。命中后构造图标、原消息标题和说明三个节点，使用 textContent 写入内容，复用原 output 与 aria-live。其他条目的反馈保持原输出路径。独立 Node 测试验证普通反馈、增强反馈、文本安全写入与连续触发复用。
+
+公共 `demo-spec.css`、`demo-accessibility.css`、类型皮肤、外框模板、页面样式、条目源数据、提示词与验收要求文件的基线 SHA-256 一致。各皮肤保留原提示父容器及 ctl / stage-label 位置，继续由既有公共机制将提示胶囊固定在舞台左下角。全部 150 个提示的父容器和双尺寸预留空间检查通过。
+
+## 测试同步与验证
+
+既有测试全部保留。类型皮肤覆盖数量同步为 ui 54、motion 68、guide 21、token 4、skill-reference 9，独立样板数量由 14 更新为 30，特殊风格排除仍为 6，总计仍为 192。
+
+新增 E 段检查覆盖全部 16 个皮肤的发布、来源选择器与交互属性、12 态标签及禁用态、表单关联、tab / hold 命令、八个图片条目在四层路径下的 srcset、主体宽度和圆角阴影。`demo_redesign_headless.cjs` 加入全部 16 条路径及状态网格、触发 Toast、开关、选择、标签、长按、滑移和滚动后的检查，保留原 A–D 段检查。
+
+| 最终验证 | 结果 |
+|---|---|
+| `scripts/build_site.py` | 通过，217 页、192 条目 |
+| `test_demo_audit` | 1 项通过 |
+| `test_redesign_tokens` | 15 项通过 |
+| `test_site_build` | 30 项通过 |
+| `node tests/token_demos.cjs` | 五类 token 的交互、计算、主题与存储回退通过 |
+| `test_redesign_javascript` | 13 项通过，包含 194 份演示初始化和 Toast 局部结构回归 |
+| `node tests/audit_fix_batch3.cjs` | 十组状态回调与减少动态生命周期通过 |
+| CSS / HTML / Python / JS | 35 份皮肤 CSS 经 PostCSS 解析通过，16 份新增 HTML 标签平衡，修改测试 Python AST、JS 语法和行尾空白检查通过 |
+| 1440 / 390 浏览器验收 | 环境阻塞，0 张截图，实际视觉效果及像素边界待验收 |
+
+最终构建与自动测试日志位于 `output/demo-redesign/E/`，汇总为 `verification.json`。Headless 使用工作区内 `dist/` 的 file URL，启动 Chromium 时收到 `MachPortRendezvousServer ... Permission denied (1100)`，在页面渲染前退出。错误保存于 `headless-attempt.log` 和 `headless-report.json`。浏览器预览通道另返回 `The browser access host is unavailable`。
+
+执行起点为本地时间 02:07:24。`output/demo-redesign/E/run.py` 使用同目录 `deadline.json`，02:31:24 后拒绝启动工作，运行中的构建与验证进程组在 02:33:24 截止时强制结束。本段实施、构建、验证与记录均在 24 分钟工作时限内完成。

@@ -19,7 +19,12 @@ const routes = [
   'components/button/', 'components/input/', 'interactions/component-lift/', 'interactions/view-crossfade/',
   'components/modal/', 'components/tooltip/', 'interactions/scroll-reveal/', 'basics/grid/',
   'components/skeleton/', 'components/carousel/',
-  'basics/color/', 'components/color/', 'scenarios/dashboard/', 'ai/skills/frontend-design/'
+  'basics/color/', 'components/color/', 'scenarios/dashboard/', 'ai/skills/frontend-design/',
+  'components/states/', 'scenarios/landing/', 'components/card/', 'components/toast/',
+  'components/navbar/', 'components/table/', 'components/tabs/', 'components/switch/',
+  'components/select/', 'components/hold-confirm/', 'interactions/view-slide/',
+  'interactions/view-curtain/', 'interactions/media-wipe/', 'interactions/media-blur/',
+  'interactions/scroll-parallax/', 'interactions/scroll-pin/'
 ];
 const galleries = ['basics/', 'components/', 'interactions/', 'scenarios/', 'ai/'];
 const report = {started: new Date().toISOString(), checks: [], failures: [], pageErrors: [], resourceErrors: [], screenshots: [], galleries: []};
@@ -230,10 +235,80 @@ async function crossfadeChecks(page, label) {
   await page.waitForTimeout(800); const final = await layers();
   await check(`${label}: rapid toggle settles`, () => {assert.equal(final.filter(l=>l.hidden==='false'&&l.opacity>.98).length,1); assert.equal(final.filter(l=>l.hidden==='true'&&l.opacity<.02).length,1); assert.equal(final[0].hidden,initial[0].hidden); return final;});
 }
+async function batchEChecks(page, route, width) {
+  const scope = page.locator('.demo-scope[data-interactive]').first();
+  if (route === 'components/states/') {
+    const sizes = await scope.locator('.st-btn').evaluateAll(nodes => nodes.map(node => {
+      const r = node.getBoundingClientRect();
+      return {width:r.width,height:r.height};
+    }));
+    assert.equal(sizes.length,12);
+    assert.ok(sizes.every(size => Math.abs(size.width-sizes[0].width)<1 && Math.abs(size.height-sizes[0].height)<1));
+    const labels = await scope.locator('.st-lbl').evaluateAll(nodes => nodes.map(node => getComputedStyle(node).fontSize));
+    assert.ok(labels.every(size => size === '12px'));
+  }
+  if (route === 'components/toast/') {
+    const trigger = scope.locator('[data-cmd="toast"]');
+    await trigger.click();
+    const toast = scope.locator('.ds-toast-output .demo-status');
+    assert.equal(await toast.locator('.ds-toast-title').textContent(), await trigger.getAttribute('data-arg'));
+    assert.ok(await toast.locator('.ds-toast-description').textContent());
+    const style = await toast.evaluate(node => ({background:getComputedStyle(node).backgroundColor,shadow:getComputedStyle(node).boxShadow}));
+    assert.equal(style.background,'rgb(255, 255, 255)');
+    assert.notEqual(style.shadow,'none');
+    await trigger.click();
+    assert.equal(await scope.locator('.demo-status').count(),1);
+  }
+  if (route === 'components/switch/') {
+    const input = scope.locator('.switch input');
+    const initial = await input.isChecked();
+    await scope.locator('label[for="ds-autosave"]').click();
+    assert.equal(await input.isChecked(),!initial);
+    await input.focus(); await page.keyboard.press('Space');
+    assert.equal(await input.isChecked(),initial);
+  }
+  if (route === 'components/select/') {
+    await scope.locator('select.i').selectOption({label:'上海'});
+    assert.equal(await scope.locator('select.i option:checked').textContent(),'上海');
+  }
+  if (route === 'components/tabs/') {
+    await scope.locator('#tab-reviews').click();
+    assert.equal(await scope.locator('#tab-reviews').getAttribute('aria-selected'),'true');
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await scope.locator('#tab-help').getAttribute('aria-selected'),'true');
+  }
+  if (route === 'components/hold-confirm/') {
+    const button = scope.locator('#holdBtn');
+    await button.focus(); await page.keyboard.down('Enter');
+    await page.waitForTimeout(200); await page.keyboard.up('Enter');
+    assert.equal(await button.evaluate(node=>node.classList.contains('completed')),false);
+    await page.waitForTimeout(1250);
+    await page.keyboard.down('Enter'); await page.waitForTimeout(1050);
+    await page.keyboard.up('Enter');
+    assert.equal(await button.evaluate(node=>node.classList.contains('completed')),true);
+  }
+  if (route === 'interactions/view-slide/') {
+    const track = scope.locator('.view-track');
+    await scope.locator('[data-action="next"]').click();
+    assert.equal(await track.evaluate(node=>node.classList.contains('next')),true);
+    await scope.locator('[data-action="next"]').click();
+    assert.equal(await track.evaluate(node=>node.classList.contains('next')),false);
+  }
+  if (route === 'interactions/scroll-pin/' || route === 'interactions/scroll-parallax/') {
+    await scope.locator('.mini-scroll').evaluate(node => {node.scrollTop=node.scrollHeight;node.dispatchEvent(new Event('scroll'));});
+    if (route === 'interactions/scroll-pin/') {
+      assert.equal(await scope.locator('.pin-scene>strong').textContent(),'第三幕');
+      assert.equal(await scope.locator('.ds-pin-image-3').evaluate(node=>getComputedStyle(node).opacity),'1');
+    }
+  }
+  const audit = await page.evaluate(layoutAudit);
+  assert.equal(audit.pageOverflow,false,JSON.stringify({route,width,audit}));
+  assert.deepEqual(audit.failures,[],JSON.stringify({route,width,audit}));
+}
 async function specimenGeometry(page) {
   const result=await page.locator('.demo-scope[data-interactive]').first().evaluate(scope=>{
     const root=scope.shadowRoot.querySelector('.ds-stage');
-    const subject=root.querySelector('.ds-surface,.lift-card,.mini-scroll,.carousel,.token-demo,.mini-page,.skill-card');
+    const subject=root.querySelector('.ds-surface,.lift-card,.mini-scroll,.carousel,.token-demo,.mini-page,.skill-card,.ds-states-panel,.card2,.ds-toast-panel,.ds-navbar-panel,.ds-table-panel,.ds-tabs-panel,.ds-switch-panel,.ds-select-panel,.ds-hold-panel,.scene-window,.scene-curtain,.art');
     const hint=root.querySelector('.ds-hint');
     const r=root.getBoundingClientRect(),s=subject.getBoundingClientRect(),h=hint?.getBoundingClientRect();
     const style=getComputedStyle(root);
@@ -431,6 +506,7 @@ function catalogInventory() {
         if(route.includes('view-crossfade')) await crossfadeChecks(page,label);
         await batchBChecks(page,route,label,width===390);
         await batchCChecks(page,route);
+        await batchEChecks(page,route,width);
       });
       await check(`${label}: screenshot`, async () => {
         const file=path.join(shots,`${route.replaceAll('/','-').replace(/-$/,'')}-${width}.png`);

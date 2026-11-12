@@ -79,8 +79,28 @@
       getSelection: () => nativeWindow.getSelection(), clipboardData: nativeWindow.clipboardData};
     function toast(message) {
       let output = shadow.querySelector('.demo-status');
-      if (!output) {output = nativeDocument.createElement('output');output.className = 'demo-status';output.setAttribute('aria-live', 'polite');body.append(output);}
+      const preview = shadow.querySelector('.ds-toast-output');
+      if (!output) {
+        output = nativeDocument.createElement('output');
+        output.className = 'demo-status';
+        output.setAttribute('aria-live', 'polite');
+        (preview || body).append(output);
+      }
       output.textContent = message;
+      if (preview) {
+        const icon = nativeDocument.createElement('span');
+        icon.className = 'ds-toast-icon';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = '✓';
+        const title = nativeDocument.createElement('strong');
+        title.className = 'ds-toast-title';
+        title.textContent = message;
+        const description = nativeDocument.createElement('span');
+        description.className = 'ds-toast-description';
+        description.textContent = preview.dataset.toastDescription;
+        output.textContent = '';
+        output.append(icon, title, description);
+      }
     }
     function mount() {
       // Keep already-loaded stylesheet links across remounts (replay, reset,

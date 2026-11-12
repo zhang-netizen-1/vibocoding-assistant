@@ -1,0 +1,13 @@
+.demo-root .stage[data-effect="view-slide"] { flex-direction:column; gap:16px; }
+.demo-root .stage[data-effect="view-slide"] .scene-window { width:min(100%,var(--ds-subject-width)); height:auto; min-height:240px; border:1px solid rgb(17 24 39 / .08); border-radius:16px; background:var(--ds-surface); box-shadow:var(--ds-shadow-1); overflow:hidden; }
+.demo-root .stage[data-effect="view-slide"] .view-track { display:flex; width:200%; height:auto; align-items:stretch; }
+.demo-root .stage[data-effect="view-slide"] .scene-window .scene-slide { position:relative; display:flex; flex:0 0 50%; min-width:0; min-height:240px; align-items:flex-start; justify-content:flex-end; gap:8px; padding:24px; background:#60625E; color:#fff; }
+.stage[data-effect="view-slide"] .scene-slide::after { content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,transparent 10%,rgb(0 0 0 / .6) 55%,rgb(0 0 0 / .6)); box-shadow:inset 0 0 0 1px rgb(17 24 39 / .06); pointer-events:none; }
+.stage[data-effect="view-slide"] .scene-slide .ds-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:0; }
+.demo-root .stage[data-effect="view-slide"] .scene-slide strong { position:relative; z-index:2; color:#fff; font:600 var(--ds-demo-heading)/1.5 var(--ds-font); }
+.demo-root .stage[data-effect="view-slide"] .scene-slide .scene-description { position:relative; z-index:2; color:#fff; font:400 14px/1.6 var(--ds-font); }
+.demo-root .stage[data-effect="view-slide"]>button { min-height:var(--ds-demo-control); padding:8px 16px; border:1px solid var(--ds-border); border-radius:8px; background:var(--ds-surface); color:var(--ds-ink); font:500 14px/1.5 var(--ds-font); box-shadow:var(--ds-shadow-1); }
+.demo-root .stage[data-effect="view-slide"]>button:hover { background:var(--ds-fill); }
+@container demo-stage (max-width:480px) { .demo-root .stage[data-effect="view-slide"] .scene-window .scene-slide { padding:20px; min-height:220px; } }
+:host(:not([data-interactive])) .stage[data-effect="view-slide"]>button { display:none; }
+:host(:not([data-interactive])) .demo-root .stage[data-effect="view-slide"] .scene-window .scene-slide { padding:16px; min-height:180px; }

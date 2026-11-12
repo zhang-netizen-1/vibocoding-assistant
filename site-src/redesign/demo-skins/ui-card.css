@@ -1,0 +1,16 @@
+.demo-root .canvas .card2 {
+  width:min(100%,var(--ds-subject-width)); border:1px solid rgb(17 24 39 / .08);
+  border-radius:16px; background:var(--ds-surface); color:var(--ds-ink);
+  box-shadow:var(--ds-shadow-1); overflow:hidden;
+  transition:box-shadow var(--ds-dur-fast) var(--ds-ease-standard);
+}
+.demo-root .card2:hover { box-shadow:var(--ds-shadow-2); }
+.demo-root .card2 .img { position:relative; height:auto; aspect-ratio:16/9; background:#8C7A68; overflow:hidden; }
+.demo-root .card2 .img::after { content:""; position:absolute; inset:0; border:1px solid rgb(17 24 39 / .06); pointer-events:none; }
+.demo-root .card2 .img .ds-img { width:100%; height:100%; object-fit:cover; border-radius:0; }
+.demo-root .card2 .body { padding:24px; }
+.ds-card-meta { color:var(--ds-ink-3); font:400 12px/1.5 var(--ds-font); }
+.demo-root .card2 h3 { margin:8px 0; color:var(--ds-ink); font:600 var(--ds-demo-heading)/1.5 var(--ds-font); }
+.demo-root .card2 p { margin:0; color:var(--ds-ink-2); font:400 14px/1.6 var(--ds-font); }
+@container demo-stage (max-width:480px) { .demo-root .card2 .body { padding:16px; } }
+:host(:not([data-interactive])) .demo-root .card2 p { display:none; }

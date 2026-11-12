@@ -1,0 +1,22 @@
+.ds-table-panel { width:min(100%,var(--ds-subject-width)); overflow:hidden; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); box-shadow:var(--ds-shadow-1); }
+.ds-table-panel header { display:flex; flex-direction:column; gap:4px; padding:24px; text-align:left; }
+.ds-table-panel header strong { color:var(--ds-ink); font:600 var(--ds-demo-heading)/1.5 var(--ds-font); }
+.ds-table-panel header span { color:var(--ds-ink-3); font:400 12px/1.5 var(--ds-font); }
+.demo-root .ds-table-panel .t { width:100%; margin:0; border:0; border-collapse:collapse; table-layout:fixed; color:var(--ds-ink); font:400 14px/1.5 var(--ds-font); }
+.demo-root .ds-table-panel .t th { padding:12px 24px; border:0; border-block:1px solid var(--ds-line); background:var(--ds-fill); color:var(--ds-ink-2); font:500 12px/1.5 var(--ds-font); text-align:left; }
+.demo-root .ds-table-panel .t td { padding:16px 24px; border:0; border-bottom:1px solid var(--ds-line); text-align:left; }
+.demo-root .ds-table-panel .t th:first-child { width:42%; }
+.demo-root .ds-table-panel .t tbody tr:nth-child(even) { background:#fafafa; }
+.ds-member { display:flex; align-items:center; gap:8px; white-space:nowrap; }
+.ds-member-avatar { display:grid; place-items:center; flex:none; width:28px; height:28px; border-radius:999px; background:var(--ds-accent-50); color:var(--ds-accent); font:500 12px/1.5 var(--ds-font); }
+.ds-avatar-neutral { background:var(--ds-fill); color:var(--ds-ink-2); }
+.ds-member-status { display:inline-flex; align-items:center; gap:6px; color:var(--ds-ink-2); white-space:nowrap; font-size:12px; }
+.ds-member-status::before { content:""; width:6px; height:6px; border-radius:999px; background:var(--ds-border); }
+.ds-online { color:var(--ds-success); }
+.ds-online::before { background:var(--ds-success); }
+.ds-table-panel footer { padding:12px 24px; color:var(--ds-ink-3); font:400 12px/1.5 var(--ds-font); text-align:left; }
+@container demo-stage (max-width:480px) {
+  .ds-table-panel header { padding:16px; }
+  .demo-root .ds-table-panel .t :is(th,td) { padding:12px; }
+  .ds-table-panel footer { padding:12px; }
+}

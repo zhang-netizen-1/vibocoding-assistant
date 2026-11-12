@@ -264,3 +264,31 @@ class RedesignTokensTest(unittest.TestCase):
             self.assertNotIn('!important',css,name)
             self.assertIn('var(--ds-shadow-1)',css if name!='ui-color' else (REDESIGN/'demo-spec.css').read_text(),name)
         self.assertIn('.demo-root.ds-stage .skill-card dt',(skins/'skill-reference-frontend-design.css').read_text())
+
+
+    def test_e_skins_keep_spec_geometry_and_state_grid(self):
+        skins = REDESIGN / 'demo-skins'
+        names = ('ui-states', 'guide-landing', 'ui-card', 'ui-toast', 'ui-navbar',
+                 'ui-table', 'ui-tabs', 'ui-switch', 'ui-select', 'ui-hold-confirm',
+                 'motion-view-slide', 'motion-view-curtain', 'motion-media-wipe',
+                 'motion-media-blur', 'motion-scroll-parallax', 'motion-scroll-pin')
+        for name in names:
+            css = (skins / (name + '.css')).read_text()
+            self.assertIn('width:min(100%,var(--ds-subject-width))', css, name)
+            self.assertIn('var(--ds-shadow-1)', css, name)
+            self.assertIn('border-radius:16px', css, name)
+            self.assertNotRegex(css, r'(?<![\w-])font-size:\s*(?:[0-9]|1[01])px')
+            self.assertNotRegex(css, r'https?://|@import|@font-face')
+        states = (skins / 'ui-states.css').read_text()
+        self.assertIn('grid-template-columns:repeat(4,minmax(0,1fr))', states)
+        self.assertIn('grid-template-columns:repeat(3,minmax(0,1fr))', states)
+        self.assertIn('color:var(--ds-ink-3); font:400 12px', states)
+        self.assertIn('height:var(--ds-demo-control); min-height:44px', states)
+        self.assertIn('var(--ds-shadow-3)', (skins / 'ui-toast.css').read_text())
+        for stage, inset in ((725.333,32),(358,16)):
+            available = stage - 2 - 2 * inset
+            width = min(available, max(420, min(available*.66,560))) if stage >= 640 else min(available,320)
+            self.assertGreaterEqual((stage-width)/2,16)
+            if stage >= 640:
+                self.assertGreaterEqual(width/stage,.55)
+                self.assertLessEqual(width/stage,.66)

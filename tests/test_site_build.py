@@ -666,8 +666,8 @@ class BatchCKindSkinTest(unittest.TestCase):
             else:
                 skips+=1
                 self.assertIn(entry['slug'],self.demos.KIND_SKIN_SKIPS.get(kind,()))
-        self.assertEqual(counts,{'ui':63,'motion':74,'guide':22,'token':4,'skill-reference':9})
-        self.assertEqual(samples,14)
+        self.assertEqual(counts,{'ui':54,'motion':68,'guide':21,'token':4,'skill-reference':9})
+        self.assertEqual(samples,30)
         self.assertEqual(skips,6)
         self.assertEqual(sum(counts.values())+samples+skips,192)
 
@@ -703,3 +703,94 @@ class BatchCKindSkinTest(unittest.TestCase):
         self.assertIn('.scroll-spacer{height:16px}',(skins/'motion-scroll-reveal.css').read_text())
         self.assertEqual((skins/'guide-grid.html').read_text().count('class="ds-grid-card"'),6)
         self.assertIn('nth-child(n+5)',(skins/'guide-grid.css').read_text())
+
+
+class BatchESkinTest(unittest.TestCase):
+    setUpClass = classmethod(DemoSpecBuildTest.setUpClass.__func__)
+    SLUGS = ('states', 'landing', 'card', 'toast', 'navbar', 'table', 'tabs',
+             'switch', 'select', 'hold-confirm', 'view-slide', 'view-curtain',
+             'media-wipe', 'media-blur', 'scroll-parallax', 'scroll-pin')
+
+    def test_e_skins_keep_source_selectors_and_behavior_attributes(self):
+        for slug in self.SLUGS:
+            with self.subTest(slug=slug):
+                entry = next(row for row in self.entries if row['slug'] == slug)
+                source = self.Document(entry['demo']['html']).root
+                markup = self.demos.markup(entry['demo'], '../../assets/redesign/', True, slug)
+                result = self.Document(markup).root
+                template = result.one('template')
+                skin = entry['demo']['kind'] + '-' + slug
+                self.assertEqual(template.attrs['data-skin-css'], '../../assets/redesign/demo-skins/' + skin + '.css')
+                self.assertNotIn('data-kind-css', template.attrs)
+                self.assertIn('data-ds-sample', result.one('article').attrs)
+                nodes = result.find_all()
+                for original in source.find_all():
+                    classes = set(original.attrs.get('class', '').split())
+                    candidates = [node for node in nodes if node.tag == original.tag and
+                                  classes <= set(node.attrs.get('class', '').split())]
+                    protected = {key: value for key, value in original.attrs.items()
+                                 if key == 'id' or key.startswith('data-') or
+                                 key in ('role', 'aria-controls', 'aria-label', 'tabindex', 'checked', 'disabled')}
+                    self.assertTrue(any(all(node.attrs.get(key) == value and key in node.attrs
+                                           for key, value in protected.items()) for node in candidates),
+                                    (slug, original.tag, original.attrs))
+                hints = result.find_all(cls='ds-hint')
+                self.assertEqual(len(hints), 0 if slug == 'landing' else 1)
+                if hints:
+                    self.assertIn(hints[0], result.one(cls='stage' if entry['demo']['kind'] == 'motion' else 'canvas').children)
+                css = (ROOT / 'site-src/redesign/demo-skins' / (skin + '.css')).read_text()
+                self.assertNotIn('.ds-hint', css)
+                self.assertIn('var(--ds-subject-width)', css)
+                self.assertIn('var(--ds-shadow-1)', css)
+                self.assertEqual((DIST / 'assets/redesign/demo-skins' / (skin + '.css')).read_text(),
+                                 self.demos.assets(self.entries)['demo-skins/' + skin + '.css'])
+
+    def test_e_real_images_have_responsive_paths_and_manifest_sources(self):
+        import posixpath
+        names = {name for image in json.loads((ROOT / 'site-src/demo-assets/manifest.json').read_text())['images']
+                 for name in image['files'].values()}
+        expected = {'landing':1, 'card':1, 'view-slide':2, 'view-curtain':2,
+                    'media-wipe':1, 'media-blur':1, 'scroll-parallax':2, 'scroll-pin':3}
+        for slug, count in expected.items():
+            entry = next(row for row in self.entries if row['slug'] == slug)
+            for depth in range(4):
+                prefix = '../' * depth + 'assets/redesign/'
+                markup = self.demos.markup(entry['demo'], prefix, True, slug)
+                self.assertNotIn('{{demo-assets}}', markup)
+                images = self.Document(markup).root.find_all('img')
+                self.assertEqual(len(images), count, slug)
+                base = posixpath.normpath(prefix + '../../demo-assets') + '/'
+                for image in images:
+                    self.assertIn('alt', image.attrs)
+                    self.assertTrue(image.attrs['src'].startswith(base))
+                    self.assertIn(image.attrs['src'].split('/')[-1], names)
+                    self.assertIn('640w', image.attrs['srcset'])
+                    self.assertIn('1280w', image.attrs['srcset'])
+                    for candidate in image.attrs['srcset'].split(','):
+                        self.assertTrue(candidate.strip().startswith(base))
+
+    def test_e_states_labels_select_tabs_and_hold_contracts(self):
+        def root(slug):
+            entry = next(row for row in self.entries if row['slug'] == slug)
+            return self.Document(self.demos.markup(entry['demo'], './', True, slug)).root
+        states = root('states')
+        self.assertEqual(len(states.find_all(cls='st-btn')), 12)
+        self.assertEqual([node.text() for node in states.find_all(cls='st-lbl')],
+                         ['default', ':hover', ':active', 'pressed', ':focus', 'selected',
+                          ':disabled', 'readonly', 'loading', 'success', 'error', 'warning'])
+        self.assertIn('disabled', states.one(cls='dis').attrs)
+        toggle = root('switch')
+        checkbox = toggle.one('input')
+        self.assertEqual(checkbox.attrs['data-cmd'], 'toastChecked')
+        self.assertEqual(next(node for node in toggle.find_all('label') if node.attrs.get('id') == checkbox.attrs['aria-labelledby']).text(), '自动保存')
+        self.assertEqual(checkbox.attrs['id'], 'ds-autosave')
+        select = root('select')
+        self.assertEqual([node.text() for node in select.find_all('option')], ['请选择城市…', '北京', '上海', '深圳'])
+        self.assertEqual(select.one('label').attrs['for'], select.one('select').attrs['id'])
+        tabs = root('tabs')
+        self.assertEqual([node.attrs['data-arg'] for node in tabs.find_all(cls='tab')], ['0','1','2'])
+        self.assertEqual(tabs.one(cls='tab-panel').attrs['id'], 'tp')
+        hold = root('hold-confirm')
+        self.assertEqual(hold.one(cls='holdbtn').attrs['id'], 'holdBtn')
+        self.assertEqual(hold.one(cls='hold-alt').attrs['data-arg'], '已通过普通按钮删除（演示）')
+        self.assertIsNotNone(root('toast').one(cls='ds-toast-output').attrs.get('data-toast-description'))

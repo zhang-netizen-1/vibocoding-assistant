@@ -263,3 +263,59 @@ for (const [query,slug] of [['浮起来','component-lift'],['弹出来的小黑�
 """
         result = subprocess.run(['node','-e',code],cwd=ROOT,text=True,capture_output=True)
         self.assertEqual(result.returncode,0,result.stderr)
+
+
+class BatchEToastRuntimeTest(unittest.TestCase):
+    def test_toast_structure_is_scoped_and_reuses_the_existing_output(self):
+        code = r'''
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const runtime = fs.readFileSync('site-src/redesign/demo-runtime.js','utf8');
+const start = runtime.indexOf('    function toast(message) {');
+const end = runtime.indexOf('    function mount() {',start);
+assert.ok(start>=0 && end>start);
+class Element {
+  constructor(tag) { this.tag=tag; this.children=[]; this.attrs={}; this.dataset={}; }
+  setAttribute(name,value) { this.attrs[name]=value; }
+  set textContent(value) { this.text=String(value); this.children=[]; }
+  get textContent() { return this.text || this.children.map(child=>child.textContent).join(''); }
+  append(...children) { this.children.push(...children); }
+}
+function model(withPreview) {
+  const body = new Element('article');
+  const preview = withPreview ? new Element('div') : null;
+  if (preview) { preview.dataset.toastDescription='操作已完成，可以继续当前工作。'; body.append(preview); }
+  const shadow = {querySelector(selector) {
+    if (selector==='.ds-toast-output') return preview;
+    return [...body.children,...(preview?.children || [])].find(node=>node.className==='demo-status') || null;
+  }};
+  const context = {shadow,body,nativeDocument:{createElement:tag=>new Element(tag)}};
+  vm.createContext(context);
+  vm.runInContext(runtime.slice(start,end)+'this.renderToast=toast;',context);
+  return {body,preview,render:context.renderToast};
+}
+const plain = model(false);
+plain.render('已开启'); plain.render('已关闭');
+assert.equal(plain.body.children.length,1);
+assert.equal(plain.body.children[0].textContent,'已关闭');
+assert.equal(plain.body.children[0].attrs['aria-live'],'polite');
+const specimen = model(true);
+const message = '<b>这是一条提示 ✔</b>';
+specimen.render(message);
+const output = specimen.preview.children[0];
+assert.equal(output.children.length,3);
+assert.equal(output.children[0].className,'ds-toast-icon');
+assert.equal(output.children[0].attrs['aria-hidden'],'true');
+assert.equal(output.children[1].className,'ds-toast-title');
+assert.equal(output.children[1].textContent,message);
+assert.equal(output.children[2].className,'ds-toast-description');
+assert.equal(output.children[2].textContent,specimen.preview.dataset.toastDescription);
+specimen.render('第二条反馈');
+assert.equal(specimen.preview.children.length,1);
+assert.equal(specimen.preview.children[0],output);
+assert.equal(output.children[1].textContent,'第二条反馈');
+console.log('Scoped toast icon/title/description, plain feedback and output reuse passed.');
+'''
+        result = subprocess.run(['node', '-e', code], cwd=ROOT, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
