@@ -9,19 +9,22 @@
     if (!template) return {reset() {}, preview() {return false;}};
     const shadow = scope.shadowRoot || scope.attachShadow({mode: 'open'});
     let previewMode = false, playbackSpeed = 1, playbackStart = performance.now();
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let motionTimer = null, motionDuration = 3000, manualPhase = 0;
     const virtualNow=()=>playbackStart+(performance.now()-playbackStart)*playbackSpeed;
     function applyPlayback(){body?.getAnimations?.({subtree:true}).forEach(animation=>{animation.playbackRate=playbackSpeed;});}
     let lifetime = null, implementation = null, body = null, dead = false;
     const timers = new Set(), intervals = new Set(), frames = new Set(), cleanup = [];
     const nativeWindow = window, nativeDocument = document;
-    function clearResources() {
+    function clearResources({preserveCssAnimations = false, preserveFrames = false} = {}) {
+      nativeWindow.clearTimeout(motionTimer); motionTimer = null;
       lifetime?.abort(); lifetime = null;
       timers.forEach(id => nativeWindow.clearTimeout(id)); timers.clear();
       intervals.forEach(id => nativeWindow.clearInterval(id)); intervals.clear();
       frames.forEach(id => nativeWindow.cancelAnimationFrame(id)); frames.clear();
       cleanup.splice(0).forEach(dispose => dispose());
-      shadow.getAnimations?.({subtree: true}).forEach(animation => animation.cancel());
-      shadow.querySelectorAll('iframe').forEach(frame => {frame.src = 'about:blank';});
+      if (!preserveCssAnimations) shadow.getAnimations?.({subtree: true}).forEach(animation => animation.cancel());
+      if (!preserveFrames) shadow.querySelectorAll('iframe').forEach(frame => {frame.src = 'about:blank';});
       implementation = null;
     }
     const setTimeout = (fn, ms, ...args) => {
@@ -29,9 +32,15 @@
       timers.add(id); return id;
     };
     const clearTimeout = id => {nativeWindow.clearTimeout(id); timers.delete(id);};
-    const setInterval = (fn, ms, ...args) => {const id = nativeWindow.setInterval(() => {if (!dead) {fn(...args);applyPlayback();}}, ms/playbackSpeed); intervals.add(id); return id;};
+    const setInterval = (fn, ms, ...args) => {
+      if (reduced.matches && !previewMode) return 0;
+      const id = nativeWindow.setInterval(() => {if (!dead) {fn(...args);applyPlayback();}}, ms/playbackSpeed);
+      intervals.add(id);
+      return id;
+    };
     const clearInterval = id => {nativeWindow.clearInterval(id); intervals.delete(id);};
     const requestAnimationFrame = fn => {
+      if(reduced.matches&&!previewMode)return 0;
       const id = nativeWindow.requestAnimationFrame(now => {frames.delete(id); if (!dead) {fn(virtualNow());applyPlayback();}});
       frames.add(id); return id;
     };
@@ -39,7 +48,11 @@
     function matchMedia(query) {
       const media = nativeWindow.matchMedia(query);
       return {
-        get matches() {return previewMode && query.includes('pointer: coarse') ? false : media.matches;}, media: media.media,
+        get matches() {
+          const previewQuery = query.includes('pointer: coarse') || query.includes('prefers-reduced-motion');
+          return previewMode && previewQuery ? false : media.matches;
+        },
+        media: media.media,
         addEventListener(type, listener, options) {media.addEventListener(type, listener, options); cleanup.push(() => media.removeEventListener(type, listener, options));},
         removeEventListener(type, listener, options) {media.removeEventListener(type, listener, options);}
       };
@@ -86,7 +99,13 @@
       primeVirtualList();
       particlePreview(false);
       fitGallery();
-      link.addEventListener('load',()=>{if(!shadow.contains(link))return;if(!scope.hasAttribute('data-demo-playing'))primeVirtualList();fitGallery();},{once:true});
+      link.addEventListener('load', () => {
+        if (!shadow.contains(link)) return;
+        if (!scope.hasAttribute('data-demo-playing')) primeVirtualList();
+        fitGallery();
+        if (scope.hasAttribute('data-demo-motion-once')) scheduleMotionEnd();
+        if (scope.hasAttribute('data-demo-motion-step')) renderManualPhase();
+      }, {once:true});
       const miniStage=scope.closest('.mini-stage');
       if(miniStage&&typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>{if(!scope.isConnected){observer.disconnect();return;}fitGallery();});observer.observe(miniStage);cleanup.push(()=>observer.disconnect());}
     }
@@ -135,7 +154,12 @@
       return implementation;
     }
     function reset() {
-      dead = true;clearResources();previewMode=false;mount();
+      dead = true;
+      clearResources();
+      previewMode = false;
+      scope.removeAttribute('data-demo-motion-once');
+      scope.removeAttribute('data-demo-motion-step');
+      mount();
       if (activePreview === controller) activePreview = null;
       scope.querySelectorAll(':scope > .demo-secondary').forEach(child => init(child).reset());
     }
@@ -164,23 +188,42 @@
       function move() {pointer(target,'pointermove',.5+Math.sin(step/7)*.3,.5+Math.cos(step/7)*.23);if((step+=playbackSpeed)<45)requestAnimationFrame(move);}
       requestAnimationFrame(move);return true;
     }
-    function particlePreview(loop=true) {
+    function particlePreview(loop=true, phase=0) {
       const canvas = shadow.querySelector('.particles canvas,canvas.particle-canvas,canvas');
       if (!canvas) return false;
       const context = canvas.getContext('2d');if (!context) return false;
-      const dots=Array.from({length:32},(_,i)=>({x:(i*71%616)+2,y:(i*53%256)+2,vx:(i%5-2)*.14,vy:(i%3-1)*.17,r:(i%3)+1}));
+      const dots=Array.from({length:32},(_,i)=>({x:((i*71+phase*87)%616)+2,y:((i*53+phase*43)%256)+2,vx:(i%5-2)*.14,vy:(i%3-1)*.17,r:(i%3)+1}));
       const color=getComputedStyle(scope).getPropertyValue('--demo-primary').trim()||'#6D28D9';
-      function draw() {context.clearRect(0,0,canvas.width,canvas.height);context.fillStyle=color;dots.forEach(d=>{context.beginPath();context.arc(d.x,d.y,d.r,0,Math.PI*2);context.fill();d.x=(d.x+d.vx*playbackSpeed+620)%620;d.y=(d.y+d.vy*playbackSpeed+260)%260;});if(loop&&!nativeWindow.matchMedia('(prefers-reduced-motion: reduce)').matches)requestAnimationFrame(draw);}
+      function draw() {context.clearRect(0,0,canvas.width,canvas.height);context.fillStyle=color;dots.forEach(d=>{context.beginPath();context.arc(d.x,d.y,d.r,0,Math.PI*2);context.fill();d.x=(d.x+d.vx*playbackSpeed+620)%620;d.y=(d.y+d.vy*playbackSpeed+260)%260;});if(loop&&(!reduced.matches||previewMode))requestAnimationFrame(draw);}
       draw();return true;
+    }
+    function finishMotionOnce() {
+      // Retain the resulting DOM while disposing all source loops and listeners.
+      dead = true; clearResources({preserveFrames:true}); previewMode = false;
+      scope.removeAttribute('data-demo-playing');
+      scope.removeAttribute('data-demo-motion-once');
+      if (activePreview === controller) activePreview = null;
+      scope.dispatchEvent(new CustomEvent('demo-playback-end'));
+    }
+    function scheduleMotionEnd() {
+      if (!reduced.matches) return;
+      nativeWindow.clearTimeout(motionTimer);
+      // Include delayed keyframes and one full cycle of a continuous effect.
+      const ends = body.getAnimations?.({subtree:true}).map(animation =>
+        animation.effect?.getComputedTiming().endTime).filter(Number.isFinite) || [];
+      motionDuration = (Math.max(3000, ...ends) + 100) / playbackSpeed;
+      motionTimer = nativeWindow.setTimeout(finishMotionOnce, motionDuration);
     }
     function preview(speed=1) {
       if (activePreview && activePreview !== controller) activePreview.reset();
-      reset();activePreview=controller;playbackSpeed=speed===.25?.25:1;playbackStart=performance.now();
+      reset();manualPhase=0;activePreview=controller;playbackSpeed=speed===.25?.25:1;playbackStart=performance.now();
       if (scope.dataset.demoStatic === 'true') return false;
-      if (nativeWindow.matchMedia('(prefers-reduced-motion: reduce)').matches&&!scope.hasAttribute('data-interactive')) return false;
       if(playbackSpeed!==1&&shadow.querySelector('iframe')) return false;
       previewMode=true;
+      if (reduced.matches) scope.setAttribute('data-demo-motion-once','');
       const source=activate();
+      scheduleMotionEnd();
+      requestAnimationFrame(scheduleMotionEnd);
       if (source.preview) {source.preview();requestAnimationFrame(applyPlayback);return true;}
       const stage=shadow.querySelector('.stage');
       if (stage) source.replay?.(stage);
@@ -211,7 +254,55 @@
       return true;
     }
     function restore(){reset();previewMode=false;playbackSpeed=1;playbackStart=performance.now();activate();particlePreview();}
-    const controller={reset,restore,preview,root:shadow,get supportsSlow(){return !shadow.querySelector('iframe');}};controllers.set(scope,controller);mount();
+    function renderManualPhase() {
+      shadow.querySelector('.stage')?.classList.add('run');
+      body.getAnimations?.({subtree:true}).forEach(animation => {
+        const timing = animation.effect.getTiming();
+        animation.pause();
+        animation.currentTime = Number(timing.delay) + Number(timing.duration) * manualPhase / 4;
+      });
+      particlePreview(false,manualPhase);
+    }
+    function step() {
+      const frame = shadow.querySelector('iframe');
+      if (frame) {frame.contentDocument?.querySelector('a')?.click();return;}
+      const morph = shadow.querySelector('.morph-stage');
+      const carousel = shadow.querySelector('.carousel');
+      if (morph || carousel) {
+        // These source-driven loops also support a static next item.
+        dead = true; clearResources(); previewMode = false;
+        scope.removeAttribute('data-demo-motion-once');
+        scope.removeAttribute('data-demo-playing');
+        scope.setAttribute('data-demo-motion-step','');
+        if (morph) {
+          const words = JSON.parse(morph.dataset.demoWords);
+          const current = morph.querySelector('.mw-cur');
+          morph.querySelector('.morph-word').classList.remove('morphing');
+          current.textContent = words[(words.indexOf(current.textContent) + 1) % words.length];
+        } else {
+          shadow.querySelector('#carNext').click();
+          clearResources({preserveCssAnimations:true});
+        }
+        return;
+      }
+      // Four static phases expose continuous CSS/canvas effects without motion.
+      manualPhase = (manualPhase + 1) % 5;
+      reset(); scope.setAttribute('data-demo-motion-step','');
+      activate(); scope.removeAttribute('data-demo-playing');
+      renderManualPhase();
+      dead = true; clearResources({preserveCssAnimations:true});
+    }
+    const controller = {
+      reset, restore, preview, step, root:shadow,
+      get motionDuration() {return motionDuration;},
+      get supportsSlow() {return !shadow.querySelector('iframe');},
+      get supportsStep() {return template.dataset.demoLoop === 'true' || !!shadow.querySelector('iframe');}
+    };
+    controllers.set(scope,controller);
+    mount();
+    reduced.addEventListener('change', () => {if(scope.hasAttribute('data-interactive'))restore();else reset();});
+    nativeDocument.addEventListener('visibilitychange', () => {if(nativeDocument.hidden&&previewMode)finishMotionOnce();});
+    nativeWindow.addEventListener('pagehide', () => {if(previewMode)finishMotionOnce();});
     if(scope.hasAttribute('data-interactive')) {activate();particlePreview();}
     return controller;
   }

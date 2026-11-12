@@ -1222,7 +1222,7 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点击切换</span>
         <div>
-          <div class="tabs" role="tablist" aria-label="产品信息"><button type="button" class="tab active" role="tab" id="tab-intro" aria-controls="tp" aria-selected="true" tabindex="0" data-cmd="switchTab" data-arg="0">简介</button><button type="button" class="tab" role="tab" id="tab-reviews" aria-controls="tp" aria-selected="false" tabindex="-1" data-cmd="switchTab" data-arg="1">评价</button></div>
+          <div class="tabs" role="tablist" aria-label="产品信息"><button type="button" class="tab active" role="tab" id="tab-intro" aria-controls="tp" aria-selected="true" tabindex="0" data-cmd="switchTab" data-arg="0">简介</button><button type="button" class="tab" role="tab" id="tab-reviews" aria-controls="tp" aria-selected="false" tabindex="-1" data-cmd="switchTab" data-arg="1">评价</button><button type="button" class="tab" role="tab" id="tab-help" aria-controls="tp" aria-selected="false" tabindex="-1" data-cmd="switchTab" data-arg="2">帮助</button></div>
           <div class="tab-panel" id="tp" role="tabpanel" aria-labelledby="tab-intro" tabindex="0">这是「简介」的内容区域。</div>
         </div>
       </div>
@@ -2225,6 +2225,7 @@
 
   /* ---- 演示交互 ---- */
   function switchTab(el,idx){
+    if(el.disabled)return;
     el.parentNode.querySelectorAll('.tab').forEach(t=>{
       const current=t===el;
       t.classList.toggle('active',current);
@@ -2232,16 +2233,16 @@
       t.tabIndex=current?0:-1;
     });
     const panel=document.getElementById('tp');
-    panel.textContent=idx===0?'这是「简介」的内容区域。':'这是「评价」的内容区域。';
+    panel.textContent=['这是「简介」的内容区域。','这是「评价」的内容区域。','这是「帮助」的内容区域。'][idx];
     panel.setAttribute('aria-labelledby',el.id);
   }
   document.querySelector('#c-tabs [role="tablist"]').addEventListener('keydown',e=>{
     if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
     e.preventDefault();
-    const tabs=[...e.currentTarget.querySelectorAll('[role="tab"]')];
+    const tabs=[...e.currentTarget.querySelectorAll('[role="tab"]:not(:disabled)')];
     const i=tabs.indexOf(document.activeElement);
     const next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
-    switchTab(tabs[next],next); tabs[next].focus();
+    switchTab(tabs[next],Number(tabs[next].dataset.arg)); tabs[next].focus();
   });
   function toggleAcc(head){
     const item=head.parentNode;

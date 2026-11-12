@@ -201,7 +201,7 @@ def column_page(slug, entries, tax):
     if slug == 'interactions':
         extra = f'<p class="entry-section"><a href="{relative(page, "interactions/spec/")}">动效实现规范 →</a></p>'
     descriptions = ['先建立颜色、排版和布局的共同语言。', '认识界面里可复用的基本单元，理解用途、状态与实现要求。', '写清操作规则、反馈过程和界面变化。', '把组件和规则组织成完整页面与操作场景。', '把需求交给 AI，用提示词、技能和测评辅助验收。']
-    body = f'<nav class="breadcrumbs" aria-label="面包屑"><a href="../">首页</a><span>/</span><span aria-current="page">{column["name"]}</span></nav><div class="row landing-title"><h1>{column["name"]}</h1><span class="title-count">{column["expected"]} 条</span></div><p class="lead">{descriptions[column["order"]-1]}</p><button class="column-search" data-search>搜索条目　⌘K</button><nav class="chips group-tabs" aria-label="栏目分组">{chips}</nav>{"".join(sections)}{extra}'
+    body = f'<nav class="breadcrumbs" aria-label="面包屑"><a href="../">首页</a><span>/</span><span aria-current="page">{column["name"]}</span></nav><div class="row landing-title"><h1>{column["name"]}</h1><span class="title-count">{column["expected"]} 条</span></div><p class="lead">{descriptions[column["order"]-1]}</p><button class="column-search" data-search>搜索条目　⌘K</button><p class="reduced-note small" hidden>已开启减弱动态：点播放看一次</p><nav class="chips group-tabs" aria-label="栏目分组">{chips}</nav>{"".join(sections)}{extra}'
     return shell(page, column['name'], body, entries, tax)
 
 
@@ -234,7 +234,7 @@ def detail(e, entries, tax):
         prompt_new = f'<details class="entry-section new-section"><summary>新做一个</summary><pre class="prompt-text" id="new-prompt">{escape(e["prompt_new"])}</pre>{copy_button("copy-new-prompt", "复制这一版")}<pre class="sr" id="copy-new-prompt" hidden>{escape(copy_payload(e, "prompt_new"))}</pre></details>'
     use_card = f'<aside class="use-card" aria-labelledby="use-card-title"><h2 id="use-card-title">使用卡</h2>{copy_button("copy-prompt",primary=True)}{criteria}<div class="use-actions">{copy_button("entry-english","复制英文名")}<button class="copy-btn" data-copy-link>复制本页链接</button></div>{bench}</aside>'
     def demonstration(demo):
-        controls = '<div class="demo-controls"><button type="button" data-demo-replay>重播</button><button type="button" data-demo-slow aria-pressed="false">慢放 0.25 倍</button><span class="reduced-note" hidden>你的系统开启了减弱动态</span></div>' if demo['kind'] == 'motion' else ''
+        controls = '<div class="demo-controls"><button type="button" data-demo-replay>重播</button><button type="button" data-demo-slow aria-pressed="false">慢放 0.25 倍</button><button type="button" data-demo-step hidden>下一步</button><span class="reduced-note small" hidden>已开启减弱动态：点播放看一次</span></div>' if demo['kind'] in ('motion', 'ui', 'guide', 'token') else ''
         return '<div class="entry-demo"><div class="demo-stage">' + demo_scope(demo, page, True) + '</div>' + controls + '</div>'
     demonstrations = demonstration(e['demo'])
     if e.get('demo_hint'):

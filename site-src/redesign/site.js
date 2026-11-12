@@ -184,15 +184,16 @@
     activeCard = null;
   }
   function playCard(card, once = false) {
-    stopAllCards(); if (reduced.matches || card.querySelector('.demo-scope').dataset.demoStatic === 'true') return;
+    stopAllCards(); if ((reduced.matches && !once) || card.querySelector('.demo-scope').dataset.demoStatic === 'true') return;
     activeCard = card; card.classList.add('playing'); card.querySelector('.play-button').setAttribute('aria-pressed','true');
     const scope = card.querySelector('.demo-scope'); controller = window.VibeDemos.init(scope); controller.preview();
     // A full original action runs once; restart only while hover/focus is held.
     const duration = scope.dataset.demoKey === 'text-text-morph' ? 3000 : 2400;
-    cardTimer = setTimeout(() => { const replay = activeCard === card && !once; stopAllCards(); if (replay) playCard(card); },duration);
+    if (!reduced.matches) cardTimer = setTimeout(() => { const replay = activeCard === card && !once; stopAllCards(); if (replay) playCard(card); },duration);
   }
   window.VibeDemos.mountAll();
   $$('.gallery-card').forEach(card => {
+    card.querySelector('.demo-scope').addEventListener('demo-playback-end', () => {if(activeCard === card)stopAllCards();});
     if (card.querySelector('.demo-scope').dataset.demoStatic === 'true') { card.classList.add('static-preview'); card.querySelector('.play-button').hidden = true; return; }
     card.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse' && !mobile.matches) playCard(card); });
     card.addEventListener('pointerleave', () => { if (activeCard === card) stopAllCards(); });
@@ -206,6 +207,11 @@
     const controller = window.VibeDemos.init(scope);
     const options = [...picker.querySelectorAll('[data-state]')];
     options.forEach(option => option.addEventListener('click', () => {
+      const fieldSelector = 'input:not([type="checkbox"]):not([type="radio"]),textarea,select';
+      const values = [...controller.root.querySelectorAll(fieldSelector)].map(field => field.value);
+      const checkSelector = 'input[type="checkbox"],input[type="radio"]';
+      const checks = [...controller.root.querySelectorAll(checkSelector)].map(field => ({checked:field.checked,indeterminate:field.indeterminate}));
+      const buttonWidths = [...controller.root.querySelectorAll('.btn')].map(button => button.getBoundingClientRect().width);
       controller.restore();
       options.forEach(button => {
         button.setAttribute('aria-pressed',String(button === option));
@@ -215,6 +221,11 @@
       scope.classList.add(option.dataset.stateClass);
       picker.querySelectorAll('[data-description]').forEach(caption => {caption.hidden = caption.dataset.description !== state;});
       const root = controller.root;
+      root.querySelectorAll(fieldSelector).forEach((field,index) => {
+        field.value = values[index];
+        field.dispatchEvent(new Event('input',{bubbles:true}));
+      });
+      root.querySelectorAll(checkSelector).forEach((field,index) => Object.assign(field,checks[index]));
       if (state === 'focus') (root.querySelector('input,select,textarea') || root.querySelector('button'))?.setAttribute('data-simulated-focus','');
       if (state === 'selected' || state === 'unselected') {
         const checked = state === 'selected';
@@ -223,14 +234,45 @@
         radios.forEach((input,index) => {input.checked = index === radios.length-1;});
         if (checked) root.querySelector('[data-cmd="switchTab"][data-arg="1"]')?.click();
       }
-      scope.inert = state !== 'free';
+      if (state === 'disabled' || state === 'loading') {
+        const controls = [...root.querySelectorAll('button,input,select,textarea')];
+        // A single unavailable tab leaves keyboard navigation demonstrable.
+        const disabled = root.querySelector('[role="tablist"]') ? controls.slice(-1) : controls;
+        disabled.forEach(control => { control.disabled = true; });
+        if (state === 'loading') {
+          root.querySelectorAll('.btn').forEach((button,index) => {
+            button.style.width = `${buttonWidths[index]}px`;
+            button.setAttribute('aria-busy','true');
+            button.innerHTML = '<span class="demo-loading-icon" aria-hidden="true"></span><span>提交中…</span>';
+          });
+        }
+      }
+      if (state === 'error') {
+        const errors = {姓名:'请输入姓名，例如「张三」。', 邮箱:'邮箱格式有误，请填写 name@example.com。',
+          备注:'请填写 1–80 字的备注。', 城市:'请选择一个可用的城市。', 搜索词:'请输入有效搜索词，例如「按钮」。'};
+        root.querySelectorAll('input,textarea,select').forEach((field,index) => {
+          const anchor = field.closest('.floatfield,.searchbox') || field;
+          const wrapper = document.createElement('div'); wrapper.className = 'demo-field-state';
+          anchor.before(wrapper); wrapper.append(anchor);
+          const error = document.createElement('p'); error.className = 'demo-field-error';
+          error.id = `demo-field-error-${index}`;
+          error.textContent = errors[field.getAttribute('aria-label')] || '内容有误，请检查后重试。';
+          field.setAttribute('aria-invalid','true');
+          field.setAttribute('aria-describedby',[field.getAttribute('aria-describedby'),error.id].filter(Boolean).join(' '));
+          wrapper.append(error);
+        });
+      }
+      scope.inert = !['free','disabled','loading','error'].includes(state);
     }));
   });
-  $$('[data-demo-replay],[data-demo-slow]').forEach(button => {
+  $$('[data-demo-replay],[data-demo-slow],[data-demo-step]').forEach(button => {
     const scope = button.closest('.entry-demo').querySelector('.demo-scope');
     const demo = window.VibeDemos.init(scope);
     if (button.hasAttribute('data-demo-slow') && demo.supportsSlow === false) button.disabled = true;
+    if (button.hasAttribute('data-demo-step')) button.hidden = !demo.supportsStep;
     button.addEventListener('click', () => {
+      if (button.hasAttribute('data-demo-step')) { demo.step(); return; }
+      button.closest('.entry-demo').querySelector('[data-state="free"]')?.click();
       const slow = button.hasAttribute('data-demo-slow');
       demo.preview(slow ? .25 : 1);
       button.closest('.demo-controls').querySelector('[data-demo-slow]').setAttribute('aria-pressed',String(slow));

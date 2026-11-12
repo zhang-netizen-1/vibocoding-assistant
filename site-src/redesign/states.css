@@ -20,3 +20,28 @@
 :host(.force-unselected) .switch .slider::before {transform:translateX(0)}
 :host(.force-selected) .tab.active {border-color:var(--demo-primary)}
 :host(.force-unselected) .switch input {pointer-events:none}
+/* Native disabled controls keep their labels legible without group opacity. */
+:host(.force-disabled) .canvas :is(button,input,select,textarea),
+:host(.force-disabled) .canvas :is(.check,.switch,.switch .slider,.searchbox) {cursor:not-allowed}
+:host(.force-disabled) .canvas :is(button,input,select,textarea):disabled {
+  opacity:1;color:var(--demo-secondary);-webkit-text-fill-color:var(--demo-secondary);
+  background:var(--demo-soft);border-color:var(--demo-border)!important;
+}
+:host(.force-disabled) .canvas .check {color:var(--demo-secondary)}
+:host(.force-disabled) .switch input:disabled + .slider {background:var(--demo-border)}
+:host(.force-disabled) input[type="range"]::-webkit-slider-thumb {background:var(--demo-secondary)}
+:host(.force-disabled) input[type="range"]::-moz-range-thumb {background:var(--demo-secondary)}
+:host(.force-disabled) .searchbox {background:var(--demo-soft)}
+:host(.force-loading) .btn {
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  padding-inline:6px;cursor:not-allowed;white-space:nowrap;
+}
+:host(.force-loading) .btn-pri {background:var(--demo-primary)}
+:host(.force-loading) .btn-ghost {background:var(--demo-white);color:var(--demo-ink)}
+:host(.force-loading) .btn-danger {background:var(--demo-danger)}
+.demo-loading-icon {display:inline-block;flex:none;width:12px;height:12px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:demo-loading-spin .8s linear infinite}
+@keyframes demo-loading-spin {to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.demo-loading-icon {animation:none}}
+.demo-field-state {display:flex;flex-direction:column;gap:6px;max-width:100%;min-width:0}
+.demo-field-error {font-size:13px;line-height:1.5;color:var(--demo-danger);margin:0;max-width:280px}
+:host(.force-error) :is(input.i,textarea.i,select.i,.searchbox) {border-color:var(--demo-danger)!important;box-shadow:none}

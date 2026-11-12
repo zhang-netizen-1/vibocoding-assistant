@@ -45,19 +45,35 @@ SHADOW_BASE = '''
 *{box-sizing:border-box} .demo-root{position:relative;min-width:0;overflow:hidden;background:var(--demo-stage);color:var(--demo-ink);border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important}
 .demo-root>.canvas,.demo-root>.stage,.guide-card-stage{border:0;background:var(--demo-stage);background-image:none;min-height:224px;max-width:100%;margin:0;overflow:hidden}
 :host(:not([data-demo-playing])) *,:host(:not([data-demo-playing])) *::before,:host(:not([data-demo-playing])) *::after{animation-play-state:paused!important}
+:host([data-demo-motion-step]) *{transition:none!important}
 :host(:not([data-interactive])) .demo-root{pointer-events:none;user-select:none}
 :host([data-demo-playing]) .demo-root{pointer-events:auto}
 .modal-mask,.drawer-mask,.drawer-panel,.cmdk-mask{position:absolute!important;inset-block:0;max-height:100%;z-index:20}
 .drawer-panel{inset-inline-start:auto;max-width:90%}.modal-box{max-width:92%;width:360px}.toast-wrap{position:absolute!important;inset:auto 12px 12px;pointer-events:none}
 .canvas .check,.tab-panel,.segmented,.ie-text,.tl-item.done .tt{color:var(--demo-ink)}.ie-text{border-bottom-color:var(--demo-secondary)}.demo-root input,.demo-root select,.demo-root textarea{accent-color:var(--demo-primary)}.stage .magnet-btn,.stage .ripple-btn{color:#fff!important}.demo-status{display:block;padding:8px 12px;color:var(--demo-secondary);font-size:12px;background:var(--demo-stage)}
 :focus-visible{outline:2px solid var(--demo-primary);outline-offset:3px}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media(prefers-reduced-motion:reduce){:host(:not([data-demo-motion-once]):not([data-demo-motion-step])) *,:host(:not([data-demo-motion-once]):not([data-demo-motion-step])) *::before,:host(:not([data-demo-motion-once]):not([data-demo-motion-step])) *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}:host([data-demo-motion-once]) *,:host([data-demo-motion-once]) *::before,:host([data-demo-motion-once]) *::after{animation-iteration-count:1!important}}
 '''
+
+
+def _gate_reduced_motion(css):
+    """Gate source overrides too, including transform/opacity final states.
+
+    Each source reduced-motion block contains flat style rules. Keep the
+    original declarations and scope every selector to the idle host.
+    """
+    def gate_block(match):
+        body = re.sub(r'([^{}]+)\{', lambda rule: ','.join(
+            ':host(:not([data-demo-motion-once]):not([data-demo-motion-step])) ' + selector.strip()
+            for selector in rule[1].split(',')) + '{', match[1])
+        return '@media(prefers-reduced-motion:reduce){' + body + '}'
+    return re.sub(r'@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}',
+                  gate_block, css)
 
 
 def css(source):
     """Compatibility API; this stylesheet is loaded inside a ShadowRoot only."""
-    original = _styles(source).replace(':root', ':host')
+    original = _gate_reduced_motion(_styles(source).replace(':root', ':host'))
     # Also expose source hover effects to the deliberate automated preview.
     hover = '\n'.join(s + b for s, b in re.findall(r'([^{}]+)(\{[^{}]*\})', original)
                       if (':hover' in s or ':active' in s) and '@' not in s)
@@ -120,6 +136,8 @@ def _motion_script(source):
     script = script.replace('  initializeDigits(currentNumber);', '  if(odometer)initializeDigits(currentNumber);')
     script = script.replace("reduce.addEventListener('change', () => updateHeader(headerScroll));", "if(headerScroll)reduce.addEventListener('change', () => updateHeader(headerScroll));")
     script = script.replace('  setInterval(()=>{\n    if(reduce.matches||paused()||switching)return;', '  if(!reduce.matches)setInterval(()=>{\n    if(reduce.matches||paused()||switching)return;')
+    # Expose the source-owned word sequence for static manual stepping.
+    script = re.sub(r'(const words=\[[^;]+\]);let idx=', r'\1;stage.dataset.demoWords=JSON.stringify(words);let idx=', script)
     script = script.replace('Number(timeline.value)', 'Number(timeline?.value||0)')
     script = script.replace("||document.getElementById('pauseAll').getAttribute('aria-pressed')==='true'", '')
     # Never navigate to a path relative to the outer entry page.
@@ -220,6 +238,16 @@ def _source_anchor(demo):
     return ''
 
 
+@lru_cache(maxsize=None)
+def _loop_classes(kind):
+    files = {'ui': ROOT / '网页UI元素速查.html', 'motion': ROOT / '动效速查.html'}
+    if kind not in files:
+        return set()
+    return {name for selector, body in re.findall(r'([^{}]+)\{([^{}]*)\}', _styles(files[kind].read_text()))
+            if re.search(r'animation[^;{}]*\binfinite\b', body)
+            for name in re.findall(r'\.([\w-]+)', selector)}
+
+
 def markup(demo, prefix, interactive=False):
     """Return a dormant template INSIDE the caller's .demo-scope host.
 
@@ -228,6 +256,8 @@ def markup(demo, prefix, interactive=False):
     """
     from entries import Document
     kind, content = demo['kind'], demo['html']
+    classes = {name for value in re.findall(r'class="([^"]+)"', content) for name in value.split()}
+    looping = bool(classes & (_loop_classes(kind) | {'carousel', 'morph-stage'})) or '<canvas' in content
     content = content.replace('href="javascript:void 0"', 'href="#"').replace("href='javascript:void 0'", "href='#'")
     extra = ''
     if kind == 'ui':
@@ -266,7 +296,7 @@ def markup(demo, prefix, interactive=False):
     attrs = f' id="{escape(anchor)}"' if anchor else ''
     if kind == 'guide':
         attrs += f' data-guide="{escape(demo["section"])}"'
-    result = f'<template data-demo-template data-demo-css="{escape(prefix)}demo-{kind}.css" data-demo-static="{'true' if category == '静态演示' else 'false'}" data-demo-category="{escape(category)}"><article class="demo-root {cls}"{attrs}>{content}{extra}</article></template>'
+    result = f'<template data-demo-template data-demo-css="{escape(prefix)}demo-{kind}.css" data-demo-loop="{str(looping).lower()}" data-demo-static="{'true' if category == '静态演示' else 'false'}" data-demo-category="{escape(category)}"><article class="demo-root {cls}"{attrs}>{content}{extra}</article></template>'
     return result
 
 
@@ -288,7 +318,7 @@ def _assets():
         'demo-guide.css': css('<style>' + (ROOT / 'site-src/guides.css').read_text() + (ROOT / 'site-src/visual-styles.css').read_text() + '</style>'),
         'demo-skill-reference.css': css('<style>' + (ROOT / 'site-src/skills.css').read_text() + '</style>'),
         'demo-token.js': (HERE / 'token-demo.js').read_text(),
-        'demo-token.css': SHADOW_BASE + (HERE / 'token-demo.css').read_text() + (HERE / 'demo-accessibility.css').read_text(),
+        'demo-token.css': SHADOW_BASE + _gate_reduced_motion((HERE / 'token-demo.css').read_text()) + (HERE / 'demo-accessibility.css').read_text(),
         'demos.css': '.demo-scope{display:block;position:relative;min-width:0;width:100%;isolation:isolate}.demo-secondary{margin-top:16px}.demo-scope>template{display:none}\n',
     }
     for page in ('motion-demo-gallery', 'motion-demo-detail'):
