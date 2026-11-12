@@ -160,3 +160,8 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
   - allpages：212 页 × 3 宽，无溢出、无 JS 报错；唯一一条失败请求 lake-teal-02-640.webp 复查返回 200，属懒加载被切页中断。
   - 未通过：batch6 无头（悬停预览弹层在 interactions 画廊格内底部超出 16px 余量）；demo_redesign_headless 24 项（相关演示格缺 skin 注入 / states 与 a11y 顺序 / 按钮页 390 下 morph、magnetic、ripple 窄格横向溢出 等）。已派短时 Codex（T2，插件关闭）修。batch4 完整无头在跑。
 - 晨间总览：box `/workspace/bench/demo-redesign/morning_summary.jpg`（16 组改前/改后 1440）。
+- 04:52 补记：
+  - batch4 完整无头（1473 项）未通过 55 项，全是触屏点击区：components/button 一行四个按钮高 25px、components/search 的 🔍 按钮高 28px、components/tabs 三个标签高 25px（390/768/1023/1440 触屏模式都有）。未修。
+  - Codex T2（插件关，cua_repl 0 次）做了静态修复：morph/magnetic/ripple 窄格收缩、悬停预览弹层位置、lift 顶部留白；demo_redesign_headless 的样式链断言改为按 skin 文件是否存在来要求，并改成严格 deepEqual。单测 147 项仍全过。
+  - 修复后重跑 demo_redesign_headless 与 batch6 时两者并发、被 280 秒超时打断，结果无效，**需要单独顺序重跑确认**。
+  - 下一步：顺序重跑 `tests/demo_redesign_headless.cjs`、`audit_fix_batch6_headless.cjs`、`audit_fix_batch4_headless.cjs`（各给 ≥15 分钟，且期间不要重新构建）；修 button/search/tabs 触屏点击区。
