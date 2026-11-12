@@ -115,30 +115,32 @@ function layoutAudit() {
     }
     failures.slice(failureStart).forEach(failure => {failure.slug = slug;});
     for (const img of shadow.querySelectorAll('img')) images.push({index, slug, src:img.currentSrc || img.src, complete:img.complete && img.naturalWidth > 0});
-    chains.push({index, slug, sheets:[...shadow.querySelectorAll('link[rel="stylesheet"],style')].map(node => ({kind:node.dataset.demoSheet || node.dataset.demoStyle || '', href:node.getAttribute('href') || '', text:node.tagName === 'STYLE' ? node.textContent.slice(0,160) : ''}))});
+    chains.push({index, slug, demoKind:scope.dataset.demoKind, interactive:scope.hasAttribute('data-interactive'), sheets:[...shadow.querySelectorAll('link[rel="stylesheet"],style')].map(node => ({kind:node.dataset.demoSheet || node.dataset.demoStyle || '', href:node.getAttribute('href') || '', text:node.tagName === 'STYLE' ? node.textContent.slice(0,160) : ''}))});
   });
   for (const img of document.images) images.push({src:img.currentSrc || img.src, complete:img.complete && img.naturalWidth > 0});
   return {scopeCount:scopes.length, pageOverflow:document.documentElement.scrollWidth > innerWidth + 2, failures, images, chains};
 }
 function verifyChains(chains, requireSkin = false, requireStates = false) {
-  for (const {index, sheets} of chains) {
+  for (const {index, slug, demoKind, interactive, sheets} of chains) {
     const classify = sheet => {
-      const value = `${sheet.kind} ${sheet.href}`;
-      if (/accessibility|a11y/.test(value)) return 'a11y';
-      if (/state/.test(value)) return 'states';
-      if (/kind|_kind-/.test(value)) return 'kind';
-      if (/skin/.test(value)) return 'skin';
-      if (/spec/.test(value)) return 'spec';
-      if (/source|demo/.test(value)) return 'source';
+      const kinds = {demo:'source', source:'source', spec:'spec', kind:'kind', skin:'skin', a11y:'a11y', state:'states', states:'states'};
+      if (kinds[sheet.kind]) return kinds[sheet.kind];
+      const file = path.posix.basename(sheet.href);
+      if (file === 'demo-accessibility.css') return 'a11y';
+      if (file === 'states.css') return 'states';
+      if (file.startsWith('_kind-')) return 'kind';
+      if (sheet.href.includes('/demo-skins/')) return 'skin';
+      if (file === 'demo-spec.css') return 'spec';
+      if (/^demo-.*\.css$/.test(file)) return 'source';
       return null;
     };
     const actual = sheets.map(classify).filter(Boolean);
-    const expected = ['source','spec', ...(actual.includes('kind') ? ['kind'] : []), ...(requireSkin || actual.includes('skin') ? ['skin'] : []), 'a11y', ...(requireStates || actual.includes('states') ? ['states'] : [])];
-    let previous = -1;
-    for (const kind of expected) {
-      const at = actual.indexOf(kind);
-      assert.ok(at > previous, `scope ${index}: expected ${expected.join(' → ')}, got ${actual.join(' → ')}`);
-      previous = at;
+    const skinFile = `${demoKind}-${slug}.css`;
+    const hasSkin = fs.existsSync(path.join(workspace, 'site-src/redesign/demo-skins', skinFile));
+    const expected = ['source','spec', ...(actual.includes('kind') ? ['kind'] : []), ...(hasSkin || (requireSkin && interactive) || actual.includes('skin') ? ['skin'] : []), 'a11y', ...((requireStates && interactive) || actual.includes('states') ? ['states'] : [])];
+    assert.deepEqual(actual, expected, `scope ${index}: expected ${expected.join(' → ')}, got ${actual.join(' → ')}`);
+    if (hasSkin) {
+      assert.ok(sheets.some(sheet => classify(sheet) === 'skin' && path.posix.basename(sheet.href) === skinFile), `scope ${index}: missing ${skinFile}`);
     }
   }
 }
@@ -220,14 +222,29 @@ async function inputChecks(page, label) {
 }
 async function liftChecks(page, label, mobile) {
   const card = page.locator('.demo-scope[data-interactive] .lift-card').first();
-  const original = await card.evaluate(styleSnapshot);
+  async function settledSnapshot() {
+    await card.evaluate(async node => {
+      // Flush style before collecting transitions triggered by focus or touch.
+      getComputedStyle(node).transform;
+      await Promise.all(node.getAnimations().filter(animation =>
+        animation.effect.getComputedTiming().iterations !== Infinity
+      ).map(animation => animation.finished.catch(() => {})));
+    });
+    return card.evaluate(styleSnapshot);
+  }
+  await page.mouse.move(0,0);
+  await card.evaluate(node => node.blur());
+  const original = await settledSnapshot();
   if (mobile) {
-    await card.tap(); await page.waitForTimeout(260); const lifted = await card.evaluate(styleSnapshot);
-    await card.tap(); await page.waitForTimeout(260); const restored = await card.evaluate(styleSnapshot);
+    assert.equal(await card.getAttribute('aria-pressed'),'false');
+    await card.tap(); const lifted = await settledSnapshot();
+    assert.equal(await card.getAttribute('aria-pressed'),'true');
+    await card.tap(); const restored = await settledSnapshot();
+    assert.equal(await card.getAttribute('aria-pressed'),'false');
     await check(`${label}: mobile tap toggle`, () => {assert.notEqual(lifted.transform,original.transform); assert.equal(restored.transform,original.transform); return {original,lifted,restored};});
   } else {
-    await card.hover(); await page.waitForTimeout(260);
-    await check(`${label}: hover lift`, async () => {const lifted = await card.evaluate(styleSnapshot); assert.notEqual(lifted.transform,original.transform); assert.notEqual(lifted.shadow,original.shadow); return lifted;});
+    await card.hover();
+    await check(`${label}: hover lift`, async () => {const lifted = await settledSnapshot(); assert.notEqual(lifted.transform,original.transform); assert.notEqual(lifted.shadow,original.shadow); return lifted;});
     await page.mouse.move(0,0);
   }
 }
@@ -599,7 +616,7 @@ function catalogInventory() {
     return {entries:inventory.length,demos:inventory.reduce((sum,row)=>sum+row.demos,0),secondary:inventory.filter(row=>row.demos>1)};
   });
   browser = await playwright.chromium.launch({headless:true});
-  for (const width of [1440,390]) {
+  for (const width of [1440,768,390]) {
     const context = await browser.newContext({viewport:{width,height:1000},hasTouch:width===390,isMobile:width===390,reducedMotion:'no-preference'});
     const page = await context.newPage(); page.setDefaultTimeout(10000);
     page.on('pageerror',error => report.pageErrors.push({width,url:page.url(),message:error.message}));

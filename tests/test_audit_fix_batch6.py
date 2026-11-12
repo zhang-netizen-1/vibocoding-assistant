@@ -80,18 +80,27 @@ for (const body of [null,{style:{}}]) {
         stage = '.demo-root .stage[data-effect="component-hover-preview"]'
         panel = stage + ' .hvp-stage.ds-h-panel'
         popup = stage + ' .hvp-pop'
-        # Last declarations are the narrow-container overrides. Check both sizes.
+        # Flow layout reserves the popup's real height, including wrapped text.
         heights = re.findall(re.escape(panel) + r'\s*\{[^}]*min-height:(\d+)px', skin)
-        tops = re.findall(re.escape(popup) + r'\s*\{[^}]*top:(\d+)px', skin)
         self.assertEqual(len(heights), 2)
-        self.assertEqual(len(tops), 2)
+        self.assertEqual(declaration(skin, popup, 'position'), 'relative')
+        self.assertEqual(declaration(skin, popup, 'inset'), 'auto')
+        self.assertEqual(declaration(skin, popup, 'width'), '100%')
+        self.assertEqual(declaration(skin, popup, 'min-width'), '0')
+        self.assertEqual(declaration(skin, popup, 'flex-shrink'), '0')
+        self.assertGreaterEqual(float(declaration(skin, popup, 'margin-top').removesuffix('px')), 16)
+        self.assertFalse(re.search(re.escape(popup) + r'\s*\{[^}]*[;{]\s*top:\s*\d', skin))
         photo_height = float(declaration(skin, popup + ' .ds-h-photo', 'height').removesuffix('px'))
         photo_margin = float(declaration(skin, popup + ' .ds-h-photo', 'margin-bottom').removesuffix('px'))
         padding = float(declaration(skin, popup, 'padding').removesuffix('px'))
         # Photo, two text lines, original title margin, padding and border.
         popup_height = photo_height + photo_margin + 14 * 1.6 + 5 + 12 * 1.6 + 2 * padding + 2
-        for height, top in zip(heights, tops):
-            self.assertGreaterEqual(float(height), float(top) + popup_height + 12)
+        self.assertTrue(all(float(height) >= popup_height + 16 for height in heights))
+        # Panel padding is the minimum visible popup-to-stage bottom clearance.
+        panel_paddings = re.findall(re.escape(stage + ' .ds-h-panel') + r'\s*\{[^}]*\bpadding:(\d+)px', skin)
+        self.assertGreaterEqual(len(panel_paddings), 2)
+        for value in panel_paddings:
+            self.assertGreaterEqual(float(value), 16)
         self.assertEqual(declaration(skin, panel, 'justify-content'), 'flex-start')
         for destination in ('interactions/component-hover-preview', 'components/card', 'interactions'):
             page = (ROOT / f'dist/{destination}/index.html').read_text()

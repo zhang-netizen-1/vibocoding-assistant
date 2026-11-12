@@ -34,3 +34,10 @@
 .demo-root .stage[data-effect="component-magnetic"] .magnet-note { text-align:center; background:transparent; }
 @media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .demo-root .stage[data-effect="component-magnetic"] .magnet-btn,:host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .demo-root .stage[data-effect="component-magnetic"] .magnet-label { transform:none!important; } }
 .demo-root .stage[data-effect="component-magnetic"] .magnet-btn.touch-open { transform:translate(7px,-3px); }
+@container demo-stage (max-width:240px) {
+  .demo-root .stage[data-effect="component-magnetic"] .magnet-btn {
+    min-width:0; width:calc(100% - 16px); max-width:calc(100% - 16px);
+    white-space:normal; overflow-wrap:anywhere;
+  }
+  .demo-root .stage[data-effect="component-magnetic"] .magnet-label { min-width:0; }
+}

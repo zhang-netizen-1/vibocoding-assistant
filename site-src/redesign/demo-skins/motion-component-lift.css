@@ -20,3 +20,7 @@
 .demo-root .stage[data-effect="component-lift"] .micro-card.lift-card{border:1px solid var(--ds-line)!important;padding:0}
 
 @container demo-stage (min-width:640px){.stage[data-effect="component-lift"] .ds-lift-details{padding:24px;gap:12px}}
+/* Reserve the 7px lift above the subject as well as the stage's 16px inset. */
+:host([data-interactive]) .demo-root.ds-stage > .stage.ds-lift-demo[data-effect="component-lift"]:has(> .ds-hint) {
+  padding-top:max(24px,var(--ds-stage-inset))!important;
+}

@@ -30,3 +30,8 @@
 .demo-root .stage[data-effect="component-morph"] .morph-demo { width:100%; min-height:48px; height:auto; padding:12px 16px!important; background:var(--ds-accent)!important; font:500 14px/1.5 var(--ds-font); }
 .demo-root .stage[data-effect="component-morph"] .morph-demo.busy { background:var(--ds-ink-2)!important; }
 .demo-root .stage[data-effect="component-morph"] .morph-demo.done { background:var(--ds-success)!important; }
+@container demo-stage (max-width:240px) {
+  .demo-root .stage[data-effect="component-morph"] .morph-demo {
+    min-width:0; max-width:100%; white-space:normal; overflow-wrap:anywhere;
+  }
+}

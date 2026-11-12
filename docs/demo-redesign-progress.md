@@ -147,3 +147,16 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
   - 处理：H 段起，启动 Codex 时用 `-c 'plugins."unified-computer-use@openai-bundled".enabled=false' -c 'plugins."codex-app-tools@openai-bundled".enabled=false'` 关掉这两个插件，说明里也写明禁止。用户的 `~/.codex/config.toml` 没有改。**以后每次跑 Codex 都必须带这两个参数。**
 - **H 段 Codex 正在跑**：03:32 启动，约 03:58 结束。说明在 `codex_brief_H.md`，日志在 `codex_log_H.txt`。范围是 interactions 的 component（14 条）、overlay（6 条）、data（9 条）、text（8 条），按顺序能做多少做多少。改前截图在 `shots/before7`，脚本 `shoot7.cjs`。
   - **下一段开头**：先用 `grep -c cua_repl codex_log_H.txt` 确认是 0，再确认 Codex 已结束，然后运行 `node shoot7.cjs http://127.0.0.1:4181/vibocoding-assistant/ shots/after7`，用 `mksheet.sh` 生成对比图，审过后提交。
+
+## 第 9–10 段（03:40–04:58）
+- 87fcdb4（H 段）：interactions 的 component 14、overlay 6、data 9、text 8，共 37 条单独精修。对比图 box `contact_sheet_H1.jpg`–`H4.jpg`。H 段日志 `mcp: cua_repl` 计数 0。
+- **单独精修累计 112 / 192**。其余 80 条走类型级皮肤（6 个视觉风格指南保留原样式）。按要求跳过 I 段。
+- 未单独精修：interactions 的 mobile、cursor、background、rules 及剩余 media/scroll；components tables 的 table-reorder、infinite-scroll、virtual-list；basics 的 layout/visual；其余 scenarios、ai；components charts。
+- b09f1d2：Codex（插件已关，日志 cua_repl 0 次）同步 11 个旧审计单测到新资产结构；触屏下 role=button 点击区 ≥44px。没有删测试。
+- 063c89a：幽灵按钮按下态边框加深（#4B5563，与悬停可区分）；batch1 无头测试同步新规格（按下 scale .98、语义色边框、图片卡片的装饰性细边框豁免，均附注释）。
+- 验证（04:30 前后）：
+  - Python 单测 147 项全部通过（含旧链接跳转 test_old_anchors）。
+  - 口语别名命中 62/62（100%）；token_demos、batch1/2/3、batch3/5 无头测试通过。
+  - allpages：212 页 × 3 宽，无溢出、无 JS 报错；唯一一条失败请求 lake-teal-02-640.webp 复查返回 200，属懒加载被切页中断。
+  - 未通过：batch6 无头（悬停预览弹层在 interactions 画廊格内底部超出 16px 余量）；demo_redesign_headless 24 项（相关演示格缺 skin 注入 / states 与 a11y 顺序 / 按钮页 390 下 morph、magnetic、ripple 窄格横向溢出 等）。已派短时 Codex（T2，插件关闭）修。batch4 完整无头在跑。
+- 晨间总览：box `/workspace/bench/demo-redesign/morning_summary.jpg`（16 组改前/改后 1440）。
