@@ -32,12 +32,23 @@ class AuditFixBatch2Test(unittest.TestCase):
             self.assertNotIn('"entries":[', html)
             url = re.search(r'data-index-url="([^"]+)"', html)[1]
             self.assertEqual(urlsplit(url).query, 'v=' + version)
-            self.assertEqual((page.parent / urlsplit(url).path).resolve(), index_file.resolve())
+            is_error_page = page == ROOT / 'dist/404.html'
+            if is_error_page:
+                self.assertTrue(url.startswith('/vibocoding-assistant/assets/search-index.json'))
+                target_index = ROOT / 'dist' / urlsplit(url).path.removeprefix('/vibocoding-assistant/')
+            else:
+                target_index = page.parent / urlsplit(url).path
+            self.assertEqual(target_index.resolve(), index_file.resolve())
             prefix = re.search(r'data-site-root="([^"]+)"', html)[1]
             for item in [*data['entries'], *data['columns']]:
                 href = prefix + item['href'][2:]
-                self.assertFalse(href.startswith(('/', 'http:','https:')))
-                self.assertTrue((page.parent / href / 'index.html').is_file(), (page, href))
+                if is_error_page:
+                    self.assertTrue(href.startswith('/vibocoding-assistant/'))
+                    target = ROOT / 'dist' / href.removeprefix('/vibocoding-assistant/')
+                else:
+                    self.assertFalse(href.startswith(('/', 'http:','https:')))
+                    target = page.parent / href
+                self.assertTrue((target / 'index.html').is_file(), (page, href))
         self.assertGreater(pages, 200)
         self.assertLess((ROOT / 'dist/components/button/index.html').stat().st_size, 100_000)
 

@@ -10,6 +10,41 @@ REDESIGN = ROOT / 'site-src/redesign'
 
 
 class RedesignTokensTest(unittest.TestCase):
+    def test_batch5_typography_and_related_link_values(self):
+        base = (REDESIGN / 'base.css').read_text()
+        site = (REDESIGN / 'site.css').read_text()
+
+        def declarations(css, selector):
+            blocks = re.findall(r'([^{}]+)\{([^{}]*)\}', css)
+            rules = [body for selectors, body in blocks if selector in [s.strip() for s in selectors.split(',')]]
+            self.assertTrue(rules, selector)
+            return dict(re.findall(r'([\w-]+)\s*:\s*([^;]+)', rules[0]))
+
+        for selector in ('.entry-section h2', '.use-card h2', '.criteria summary', '.new-section>summary', '.group-section h2'):
+            rule = declarations(site, selector)
+            self.assertEqual(rule['font-size'], 'var(--text-section)', selector)
+            self.assertEqual(rule['line-height'], '1.3', selector)
+            self.assertEqual(rule['font-weight'], '600', selector)
+        for css, selector in ((base, '.chip'), (site, '.count'), (site, '.stat'),
+                              (site, '.title-count'), (site, '.result-count'), (site, '.bench-badge')):
+            rule = declarations(css, selector)
+            self.assertEqual(rule['font-size'], 'var(--text-label)', selector)
+            self.assertEqual(rule['font-weight'], '500', selector)
+            self.assertEqual(rule['line-height'], '1.5', selector)
+        for selector in ('.gallery-caption strong', '.simple-card strong', '.layer h3'):
+            rule = declarations(site, selector)
+            self.assertEqual(rule['font-size'], '16px', selector)
+            self.assertEqual(rule['font-weight'], '600', selector)
+            self.assertEqual(rule['line-height'], '1.5', selector)
+            self.assertRegex(site, re.escape(selector) + r'[^{}]*\{font-size:14px')
+        self.assertNotRegex(site, r'\.motion-grid \.gallery-caption strong\{font-size:14px')
+        rule = declarations(base, '.link-block')
+        for prop, expected in {'background':'var(--white)', 'border':'1px solid var(--control)',
+                               'color':'var(--ink)', 'min-height':'44px', 'overflow-wrap':'anywhere'}.items():
+            self.assertEqual(rule[prop], expected)
+        self.assertEqual(declarations(base, '.link-block:hover')['border-color'], 'var(--ink)')
+        self.assertIn('outline: 2px solid var(--blue)', base)
+
     def test_prd_contrast_pairs(self):
         with contextlib.redirect_stdout(io.StringIO()):
             contrast = runpy.run_path(str(ROOT / 'docs/style-research/contrast.py'))['cr']

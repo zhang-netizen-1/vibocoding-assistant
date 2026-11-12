@@ -73,7 +73,7 @@ class SiteBuildTest(unittest.TestCase):
         spec.loader.exec_module(builder)
         entries = json.loads((ROOT / "build/entries.json").read_text())
         self.assertEqual(files, builder.expected_build_files(entries))
-        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 8 + len(entries))
+        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 9 + len(entries))
 
     def test_bench_pages_navigation_badges_and_local_references(self):
         paths = [DIST / "bench" / "index.html", *(DIST / "bench" / slug / "index.html" for slug in ("button", "crossfade", "grid"))]
@@ -245,13 +245,19 @@ class SiteBuildTest(unittest.TestCase):
             parsed = parse(path)
             for ref in parsed.references:
                 url = urlsplit(ref)
-                self.assertFalse(ref.startswith('/'), (name,ref))
+                if name == '404.html' and not ref.startswith('#'):
+                    self.assertTrue(ref.startswith('/vibocoding-assistant/'), (name,ref))
+                else:
+                    self.assertFalse(ref.startswith('/'), (name,ref))
                 if url.scheme or url.netloc:
                     # Existing skill source links are outbound anchors, never fetched resources.
                     self.assertEqual(url.netloc, 'github.com', (name,ref))
                     self.assertIn('ai/skills/', name)
                     continue
-                target = (path.parent/unquote(url.path)).resolve() if url.path else path
+                if name == '404.html' and url.path:
+                    target = (DIST/unquote(url.path).removeprefix('/vibocoding-assistant/')).resolve()
+                else:
+                    target = (path.parent/unquote(url.path)).resolve() if url.path else path
                 self.assertTrue(target.is_relative_to(DIST.resolve()), (name,ref))
                 if target.is_dir(): target /= 'index.html'
                 self.assertTrue(target.is_file(), (name,ref))

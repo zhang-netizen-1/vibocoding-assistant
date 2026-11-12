@@ -206,3 +206,56 @@
 - 新增可选无界面验证脚本 `tests/audit_fix_batch4_headless.cjs`：只用临时 Chromium 配置、本地文件响应和 `/vibocoding-assistant/` 子路径，阻止外部请求。覆盖 390、768、1023、1024、1440px 及宽屏触屏；扫描五栏目、192 条目及状态切换的实际文字字号、点击高度、同级按钮重叠、U01/小卡片文字边界、页面横向溢出，并检查抽屉焦点和播放按钮命中。正常执行后报告写入 `output/playwright/audit-fix-batch4.json`。
 - 无界面 Chromium 启动探测返回 `bootstrap_check_in ... MachPortRendezvousServer ... Permission denied (1100)`，尚未进入页面。上述浏览器脚本目前仅完成语法检查；实际渲染统计、页头高度、文字裁切及点击命中均未完成验证，留给用户最终浏览器验收。可在允许启动无界面 Chromium 的环境中运行 `NODE_PATH=/Users/zhiguang/.npm/_npx/e41f203b7505f1fb/node_modules node tests/audit_fix_batch4_headless.cjs`。
 - 本批只改当前工作区中的共用源文件、测试和本记录，未手改 dist，未执行暂存、提交、推送或发布。
+
+## 第 5 批 · 细节与规范
+
+日期为 2026-11-12，工作目录为 `~/Downloads/vibocoding-audit-fix`，分支为 `audit-fixes`。
+
+### U14 · 中文 404 与深层网址恢复
+
+- `site-src/redesign/templates.py` 新增 `not_found_page()`，加入生成页面和构建允许清单，生成 `dist/404.html`。页面包含中文说明「这个页面不存在，可能是网址输错了或条目改名了」、全站搜索按钮及回首页按钮，复用站点页头、页脚、目录与搜索浮层。
+- 本项选择绝对子路径方案。仅在生成 `404.html` 时，路径生成函数输出 `/vibocoding-assistant/...`，涵盖导航、资源、搜索 JSON 与搜索结果根路径。页内跳转继续使用 `#main`。任意深度错误网址均使用同一部署前缀，其余页面继续使用相对路径。
+- `tests/test_audit_fix_batch5.py` 验证中文、外框、两个恢复入口，并分别以三种深度错误网址解析全部资源、栏目、搜索索引和 192 个搜索条目地址，检查目标存在。`tests/audit_fix_batch2.cjs` 读取真实 404 页的搜索配置，验证加载共享 JSON、渲染按钮搜索结果及 Enter 跳转。`tests/test_site_build.py`、`tests/test_audit_fix_batch2.py` 为唯一的 404 绝对子路径例外增加精确断言，保留其他页面的相对路径与目标存在检查。
+- 实现和自动化路径、脚本行为验证已完成。GitHub Pages 错误响应及真实浏览器搜索入口待用户最终验收。
+
+### U16 · 首页标题末行
+
+- `site-src/redesign/templates.py` 将标题末尾「提示词。」整体包进 `span.nowrap`。`site-src/redesign/base.css` 使用 `white-space: nowrap`，让词语和句号一起换行。
+- `tests/test_audit_fix_batch5.py` 断言生成结构与不断行规则。`tests/audit_fix_batch5_headless.cjs` 为 1440、1024、768、390px 准备逐字测量行位置的检查，要求末行除空白和标点后超过两个字符。
+- 实现和结构验证已完成。四个宽度的实际换行待用户最终验收，无界面浏览器启动受沙箱阻止。
+
+### U17 · 页脚分隔线对齐
+
+- `site-src/redesign/templates.py` 共用外框统一改为 `footer.wrap > div.footer`，外层负责页面左右留白，内层承载原有分隔线与页脚内容。首页、栏目、条目、规范、提示词写法、测评和 404 页统一生成。
+- `tests/test_audit_fix_batch5.py` 遍历所有带共用搜索浮层的页面，检查内层容器结构。无界面脚本准备按主内容左右内边距检查页脚分隔线坐标。
+- 实现和全站结构验证已完成。实际像素对齐待用户最终验收。
+
+### U18 · 提示词写法页间距与主按钮
+
+- `site-src/redesign/site.css` 为 `.entry-section p + h3` 设置 `margin-top: var(--space-6)`，对应 24px，覆盖「动效描述的四层结构」和「完整例子 · 按钮」中的两处链接段落与后续小标题。
+- `site-src/redesign/templates.py` 中「复制提示词」按钮调用共用 `copy_button(..., primary=True)`，使用墨黑主按钮样式。
+- `tests/test_audit_fix_batch5.py` 检查令牌间距与实际生成按钮类。原有提示词写法测试继续逐字核对两版按钮提示词及验收要求。无界面脚本准备检查两处实际间距均为 24px、按钮背景为 `#111827`。
+- 实现和静态验证已完成。实际渲染间距与按钮外观待用户最终验收。
+
+### U19 · 相关条目链接块
+
+- `site-src/redesign/templates.py` 将条目底部相关链接及「用在哪些组件上」互链统一生成 `a.link-block`，末尾添加向右箭头，箭头设为 `aria-hidden="true"`。
+- `site-src/redesign/base.css` 定义白底、`1px solid var(--control)`（`#868E9C`）、墨黑字，悬停边框为 `var(--ink)`（`#111827`）并使用灰白舞台底色。链接沿用全站 2px 蓝色焦点环。所有尺寸下链接块最小高度 44px，长名称允许换行。`site-src/redesign/site.css` 在手机宽度下将这两组链接排成单列。
+- `tests/test_audit_fix_batch5.py` 遍历 192 个条目及组件反向互链，逐个检查链接块、箭头与辅助技术属性。`tests/test_redesign_tokens.py` 断言边框、底色、文字、悬停、44px 高度及焦点规则。原有组件动效映射测试继续验证双向目标完整。
+- 实现和全量结构、CSS 验证已完成。手机实际点击区、悬停与聚焦外观待用户最终验收。
+
+### U22 · 对齐 PRD §15.4 字号表
+
+- `site-src/redesign/site.css` 将条目区块、使用卡、验收要求和新做一个标题，以及栏目分组标题统一为 `--text-section`（22px）、行高 1.3、字重 600。
+- `site-src/redesign/base.css`、`site-src/redesign/site.css` 将 chip、栏目与分组条数、首页条数、搜索结果条数和测评徽标统一为 `--text-label`（13px）、行高 1.5、字重 500。共用导航中的栏目条数改用 `.count`。
+- 栏目卡片、组件关联动效卡片和首页目录卡片名称统一字重 600、行高 1.5、桌面 16px、手机 14px，移除关联动效卡片名称在桌面下的 14px 覆盖。
+- `tests/test_redesign_tokens.py` 增加上述精确 CSS 值断言。`tests/test_audit_fix_batch5.py` 扫描生成 CSS、JS 和全部演示模板，确认无旧危险色 `#DC2626`。原有对比度测试继续断言 `--demo-danger: #B91C1C`。内容数据与条目验收要求、别名保持现有版本。
+- 实现和静态规范验证已完成。区块标题层级、390px 等宽度的实际溢出和截断待用户最终验收。
+
+### 本批验证结果与待验收项
+
+- `python3 scripts/build_site.py` 通过，生成 217 个页面、192 个统一条目，包含新增 404 页。
+- `python3 -m unittest discover -s tests -p 'test_*.py'` 共 101 项通过，本批新增 7 项 Python 回归测试。口语搜索仍为 62/62 命中前三。
+- `node tests/audit_fix_batch2.cjs` 通过，包含新增 404 页真实配置的搜索加载、结果链接与 Enter 跳转检查。`node --check tests/audit_fix_batch5_headless.cjs`、`git diff --check` 通过。
+- 新增 `tests/audit_fix_batch5_headless.cjs`，仅使用临时无界面 Chromium 配置和本地文件响应，检查 1440、1024、768、390px 的首页、五栏目、提示词写法、192 条目和三种深度错误网址，涵盖标题末行、页脚坐标、间距、计算字号与字重、链接高度、横向溢出及搜索跳转。脚本完成语法检查，实际渲染检查尚未运行成功。
+- 无界面 Chromium 启动探测返回 `bootstrap_check_in ... MachPortRendezvousServer ... Permission denied (1100)`。本批未获得浏览器渲染证据，以上视觉与真实浏览器交互项留给用户最终验收。在可启动无界面 Chromium 的环境中，可执行 `NODE_PATH=/Users/zhiguang/.npm/_npx/e3e9a1d1813bae49/node_modules node tests/audit_fix_batch5_headless.cjs`，运行报告写入 `output/playwright/audit-fix-batch5.json`。

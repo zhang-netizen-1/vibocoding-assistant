@@ -146,5 +146,19 @@ const payload = () => JSON.parse(fs.readFileSync('dist/assets/search-index.json'
   assert.match(invalid.nodes.get('#search-body').innerHTML,/result-thumb-fallback/);
   assert.match(invalid.nodes.get('#search-body').innerHTML,/aria-hidden="true">组<\/span>/);
   assert.doesNotMatch(invalid.nodes.get('#search-body').innerHTML,/demo-scope|data-demo|<img|<script/);
+
+  const errorHtml = fs.readFileSync('dist/404.html','utf8');
+  const errorRoot = errorHtml.match(/data-site-root="([^"]+)"/)[1];
+  const errorIndex = errorHtml.match(/data-index-url="([^"]+)"/)[1];
+  const errorPage = boot(errorRoot);
+  errorPage.dialog.dataset.indexUrl = errorIndex;
+  errorPage.nodes.get('#nav-search').fire('click');
+  assert.equal(errorPage.requests[0].url,errorIndex);
+  errorPage.requests[0].resolve({ok:true,json:async () => payload()}); await flush();
+  const errorInput = errorPage.nodes.get('#search-input');
+  errorInput.value = '按钮'; errorInput.fire('input');
+  assert.match(errorPage.nodes.get('#search-body').innerHTML,/href="\/vibocoding-assistant\/components\/button\/"/);
+  errorPage.dialog.fire('keydown',{key:'Enter',target:errorInput});
+  assert.equal(errorPage.navigations[0],'/vibocoding-assistant/components/button/');
   console.log('Lazy load, loading/retry/cache, relative links, copy isolation, arrows/Enter and single Escape passed');
 })().catch(error => {console.error(error);process.exitCode = 1;});

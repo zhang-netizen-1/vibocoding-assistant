@@ -22,7 +22,7 @@ def entry_destination(entry):
 
 
 def generated_pages(entries):
-    return ['index.html', *(f'{column}/index.html' for column in ('basics', 'components', 'interactions', 'scenarios', 'ai')),
+    return ['index.html', '404.html', *(f'{column}/index.html' for column in ('basics', 'components', 'interactions', 'scenarios', 'ai')),
             *(entry_destination(e) + 'index.html' for e in entries), 'interactions/spec/index.html', 'ai/prompt-writing/index.html']
 
 
@@ -34,6 +34,11 @@ def generated_files(entries):
 def relative(page, destination):
     path, mark, fragment = destination.partition('#')
     path = path.strip('/')
+    if page == '404.html':
+        # GitHub Pages serves this document at error URLs of arbitrary depth.
+        if path and not path.endswith('.html') and not path.startswith('assets/'):
+            path += '/'
+        return '/vibocoding-assistant/' + path + (mark + fragment if mark else '')
     result = posixpath.relpath(path or '.', posixpath.dirname(page) or '.')
     if result == '.':
         result = './'
@@ -89,7 +94,7 @@ def header(page, tax):
             groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, "bench/")}">测评结果</a></div>')
         # No entry lists in either menu. Only the approved component intro.
         first = f'<p class="small menu-intro">先看：<a href="{relative(page, "components/states/")}">组件状态</a></p>' if slug == 'components' else ''
-        panels.append(f'<div class="mega" id="mega-{slug}" hidden><div class="wrap mega-inner"><div class="row between mega-heading"><h2>{name}</h2><span class="small">{column["expected"]} 条</span></div>{first}<div class="mega-grid">{"".join(groups)}</div></div></div><!-- mega -->')
+        panels.append(f'<div class="mega" id="mega-{slug}" hidden><div class="wrap mega-inner"><div class="row between mega-heading"><h2>{name}</h2><span class="count">{column["expected"]} 条</span></div>{first}<div class="mega-grid">{"".join(groups)}</div></div></div><!-- mega -->')
         drawers.append(f'<details class="drawer-category"><summary>{number} {name}</summary>{"".join(groups)}</details>')
     return f'''<a class="skip" href="#main">跳到主要内容</a>
 <header class="header" id="header"><div class="wrap nav-inner"><a class="brand" href="{relative(page, '')}"><span class="logo" aria-hidden="true"></span>Vibe Design 速查</a><nav class="desktop-nav" aria-label="主导航"><a class="nav-link" href="{relative(page, '')}">首页</a>{''.join(triggers)}</nav><div class="nav-actions"><button class="nav-search" id="nav-search" aria-haspopup="dialog" aria-controls="search-dialog"><span class="desktop-search">搜索 <kbd class="shortcut-hint">⌘K</kbd></span><span class="mobile-only"><span class="search-icon" aria-hidden="true"></span><span class="sr">搜索</span></span></button><button class="mobile-only menu-button" id="directory-toggle" aria-haspopup="dialog" aria-controls="directory" aria-expanded="false">目录</button></div></div>{''.join(panels)}</header>
@@ -117,7 +122,7 @@ def motion_links(entry, page, entries, tax):
         more = '<details class="more-motions"><summary>更多动效</summary><div class="gallery motion-grid">' + ''.join(gallery_card(item,page,compact=True) for item in forward[6:]) + '</div></details>' if len(forward)>6 else ''
         parts.append(f'<section class="entry-section motion-section"><h2>它怎么动</h2><div class="gallery motion-grid">{shown}</div>{more}</section>')
     if reverse:
-        links = ''.join(f'<a class="chip" href="{relative(page,entry_destination(item))}">{escape(item["zh"])}</a>' for item in reverse)
+        links = ''.join(f'<a class="link-block" href="{relative(page,entry_destination(item))}">{escape(item["zh"])}<span aria-hidden="true">→</span></a>' for item in reverse)
         parts.append(f'<section class="entry-section motion-section"><h2>用在哪些组件上</h2><div class="chips">{links}</div></section>')
     return ''.join(parts)
 
@@ -153,7 +158,7 @@ def shell(page, title, body, entries, tax, entry=False):
     css += asset_tag('demos.css')
     css += ''.join(asset_tag(name) for name in sorted(bundle_names) if name.endswith('.css'))
     js = ''.join(asset_tag(name) for name in ('demo-runtime.js', *sorted(name for name in bundle_names if name.endswith('.js') and name != 'demo-runtime.js'), 'search.js', 'site.js'))
-    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="查看界面效果的中英文名称与演示，复制原始实现提示词。"><title>{escape(title)} · Vibe Design 速查</title><link rel="icon" href="{relative(page, "assets/favicon.svg")}">{css}{js}</head><body{' class="entry-active"' if entry else ''}>{header(page,tax)}<main class="wrap view" id="main" tabindex="-1">{body}</main><footer class="wrap footer">Vibe Design 速查 · <a href="{relative(page,'bench/')}">测评结果</a></footer>
+    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="查看界面效果的中英文名称与演示，复制原始实现提示词。"><title>{escape(title)} · Vibe Design 速查</title><link rel="icon" href="{relative(page, "assets/favicon.svg")}">{css}{js}</head><body{' class="entry-active"' if entry else ''}>{header(page,tax)}<main class="wrap view" id="main" tabindex="-1">{body}</main><footer class="wrap"><div class="footer">Vibe Design 速查 · <a href="{relative(page,'bench/')}">测评结果</a></div></footer>
 <dialog class="overlay search-dialog" id="search-dialog" aria-label="搜索条目" data-index-url="{index_url}" data-site-root="{relative(page, '')}"><div class="search-top"><label class="sr" for="search-input">搜索中文名、英文名或已有词</label><input id="search-input" type="search" placeholder="用你自己的说法搜，比如：鼠标放上去浮起来" autocomplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="grid" aria-expanded="false" aria-describedby="search-help"><button class="close-button" data-close="search-dialog">关闭</button></div><div class="search-body" id="search-body"></div><p class="search-help" id="search-help">↑↓ 选择条目 · Enter 打开 · Tab 选择操作 · Esc 关闭</p></dialog><div class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></div></body></html>'''
 
 
@@ -165,8 +170,16 @@ def home(entries, tax):
     for c, description, anchor in zip(tax['columns'], descriptions, starts):
         start = next(e for e in entries if anchor in e['old_anchors'])
         layers.append(f'<article class="layer"><span class="number">{c["order"]:02d}</span><h3><a href="{relative(page,column_destination(c["slug"]))}">{c["name"]}</a></h3><span class="stat">{c["expected"]} 条</span><p>{description}</p><a class="start" href="{relative(page,entry_destination(start))}">推荐起点：{escape(start["zh"])} →</a></article>')
-    body = f'''<div class="hero"><h1>看见一个效果，叫出它的名字，拿到能粘进 AI 的提示词。</h1><p class="sub">{len(entries)} 个界面效果，附中英文名称、演示和可直接复制的提示词。</p><button class="home-search" data-search><span class="search-icon" aria-hidden="true"></span><span>用你自己的说法搜，比如：鼠标放上去浮起来</span><kbd class="shortcut-hint">/</kbd></button><div class="chips examples">{query_buttons()}</div></div><h2 class="section-head">从这里开始</h2><div class="layers">{''.join(layers)}</div><section class="method"><h2>怎么用</h2><ol class="steps"><li>找到效果</li><li>看演示</li><li>复制提示词</li><li>粘进 AI 并验收</li></ol></section>'''
+    body = f'''<div class="hero"><h1>看见一个效果，叫出它的名字，拿到能粘进 AI 的<span class="nowrap">提示词。</span></h1><p class="sub">{len(entries)} 个界面效果，附中英文名称、演示和可直接复制的提示词。</p><button class="home-search" data-search><span class="search-icon" aria-hidden="true"></span><span>用你自己的说法搜，比如：鼠标放上去浮起来</span><kbd class="shortcut-hint">/</kbd></button><div class="chips examples">{query_buttons()}</div></div><h2 class="section-head">从这里开始</h2><div class="layers">{''.join(layers)}</div><section class="method"><h2>怎么用</h2><ol class="steps"><li>找到效果</li><li>看演示</li><li>复制提示词</li><li>粘进 AI 并验收</li></ol></section>'''
     return shell(page, '首页', body, entries, tax)
+
+
+def not_found_page(entries, tax):
+    page = '404.html'
+    body = f'''<div class="hero"><h1>找不到这个页面</h1>
+<p class="sub">这个页面不存在，可能是网址输错了或条目改名了</p>
+<div class="row"><button data-search>搜索全站条目</button><a class="btn-primary recovery-home" href="{relative(page, '')}">回首页</a></div></div>'''
+    return shell(page, '页面不存在', body, entries, tax)
 
 
 def demo_scope(demo, page, interactive=False):
@@ -222,7 +235,7 @@ def detail(e, entries, tax):
         usage += '<section class="entry-section usage-section"><h2>关键参数</h2><ul>' + ''.join(f'<li>{escape(item)}</li>' for item in params) + '</ul></section>'
     aliases = '<p class="entry-aliases small">也叫：' + escape('、'.join(e['aliases'][:5])) + '</p>' if e.get('aliases') else ''
     notice = f'<p class="small">共 {len(e["acceptance"])} 条验收要求，见使用卡；复制提示词时自动包含</p>' if e.get('prompt_edit') else ''
-    related = ''.join(f'<a class="chip" href="{relative(page,entry_destination(other))}">{escape(other["zh"])}</a>' for other in entries if (other['column'] == e['column'] and other['group'] == e['group'] and other['slug'] != e['slug']) or other['column'] + '/' + other['slug'] in e.get('related', []))
+    related = ''.join(f'<a class="link-block" href="{relative(page,entry_destination(other))}">{escape(other["zh"])}<span aria-hidden="true">→</span></a>' for other in entries if (other['column'] == e['column'] and other['group'] == e['group'] and other['slug'] != e['slug']) or other['column'] + '/' + other['slug'] in e.get('related', []))
     criteria = ''
     if e['acceptance']:
         items = ''.join(f'<li><p id="criterion-{i}">{escape(text)}</p>{copy_button("criterion-"+str(i), "复制这条")}</li>' for i,text in enumerate(e['acceptance']))
@@ -289,7 +302,7 @@ def prompt_writing_page(entries, tax):
 <section class="entry-section" id="button-example"><h2>完整例子 · 按钮</h2>
 <p>以下内容直接读取按钮条目的当前提示词与五条验收要求。</p>
 <p><a href="{relative(page, 'components/button/')}">打开按钮条目，查看演示、用途与参数 →</a></p>
-<h3>改现有页面</h3><pre class="prompt-text" id="button-edit-example">{escape(copy_payload(button))}</pre>{copy_button('button-edit-example')}
+<h3>改现有页面</h3><pre class="prompt-text" id="button-edit-example">{escape(copy_payload(button))}</pre>{copy_button('button-edit-example', primary=True)}
 <details class="entry-section"><summary>新做一个</summary><pre class="prompt-text" id="button-new-example">{escape(copy_payload(button, 'prompt_new'))}</pre>{copy_button('button-new-example', '复制这一版')}</details></section>'''
     return shell(page, '提示词写法', body, entries, tax)
 
@@ -302,7 +315,7 @@ def build(output, entries, tax):
     contents.update(demos.assets(entries))
     for name, content in contents.items():
         (assets/name).write_text(content, encoding='utf-8')
-    pages = {'index.html':home(entries,tax), 'interactions/spec/index.html':spec_page(entries,tax), 'ai/prompt-writing/index.html':prompt_writing_page(entries,tax)}
+    pages = {'index.html':home(entries,tax), '404.html':not_found_page(entries,tax), 'interactions/spec/index.html':spec_page(entries,tax), 'ai/prompt-writing/index.html':prompt_writing_page(entries,tax)}
     pages.update({f'{column["slug"]}/index.html':column_page(column['slug'],entries,tax) for column in tax['columns']})
     pages.update({entry_destination(e) + 'index.html':detail(e,entries,tax) for e in entries})
     for name, html in pages.items():
