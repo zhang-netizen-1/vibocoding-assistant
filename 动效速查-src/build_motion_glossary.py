@@ -31,17 +31,17 @@ def shell(text='动效预览'):
 def demo(kind):
     if kind=='view-crossfade':
         return ('''<div class="view-stack scene-stack">
-          <div class="mini-view view-a"><span class="scene-topline"><i></i> MY WORKSPACE <em>01 / 02</em></span><strong>创作概览</strong><span class="scene-description">把想法整理为清晰的下一步。</span><span class="scene-progress"><i></i></span><span class="scene-metrics"><b>12 <small>个灵感</small></b><b>04 <small>进行中</small></b></span></div>
-          <div class="mini-view view-b" aria-hidden="true"><span class="scene-topline"><i></i> PROJECT DETAIL <em>02 / 02</em></span><strong>页面设计</strong><span class="scene-description">本周的重点，正在稳步完成。</span><span class="scene-task"><i>✓</i> 结构草图 <small>已完成</small></span><span class="scene-task"><i>→</i> 动效细化 <small>进行中</small></span></div>
+          <div class="mini-view view-a"><strong>创作概览</strong><span class="scene-description">把想法整理为清晰的下一步。</span></div>
+          <div class="mini-view view-b" aria-hidden="true"><strong>页面设计</strong><span class="scene-description">本周的重点，正在稳步完成。</span></div>
         </div>''' + btn('切换视图','next'))
     if kind=='view-slide':
-        return ('''<div class="view-window scene-window"><div class="view-track"><div class="scene-slide"><span class="scene-topline"><i></i> DISCOVER <em>01 / 02</em></span><strong>寻找灵感</strong><span class="scene-description">从不同方向，找到你的表达。</span><span class="scene-thumbs"><i></i><i></i><i></i></span></div><div class="scene-slide"><span class="scene-topline"><i></i> COLLECTION <em>02 / 02</em></span><strong>精选灵感</strong><span class="scene-description">收藏的内容，继续向前探索。</span><span class="scene-thumbs"><i></i><i></i><i></i></span></div></div></div>''' + btn('前进 / 返回','next'))
+        return ('''<div class="view-window scene-window"><div class="view-track"><div class="scene-slide"><strong>寻找灵感</strong><span class="scene-description">从不同方向，找到你的表达。</span></div><div class="scene-slide"><strong>精选灵感</strong><span class="scene-description">收藏的内容，继续向前探索。</span></div></div></div>''' + btn('前进 / 返回','next'))
     if kind=='view-curtain':
-        return '<div class="mini-view curtain-target scene-curtain"><span class="scene-topline"><i></i> NEW CHAPTER <em>03 / 03</em></span><strong>下一段旅程</strong><span class="scene-description">打开新的视角与可能。</span><span class="scene-curtain-art" aria-hidden="true"></span><span class="curtain"></span></div>'
+        return '<div class="mini-view curtain-target scene-curtain"><strong>下一段旅程</strong><span class="scene-description">打开新的视角与可能。</span><span class="curtain"></span></div>'
     if kind=='view-shared':
         return '<div class="shared-box"><span class="shared-origin-label">概览卡片</span><span class="shared-destination-label">详情面板</span><button class="shared-chip" type="button" data-action="toggle" aria-expanded="false"><span class="shared-art" aria-hidden="true"></span><strong>展开详情 ↗</strong><span>同一内容，跨位置衔接</span></button></div>'
     if kind=='view-stagger':
-        return '<div class="stagger-box"><span class="stagger-kicker">NEW / 2026</span><strong>让想法，<br>逐步成形。</strong><span>从第一行标题开始，层层展开。</span><i>开始探索 <b>↗</b></i></div>'
+        return '<div class="stagger-box"><strong>让想法，<br>逐步成形。</strong><span>从第一行标题开始，层层展开。</span><i>开始探索 <b>↗</b></i></div>'
     if kind=='scroll-scroll-zoom': return '<div class="mini-scroll zoom-scroll" tabindex="0" aria-label="可滚动的缩放演示"><div class="scroll-top">向下滚动 ↓</div><div class="scroll-spacer"></div><div class="zoom-target"><strong>产品图</strong><span>随滚动放大</span></div><div class="scroll-spacer end"></div></div><div class="scroll-meter"><i></i></div>'
     if kind=='component-ripple': return '<button class="ripple-btn" type="button">点击我<span class="ripple-ink" aria-hidden="true"></span></button>'
     if kind=='component-underline': return '<div class="uline-stage"><nav class="uline-nav"><a class="uline on" href="javascript:void 0">首页</a><a class="uline" href="javascript:void 0">作品</a><a class="uline" href="javascript:void 0">关于</a></nav><p class="uline-note">悬停链接：下划线左进右出</p></div>'
@@ -125,7 +125,7 @@ def card(e):
     backdrop = '<div class="overlay-preview-shell" aria-hidden="true"><span class="overlay-preview-title">工作台 <small>OVERVIEW</small></span><span class="overlay-preview-line"></span><span class="overlay-preview-line short"></span><span class="overlay-preview-tiles"><i></i><i></i><i></i></span></div>' if cat=='overlay' and not kind.startswith('extra-') else ''
     return f'''<article class="effect-card" id="e-{esc(kind)}" data-cat="{esc(cat)}" data-name="{esc(name+' '+en+' '+trigger+' '+description)}">
       <div class="card-head"><div><h3>{esc(name)}</h3><button class="english" type="button" data-copy="{esc(en)}" aria-label="复制英文名称：{esc(en)}">{esc(en)}</button></div>{card_label}</div>
-      <div class="stage {'dark-stage' if cat=='background' else ''}" data-effect="{esc(kind)}"><span class="stage-label">{esc(trigger)}</span><span class="stage-live" aria-hidden="true"><i></i> LIVE DEMO</span>{backdrop}{demo(kind)}<span class="stage-signature" aria-hidden="true">{esc(cat.upper())} / MOTION STUDY</span></div>
+      <div class="stage {'dark-stage' if cat=='background' else ''}" data-effect="{esc(kind)}"><span class="stage-label">{esc(trigger)}</span>{backdrop}{demo(kind)}</div>
       <div class="demo-tools">{tools}<span class="preview-label">真实交互演示</span></div>
       <div class="card-note">{esc(description)}</div>
       <details class="card-prompt" open><summary>查看并复制动效实现提示词</summary><p class="prompt-text">{esc(prompt)}</p><button class="copy-prompt" type="button">复制提示词</button></details>

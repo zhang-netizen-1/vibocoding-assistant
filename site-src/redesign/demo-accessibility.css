@@ -1,0 +1,91 @@
+/* Shared inside every demo ShadowRoot, after the source stylesheet. */
+.demo-root :is(input, textarea, select, button, [role="button"], [role="checkbox"], [role="radio"], [role="switch"], [tabindex]),
+.demo-root :is(.searchbox, .taginput-demo, .stepper, .dropzone, .slider, .switch-demo, .extra-drag-chip, .extra-drop-target, .swipe-item, .rubber-item, .drag-list > div) {
+  border-color: var(--demo-border) !important;
+}
+.demo-root :is(.slider, .switch-demo) {
+  border: 1px solid var(--demo-border) !important;
+}
+.demo-root input[type="checkbox"],
+.demo-root input[type="radio"] {
+  appearance: none;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid var(--demo-border);
+  border-radius: 3px;
+  background: var(--demo-white);
+  vertical-align: middle;
+}
+.demo-root input[type="radio"] { border-radius: 50%; }
+.demo-root input[type="checkbox"]:checked {
+  background: var(--demo-primary);
+  background-image: linear-gradient(45deg, transparent 43%, white 43% 57%, transparent 57%), linear-gradient(-45deg, transparent 43%, white 43% 57%, transparent 57%);
+  background-size: 5px 7px, 8px 10px;
+  background-position: 2px 5px, 5px 2px;
+  background-repeat: no-repeat;
+}
+.demo-root input[type="checkbox"]:indeterminate {
+  background: linear-gradient(var(--demo-white), var(--demo-white)) center / 8px 2px no-repeat var(--demo-primary);
+}
+.demo-root input[type="radio"]:checked {
+  background: radial-gradient(circle, var(--demo-primary) 0 4px, var(--demo-white) 4px);
+}
+/* The switch keeps its existing hidden input and visible track. */
+.demo-root .switch input { appearance: auto; width: 0; height: 0; border: 0; }
+.demo-root input[type="range"] { appearance: none; background: transparent; }
+.demo-root input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border: 1px solid var(--demo-border);
+  border-radius: 99px;
+  background: var(--demo-soft);
+}
+.demo-root input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border: 1px solid var(--demo-border);
+  border-radius: 50%;
+  background: var(--demo-primary);
+}
+.demo-root input[type="range"]::-moz-range-track {
+  height: 4px;
+  border: 1px solid var(--demo-border);
+  border-radius: 99px;
+  background: var(--demo-soft);
+}
+.demo-root input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--demo-border);
+  border-radius: 50%;
+  background: var(--demo-primary);
+}
+.demo-root :is(.stage-label, .canvas .ctl, .gesture-note, .preview-label, .scroll-top, .compare-label, .carousel-status, .shared-origin-label, .shared-destination-label, .rubber-zone small, .magnet-note, .cf-hint, .trail-hint, .eyes-note, .uline-note, .taghint, .ie-hint, .otp-hint, .tblhint, .hold-alt, .extra-magnifier-art small, .extra-timeline-label, .obj-card span, .pull-indicator) {
+  font-size: 13px !important;
+  line-height: 1.5;
+  color: #4B5563 !important;
+}
+/* Opaque backing preserves hint contrast over changing specimen backgrounds. */
+.demo-root :is(.stage-label, .canvas .ctl, .cf-hint, .trail-hint, .eyes-note, .magnet-note) {
+  background: var(--demo-stage);
+}
+.demo-root .canvas .ctl { max-width: calc(100% - 28px); }
+.demo-root .canvas { padding-top: 52px; }
+.demo-root .stage { padding-top: 40px; }
+.demo-root .btn-pri:active,
+.demo-root .btn-pri[data-preview-active] { background: var(--demo-primary-active); }
+.demo-root .btn-ghost:hover,
+.demo-root .btn-ghost[data-preview-hover] { background: var(--demo-soft); }
+.demo-root .btn-ghost:active,
+.demo-root .btn-ghost[data-preview-active] { background: var(--demo-line); border-color: var(--demo-ink) !important; }
+.demo-root .btn-danger:active,
+.demo-root .btn-danger[data-preview-active] { background: var(--demo-danger-active); }
+
+.demo-root .ctxmenu .danger:hover,
+.demo-root .ctxmenu .danger:focus-visible,
+.demo-root .holdbtn:not(.completed):hover { color: var(--demo-danger-hover); }
+.demo-root .ctxmenu .danger:active,
+.demo-root .holdbtn:not(.completed):active { color: var(--demo-danger-active); }

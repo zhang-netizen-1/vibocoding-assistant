@@ -4,6 +4,9 @@
 :host(.force-hover) .btn-ghost {background:var(--demo-soft)}
 :host(.force-hover) .btn-danger {background:var(--demo-danger-hover)}
 :host(.force-pressed) .btn {transform:translateY(1px)}
+:host(.force-pressed) .btn-pri {background:var(--demo-primary-active)}
+:host(.force-pressed) .btn-ghost {background: var(--demo-line);border-color:var(--demo-ink)!important}
+:host(.force-pressed) .btn-danger {background:var(--demo-danger-active)}
 :host(.force-focus) :is(input.i,select.i,textarea.i) {border-color:var(--demo-primary);box-shadow:0 0 0 3px var(--demo-soft)}
 :host(.force-focus) .floatfield .fflabel {top:-8px;font-size:11px;background:var(--demo-white);color:var(--demo-primary)}
 :host(.force-focus) .canvas [data-simulated-focus] {outline:2px solid var(--demo-focus);outline-offset:2px}

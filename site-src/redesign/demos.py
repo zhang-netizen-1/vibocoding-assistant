@@ -32,6 +32,8 @@ def _palette(text):
         '#ff6a4a': 'var(--demo-primary)', '#ff5b41': 'var(--demo-primary-hover)',
         '#ff8a70': 'var(--demo-primary)', '#ff9a85': '#C4B5FD',
         '#ffd6cc': '#EDE9FE', '#fdeeea': '#F5F3FF', '#a5321f': 'var(--demo-primary-active)',
+        '#dc2626': 'var(--demo-danger)', '#b91c1c': 'var(--demo-danger)',
+        '#991b1b': 'var(--demo-danger-hover)', '#7f1d1d': 'var(--demo-danger-active)',
         '#1d4ed8': 'var(--demo-primary)', '#2448a4': 'var(--demo-primary-hover)',
     }
     text = re.sub(r'#[\da-fA-F]{3,8}\b', lambda m: colors.get(m[0].lower(), m[0]), text)
@@ -39,7 +41,7 @@ def _palette(text):
 
 
 SHADOW_BASE = '''
-:host{display:block;position:relative;isolation:isolate;contain:layout style;min-width:0;width:100%;color:var(--demo-ink,#111827);font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;--demo-primary:#6D28D9;--demo-primary-hover:#5B21B6;--demo-primary-active:#4C1D95;--demo-stage:#F6F7F9;--demo-ink:#111827;--demo-secondary:#4B5563;--demo-line:#E4E7EC;--demo-soft:#F3F4F6;--text:var(--demo-ink);--bg:#fff;--bg2:#fff;--bg3:var(--demo-soft);--panel:#fff;--panel2:var(--demo-soft);--line2:var(--demo-line);--demo-white:#fff;--font-sans:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;--font-mono:ui-monospace,monospace;--acc:var(--demo-primary);--acc-solid:var(--demo-primary);--accent:var(--demo-primary);--accent-dark:var(--demo-primary-active);--ink:var(--demo-ink);--muted:var(--demo-secondary);--line:var(--demo-line)}
+:host{display:block;position:relative;isolation:isolate;contain:layout style;min-width:0;width:100%;color:var(--demo-ink,#111827);font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;--demo-primary:#6D28D9;--demo-primary-hover:#5B21B6;--demo-primary-active:#4C1D95;--demo-stage:#F6F7F9;--demo-ink:#111827;--demo-secondary:#4B5563;--demo-line:#E4E7EC;--demo-border:#868E9C;--demo-danger:#B91C1C;--demo-danger-hover:#991B1B;--demo-danger-active:#7F1D1D;--demo-soft:#F3F4F6;--text:var(--demo-ink);--bg:#fff;--bg2:#fff;--bg3:var(--demo-soft);--panel:#fff;--panel2:var(--demo-soft);--line2:var(--demo-line);--demo-white:#fff;--font-sans:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;--font-mono:ui-monospace,monospace;--acc:var(--demo-primary);--acc-solid:var(--demo-primary);--accent:var(--demo-primary);--accent-dark:var(--demo-primary-active);--ink:var(--demo-ink);--muted:var(--demo-secondary);--line:var(--demo-line)}
 *{box-sizing:border-box} .demo-root{position:relative;min-width:0;overflow:hidden;background:var(--demo-stage);color:var(--demo-ink);border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important}
 .demo-root>.canvas,.demo-root>.stage,.guide-card-stage{border:0;background:var(--demo-stage);background-image:none;min-height:224px;max-width:100%;margin:0;overflow:hidden}
 :host(:not([data-demo-playing])) *,:host(:not([data-demo-playing])) *::before,:host(:not([data-demo-playing])) *::after{animation-play-state:paused!important}
@@ -60,7 +62,7 @@ def css(source):
     hover = '\n'.join(s + b for s, b in re.findall(r'([^{}]+)(\{[^{}]*\})', original)
                       if (':hover' in s or ':active' in s) and '@' not in s)
     hover = hover.replace(':hover', '[data-preview-hover]').replace(':active', '[data-preview-active]')
-    return _palette(original) + '\n' + _palette(hover) + '\n' + SHADOW_BASE
+    return _palette(original) + '\n' + _palette(hover) + '\n' + SHADOW_BASE + '\n' + (HERE / 'demo-accessibility.css').read_text()
 
 
 def _ui_script(source):
@@ -286,7 +288,7 @@ def _assets():
         'demo-guide.css': css('<style>' + (ROOT / 'site-src/guides.css').read_text() + (ROOT / 'site-src/visual-styles.css').read_text() + '</style>'),
         'demo-skill-reference.css': css('<style>' + (ROOT / 'site-src/skills.css').read_text() + '</style>'),
         'demo-token.js': (HERE / 'token-demo.js').read_text(),
-        'demo-token.css': SHADOW_BASE + (HERE / 'token-demo.css').read_text(),
+        'demo-token.css': SHADOW_BASE + (HERE / 'token-demo.css').read_text() + (HERE / 'demo-accessibility.css').read_text(),
         'demos.css': '.demo-scope{display:block;position:relative;min-width:0;width:100%;isolation:isolate}.demo-secondary{margin-top:16px}.demo-scope>template{display:none}\n',
     }
     for page in ('motion-demo-gallery', 'motion-demo-detail'):
