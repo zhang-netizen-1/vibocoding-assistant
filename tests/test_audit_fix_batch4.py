@@ -3,6 +3,7 @@ from pathlib import Path
 import re
 import subprocess
 import unittest
+from demo_css import declaration, demo_styles
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / 'site-src/redesign'
@@ -71,12 +72,23 @@ assert.equal(search.similar(entries,'buton')[0]?.zh,'按钮');
         self.assertIn('.play-button{min-height:44px', css)
         self.assertIn('.nav-search{min-height:44px}', css)
         self.assertNotIn('margin-block:-', css)
+        assets = ROOT / 'dist/assets/redesign'
+        a11y = (assets / 'demo-accessibility.css').read_text()
+        self.assertIn('@media(max-width:1023px), (hover:none), (pointer:coarse)', a11y)
         for kind in ('ui','motion','guide','token','skill-reference'):
-            demo_css = (ROOT / f'dist/assets/redesign/demo-{kind}.css').read_text()
-            self.assertIn(':host([data-interactive]) :is(a,button,summary)', demo_css)
-            self.assertRegex(demo_css, r'min-height:\s*44px')
+            demo_css = demo_styles(assets, kind)
+            target = ':host([data-interactive]) :is(a,button,summary,[role="button"])'
+            self.assertGreaterEqual(float(declaration(demo_css, target, 'min-height').removesuffix('px')), 44)
+            self.assertGreaterEqual(float(declaration(demo_css, ':host([data-interactive]) button', 'min-width').removesuffix('px')), 44)
+            self.assertEqual(declaration(demo_css, ':host([data-interactive]) p a', 'display'), 'inline')
+            self.assertEqual(declaration(demo_css, ':host([data-interactive]) p a', 'min-height'), '0')
             self.assertIn('.car-track { grid-column:1/-1;grid-row:1;', demo_css)
-            self.assertIn('.car-dots { position:static;', demo_css)
+            self.assertEqual(declaration(demo_css, ':host([data-interactive]) .car-dots', 'position'), 'static')
+            # A 44px layout box must retain its hit size while pressed.
+            self.assertEqual(declaration(demo_css, ':host([data-interactive]) :is(button,[role="button"]):active', 'transform'), 'none')
+            self.assertEqual(declaration(demo_css, ':host([data-interactive]).force-pressed .btn', 'transform'), 'none')
+            self.assertEqual(declaration(demo_css, ':host([data-interactive]) .ds-carousel-demo .car-btn:active', 'transform'), 'translateY(-50%)')
+            self.assertGreaterEqual(float(declaration(demo_css, ':host([data-interactive]) [role="button"]', 'min-width').removesuffix('px')), 44)
 
     def test_column_and_command_demo_shortcuts_are_separately_hideable(self):
         for column in ('basics','components','interactions','scenarios','ai'):
@@ -91,15 +103,23 @@ assert.equal(search.similar(entries,'buton')[0]?.zh,'按钮');
     def test_gallery_zoom_is_shadow_local_and_stage_can_grow(self):
         css = (SOURCE / 'site.css').read_text()
         self.assertIn('.gallery-card{container-type:inline-size}', css)
-        self.assertIn('.mini-stage{min-height:max(240px,75cqw);height:auto', css)
+        self.assertEqual(declaration(css, '.mini-stage', 'height'), 'auto')
+        self.assertEqual(declaration(css, '.mini-stage', 'overflow'), 'visible')
+        self.assertEqual(declaration(css, '.mini-stage', 'padding'), '0 0 52px')
         self.assertNotIn('.mini-stage{aspect-ratio:', css)
-        self.assertIn('padding:12px 12px 60px', css)
+        assets = ROOT / 'dist/assets/redesign'
         for kind in ('ui','motion','guide','token','skill-reference'):
-            demo_css = (ROOT / f'dist/assets/redesign/demo-{kind}.css').read_text()
-            self.assertIn(':host(:not([data-interactive])) .demo-root', demo_css)
+            demo_css = demo_styles(assets, kind)
+            selector = ':host(:not([data-interactive])) .demo-root.ds-stage'
+            self.assertEqual(declaration(demo_css, selector, 'min-height'), '75cqi')
+            self.assertEqual(declaration(demo_css, selector, 'aspect-ratio'), 'auto')
+            self.assertEqual(declaration(demo_css, '.demo-root.ds-stage', 'height'), 'auto')
+            self.assertEqual(declaration(demo_css, '.demo-root.ds-stage', 'overflow'), 'visible')
+            self.assertEqual(declaration(demo_css, '.demo-root .scene-description', 'overflow-wrap'), 'anywhere')
             self.assertNotIn('zoom:1.35', demo_css)
-            self.assertIn('.scene-description', demo_css)
-            self.assertIn('overflow-wrap:anywhere', demo_css)
         runtime = (SOURCE / 'demo-runtime.js').read_text()
-        self.assertIn("body.style.width='312px'", runtime)
-        self.assertIn('Math.min(1.35,width/312', runtime)
+        fit = runtime[runtime.index('    function fitGallery()'):runtime.index('    function preventExampleNavigation')]
+        self.assertIn("scope.closest('.mini-stage')", fit)
+        self.assertIn('scope.clientWidth || stage.clientWidth', fit)
+        self.assertIn('body.style.width=`${width}px`', fit)
+        self.assertIn("body.style.zoom='1'", fit)

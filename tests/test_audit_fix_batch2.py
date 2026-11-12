@@ -6,6 +6,7 @@ import re
 import subprocess
 import unittest
 from urllib.parse import urlsplit
+from demo_css import declaration
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -62,8 +63,37 @@ class AuditFixBatch2Test(unittest.TestCase):
         self.assertIn('entry.column.slice(0,1)', script)
         css = (ROOT / 'site-src/redesign/site.css').read_text()
         self.assertIn('.result-thumb', css)
-        self.assertIn('width:56px', css)
-        self.assertIn('height:56px', css)
+        width = float(declaration(css, '.result-thumb', 'width').removesuffix('px'))
+        height = float(declaration(css, '.result-thumb', 'height').removesuffix('px'))
+        self.assertEqual((width, height), (64, 48))
+        self.assertEqual(width / height, 4 / 3)
+        # Execute the production renderer for valid, unknown and missing metadata.
+        code = r"""
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const script = fs.readFileSync('site-src/redesign/site.js','utf8');
+const escape = script.slice(script.indexOf('  const escape ='),script.indexOf('  let announceTimer'));
+const render = script.slice(script.indexOf('  function thumbnail('),script.indexOf('  function renderSearch('));
+const context = vm.createContext({});
+vm.runInContext(escape + render,context);
+for (const kind of ['basics','components','interactions','scenarios','ai']) {
+  context.entry = {thumbnail:kind,column:'组件'};
+  const html = vm.runInContext('thumbnail(entry)',context);
+  assert.ok(html.includes('result-thumb-' + kind));
+  assert.equal((html.match(/<i><\/i>/g)||[]).length,3);
+  assert.ok(html.includes('aria-hidden="true"'));
+}
+for (const thumbnail of [undefined,null,'unknown','<img>']) {
+  context.entry = {thumbnail,column:'组件'};
+  assert.equal(vm.runInContext('thumbnail(entry)',context),
+    '<span class="result-thumb result-thumb-fallback" aria-hidden="true">组</span>');
+}
+context.entry = {column:'<unsafe'};
+assert.ok(vm.runInContext('thumbnail(entry)',context).includes('&lt;</span>'));
+"""
+        result = subprocess.run(['node', '-e', code], cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_stretched_link_and_responsive_use_card_rules(self):
         script = (ROOT / 'site-src/redesign/site.js').read_text()

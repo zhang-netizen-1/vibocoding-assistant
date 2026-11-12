@@ -609,3 +609,40 @@ Headless Chromium 启动时仍收到 `MachPortRendezvousServer ... Permission de
 工作起点为本地时间 03:32:16，24 分钟工作截止为 03:56:16，26 分钟进程截止为 03:58:16。`output/demo-redesign/H/run.py` 在工作截止后拒绝启动新任务，并在进程截止时强制终止本轮构建与测试子进程组。
 
 本段最终复核于本地时间 03:52:32 完成，工作耗时约 20.28 分钟，处于 24 分钟工作窗口内。
+
+## 测试同步
+
+2026-11-13，本轮按 `/tmp/demo_full_tests.log` 逐项复现并同步 11 个旧测试。基线定向运行共 24 项，复现 11 项失败。最终完整套件共 147 项，全部通过。
+
+### 逐项判断与处理
+
+| 旧测试 | 失败原因与意图判断 | 处理方式 |
+|---|---|---|
+| `test_button_background_values_are_distinct_after_token_resolution` | 按下规则已拆入独立无障碍资产，按钮皮肤使用 `--ds-*`，旧测试仅从 `demo-ui.css` 获取规则及字面令牌。现有三类按钮的默认、悬停、按下颜色各自不同，满足意图。 | 按来源、规格、kind、skin、无障碍的顺序读取资产，递归解析 `--demo-*` 到 `--ds-*` 的颜色别名。对三类按钮分别断言三态颜色互异、按下的规范值，以及固定态、真实伪类、预览属性颜色一致。 |
+| `test_danger_palette_is_canonical` | 危险按下规则迁至 `demo-accessibility.css`，按钮皮肤使用新令牌和规范红色色值，满足统一危险色意图。 | 递归扫描皮肤及公共 CSS，继续排查旧红色。断言危险色三档为 `#B91C1C`、`#991B1B`、`#7F1D1D`，并核对实际按钮皮肤的默认、悬停、按下声明。 |
+| `test_interactive_borders_use_control_token_in_every_demo_family` | 控件边框补丁已从五类 `demo-<kind>.css` 拆出。共享边框 `#868E9C` 在新舞台、白色承托面和浅底上的对比度均达到 3∶1，满足意图。 | 从独立无障碍资产校验控件集合、`!important` 优先级、复选框、单选框及两类 range 轨道的真实边框声明。五类样式链分别计算对比度，并检查所有生成演示模板均引用公共规格和无障碍资产，覆盖五个 kind。 |
+| `test_operation_hints_are_readable` | 旧测试要求分族 CSS 内的 13px 补丁，当前规格 §9 明确提示下限为 12px，统一提示由 `.ds-hint` 提供。现有 12px 提示与白色底的对比度满足 4.5∶1。 | 对 UI、动效、指南三类读取完整样式链，定位最终 `.demo-root.ds-stage .ds-hint`，断言字号至少 12px，解析真实前景与背景后计算至少 4.5∶1，并保留旧提示类的补丁覆盖检查。 |
+| `test_pressed_and_real_active_have_independent_colors` | 真实按下规则迁入独立无障碍资产，按钮皮肤提供独立真实态与固定态，按下变换按规格使用 0.98，满足颜色分档意图。 | 分别检查 `states.css`、无障碍资产和按钮皮肤中的真实及固定按下钩子与 active 令牌，按当前规格校验变换。具体三态色值由上述颜色解析测试逐一核对。 |
+| `test_static_thumbnails_have_small_metadata_and_a_fallback` | 搜索缩略图已按新方向改为 64×48，旧测试仍锁定 56×56。轻量元数据和未知类型首字回退机制均满足原意图。 | 保留 192 条索引的类型及元数据体积限制，读取 `.result-thumb` 的实际尺寸并断言 64×48、4∶3。用 Node 执行生产缩略图函数，检查五类有效元数据、缺失/null/未知元数据回退、首字与转义。 |
+| `test_gallery_zoom_is_shadow_local_and_stage_can_grow` | 栏目预览改为实际可用宽度排版，统一舞台使用 `75cqi` 首选最小高度并允许增高。旧测试仍锁定外层 240px、旧 padding 及 312px 画布缩放公式。当前结构满足宽度约束与文字可读性意图。 | 校验外层自动高度、可见溢出及操作区留白，五类统一舞台的最小高度、自动比例、自动高度、可见溢出和文字换行。确认实际运行函数仅处理 `.mini-stage`，采用 host/stage 可用宽度并使用 `zoom=1`。 |
+| `test_touch_targets_use_layout_space_and_keep_inline_prose_links` | 点击区补丁已拆出，旧文件读取失效。核对发现角色按钮缺少统一 44px 高度约束，44px 按钮经 0.98 按下变换后仅剩 43.12px，这两处需要 CSS 修复。 | 仅修改 `site-src/redesign/demo-accessibility.css`。在原触屏/窄屏媒体条件内将角色按钮纳入 44px 高度约束，提供 inline-flex 布局与 44px 最小宽度，真实按下和固定按下保持完整命中矩形。轮播箭头保留 `translateY(-50%)` 定位。测试继续检查正文内联链接例外、轮播操作分行及点击区，并补充角色按钮和按下变换断言。 |
+| `test_gallery_runtime_width_scale_height_limit_and_repeat_stability` | 旧运行时测试假定固定 312px 画布和固定高度压缩。新结构通过实际宽度重排和自动增高保持字号，当前实现满足防越界、复测稳定及可读性意图。 | 在 Node VM 中执行真实 `fitGallery()`。覆盖 140/180/336/436px、四档内容高度、每种宽度重复四次、往返 resize、初始 host 零宽、stage 零宽及正文无 mini-stage 的分支。断言实际布局宽度、`zoom=1`、禁止 flex 收缩及居中样式。自动增高和可见溢出另由对应 CSS 测试约束。 |
+| `test_hover_card_stage_reserves_clearance_in_both_entry_points` | 公共 272px 舞台留白迁入无障碍资产，独立皮肤另以 408/416px 面板承载预览。现有结构满足预览留白意图。 | 从正确资产校验舞台留白、对齐与规则顺序。读取皮肤的宽窄两档面板高度、浮层 top、112px 图片、图片间距和 padding，计入两行文字、标题间距及边框后断言浮层下方至少预留 12px。检查动效详情、组件卡片和动效画廊三个入口均引用对应皮肤与无障碍资产。 |
+| `test_skill_and_component_small_text_contrast` | 旧测试从分族文件读取无障碍补丁，并将技能标签视为旧暗底。新技能皮肤的高优先级紫色标签置于浅底，浮动标签与 chip 也使用新承托面，现有对比度满足意图。 | 使用真实皮肤选择器和新背景，递归解析颜色，检查技能标签、浮动标签、字数计数、chip 删除按钮均达到 4.5∶1，同时覆盖浮动标签聚焦态和 chip 删除按钮悬停态。 |
+
+### 验证记录
+
+测试辅助模块 `tests/demo_css.py` 统一处理选择器列表中的函数内逗号、同一选择器声明的 `!important` 优先级和颜色别名。断言定位明确的公共规则与实际皮肤选择器，验证采用静态 CSS 检查和 Node 运行时执行。
+
+- 11 个失败测试的方法全部保留，完整套件仍为 147 项。
+- 点击区回归断言先运行并复现失败，修复后定向 24 项通过。
+- 对 11 项同步测试分别进行进程内故障注入，颜色合并、危险色漂移、低对比度边框、11px 提示、按下规则缺失、43px 点击区、固定高度裁切、缩略图错误回退、画廊缩小、预览留白不足及低对比度小字均被对应断言检出，共 11/11。
+- 最后完整验证使用用户指定命令，147 项通过，耗时 27.250 秒，退出码 0。口语搜索前 3 条命中 62/62。
+
+```text
+PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tests -p 'test_*.py'
+Ran 147 tests in 27.250s
+OK
+```
+
+完整套件内既有 `test_all_content_acceptance_and_aliases_are_frozen` 使用只读 `git show HEAD:site-src/content/...` 进行内容冻结校验，该调用随用户指定的完整测试命令执行。
