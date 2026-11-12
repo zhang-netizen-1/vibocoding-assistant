@@ -127,6 +127,8 @@
 @media(max-width:1023px), (hover:none), (pointer:coarse) {
   :host([data-interactive]) :is(a,button,summary) { min-height:44px; }
   :host([data-interactive]) button { min-width:44px; }
+  /* 触屏点击区：长按（pressed）态用内阴影表示按下，不缩小，保持 ≥ 44px 命中高度 */
+  :host([data-interactive]) .st-btn.pr { transform:none; box-shadow:inset 0 2px 4px rgb(17 24 39 / .18); }
   :host([data-interactive]) a { display:inline-flex;align-items:center; }
   :host([data-interactive]) p a { display:inline;min-height:0; }
   :host([data-interactive]) :is(.btn-row,.btns,.tabs,.pag,.otp-row) { flex-wrap:wrap;gap:8px; }
