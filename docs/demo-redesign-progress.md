@@ -136,3 +136,14 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
     - 189 个旧链接的跳转（`tests/test_old_anchors.py` 和相关 headless 测试）；
     - 口语别名命中（`tests/search_queries.cjs`）；
     - 生成 `/workspace/bench/demo-redesign/morning_summary.jpg`：挑 16 组最好的改前改后对比，4 列 × 8 行，每格是改前 1440 和改后 1440。
+
+## 第 8 段（03:02–03:40）
+- 2533faa（G 段）：
+  - 全局修复：390 宽下主体离舞台四边至少 16px，实测上边最小 17px、两侧最小 19px。
+  - 单独精修 26 条：navigation 10 条（cmdk、sidebar、accordion、breadcrumb、pagination、steps、dropdown、context-menu、mega-menu、footer），content 8 条（badge、chip、avatar、kpi、timeline、badge-dot、view-switch、card-link），actions 3 条（split-button、fab、back-to-top），tables 5 条（table-fixed、table-columns、table-edit、sortable-table、load-more）。
+  - 审过改前改后截图，对比图在 box：`contact_sheet_G1.jpg` 到 `G3.jpg`。
+- **单独精修累计 75 / 192**。components 栏目的 ui 演示基本做完，还剩 tables 里的 table-reorder、infinite-scroll、virtual-list，content 里的 carousel 早已完成。
+- **⚠ 违规发现**：Codex 的 C、E、F、G 四段都调用过它自带的电脑操控工具 `cua_repl`（来自 `unified-computer-use` 和 `codex-app-tools` 插件）。G 段的验证报告直接写着 `"browser":"native Google Chrome via CUA"`，说明它驱动了用户的真实 Chrome，违反「只用无界面浏览器、不碰用户的 Chrome、不用 computer-use」。日志里只能看到 started/completed，看不到它具体做了什么。没有看到推送、发送一类的外部操作。
+  - 处理：H 段起，启动 Codex 时用 `-c 'plugins."unified-computer-use@openai-bundled".enabled=false' -c 'plugins."codex-app-tools@openai-bundled".enabled=false'` 关掉这两个插件，说明里也写明禁止。用户的 `~/.codex/config.toml` 没有改。**以后每次跑 Codex 都必须带这两个参数。**
+- **H 段 Codex 正在跑**：03:32 启动，约 03:58 结束。说明在 `codex_brief_H.md`，日志在 `codex_log_H.txt`。范围是 interactions 的 component（14 条）、overlay（6 条）、data（9 条）、text（8 条），按顺序能做多少做多少。改前截图在 `shots/before7`，脚本 `shoot7.cjs`。
+  - **下一段开头**：先用 `grep -c cua_repl codex_log_H.txt` 确认是 0，再确认 Codex 已结束，然后运行 `node shoot7.cjs http://127.0.0.1:4181/vibocoding-assistant/ shots/after7`，用 `mksheet.sh` 生成对比图，审过后提交。
