@@ -99,3 +99,19 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
   - interactions/spec 是规范长页，不是演示，不用管；
   - 类型级皮肤只算统一，离「极致」还远，ui 演示尤其明显（比如按钮组和标签只是换了色）。
 - 后面的安排：第 6 段（约 02:20–03:00）审 E 段并提交，然后继续 components 余下的 forms 和 feedback 分组。第 7 段（约 03:00–03:40）做 interactions 的 component、text、data、overlay 分组。最后一段（约 04:50–05:30）做完整验证：测试，全站页面在三种宽度下检查，旧链接跳转，口语别名命中。再做 16 组最佳改前改后对比，输出 `/workspace/bench/demo-redesign/morning_summary.jpg`。
+
+## 第 6 段（02:08–02:45）
+- b4428f8（E 段）：16 条单独精修，审过改前改后截图后提交。对比图在 box：`contact_sheet_E1.jpg`、`contact_sheet_E2.jpg`，改后截图在 Mac `shots/after4`。
+  - 16 条是：states、landing、card、toast、navbar、table、tabs、switch、select、hold-confirm、view-slide、view-curtain、media-wipe、media-blur、scroll-parallax、scroll-pin。
+  - 动效类的纯色块都换成了图片库里的真图；表单类用的是真实场景文案（如「设置所在城市」「编辑偏好」），层级分明。
+  - scroll-pin 在 390 下上沿被截的问题已不存在，截图里外框完整。
+  - 小毛病：hold-confirm 和 states 在 390 下承托面离舞台上边太近（约 4px），以后统一处理。
+- **单独精修累计 30 / 192**：A–C 的 14 条，加 E 的 16 条。其余 162 条中，156 条用的是类型级皮肤，6 条视觉风格演示保留原风格。
+- **F 段 Codex 正在跑**：02:34 启动，perl alarm 26 分钟，约 03:00 结束。说明在 `codex_brief_F.md`，日志在 `codex_log_F.txt`。
+  - 先做 components/forms：checkbox、radio、slider、otp、search、segmented、password-strength、tag-input、stepper、rating、upload、combobox、date、form；
+  - 再做 feedback：alert、empty、loader、drawer、popover。
+  - 改前截图已拍好，在 `shots/before5`。截图脚本是 `shoot5.cjs`（文件里已写死这 19 条）。
+  - **下一段开头**：确认 F 段已结束，然后运行 `node shoot5.cjs http://127.0.0.1:4181/vibocoding-assistant/ shots/after5`，再用 `mksheet.sh` 生成对比图，审过后提交。
+- 再往后：
+  - components 还剩：navigation 的 sidebar、accordion、breadcrumb、pagination、steps、footer、dropdown、mega-menu、context-menu、cmdk；content 的 badge、chip、badge-dot、timeline、kpi、avatar、view-switch、card-link；tables 的其余条目；actions 的 split-button、fab、back-to-top。
+  - interactions 的 component、text、data、overlay、mobile、cursor、background 分组。
