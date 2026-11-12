@@ -106,7 +106,8 @@ class RedesignTokensTest(unittest.TestCase):
         self.assertNotRegex(css, r'aspect-ratio:(?:16/10|3/2|4/3)')
         self.assertIn('aspect-ratio:auto',css)
         self.assertIn('--ds-subject-width:clamp(320px,52%,640px)',css)
-        self.assertIn('@container (min-width:768px)',css)
+        self.assertIn('@container demo-stage (min-width:640px)',css)
+        self.assertIn('--ds-subject-width:clamp(420px,66%,560px)',css)
         self.assertIn('--ds-demo-body:16px',css)
         self.assertIn('--ds-demo-heading:22px',css)
         self.assertIn('--ds-demo-button:15px',css)
@@ -131,7 +132,7 @@ class RedesignTokensTest(unittest.TestCase):
     def test_batch_b_specimen_styles_and_motion_contracts(self):
         skins=REDESIGN/'demo-skins'
         expected={
-            'ui-modal':['rgb(17 24 39 / .45)','backdrop-filter:blur(4px)','var(--ds-shadow-3)','justify-content:flex-end','font-size:20px'],
+            'ui-modal':['rgb(17 24 39 / .45)','backdrop-filter:blur(4px)','var(--ds-shadow-3)','justify-content:flex-end','font-size:var(--ds-demo-title)'],
             'ui-tooltip':['background:#111827','color:#fff','13px/1.5','border-radius:8px','border-top-color:#111827'],
             'motion-scroll-reveal':['translateY(16px)','360ms var(--ds-ease-out)','ds-revealed','prefers-reduced-motion'],
             'guide-grid':['repeat(auto-fit,minmax(min(100%,128px),1fr))','gap:16px','gap:24px','height:auto'],
@@ -142,6 +143,9 @@ class RedesignTokensTest(unittest.TestCase):
             css=(skins/(skin+'.css')).read_text()
             for contract in contracts:self.assertIn(contract,css,skin)
             self.assertNotRegex(css,r'rgba\(0,0,0,')
+        for name in ('ui-input','motion-component-lift','motion-view-crossfade','ui-modal','ui-tooltip','motion-scroll-reveal','guide-grid','ui-skeleton','ui-carousel'):
+            self.assertIn('@container demo-stage (min-width:640px)',(skins/(name+'.css')).read_text())
+        self.assertIn('.ds-tooltip-copy p{margin:8px 0 0;font-size:var(--ds-demo-body)',(skins/'ui-tooltip.css').read_text())
         source=(REDESIGN/'demos.py').read_text()
         self.assertIn('setTimeout(finishSkeleton,1400)',source)
         self.assertIn("setAttribute('aria-busy','false')",source)
@@ -151,10 +155,11 @@ class RedesignTokensTest(unittest.TestCase):
         # Mirrors border-box stage padding and the public clamp, with no browser.
         for stage,padding in [(342,16),(358,16),(390,16),(725.333,32),(768,32),(960,32),(1200,32),(1440,32)]:
             inner=stage-2-2*padding
-            subject=min(inner,max(320,min(inner*.52,640)))
+            subject=min(inner,max(420,min(inner*.66,560))) if stage>=640 else min(inner,max(320,min(inner*.52,640)))
             self.assertLessEqual(subject,inner)
             self.assertGreaterEqual((stage-subject)/2,16)
-            if 725<=stage<=1440:self.assertTrue(.45<=subject/inner<=.60)
+            if 640<=stage<=960:self.assertTrue(.60<=subject/inner<=.72)
+            if stage>=1200:self.assertLessEqual(subject,560)
         # Two lines of 12px/1.5 text + capsule padding/border + bottom offset.
         hint_height=2*12*1.5+2*6+2
         self.assertLessEqual(hint_height+12+12,76)
@@ -163,12 +168,35 @@ class RedesignTokensTest(unittest.TestCase):
         desktop_stage=((1184-64)-32)*2/3
         mobile_stage=390-32
         def card_width(stage,padding):
-            return min(stage-2*padding-2,max(320,min(640,(stage-2*padding-2)*.52)))
+            inner=stage-2*padding-2
+            return min(inner,max(420,min(560,inner*.66))) if stage>=640 else min(inner,max(320,min(640,inner*.52)))
         desktop_card=card_width(desktop_stage,32)
         mobile_card=card_width(mobile_stage,16)
-        self.assertAlmostEqual(desktop_card,342.8533333)
+        self.assertAlmostEqual(desktop_card,435.16)
         self.assertEqual(mobile_card,320)
         self.assertEqual(int((desktop_card-50+16)/(128+16)),2)
-        self.assertEqual(int((mobile_card-50+16)/(128+16)),1)
+        grid=(REDESIGN/'demo-skins/guide-grid.css').read_text()
+        self.assertIn('grid-template-columns:repeat(2,minmax(0,1fr))',grid)
+        self.assertIn('nth-child(n+5)',grid)
         css=(REDESIGN/'demo-spec.css').read_text()
-        self.assertIn('@media(min-width:1024px)',css)
+        self.assertNotIn('@media(min-width:1024px)',css)
+
+
+    def test_kind_token_skin_preserves_teaching_properties(self):
+        css=(REDESIGN/'demo-skins/_kind-token.css').read_text()
+        self.assertIn('.token-card:not(.elevation-card):not(.theme-sample)',css)
+        self.assertNotIn('--sample-radius:',css)
+        self.assertNotIn('--sample-shadow:',css)
+        self.assertNotIn('--theme-bg:',css)
+        self.assertNotIn('--sample-padding:',css)
+        guide=(REDESIGN/'demo-skins/_kind-guide.css').read_text()
+        self.assertIn('[data-demo="sticky"] .mini-layout { height:260px; overflow-y:auto;',guide)
+
+    def test_c_samples_use_scoped_light_surfaces(self):
+        skins=REDESIGN/'demo-skins'
+        for name in ('token-color','ui-color','guide-dashboard','skill-reference-frontend-design'):
+            css=(skins/(name+'.css')).read_text()
+            self.assertIn('var(--ds-surface)',css,name)
+            self.assertNotIn('!important',css,name)
+            self.assertIn('var(--ds-shadow-1)',css if name!='ui-color' else (REDESIGN/'demo-spec.css').read_text(),name)
+        self.assertIn('.demo-root.ds-stage .skill-card dt',(skins/'skill-reference-frontend-design.css').read_text())

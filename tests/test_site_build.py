@@ -39,7 +39,7 @@ class PageParser(HTMLParser):
             commands=json.loads(attributes["data-demo-commands"])
             self.commands.extend(commands)
             self.references.extend(command["href"] for command in commands)
-        self.references.extend(attributes[key] for key in ("href", "src", "data-demo-css", "data-state-css", "data-spec-css", "data-skin-css", "data-a11y-css") if attributes.get(key))
+        self.references.extend(attributes[key] for key in ("href", "src", "data-demo-css", "data-state-css", "data-spec-css", "data-kind-css", "data-skin-css", "data-a11y-css") if attributes.get(key))
         if tag == "img":
             self.images.append(attributes)
             self.references.extend(candidate.strip().split()[0] for candidate in attributes.get('srcset', '').split(',') if candidate.strip())
@@ -583,7 +583,7 @@ class DemoSpecBuildTest(unittest.TestCase):
             self.assertNotIn('Opaque backing preserves hint contrast',assets['demo-'+kind+'.css'])
             self.assertNotIn('--ds-dur-scene:',assets['demo-'+kind+'.css'])
         runtime=assets['demo-runtime.js']
-        positions=[runtime.index("['"+key+"', template.dataset.") for key in ['demo','spec','skin','a11y','state']]
+        positions=[runtime.index("['"+key+"', template.dataset.") for key in ['demo','spec','kind','skin','a11y','state']]
         self.assertEqual(positions,sorted(positions))
         for name in ['demo-spec.css','demo-accessibility.css']:
             self.assertIn(name,assets)
@@ -604,3 +604,71 @@ class DemoSpecBuildTest(unittest.TestCase):
         nodes=[n for n in overlay.children if hasattr(n,'tag')]
         self.assertEqual([node.attrs['id'] for node in nodes],['dmask','dpanel'])
         self.assertIn('overflow:clip',(ROOT/'site-src/redesign/demo-spec.css').read_text().split('.ds-stage > .ds-overlays')[1].split('}')[0])
+
+
+class BatchCKindSkinTest(unittest.TestCase):
+    setUpClass = classmethod(DemoSpecBuildTest.setUpClass.__func__)
+    def test_color_slug_is_resolved_by_kind_and_contracts_survive(self):
+        for kind in ('ui','token'):
+            entry=next(e for e in self.entries if e['slug']=='color' and e['demo']['kind']==kind)
+            html=self.demos.markup(entry['demo'],'../../assets/redesign/',True,'color')
+            self.assertIn('demo-skins/'+kind+'-color.css',html)
+            self.assertNotIn('data-kind-css',html)
+            root=self.Document(html).root
+            if kind=='ui':
+                self.assertEqual(root.one('input').attrs['type'],'color')
+                self.assertEqual(root.one('input').attrs['aria-label'],'选择颜色')
+                self.assertEqual(root.one('span',cls='ctl').attrs['class'],'ctl ds-hint')
+                self.assertIn('id="hexc"',html)
+            else:
+                self.assertEqual([n.attrs['data-token-control'] for n in root.find_all('input')],['foreground','background'])
+                self.assertIn('data-token-sample',html)
+                self.assertIn('data-token-output',html)
+
+    def test_dashboard_and_skill_keep_source_contracts(self):
+        for slug in ('dashboard','frontend-design'):
+            entry=next(e for e in self.entries if e['slug']==slug)
+            html=self.demos.markup(entry['demo'],'../../assets/redesign/',True,slug)
+            self.assertIn('data-ds-sample',html)
+            root=self.Document(html).root
+            if slug=='dashboard':
+                self.assertEqual(root.one(cls='guide-card-stage').attrs['data-demo'],'dashboard')
+                self.assertEqual(len(root.find_all('i')),7)
+                self.assertIn('1,280',html)
+                self.assertIn('24%',html)
+                self.assertEqual([n.attrs['data-guide-mode'] for n in root.find_all('button')],['0','1'])
+            else:
+                self.assertEqual(root.one(cls='skill-summary').text(),self.Document(entry['demo']['html']).root.one(cls='skill-summary').text())
+                self.assertEqual(len(root.find_all('dt')),2)
+                self.assertEqual(len(root.one(cls='skill-tags').find_all('span')),2)
+
+    def test_kind_skin_coverage_and_special_style_exclusions(self):
+        counts={kind:0 for kind in self.demos.KINDS}
+        samples=skips=0
+        for entry in self.entries:
+            kind=entry['demo']['kind']
+            html=self.demos.markup(entry['demo'],'../../assets/redesign/',True,entry['slug'])
+            if 'data-kind-css=' in html:
+                counts[kind]+=1
+                self.assertIn('data-ds-kind="'+kind+'"',html)
+                self.assertIn('demo-skins/_kind-'+kind+'.css',html)
+                self.assertNotIn('data-ds-sample',html)
+            elif 'data-ds-sample' in html:
+                samples+=1
+            else:
+                skips+=1
+                self.assertIn(entry['slug'],self.demos.KIND_SKIN_SKIPS.get(kind,()))
+        self.assertEqual(counts,{'ui':63,'motion':74,'guide':22,'token':4,'skill-reference':9})
+        self.assertEqual(samples,14)
+        self.assertEqual(skips,6)
+        self.assertEqual(sum(counts.values())+samples+skips,192)
+
+    def test_reveal_starts_with_a_visible_card_and_grid_keeps_all_data(self):
+        skins=ROOT/'site-src/redesign/demo-skins'
+        reveal=(skins/'motion-scroll-reveal.html').read_text()
+        self.assertIn('reveal-target ds-reveal-card ds-revealed',reveal)
+        self.assertIn('发现庭院之美',reveal)
+        self.assertEqual(reveal.count('class="ds-reveal-copy"'),3)
+        self.assertIn('.scroll-spacer{height:16px}',(skins/'motion-scroll-reveal.css').read_text())
+        self.assertEqual((skins/'guide-grid.html').read_text().count('class="ds-grid-card"'),6)
+        self.assertIn('nth-child(n+5)',(skins/'guide-grid.css').read_text())

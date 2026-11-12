@@ -14,6 +14,9 @@ import re
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 KINDS = ('ui', 'motion', 'guide', 'skill-reference', 'token')
+# These guide entries teach a particular visual material. Preserve that material.
+KIND_SKIN_SKIPS = {'guide': frozenset(('minimal', 'editorial', 'organic', 'glass', 'brutalist', 'neumorphic'))}
+
 
 
 def _styles(source):
@@ -369,11 +372,18 @@ def markup(demo, prefix, interactive=False, slug=''):
     content = content.replace('id=#ed462d" data-x="x" data-hexc="', 'id="hexc"')
     category = '静态演示' if kind == 'skill-reference' else _classification().get(anchor, '')
     attrs = f' id="{escape(anchor)}"' if anchor else ''
-    if skin and (HERE / 'demo-skins' / f'{skin}.css').is_file():
+    has_sample = bool(skin and (HERE / 'demo-skins' / f'{skin}.css').is_file())
+    kind_skin = not has_sample and slug not in KIND_SKIN_SKIPS.get(kind, ())
+    if has_sample:
         attrs += ' data-ds-sample'
+    elif kind_skin:
+        attrs += f' data-ds-kind="{escape(kind)}"'
+
     if kind == 'guide':
         attrs += f' data-guide="{escape(demo["section"])}"'
     skin_attr = f' data-skin-css="{escape(prefix)}demo-skins/{escape(skin)}.css"' if skin and (HERE / 'demo-skins' / f'{skin}.css').is_file() else ''
+    if kind_skin:
+        skin_attr += f' data-kind-css="{escape(prefix)}demo-skins/_kind-{escape(kind)}.css"'
     # Existing hints keep their original selector and parent relationships.
     content = re.sub(r'class="([^"]*(?:stage-label|\bctl\b)[^"]*)"',
                      lambda m: f'class="{m[1]}"' if 'ds-hint' in m[1].split() else f'class="{m[1]} ds-hint"', content)

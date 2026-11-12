@@ -192,3 +192,92 @@ node tests/demo_redesign_headless.cjs
 ```
 
 脚本沿用执行者现有 Playwright 环境，默认截图目录为 `output/demo-redesign/AB/`，报告为 `output/demo-redesign/headless-report.json`。截图覆盖 1440/390 两档，并额外记录打开状态的模态弹窗。本轮验收采用尺寸计算与 Node DOM 模型，浏览器截图及视觉验收由执行者完成。
+
+
+## C 段与类型级皮肤
+
+2026-11-13。本轮范围为演示内部的 `demo-spec.css`、`demo-skins/`、`demos.py` 与 `demo-runtime.js` 注入链，以及对应测试。沿用给定规格，按主体放大、手机网格、滚动显现、C 段样板、类型级皮肤的顺序实施。每一项完成后均执行 `PYTHONDONTWRITEBYTECODE=1 python3 -B scripts/build_site.py`，四个 C 段样板分别构建，后续修订也重新构建。
+
+### 主体放大与两项修复
+
+- 实际演示容器宽度达到 640px 后，主体宽度令牌切换为 `clamp(420px,66%,560px)`。标题 22–24px、正文 16px、按钮 15px，控件高 48px，承托面内边距 32px，按钮组间距 16px。十个既有样板共用宽度令牌。触发条件使用容器查询，手机维持原字号与宽度档位。
+- 1440px 页面按既有双栏计算，舞台宽约 725.33px，可用内容宽约 659.33px，主体宽约 435.16px。该数值为 CSS 推导，实际排版待浏览器复核。
+- `guide/grid` 在手机上固定两列，显示前四张，第五、六张通过 CSS 隐藏展示。六张图片与卡片仍在 DOM 中，原状态切换保留。手机承托面内边距 16px，卡片间距 12px。
+- `motion/scroll-reveal` 将首段空白从 160px 收至 16px，补充「发现庭院之美」标题和一行正文。第一张卡初始带 `ds-revealed`，首屏直接可见，后续两张继续由原滚动监听逐张显现。滚动进度、重播、图片、减少动态处理沿用原机制。
+
+### C 段四个样板
+
+| 位置与 kind | 实现 |
+|---|---|
+| `basics/color` · token | 白色承托面、双列色盘、中文标签、对比度样本和结果反馈；保留前景／背景两项 `data-token-control`、`data-token-sample`、`data-token-output` 与原计算逻辑。 |
+| `components/color` · ui | 「项目强调色」中文场景、色盘和实时十六进制色值，默认紫色；保留 `input[type=color]`、原 aria-label、`#hexc` 和输入事件。皮肤名称为 `ui-color`，与 `token-color` 分开解析。 |
+| `scenarios/dashboard` · guide | 浅色「内容工作台」、本周访问 1,280、内容转化率 24%、七日访问柱状图。七日示例数据为 80、160、120、240、160、280、240，总数为 1,280。图表有完整中文无障碍说明，保留 `.mini-page*`、`data-demo="dashboard"`、`data-mode` 和两项状态按钮。 |
+| `ai/skills/frontend-design` · skill-reference | 白色技能卡、浅灰信息块、紫色标签、双层阴影与清晰文字层级。演示内的技能名称、概述、适用情境、范围与能力标签沿用来源内容。手机信息块竖排，`dt` 明确使用深紫色，覆盖旧无障碍层的浅紫文字。 |
+
+### 已单独重做的样板
+
+共 14 个 kind/slug 组合，`color` 按 kind 区分。
+
+- `ui` 共 7 个，包括 `button`、`input`、`color`、`modal`、`tooltip`、`skeleton`、`carousel`。
+- `motion` 共 3 个，包括 `view-crossfade`、`scroll-reveal`、`component-lift`。
+- `guide` 共 2 个，包括 `grid`、`dashboard`。
+- `token` 共 1 个，包括 `color`。
+- `skill-reference` 共 1 个，包括 `frontend-design`。
+
+### 类型级注入与覆盖范围
+
+新增 `_kind-motion.css`、`_kind-ui.css`、`_kind-guide.css`、`_kind-token.css`、`_kind-skill-reference.css`。`demos.py` 为适用演示输出 `data-kind-css` 与 `data-ds-kind`，已有单独皮肤优先。样式加载顺序为来源、公共规格、适用类型层、适用单独皮肤、无障碍层、适用状态层。重播和复原保留已加载的全部样式节点。
+
+- UI 类型统一白色承托面、按钮和表单控件、卡片、标签、导航演示、表格以及语义提示。既有卡片主体省去额外承托面，浮层保留原定位与开关。
+- Motion 类型统一适用卡片、列表和扩展演示的白底、圆角、双层阴影、文字与紫色控件。绘图、遮罩、指针坐标平面和滚动内容沿用来源几何。
+- Guide 类型统一布局、表单、页面与数据示例的浅色面、字号、圆角和控件。内容自然增高，sticky 单独保留 260px 的局部滚动视口。
+- Token 类型统一外部承托面与控件。圆角／阴影样本和主题样本跳过通用内卡片覆盖，保留 `--sample-radius`、`--sample-shadow`、`--sample-padding` 与主题变量的教学变化。
+- Skill-reference 类型将其余九张技能卡套用同一浅色体系，保持来源文字。
+
+按 192 个主条目去重，类型皮肤覆盖 **172 个**。连同 14 个单独样板，共影响 **186 个主条目**。`submit` 与 `undo` 两处 secondary motion 演示也加载类型皮肤，因此类型层共作用于 **174 份演示实例**。
+
+#### motion · 74 个主条目
+
+`view-slide`、`view-curtain`、`view-shared`、`view-stagger`、`scroll-parallax`、`scroll-pin`、`scroll-horizontal`、`scroll-progress`、`background-aurora`、`background-wave`、`background-particles`、`background-cursorwave`、`background-fluid`、`text-stagger`、`text-mask`、`text-typewriter`、`text-scramble`、`text-draw`、`media-wipe`、`media-carousel`、`media-blur`、`media-compare`、`media-glitch`、`component-tilt`、`component-spotlight`、`component-flip`、`component-press`、`component-switch`、`component-morph`、`overlay-menu`、`overlay-drawer`、`overlay-modal`、`overlay-tooltip`、`overlay-sheet`、`data-count`、`data-skeleton`、`data-bars`、`data-reorder`、`data-success`、`mobile-swipe`、`mobile-drag`、`mobile-pull`、`mobile-rubber`、`mobile-pager`、`filter-grid`、`accordion`、`toast-stack`、`tab-indicator`、`drop-snap`、`odometer`、`cross-page`、`inline-expand`、`shrink-header`、`section-nav`、`scroll-highlight`、`snap-sections`、`image-magnifier`、`timeline-preview`、`chart-morph`、`skeleton-handoff`、`component-magnetic`、`component-hover-preview`、`component-hover-action`、`text-text-morph`、`scroll-scroll-zoom`、`media-image-sequence`、`data-input-shake`、`cursor-cursor-follower`、`cursor-cursor-trail`、`cursor-cursor-eyes`、`cursor-object-follow`、`scroll-hide-header`、`component-ripple`、`component-underline`。
+
+#### ui · 63 个主条目
+
+`textarea`、`select`、`checkbox`、`radio`、`switch`、`slider`、`stepper`、`date`、`rating`、`search`、`cmdk`、`form`、`progress`、`toast`、`states`、`alert`、`loader`、`empty`、`drawer`、`navbar`、`sidebar`、`tabs`、`accordion`、`breadcrumb`、`pagination`、`steps`、`footer`、`dropdown`、`badge`、`chip`、`table`、`card`、`badge-dot`、`timeline`、`kpi`、`avatar`、`upload`、`combobox`、`segmented`、`popover`、`password-strength`、`tag-input`、`otp`、`inline-edit`、`hold-confirm`、`split-button`、`fab`、`mega-menu`、`context-menu`、`view-switch`、`table-fixed`、`table-columns`、`table-reorder`、`table-edit`、`infinite-scroll`、`load-more`、`back-to-top`、`conditional-step`、`advanced-settings`、`context-options`、`auto-save`、`virtual-list`、`card-link`。
+
+#### guide · 22 个主条目
+
+`sidebar`、`split`、`container`、`density`、`sticky`、`validation`、`submit`、`undo`、`bulk`、`optimistic`、`focus`、`landing`、`list`、`detail`、`settings`、`wizard`、`line`、`bar`、`stacked`、`donut`、`heatmap`、`sortable-table`。
+
+#### token · 4 个主条目
+
+`typography`、`spacing`、`radius-shadow`、`dark-mode`。
+
+#### skill-reference · 9 个主条目
+
+`ui-ux-pro-max`、`baseline-ui`、`create-design-md`、`fixing-accessibility`、`fixing-motion-performance`、`vercel-react-view-transitions`、`web-design-guidelines`、`webapp-testing`、`vercel-composition-patterns`。
+
+### 结构与教学特例
+
+- 六个视觉材质样板完整跳过类型皮肤，分别为 `minimal`、`editorial`、`organic`、`glass`、`brutalist`、`neumorphic`。这些条目的字体、底色、边框或阴影本身属于演示主题，继续使用公共规格与来源样式。
+- UI 中 `card`、`card-link`、`empty`、`upload`、`kpi`、`navbar`、`sidebar`、`footer`、`accordion` 由原卡片提供白色主体，跳过新增外围承托面，继续应用类型皮肤。
+- Motion 的背景类 `background-aurora`、`background-wave`、`background-particles`、`background-cursorwave`、`background-fluid`，媒体类 `media-wipe`、`media-carousel`、`media-blur`、`media-compare`、`media-glitch`、`media-image-sequence`，指针类 `cursor-cursor-follower`、`cursor-cursor-trail`、`cursor-cursor-eyes`、`cursor-object-follow`，以及 `component-flip`、`text-mask`、`text-draw`、`scroll-parallax`、`scroll-pin`、`scroll-horizontal`、`scroll-progress`、`scroll-scroll-zoom`、`scroll-hide-header` 保留自身画面／坐标／裁切结构，跳过额外白底包裹。这些条目仍加载类型层，类型层仅处理命中的安全文字或控件规则。
+- Token 中 `radius-shadow` 的样本内卡片和 `dark-mode` 的主题样本跳过通用圆角／阴影覆盖，继续展示参数切换。
+
+### 验证与待验收范围
+
+| 检查 | 结果 |
+|---|---|
+| 构建 | 通过，217 页、192 条目 |
+| `test_demo_audit` | 1 项通过 |
+| `test_redesign_tokens` | 10 项通过 |
+| `test_site_build` | 26 项通过 |
+| `token_demos.cjs` | 五类交互、对比度、主题、存储回退及类型层教学变量保护通过 |
+| `test_redesign_javascript` | 12 项通过，包含 194 份最终演示初始化 |
+| `audit_fix_batch3.cjs` | 十组状态与减少动态生命周期通过，补充六层样式顺序及复原后节点保留断言 |
+| CSS 与 JS 语法 | 20 份演示样式经 PostCSS 解析；浏览器复核脚本通过 Node 语法检查 |
+
+浏览器复核入口 `tests/demo_redesign_headless.cjs` 已扩充到 14 个样板，增加 C 段交互、640px 主体宽度、首卡可见、手机四张两列网格与类型样式链断言，截图默认目录为 `output/demo-redesign/C/`。
+
+当前环境监听 `127.0.0.1:4182` 返回 `EPERM`，本地文件入口启动 Chromium 返回 `MachPortRendezvousServer ... Permission denied (1100)`，浏览器接入另返回 `The browser access host is unavailable`。因此本轮没有形成 1440／390 截图，全部演示的实际溢出、截断与视觉效果仍待浏览器验收。自动初始化与静态几何断言的通过情况见上表。
+
+覆盖明细同时保存于 `output/demo-redesign/C-coverage.json`。执行使用本轮工作区内的截止时间包装器，为启动的构建和测试子进程设置整组强制终止上限。

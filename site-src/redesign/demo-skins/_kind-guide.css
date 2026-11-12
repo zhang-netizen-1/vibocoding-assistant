@@ -1,0 +1,24 @@
+/* Intrinsic heights prevent large text from being clipped in miniature pages. */
+.demo-root[data-ds-kind="guide"] :is(.mini-layout,.mini-interaction,.mini-page,.mini-data) { width:min(100%,var(--ds-subject-width)); height:auto; max-height:none; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-1); font:400 var(--ds-demo-body)/1.6 var(--ds-font); }
+[data-ds-kind="guide"] .guide-card-stage[data-mode="1"] :is(.mini-layout,.mini-page) { width:min(280px,100%); }
+[data-ds-kind="guide"] :is(.mini-layout-top,.mini-page-top,.mini-data-title) { color:var(--ds-ink-2); background:var(--ds-fill); border-color:var(--ds-line); font:500 12px/1.5 var(--ds-font); }
+[data-ds-kind="guide"] :is(.mini-layout-main,.mini-page-content,.mini-interaction,.mini-data) { padding:16px; }
+[data-ds-kind="guide"] :is(.mini-layout-main b,.mini-page-content h4,.mini-interaction b) { font-size:var(--ds-demo-heading); line-height:1.4; color:var(--ds-ink); }
+[data-ds-kind="guide"] :is(.mini-task,.mini-page-search,.mini-page-field,.mini-page-metrics span,.mini-layout-items>*) { border-color:var(--ds-line); border-radius:8px; background:var(--ds-fill); color:var(--ds-ink); }
+[data-ds-kind="guide"] :is(.mini-interaction p,.mini-page-content>p,.mini-data p,.mini-page-list span,.mini-page-settings span) { color:var(--ds-ink-2); font-size:12px; }
+[data-ds-kind="guide"] :is(.mini-action,.mini-page-cta,.mini-page-hero span) { padding:8px 12px; border-radius:8px; background:var(--ds-accent); color:var(--ds-surface); font-size:14px; }
+[data-ds-kind="guide"] .mini-interaction input { height:44px; border-radius:8px; background:var(--ds-surface); font-size:14px; }
+[data-ds-kind="guide"] .mini-table { font-size:12px; color:var(--ds-ink); }
+[data-ds-kind="guide"] .mini-table th { color:var(--ds-accent); }
+[data-ds-kind="guide"] .demo-controls button { min-height:44px; padding:8px 16px; border:1px solid var(--ds-border); border-radius:8px; background:var(--ds-surface); color:var(--ds-ink); font:500 15px/1.5 var(--ds-font); }
+[data-ds-kind="guide"] .demo-controls button:hover { background:var(--ds-fill); }
+/* Sticky needs an actual scrollport to demonstrate sticking. */
+[data-ds-kind="guide"] .guide-card-stage[data-demo="sticky"] .mini-layout { height:260px; overflow-y:auto; }
+
+[data-ds-kind="guide"] .mini-layout-side { background:var(--ds-fill); }
+[data-ds-kind="guide"] .mini-layout-side i { background:var(--ds-border); border-radius:6px; }
+[data-ds-kind="guide"] :is(.mini-layout-main p,.mini-layout-tail,.mini-layout-heading small,.mini-layout-bottom,.mini-page-list span,.mini-page-settings span,.mini-page-hero small) { color:var(--ds-ink-2); }
+[data-ds-kind="guide"] .mini-page-hero { border-radius:12px; background:var(--ds-accent-50); color:var(--ds-ink); }
+[data-ds-kind="guide"] .mini-page-foot { border-color:var(--ds-line); color:var(--ds-ink-2); }
+[data-ds-kind="guide"] .mini-interaction input[aria-invalid="true"] { border-color:var(--ds-danger); }
+[data-ds-kind="guide"] .mini-interaction p[data-error="true"] { color:var(--ds-danger); }

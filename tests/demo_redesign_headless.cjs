@@ -1,7 +1,7 @@
 /* Headless-only acceptance check. Build dist first; this script never builds it.
  * NODE_PATH=/Users/zhiguang/Downloads/Kreator/node_modules node tests/demo_redesign_headless.cjs
  * DEMO_URL may point at an existing local server (including its deployment prefix).
- * SHOTS_DIR overrides the sandbox-safe output/demo-redesign/AB screenshot folder.
+ * SHOTS_DIR overrides the sandbox-safe output/demo-redesign/C screenshot folder.
  */
 'use strict';
 const assert = require('node:assert/strict');
@@ -13,12 +13,13 @@ try { playwright = require('playwright'); }
 catch { playwright = require('/Users/zhiguang/Downloads/Kreator/node_modules/playwright'); }
 const workspace = path.resolve(__dirname, '..');
 const dist = path.join(workspace, 'dist');
-const shots = path.resolve(process.env.SHOTS_DIR || path.join(workspace, 'output/demo-redesign/AB'));
+const shots = path.resolve(process.env.SHOTS_DIR || path.join(workspace, 'output/demo-redesign/C'));
 const reportPath = path.join(workspace, 'output/demo-redesign/headless-report.json');
 const routes = [
   'components/button/', 'components/input/', 'interactions/component-lift/', 'interactions/view-crossfade/',
   'components/modal/', 'components/tooltip/', 'interactions/scroll-reveal/', 'basics/grid/',
-  'components/skeleton/', 'components/carousel/'
+  'components/skeleton/', 'components/carousel/',
+  'basics/color/', 'components/color/', 'scenarios/dashboard/', 'ai/skills/frontend-design/'
 ];
 const galleries = ['basics/', 'components/', 'interactions/', 'scenarios/', 'ai/'];
 const report = {started: new Date().toISOString(), checks: [], failures: [], pageErrors: [], resourceErrors: [], screenshots: [], galleries: []};
@@ -98,13 +99,14 @@ function verifyChains(chains, requireSkin = false, requireStates = false) {
       const value = `${sheet.kind} ${sheet.href}`;
       if (/accessibility|a11y/.test(value)) return 'a11y';
       if (/state/.test(value)) return 'states';
+      if (/kind|_kind-/.test(value)) return 'kind';
       if (/skin/.test(value)) return 'skin';
       if (/spec/.test(value)) return 'spec';
       if (/source|demo/.test(value)) return 'source';
       return null;
     };
     const actual = sheets.map(classify).filter(Boolean);
-    const expected = ['source','spec', ...(requireSkin || actual.includes('skin') ? ['skin'] : []), 'a11y', ...(requireStates || actual.includes('states') ? ['states'] : [])];
+    const expected = ['source','spec', ...(actual.includes('kind') ? ['kind'] : []), ...(requireSkin || actual.includes('skin') ? ['skin'] : []), 'a11y', ...(requireStates || actual.includes('states') ? ['states'] : [])];
     let previous = -1;
     for (const kind of expected) {
       const at = actual.indexOf(kind);
@@ -217,18 +219,27 @@ async function crossfadeChecks(page, label) {
 async function specimenGeometry(page) {
   const result=await page.locator('.demo-scope[data-interactive]').first().evaluate(scope=>{
     const root=scope.shadowRoot.querySelector('.ds-stage');
-    const subject=root.querySelector('.ds-surface,.lift-card,.mini-scroll,.carousel');
+    const subject=root.querySelector('.ds-surface,.lift-card,.mini-scroll,.carousel,.token-demo,.mini-page,.skill-card');
     const hint=root.querySelector('.ds-hint');
-    const r=root.getBoundingClientRect(),s=subject.getBoundingClientRect(),h=hint.getBoundingClientRect();
+    const r=root.getBoundingClientRect(),s=subject.getBoundingClientRect(),h=hint?.getBoundingClientRect();
     const style=getComputedStyle(root);
     const inner=r.width-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-2;
     return {stage:r.width,subject:s.width,ratio:s.width/inner,left:s.left-r.left,right:r.right-s.right,
-      hintLeft:h.left-r.left,hintBottom:r.bottom-h.bottom,hintRight:r.right-h.right,clearance:h.top-s.bottom};
+      typeBody:style.getPropertyValue('--ds-demo-body').trim(),typeHeading:style.getPropertyValue('--ds-demo-heading').trim(),typeButton:style.getPropertyValue('--ds-demo-button').trim(),hasHint:!!h,hintLeft:h?h.left-r.left:null,hintBottom:h?r.bottom-h.bottom:null,hintRight:h?r.right-h.right:null,clearance:h?h.top-s.bottom:null};
   });
   assert.ok(result.left>=15.5&&result.right>=15.5,JSON.stringify(result));
+  if(result.hasHint) {
   assert.ok(Math.abs(result.hintLeft-13)<=1.1&&Math.abs(result.hintBottom-13)<=1.1,JSON.stringify(result));
   assert.ok(result.hintRight>=11.5&&result.clearance>=11.5,JSON.stringify(result));
-  if(result.stage>=640)assert.ok(result.ratio>=.45&&result.ratio<=.60,JSON.stringify(result));
+  }
+  assert.equal(result.typeBody,result.stage>=640?'16px':'14px');
+  assert.equal(result.typeHeading,result.stage>=640?'22px':'16px');
+  assert.equal(result.typeButton,result.stage>=640?'15px':'14px');
+  if(result.stage>=640) {
+    const inner=result.subject/result.ratio;
+    const expected=Math.min(inner,Math.max(420,Math.min(inner*.66,560)));
+    assert.ok(Math.abs(result.subject-expected)<2,JSON.stringify(result));
+  }
   return result;
 }
 async function batchBChecks(page, route, label, mobile) {
@@ -250,15 +261,27 @@ async function batchBChecks(page, route, label, mobile) {
     if(mobile){await trigger.tap();await scope.locator('[role="tooltip"]').waitFor({state:'hidden'});await trigger.tap();}
   }
   if (route.includes('/scroll-reveal/')) {
+    const initial=await scope.locator('.mini-scroll').evaluate(node=>{
+      const card=node.querySelector('.ds-reveal-card'),a=node.getBoundingClientRect(),b=card.getBoundingClientRect();
+      return {shown:getComputedStyle(card).opacity,top:b.top-a.top,height:a.height,title:node.querySelector('.scroll-top strong').textContent};
+    });
+    assert.equal(initial.shown,'1'); assert.ok(initial.top<initial.height/2); assert.ok(initial.title);
     await scope.locator('.mini-scroll').evaluate(node=>{for(const card of node.querySelectorAll('.ds-reveal-card')){node.scrollTop=card.offsetTop-16;node.dispatchEvent(new Event('scroll'));}});
     await page.waitForTimeout(400);
     assert.equal(await scope.locator('.ds-reveal-card.ds-revealed').count(),3);
   }
   if (route.includes('/grid/')) {
+    const originalWidth=await scope.locator('.mini-layout').evaluate(node=>node.getBoundingClientRect().width);
     await scope.locator('[data-guide-mode="1"]').click();
     assert.equal(await scope.locator('.guide-card-stage').getAttribute('data-mode'),'1');
+    assert.ok(await scope.locator('.mini-layout').evaluate(node=>node.getBoundingClientRect().width)<originalWidth);
+    if(mobile)assert.equal(await scope.locator('.ds-grid-card:visible').count(),4);
     await scope.locator('[data-guide-mode="0"]').click();
     assert.equal(await scope.locator('.ds-grid-card').count(),6);
+    if(mobile) {
+      assert.equal(await scope.locator('.ds-grid-card:visible').count(),4);
+      assert.equal(await scope.locator('.mini-layout-items').evaluate(node=>getComputedStyle(node).gridTemplateColumns.split(' ').length),2);
+    }
   }
   if (route.includes('/skeleton/')) {
     await scope.locator('.ds-skeleton-card.is-loaded').waitFor();
@@ -272,6 +295,29 @@ async function batchBChecks(page, route, label, mobile) {
     assert.equal(await scope.locator('#carDots button').nth(1).getAttribute('aria-current'),'true');
     await scope.locator('#carPrev').click();
     assert.equal(await scope.locator('#carDots button').first().getAttribute('aria-current'),'true');
+  }
+}
+async function batchCChecks(page,route) {
+  const scope=page.locator('.demo-scope[data-interactive]').first();
+  if(route==='basics/color/') {
+    const input=scope.locator('[data-token-control="foreground"]');
+    await input.evaluate(node=>{node.value='#FFFFFF';node.dispatchEvent(new Event('input',{bubbles:true}));});
+    assert.match(await scope.locator('[data-token-output]').textContent(),/1\.00:1.*正文未达标/);
+    await input.evaluate(node=>{node.value='#6D28D9';node.dispatchEvent(new Event('input',{bubbles:true}));});
+  }
+  if(route==='components/color/') {
+    await scope.locator('input[type=color]').evaluate(node=>{node.value='#047857';node.dispatchEvent(new Event('input',{bubbles:true}));});
+    assert.equal(await scope.locator('#hexc').textContent(),'#047857');
+  }
+  if(route==='scenarios/dashboard/') {
+    await scope.locator('[data-guide-mode="1"]').click();
+    assert.equal(await scope.locator('.guide-card-stage').getAttribute('data-mode'),'1');
+    await scope.locator('[data-guide-mode="0"]').click();
+    assert.equal(await scope.locator('.ds-dashboard-bars i').count(),7);
+  }
+  if(route==='ai/skills/frontend-design/') {
+    assert.equal(await scope.locator('.skill-card').evaluate(node=>getComputedStyle(node).backgroundColor),'rgb(255, 255, 255)');
+    assert.equal(await scope.locator('dt').first().evaluate(node=>getComputedStyle(node).color),'rgb(109, 40, 217)');
   }
 }
 async function reducedChecks(page, url, label) {
@@ -339,6 +385,7 @@ function catalogInventory() {
         if(route.includes('component-lift')) await liftChecks(page,label,width===390);
         if(route.includes('view-crossfade')) await crossfadeChecks(page,label);
         await batchBChecks(page,route,label,width===390);
+        await batchCChecks(page,route);
       });
       await check(`${label}: screenshot`, async () => {
         const file=path.join(shots,`${route.replaceAll('/','-').replace(/-$/,'')}-${width}.png`);

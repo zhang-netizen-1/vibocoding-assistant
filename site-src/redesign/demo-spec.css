@@ -98,7 +98,7 @@
 .ds-overlays > :is(.modal-mask,.drawer-mask,.drawer-panel,.cmdk-mask){pointer-events:auto}
 
 /* Type responds to the actual stage width, including embedded previews. */
-@container (min-width:768px) {
+@container demo-stage (min-width:640px) {
   .demo-root.ds-stage {
     --ds-demo-body:16px; --ds-demo-heading:22px; --ds-demo-title:24px;
     --ds-demo-button:15px; --ds-demo-control:48px;
@@ -115,11 +115,13 @@
 .ds-stage[data-ds-sample] :is(.ds-button-heading,.ds-lift-details,.ds-scene-copy) { gap:8px; }
 .ds-stage[data-ds-sample] .ds-button-grid { gap:12px; }
 
-/* The desktop detail column is about 725px at a 1440px viewport. Keep its
-   specimen readable even while the adjacent use card shares the page. */
-@media(min-width:1024px) {
-  :host([data-interactive]) .demo-root.ds-stage {
-    --ds-demo-body:16px; --ds-demo-heading:22px; --ds-demo-title:24px;
-    --ds-demo-button:15px; --ds-demo-control:48px;
+/* Scale samples only when the actual demo host has enough space. */
+@container demo-stage (min-width:640px) {
+  .demo-root.ds-stage {
+    --ds-subject-width:clamp(420px,66%,560px);
   }
+  .ds-stage[data-ds-sample] .ds-surface { padding:32px; }
+  .ds-stage[data-ds-sample] .ds-button-grid { gap:16px; }
+  .ds-stage[data-ds-sample] :is(.ds-button-heading,.ds-lift-details,.ds-scene-copy) { gap:12px; }
+  .ds-stage[data-ds-sample] :is(.ds-modal-preview,.ds-scene) { padding:0; }
 }

@@ -19,3 +19,5 @@
 @media(prefers-reduced-motion:reduce){.ds-skeleton-card .sk::after{animation:none}.ds-skeleton-content{transition:none}}
 :host(:not([data-interactive])) .skeleton.ds-skeleton-card{padding:16px}
 :host(:not([data-interactive])) .ds-skeleton-content>p{display:none}
+
+@container demo-stage (min-width:640px){.ds-skeleton-content,.ds-skeleton-placeholder{gap:16px}}

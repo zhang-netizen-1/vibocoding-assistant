@@ -22,3 +22,5 @@
 :host(:not([data-interactive])) :is(.ds-input-field,.ds-input-note){display:none}
 /* Keep the visible field label above the native input in every state. */
 .ds-input-demo .floatfield .fflabel{display:block;z-index:1;opacity:1;visibility:visible}
+
+@container demo-stage (min-width:640px){.ds-input-panel{gap:32px}.ds-input-field{gap:12px}}

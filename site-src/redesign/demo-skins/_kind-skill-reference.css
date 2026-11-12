@@ -1,0 +1,14 @@
+
+.demo-root[data-ds-kind="skill-reference"] .skill-card { width:min(100%,var(--ds-subject-width)); min-width:0; height:auto; overflow:visible; background:var(--ds-surface); color:var(--ds-ink); border:1px solid var(--ds-line); border-radius:16px; box-shadow:var(--ds-shadow-1); }
+.demo-root[data-ds-kind="skill-reference"] .skill-card-top { min-height:48px; padding:16px 24px; flex-wrap:wrap; color:var(--ds-ink-2); background:var(--ds-fill); border-bottom:1px solid var(--ds-line); border-radius:16px 16px 0 0; font:400 12px/1.5 var(--ds-font); }
+.demo-root[data-ds-kind="skill-reference"] .skill-card-body { padding:24px; }
+.demo-root[data-ds-kind="skill-reference"] .skill-card h3 { margin:0 0 16px; letter-spacing:0; font:600 var(--ds-demo-title)/1.35 var(--ds-font); }
+.demo-root[data-ds-kind="skill-reference"] .skill-card h3 small { margin-top:8px; color:var(--ds-accent); font:500 12px/1.5 var(--ds-font); }
+.demo-root[data-ds-kind="skill-reference"] .skill-summary { min-height:0; margin:0 0 24px; color:var(--ds-ink-2); font:400 var(--ds-demo-body)/1.6 var(--ds-font); }
+.demo-root[data-ds-kind="skill-reference"] .skill-card dl { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr); gap:12px; }
+.demo-root[data-ds-kind="skill-reference"] .skill-card dl div { padding:16px; background:var(--ds-fill); border:1px solid var(--ds-line); border-radius:12px; box-shadow:var(--ds-shadow-1); }
+.demo-root[data-ds-kind="skill-reference"] .skill-card dt { margin-bottom:8px; color:var(--ds-accent); font:600 12px/1.5 var(--ds-font); }
+.demo-root[data-ds-kind="skill-reference"] .skill-card dd { color:var(--ds-ink-2); font:400 12px/1.6 var(--ds-font); }
+.demo-root[data-ds-kind="skill-reference"] .skill-tags { gap:8px; margin-top:24px; }
+.demo-root[data-ds-kind="skill-reference"] .skill-tags span { padding:6px 10px; border:1px solid var(--ds-accent-200); border-radius:6px; background:var(--ds-accent-50); color:var(--ds-accent); font:500 12px/1.5 var(--ds-font); }
+@container demo-stage (max-width:380px) { .demo-root[data-ds-kind="skill-reference"] .skill-card-body { padding:16px; } .demo-root[data-ds-kind="skill-reference"] .skill-card dl { grid-template-columns:minmax(0,1fr); } }

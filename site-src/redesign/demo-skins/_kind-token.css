@@ -1,0 +1,8 @@
+
+.demo-root[data-ds-kind="token"] .token-demo { width:min(100%,var(--ds-subject-width)); padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-1); gap:24px; font-size:var(--ds-demo-body); }
+[data-ds-kind="token"] .token-controls { gap:16px; }
+[data-ds-kind="token"] :is(select,input:not([type=range]),button) { min-height:44px; border-radius:8px; font-size:15px; }
+[data-ds-kind="token"] .token-card:not(.elevation-card):not(.theme-sample) { border-color:var(--ds-line); border-radius:12px; box-shadow:var(--ds-shadow-1); }
+[data-ds-kind="token"] .space-ruler { color:var(--ds-ink-2); background-color:var(--ds-fill); border-radius:6px; }
+[data-ds-kind="token"] output { color:var(--ds-ink-2); font-size:12px; }
+@container demo-stage (max-width:380px) { .demo-root[data-ds-kind="token"] .token-demo { padding:16px; } }

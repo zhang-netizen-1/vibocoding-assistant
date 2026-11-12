@@ -18,3 +18,5 @@
 :host(:not([data-interactive])) .ds-lift-details>span{display:none}
 /* Override the later shared control border and legacy micro-card padding. */
 .demo-root .stage[data-effect="component-lift"] .micro-card.lift-card{border:1px solid var(--ds-line)!important;padding:0}
+
+@container demo-stage (min-width:640px){.stage[data-effect="component-lift"] .ds-lift-details{padding:24px;gap:12px}}

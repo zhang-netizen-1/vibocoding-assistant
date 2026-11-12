@@ -121,7 +121,7 @@ function scopeFixture(interactive = true, withFrame = false) {
   scope.dataset.demoKind = 'fixture';
   if (interactive) scope.setAttribute('data-interactive','');
   template.matches = selector => selector === 'template[data-demo-template]';
-  template.dataset = {demoCss:'./demo.css'};
+  template.dataset = {demoCss:'./demo.css',specCss:'./demo-spec.css',kindCss:'./demo-skins/_kind-ui.css',skinCss:'./demo-skins/ui-fixture.css',a11yCss:'./demo-accessibility.css',stateCss:'./states.css'};
   template.content = {cloneNode() {
     const body = new Element();
     body.animation = {pause() {this.paused = true;},effect:{getComputedTiming:() => ({endTime:8000}),getTiming:() => ({duration:8000,delay:0})}};
@@ -148,6 +148,8 @@ window.VibeDemos.register('fixture', env => {
 });
 const scope = scopeFixture();
 const demo = window.VibeDemos.init(scope);
+const originalSheets=scope.shadowRoot.children.filter(node=>node.tagName==='LINK');
+assert.deepEqual(originalSheets.map(node=>node.dataset.demoSheet),['demo','spec','kind','skin','a11y','state']);
 assert.equal(sourceMedia.matches,true);
 assert.equal(intervals.size,0,'Reduced motion initialization must not install an automatic loop');
 assert.equal(frames.size,0,'Reduced motion initialization must not request moving frames');
@@ -165,6 +167,7 @@ assert.equal(intervals.size,0); assert.equal(frames.size,0);
 demo.preview(.25);
 assert.equal(demo.motionDuration,32400,'Slow playback includes a complete quarter-speed cycle');
 demo.reset();
+assert.deepEqual(scope.shadowRoot.children.filter(node=>node.tagName==='LINK'),originalSheets,'All loaded sheets survive reset');
 assert.equal(timeouts.size,0); assert.equal(intervals.size,0); assert.equal(frames.size,0);
 assert.ok(!scope.hasAttribute('data-demo-motion-once'));
 const gallery = scopeFixture(false);

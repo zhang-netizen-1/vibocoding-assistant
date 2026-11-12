@@ -87,7 +87,7 @@
       // state changes) so the rebuilt demo never renders unstyled for a frame.
       const sheets = [
         ['demo', template.dataset.demoCss], ['spec', template.dataset.specCss],
-        ['skin', template.dataset.skinCss], ['a11y', template.dataset.a11yCss],
+        ['kind', template.dataset.kindCss], ['skin', template.dataset.skinCss], ['a11y', template.dataset.a11yCss],
         ['state', template.dataset.stateCss]
       ].filter(([, href]) => href);
       Array.from(shadow.children).forEach(node => {if (!node.hasAttribute('data-demo-sheet')) node.remove();});

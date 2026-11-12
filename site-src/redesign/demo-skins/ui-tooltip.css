@@ -2,7 +2,7 @@
 .ds-tooltip-panel{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:32px 24px}
 .ds-tooltip-copy{min-width:0}
 .ds-tooltip-copy strong{display:block;font-size:var(--ds-demo-heading);line-height:1.4;font-weight:600}
-.ds-tooltip-copy p{margin:8px 0 0;font-size:var(--ds-demo-button);line-height:1.6;color:var(--ds-ink-2)}
+.ds-tooltip-copy p{margin:8px 0 0;font-size:var(--ds-demo-body);line-height:1.6;color:var(--ds-ink-2)}
 .ds-tooltip-demo .tip{position:relative;display:inline-flex;flex:none}
 .ds-tooltip-demo .tip>.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--ds-demo-control);padding:10px 16px;border:1px solid var(--ds-border);border-radius:8px;background:var(--ds-surface);color:var(--ds-ink);font:500 var(--ds-demo-button)/1.5 var(--ds-font);cursor:pointer}
 .ds-tooltip-demo .tip>.btn:hover{background:var(--ds-fill)}
@@ -14,3 +14,5 @@
 @media(prefers-reduced-motion:reduce){.ds-tooltip-demo .tip .bubble{transition:none;transform:none!important}}
 :host(:not([data-interactive])) .ds-tooltip-panel{padding:16px;gap:16px}
 :host(:not([data-interactive])) .ds-tooltip-copy p{display:none}
+
+@container demo-stage (min-width:640px){.ds-tooltip-panel{gap:32px}}

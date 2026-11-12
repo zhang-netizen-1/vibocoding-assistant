@@ -1,7 +1,7 @@
 .stage.ds-reveal-demo[data-effect="scroll-reveal"]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:0;--p:0}
 .stage.ds-reveal-demo .mini-scroll{position:relative;width:min(100%,var(--ds-subject-width));height:380px;max-height:none;padding:16px;background:var(--ds-surface);border:1px solid rgb(17 24 39 / .08);border-radius:16px;box-shadow:var(--ds-shadow-1);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;text-align:left;scrollbar-color:var(--ds-border) transparent;scrollbar-width:thin}
 .ds-reveal-demo .scroll-top{height:auto;padding:8px 0;font:400 12px/1.5 var(--ds-font);color:var(--ds-ink-2);text-align:center}
-.ds-reveal-demo .scroll-spacer{height:160px}
+.ds-reveal-demo .scroll-spacer{height:16px}
 .ds-reveal-demo .scroll-spacer.end{height:32px}
 .stage.ds-reveal-demo .mini-scroll .ds-reveal-card{display:block;width:100%;margin:0 0 16px;padding:0;min-height:0;border:1px solid var(--ds-line);border-radius:12px;background:var(--ds-surface);color:var(--ds-ink);overflow:hidden;text-align:left;opacity:1;transform:none;transition:opacity 360ms var(--ds-ease-out),transform 360ms var(--ds-ease-out)}
 .stage.ds-reveal-demo .mini-scroll.reveal-ready .ds-reveal-card{opacity:0;transform:translateY(16px)}
@@ -16,3 +16,9 @@
 :host(:not([data-interactive])) .stage.ds-reveal-demo .mini-scroll{height:260px;padding:12px}
 :host(:not([data-interactive])) .ds-reveal-demo .scroll-spacer{height:0}
 :host(:not([data-interactive])) .ds-reveal-copy p{display:none}
+
+.ds-reveal-demo .scroll-top { padding:0; text-align:left; }
+.ds-reveal-demo .scroll-top strong { display:block; color:var(--ds-ink); font:600 var(--ds-demo-title)/1.35 var(--ds-font); }
+.ds-reveal-demo .scroll-top p { margin:8px 0 0; font:400 var(--ds-demo-body)/1.6 var(--ds-font); }
+
+@container demo-stage (min-width:640px){.stage.ds-reveal-demo .mini-scroll{padding:24px}.ds-reveal-copy{padding:24px}}

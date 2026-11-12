@@ -25,3 +25,5 @@
 :host(:not([data-interactive])) .ds-carousel-demo .car-slide{padding:16px}
 :host(:not([data-interactive])) .ds-carousel-demo .ds-carousel-copy>span{display:none}
 :host(:not([data-interactive])) .ds-carousel-footer{display:none}
+
+@container demo-stage (min-width:640px){.ds-carousel-demo .car-slide{padding:32px}.ds-carousel-copy{gap:12px}}

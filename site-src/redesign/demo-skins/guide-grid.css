@@ -21,7 +21,18 @@
 .demo-root .demo-controls{gap:12px;margin:0}
 .demo-controls button{min-height:var(--ds-demo-control);padding:8px 16px;border:1px solid var(--ds-border);border-radius:8px;background:var(--ds-surface);color:var(--ds-ink);font:500 var(--ds-demo-button)/1.5 var(--ds-font);cursor:pointer}
 .demo-controls button:hover{background:var(--ds-fill)}
-@container demo-stage (min-width:768px){.ds-grid-demo .mini-layout-items{gap:24px}}
+@container demo-stage (min-width:640px){.ds-grid-demo .mini-layout-items{gap:24px}}
 :host(:not([data-interactive])) .guide-card-stage[data-demo="grid"] .mini-layout{padding:16px}
 :host(:not([data-interactive])) .ds-grid-demo .mini-layout-items>.ds-grid-card:nth-child(n+3){display:none}
 :host(:not([data-interactive])) .ds-grid-demo :is(.mini-layout-heading,.mini-layout-tail,.mini-layout-main>p){display:none}
+
+/* Mobile keeps four complete cards in a two-column gallery. Data stays intact. */
+@media(max-width:767px) {
+  :host([data-interactive]) .ds-grid-demo .mini-layout-items { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  :host([data-interactive]) .ds-grid-demo .mini-layout-items>.ds-grid-card:nth-child(n+5) { display:none; }
+  :host([data-interactive]) .guide-card-stage[data-demo="grid"] .mini-layout { padding:16px; }
+  :host([data-interactive]) .ds-grid-copy strong { font-size:16px; }
+  :host([data-interactive]) .ds-grid-demo .mini-layout-top { flex-wrap:wrap; }
+}
+
+@container demo-stage (min-width:640px){.guide-card-stage[data-demo="grid"] .mini-layout{padding:32px}}
