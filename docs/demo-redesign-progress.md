@@ -44,3 +44,14 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
 1. **390 宽内容超出 4:3 舞台**：component-lift 和 view-crossfade 的卡片贴着或超出舞台上下边，提示胶囊被截掉。要按规格「放不下就增高」，或在手机上缩小主体。改完要在 390 宽量一遍每个样板的舞台和内容边界。
 2. 按钮缺一张悬停、按下、聚焦状态的截图证据（目前只截了静止状态），去状态切换页 `components/states/` 补截。
 3. 然后做 B 段：modal、tooltip、scroll-reveal、grid、skeleton、carousel。说明照 codex_brief_A.md 改写成 codex_brief_B.md，跑 Codex 时用 `perl alarm` 限 25 分钟。Codex 的沙箱不能截图。
+
+## 第 3 段（00:39–01:12）
+- audit-fixes：触屏模式下，组件状态里的「长按」态原本缩到 0.96，按钮高只剩 42.24px。改成用内阴影表示按下，不再缩小。完整 batch4 跑完，1449 项全部通过（日志 `/tmp/b4full2.log`）。已提交 `c72e4ee`「audit-fixes final (full batch4 passed)…」，并已合并进 demo-redesign（`663260c`）。
+- demo-redesign 的 `1cf8f1c`：A 段精修，加上 B 段 6 个样板（modal、tooltip、scroll-reveal、grid、skeleton、carousel）。截图在 `shots/after-B/`（box 上是 `after-B/`）。总览图：box `contact_sheet_A2_before_after.jpg`、`contact_sheet_B_before_after.jpg`。
+- 实测 1440 宽：舞台 725px（右侧是使用卡），承托面 343px，占 47%。按百分比达标了，看起来还是小。
+
+## 下一段要做（按优先级）
+1. 1440 宽主体再放大：承托面 `width: clamp(420px, 62%, 560px)`，标题 22–24、正文 16。或者把条目页演示区加宽（要和外框布局一起看，属于外框改动，先问他）。
+2. grid 在 390 宽变成一长列很小的缩略图，页面非常长。手机上改成 2 列，最多显示 4 张。
+3. scroll-reveal 上半部分空白太多：首屏就露出第一张卡，并补标题和正文。
+4. 再做 C 段：两个 color、dashboard、frontend-design。frontend-design 现在是深色面板，要改成本规格的浅色。
