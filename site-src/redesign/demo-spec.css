@@ -50,7 +50,7 @@
   padding:0; overflow:visible; flex-shrink:0;
 }
 .demo-root.ds-stage > :is(.canvas,.stage):has(> .ds-hint) {
-  padding-bottom:0!important; row-gap:12px; flex-wrap:wrap;
+  padding-bottom:56px!important; row-gap:12px; flex-wrap:wrap;
 }
 .demo-root.ds-stage > :is(.canvas,.stage) > * { flex-shrink:0; }
 .ds-surface { width:min(100%,var(--ds-subject-width)); box-sizing:border-box; background:var(--ds-surface); border:1px solid rgb(17 24 39 / .08); border-radius:16px; box-shadow:var(--ds-shadow-1); padding:24px; min-width:0; max-width:100%; }

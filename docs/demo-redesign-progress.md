@@ -55,3 +55,27 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
 2. grid 在 390 宽变成一长列很小的缩略图，页面非常长。手机上改成 2 列，最多显示 4 张。
 3. scroll-reveal 上半部分空白太多：首屏就露出第一张卡，并补标题和正文。
 4. 再做 C 段：两个 color、dashboard、frontend-design。frontend-design 现在是深色面板，要改成本规格的浅色。
+
+## 第 4 段（01:07–01:45）
+- e185c8c（Codex）：
+  - 1440 宽的主体放大到 clamp(420px, 66%, 560px)，并换用大舞台字号；
+  - 网格在手机上改成 2 列、最多 4 张；
+  - 滚动显现的第一张卡在首屏就能看到；
+  - C 段 4 个样板：basics/color、components/color、scenarios/dashboard、ai/skills/frontend-design（改成浅色）；
+  - 五种类型级皮肤 `demo-skins/_kind-*.css`。
+- 我的截图检查（执行者）：ui 和 motion 两种类型的皮肤会让提示胶囊压住内容（switch、tabs、toast、select、scroll-parallax、text-mask），390 宽尤其严重，所以先停用这两种。原稿在 `site-src/redesign/demo-skins-wip/`，现在的 `_kind-ui.css` 和 `_kind-motion.css` 里只剩一行注释。guide、token、skill-reference 三种保留。
+- 公共层修复：带提示的 .canvas/.stage 底部留出 56px（demo-spec.css 第 53 行），提示胶囊不再压住内容。截图核对见 box `check_hintfix.jpg`。
+- 全站 212 页 × 3 种宽度：没有 JS 报错。有 1 处横向溢出（1440 宽的 ai/skills/fixing-accessibility），是那次 site.css 没加载出来造成的，重测没有溢出。
+
+## 演示清单（192 条）
+- **单独重做（14 条）**：components/button、input、modal、tooltip、skeleton、carousel、color；interactions/component-lift、view-crossfade、scroll-reveal；basics/grid、basics/color；scenarios/dashboard；ai/skills/frontend-design。
+- **类型级皮肤生效（约 35 条，以 implementation.md 的清单为准）**：guide、token、skill-reference 三种类型里没单独重做的条目，6 个视觉材质类演示（如 glass、brutalist）保留原来的风格。
+- **只换上了统一舞台**（底色、点阵、提示胶囊、字号下限）：其余约 143 条 ui 和 motion 演示。
+- **待做**：
+  1. 修好 `_kind-ui.css` 和 `_kind-motion.css` 后恢复。要求是 .canvas 当承托面时，提示胶囊在承托面外、舞台左下角，不能和内容同行。
+  2. 1440 宽下，提示胶囊应在舞台最底部，现在跟在内容下面。
+  3. 按栏目逐条精修：components 的 ui 演示（约 62 条），interactions 的 motion 演示（约 74 条）。
+- **做不到要求的**：暂时没有。
+
+## 问用户
+- 条目页的演示区要不要整体加宽？要加宽就得改外框布局，比如收窄或下移右侧的使用卡。现在 1440 宽下舞台只有 725px，靠放大舞台里的内容来弥补。
