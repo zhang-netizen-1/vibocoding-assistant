@@ -37,6 +37,7 @@ class RedesignJavaScriptTest(unittest.TestCase):
         self.assertIn('194',result.stdout)
         self.assertIn('Command palette: 70 real candidates',result.stdout)
         self.assertIn('Motion modal: local sibling inert',result.stdout)
+        self.assertIn('Batch B: skeleton loading/reduced motion',result.stdout)
 
     def test_real_index_matching_ranking_and_near_names(self):
         code = r'''

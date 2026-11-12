@@ -130,6 +130,22 @@
           lift.setAttribute('aria-pressed', String(open));
         });
       }
+      const tooltip = shadow.querySelector('.ds-tooltip-demo .tip');
+      if (tooltip && scope.hasAttribute('data-interactive')) {
+        tooltip.querySelector('[data-tooltip-trigger]').addEventListener('click', () => {
+          tooltip.classList.remove('dismissed');
+          tooltip.classList.toggle('touch-open');
+        });
+        tooltip.addEventListener('keydown', event => {
+          if (event.key !== 'Escape') return;
+          tooltip.classList.remove('touch-open');
+          tooltip.classList.add('dismissed');
+        });
+        tooltip.addEventListener('pointerleave', () => tooltip.classList.remove('dismissed'));
+        tooltip.addEventListener('focusout', () => {
+          tooltip.classList.remove('touch-open', 'dismissed');
+        });
+      }
       if (nativeWindow.matchMedia('(hover:none), (pointer:coarse)').matches) {
         shadow.querySelectorAll('[data-touch-hint]').forEach(hint => {hint.textContent = hint.dataset.touchHint;});
       }

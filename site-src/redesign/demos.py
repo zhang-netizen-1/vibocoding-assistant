@@ -155,6 +155,24 @@ def _ui_script(source):
     script = script.replace('    auto();\n  })();', '    auto();\n  })();')
     script += "\ndocument.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCmdk();if(document.getElementById('modal'))closeModal();if(document.getElementById('dmask'))closeDrawer();closePopover();}});\n"
     script = re.sub(r'(\w+)\.setPointerCapture\(e\.pointerId\)', r'e.isTrusted&&\1.setPointerCapture(e.pointerId)', script)
+    script += r"""
+const skeletonCard=document.querySelector('.ds-skeleton-card');
+if(skeletonCard){
+  const image=skeletonCard.querySelector('img');
+  function revealSkeleton(){
+    skeletonCard.classList.add('is-loaded');
+    skeletonCard.setAttribute('aria-busy','false');
+    skeletonCard.querySelector('.ds-skeleton-content').setAttribute('aria-hidden','false');
+    skeletonCard.querySelector('[role=status]').textContent='场景加载完成';
+  }
+  function finishSkeleton(){
+    if(image.complete&&image.naturalWidth)revealSkeleton();
+    else image.addEventListener('load',revealSkeleton,{once:true});
+  }
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)finishSkeleton();
+  else setTimeout(finishSkeleton,1400);
+}
+"""
     return script
 
 
@@ -174,12 +192,24 @@ def _motion_script(source):
     script = script.replace('  setInterval(()=>{\n    if(reduce.matches||paused()||switching)return;', '  if(!reduce.matches)setInterval(()=>{\n    if(reduce.matches||paused()||switching)return;')
     # Expose the source-owned word sequence for static manual stepping.
     script = re.sub(r'(const words=\[[^;]+\]);let idx=', r'\1;stage.dataset.demoWords=JSON.stringify(words);let idx=', script)
+    # Photo cards reveal independently when each enters the local scrollport.
+    script = script.replace("stage.style.setProperty('--p',p);", "stage.style.setProperty('--p',p);revealVisibleCards(scroller);")
     script = script.replace('Number(timeline.value)', 'Number(timeline?.value||0)')
     script = script.replace("||document.getElementById('pauseAll').getAttribute('aria-pressed')==='true'", '')
     # Never navigate to a path relative to the outer entry page.
     script = script.replace("scene.querySelector('iframe').src = 'motion-demo-gallery.html'", "scene.querySelector('iframe').src = scene.querySelector('iframe').dataset.initialSrc")
     script = script.replace('el.setPointerCapture(e.pointerId)', 'e.isTrusted&&el.setPointerCapture(e.pointerId)').replace('chip.setPointerCapture(event.pointerId)', 'event.isTrusted&&chip.setPointerCapture(event.pointerId)')
     return '''const reduce=matchMedia('(prefers-reduced-motion: reduce)'),coarse=matchMedia('(pointer: coarse)');
+function revealVisibleCards(scroller){
+  if(!scroller.closest('.ds-reveal-demo'))return;
+  const viewport=scroller.getBoundingClientRect();
+  scroller.querySelectorAll('.ds-reveal-card').forEach(card=>{
+    const rect=card.getBoundingClientRect();
+    if(rect.top<viewport.bottom-16&&rect.bottom>viewport.top){
+      card.classList.add('ds-revealed');
+    }
+  });
+}
 let activeDialog=null,inerted=[];
 function openDialog(layer){if(!layer||activeDialog)return;layer.hidden=false;let child=layer;while(child!==document.body){for(const sibling of child.parentElement.children){if(sibling!==child&&!sibling.inert){sibling.inert=true;inerted.push(sibling)}}child=child.parentElement}activeDialog=layer;layer.querySelector('[data-action=close]')?.focus();}
 ''' + script + '''
@@ -339,6 +369,8 @@ def markup(demo, prefix, interactive=False, slug=''):
     content = content.replace('id=#ed462d" data-x="x" data-hexc="', 'id="hexc"')
     category = '静态演示' if kind == 'skill-reference' else _classification().get(anchor, '')
     attrs = f' id="{escape(anchor)}"' if anchor else ''
+    if skin and (HERE / 'demo-skins' / f'{skin}.css').is_file():
+        attrs += ' data-ds-sample'
     if kind == 'guide':
         attrs += f' data-guide="{escape(demo["section"])}"'
     skin_attr = f' data-skin-css="{escape(prefix)}demo-skins/{escape(skin)}.css"' if skin and (HERE / 'demo-skins' / f'{skin}.css').is_file() else ''

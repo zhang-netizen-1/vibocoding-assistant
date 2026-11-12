@@ -129,3 +129,66 @@ node tests/demo_redesign_headless.cjs
 - `PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tests -p test_site_build.py` 通过，共 21 项。
 - 修改的 CSS 经 PostCSS 解析通过。
 - 本轮 Headless Chromium 启动被沙箱拒绝，错误为 `MachPortRendezvousServer ... Permission denied (1100)`。390px 截图、实际提示间距及全部演示的浏览器几何尚待视觉复核。
+
+## A 段精修 + B 段
+
+2026-11-13，按本轮评审完成 A 段三项精修与 B 段六个样板。实现沿用 Shadow DOM 样式链、原交互适配器和内容数据。每项交付后均执行构建，最终产物为 `dist/`，共 217 页、192 条目。
+
+### A 段公共调整
+
+- 公共主体宽度令牌为 `--ds-subject-width:clamp(320px,52%,640px)`，承托面和十个样板的主体均使用 `min(100%,var(--ds-subject-width))`。手机可用宽度小于 320px 时受父容器约束。
+- 新增 `--ds-demo-body/heading/title/button/control`。默认分别为 14/16/20/14/44px，实际舞台宽度达到 768px 后切换为 16/22/24/15/48px。现有桌面双栏中，1440px 页面主演示实际宽约 725px，因此额外为桌面详情页启用大字号档位。
+- 舞台使用 `aspect-ratio:auto`，通过 `min-height:max(320px,62.5cqi)`、`max(300px,66.667cqi)`、`max(260px,75cqi)` 保留比例下限。正文、表单和网格按内容自然增高。
+- 提示胶囊使用舞台内部左侧和底部各 12px 的绝对定位。舞台底部内边距为 76px，提供两行提示的实际布局空间。样板外包装采用静态定位，使提示统一锚定公共舞台。手机横向内边距保持 16px。
+- 双层阴影继续使用墨色低透明度令牌。点阵恢复为 24px 间距、`rgb(17 24 39 / .05)`。按钮网格间距统一为 12px，表单组间距为 24px。
+- 上浮卡片、交叉淡化和新图片样板设置裁切焦点。交叉淡化和轮播的文字区域采用透明至 `rgb(0 0 0 / .6)` 的遮罩，45% 高度之后保持该不透明度。纯白原图经过该遮罩后的最亮背景为 `#666666`，与白字对比度约 5.74∶1。
+
+### 尺寸计算
+
+下表按现有 `.wrap` 最大宽度 1184px、桌面左右内边距 32px、移动端左右内边距 16px，以及桌面主栏与使用卡 2∶1、栏间距 32px 计算。
+
+| 页面宽度 | 主演示宽度 | 舞台内容区宽度 | 主体宽度 | 主体左右净距 | 网格列数 |
+|---|---:|---:|---:|---:|---:|
+| 1440px | 725.33px | 659.33px | 342.85px | 191.24px | 2 |
+| 390px | 358px | 324px | 320px | 19px | 1 |
+
+桌面主体占舞台内容区 52%。移动端承托面占用可用宽度，并由内容决定高度。两行提示的高度上限为 `2×12×1.5+2×6+2=50px`，加上底部偏移 12px 和正文间距 12px，共 74px，纳入 76px 底部预留。
+
+以上为 CSS 尺寸推导与自动断言。字体实际排版、图片解码后的构图和视觉精致度由执行者通过截图复核。
+
+### B 段样板
+
+| 样板 | 实现与行为 |
+|---|---|
+| modal | 客厅真实图片承托面，确认弹窗保留 `#modal`、`.modal-box`、标题和描述关联、开关命令、遮罩关闭、Escape 和焦点回返。遮罩为 `rgb(17 24 39 / .45)`，背景模糊 4px，弹窗圆角 16px、shadow-3、20px 标题，次要与主要按钮右对齐。 |
+| tooltip | 中文「分享」按钮与图标、深墨色白字 13px 气泡、8px 圆角、小箭头和 shadow-3。保留 `.tip/.bubble`，增加 tooltip 语义关联、键盘聚焦、Escape 收起、触屏点按切换与手机提示。 |
+| scroll-reveal | 三张同系列真实庭院图与标题，保留 `.mini-scroll`、`.reveal-target`、滚动进度及重播。每张卡片进入本地滚动视口后分别淡入并上移 16px，时长 360ms，曲线为 `--ds-ease-out`。减少动态时直接显示内容。 |
+| grid | 六张真实庭院和湖景卡片，保留 guide 的 `data-demo="grid"`、`data-mode`、原状态按钮及布局选择器。列宽下限 128px，使用 auto-fit，间距随实际舞台宽度采用 16/24px。原窄布局状态继续生效，内容自然增高。 |
+| skeleton | 白色承托面上显示 `#E9EBEF` 骨架，微光采用白色半透明渐变的 transform 动画。模拟加载 1400ms，并等待真实图片加载后显示湖景图片、标题和正文。同步 `aria-busy`、内容可见性和加载状态播报，减少动态时直接等待图片并显示结果。 |
+| carousel | 使用 `garden-dusk-01/02/03`，圆角 16px，44px 白色圆形浮钮配 shadow-2。当前指示点为紫色 24px 胶囊，独立点击区域为 44px，相邻间隔 8px。保留全部 `car*` ID、三项顺序、箭头、圆点、自动轮播、暂停与悬停/聚焦暂停行为。 |
+
+新皮肤位于 `site-src/redesign/demo-skins/`，名称分别为 `ui-modal`、`ui-tooltip`、`motion-scroll-reveal`、`guide-grid`、`ui-skeleton`、`ui-carousel`。新增滚动与加载逻辑接入 `demos.py` 的既有生命周期，触屏提示逻辑接入 `demo-runtime.js`。
+
+### 验证与执行者复核
+
+| 验证 | 最终结果 |
+|---|---|
+| `PYTHONDONTWRITEBYTECODE=1 python3 -B scripts/build_site.py` | 通过，217 页、192 条目 |
+| `test_demo_audit` | 1 项通过 |
+| `test_redesign_tokens` | 8 项通过，包含大舞台字号、比例下限、提示占位、主体比例、双尺寸网格与图片遮罩对比度 |
+| `test_site_build` | 22 项通过，十套皮肤在四层资源路径下的契约、六样板选择器、真实图片和原锚点均覆盖 |
+| `node tests/token_demos.cjs` | 五类 token 的交互、计算、主题及存储回退通过 |
+| `test_redesign_javascript` | 12 项通过，包含 194 份演示初始化，以及骨架加载、减少动态、轮播、逐卡滚动显现、网格切换和弹窗关闭/焦点回返 |
+| `node tests/audit_fix_batch3.cjs` | 10 组状态回调及减少动态生命周期通过 |
+| Python AST、Node 语法、修改文件行尾空白检查 | 通过 |
+
+测试断言随实现更新并新增针对性回归覆盖。测试初次并行运行时，共同触发重建并造成生成目录竞争，已恢复生成目录，最终验证全部串行执行。
+
+执行者可运行已有复核入口。该入口现覆盖十个样板，并检查主体占比、手机净距、提示左下位置、内容间距和 B 段交互。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 -B scripts/build_site.py
+node tests/demo_redesign_headless.cjs
+```
+
+脚本沿用执行者现有 Playwright 环境，默认截图目录为 `output/demo-redesign/AB/`，报告为 `output/demo-redesign/headless-report.json`。截图覆盖 1440/390 两档，并额外记录打开状态的模态弹窗。本轮验收采用尺寸计算与 Node DOM 模型，浏览器截图及视觉验收由执行者完成。

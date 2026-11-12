@@ -31,13 +31,17 @@
   --demo-danger:var(--ds-danger); --demo-focus:var(--ds-accent);
   --guide-ink:var(--ds-ink); --guide-muted:var(--ds-ink-2); --guide-accent:var(--ds-accent);
   --skill-ink:var(--ds-ink); --skill-muted:var(--ds-ink-2); --skill-accent:var(--ds-accent);
+  --ds-subject-width:clamp(320px,52%,640px);
+  --ds-demo-body:14px; --ds-demo-heading:16px; --ds-demo-title:20px;
+  --ds-demo-button:14px; --ds-demo-control:44px;
+  container-type:inline-size; container-name:demo-stage;
   font-family:var(--ds-font); font-variant-numeric:tabular-nums;
 }
 .demo-root.ds-stage {
   position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center;
-  gap:24px; width:100%; min-width:0; min-height:320px; height:auto; aspect-ratio:16/10;
-  padding:32px; border:1px solid var(--ds-line); border-radius:12px;
-  background:radial-gradient(circle,rgb(17 24 39 / .07) .5px,transparent .5px) 0 0/20px 20px var(--ds-stage);
+  gap:24px; width:100%; min-width:0; min-height:max(320px,62.5cqi); height:auto; aspect-ratio:auto;
+  padding:32px 32px 76px; border:1px solid var(--ds-line); border-radius:12px;
+  background:radial-gradient(circle,rgb(17 24 39 / .05) .5px,transparent .5px) 0 0/24px 24px var(--ds-stage);
   color:var(--ds-ink); box-shadow:none; font:14px/1.6 var(--ds-font); overflow:visible;
 }
 .ds-stage > :is(.canvas,.stage,.guide-card-stage) {
@@ -49,18 +53,16 @@
   padding-bottom:0!important; row-gap:12px; flex-wrap:wrap;
 }
 .demo-root.ds-stage > :is(.canvas,.stage) > * { flex-shrink:0; }
-.ds-surface { background:var(--ds-surface); border:1px solid rgb(17 24 39 / .08); border-radius:16px; box-shadow:var(--ds-shadow-1); padding:24px; min-width:0; max-width:100%; }
+.ds-surface { width:min(100%,var(--ds-subject-width)); box-sizing:border-box; background:var(--ds-surface); border:1px solid rgb(17 24 39 / .08); border-radius:16px; box-shadow:var(--ds-shadow-1); padding:24px; min-width:0; max-width:100%; }
 .demo-root.ds-stage .ds-hint {
-  position:static!important; inset:auto!important; width:fit-content; max-width:100%!important;
-  margin:12px 0 0!important; order:999; flex-shrink:0; grid-column:1/-1;
+  position:absolute!important; inset:auto auto 12px 12px!important; width:fit-content; max-width:calc(100% - 24px)!important;
+  margin:0!important; order:999; flex-shrink:0; grid-column:1/-1;
   align-self:flex-start!important; transform:none;
   display:flex; align-items:center; gap:8px; padding:6px 12px;
   background:var(--ds-surface); color:var(--ds-ink-2); border:1px solid var(--ds-line);
   border-radius:999px; font:400 12px/1.5 var(--ds-font); white-space:normal; text-align:left;
   pointer-events:none; letter-spacing:0;
 }
-/* Row-based legacy canvases give their hint a separate final line. */
-.demo-root.ds-stage > .canvas:not(.ds-button-demo):not(.ds-input-demo):has(> .ds-hint) > .ds-hint { flex-basis:100%; }
 .ds-hint-icon { color:var(--ds-accent); flex:none; font-size:12px; }
 .ds-caption { font:400 12px/1.5 var(--ds-font); color:var(--ds-ink-2); }
 .ds-img { display:block; width:100%; max-width:100%; height:auto; object-fit:cover; border-radius:inherit; }
@@ -70,14 +72,14 @@
 .ds-stage :is(button,input,select,textarea):disabled { opacity:.45; cursor:not-allowed; }
 .ds-stage :is(button,[role=button]):not(:disabled):active { transform:scale(.98); }
 .ds-stage .demo-controls { flex-wrap:wrap; gap:8px; }
-:host(:not([data-interactive])) .demo-root.ds-stage { aspect-ratio:4/3; min-height:0; padding:16px; }
+:host(:not([data-interactive])) .demo-root.ds-stage { aspect-ratio:auto; min-height:75cqi; padding:16px; }
 :host(:not([data-interactive])) .ds-stage > :is(.canvas,.stage,.guide-card-stage) { min-height:0; padding:0; }
 :host(:not([data-interactive])) .ds-hint { display:none; }
 @media(min-width:768px) and (max-width:1023px) {
-  :host([data-interactive]) .demo-root.ds-stage { aspect-ratio:3/2; min-height:300px; padding:24px; }
+  :host([data-interactive]) .demo-root.ds-stage { aspect-ratio:auto; min-height:max(300px,66.667cqi); padding:24px 24px 76px; }
 }
 @media(max-width:767px) {
-  :host([data-interactive]) .demo-root.ds-stage { aspect-ratio:4/3; min-height:260px; padding:16px; }
+  :host([data-interactive]) .demo-root.ds-stage { aspect-ratio:auto; min-height:max(260px,75cqi); padding:16px 16px 76px; }
   :host([data-interactive]) .ds-stage :is(button,input:not([type=checkbox]):not([type=radio]),select,textarea) { min-height:44px; }
   :host([data-interactive]) .ds-stage :is(button,[role=button]) { min-width:44px; }
   .ds-surface { padding:16px; }
@@ -94,3 +96,30 @@
 /* Only moving overlay layers are clipped to the stage; content stays intrinsic. */
 .ds-stage > .ds-overlays{position:absolute;inset:0;overflow:clip;border-radius:inherit;pointer-events:none;z-index:20}
 .ds-overlays > :is(.modal-mask,.drawer-mask,.drawer-panel,.cmdk-mask){pointer-events:auto}
+
+/* Type responds to the actual stage width, including embedded previews. */
+@container (min-width:768px) {
+  .demo-root.ds-stage {
+    --ds-demo-body:16px; --ds-demo-heading:22px; --ds-demo-title:24px;
+    --ds-demo-button:15px; --ds-demo-control:48px;
+  }
+}
+
+/* Sample wrappers keep every hint relative to the outer stage. The bottom
+   padding reserves 64px for a two-line capsule plus its 12px edge offset. */
+.demo-root.ds-stage[data-ds-sample] > :is(.canvas,.stage,.guide-card-stage) {
+  position:static; padding-bottom:0;
+}
+.demo-root.ds-stage[data-ds-sample] .ds-hint { flex-basis:auto; }
+
+.ds-stage[data-ds-sample] :is(.ds-button-heading,.ds-lift-details,.ds-scene-copy) { gap:8px; }
+.ds-stage[data-ds-sample] .ds-button-grid { gap:12px; }
+
+/* The desktop detail column is about 725px at a 1440px viewport. Keep its
+   specimen readable even while the adjacent use card shares the page. */
+@media(min-width:1024px) {
+  :host([data-interactive]) .demo-root.ds-stage {
+    --ds-demo-body:16px; --ds-demo-heading:22px; --ds-demo-title:24px;
+    --ds-demo-button:15px; --ds-demo-control:48px;
+  }
+}

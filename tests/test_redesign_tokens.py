@@ -101,8 +101,18 @@ class RedesignTokensTest(unittest.TestCase):
             self.assertIn('--ds-ease-' + name + ':',css)
         for cls in ['stage','surface','hint','caption','img']:
             self.assertIn('.ds-' + cls,css)
-        for ratio in ['16/10','3/2','4/3']:
-            self.assertIn('aspect-ratio:' + ratio,css)
+        for lower_bound in ['max(320px,62.5cqi)','max(300px,66.667cqi)','max(260px,75cqi)']:
+            self.assertIn('min-height:' + lower_bound,css)
+        self.assertNotRegex(css, r'aspect-ratio:(?:16/10|3/2|4/3)')
+        self.assertIn('aspect-ratio:auto',css)
+        self.assertIn('--ds-subject-width:clamp(320px,52%,640px)',css)
+        self.assertIn('@container (min-width:768px)',css)
+        self.assertIn('--ds-demo-body:16px',css)
+        self.assertIn('--ds-demo-heading:22px',css)
+        self.assertIn('--ds-demo-button:15px',css)
+        self.assertIn('--ds-demo-control:48px',css)
+        self.assertIn('inset:auto auto 12px 12px!important',css)
+        self.assertIn('padding:16px 16px 76px',css)
         self.assertIn('0 0/24px 24px',css)
         self.assertIn('overflow:visible',css)
         self.assertNotIn('demo-spec.css', (REDESIGN/'templates.py').read_text().split('ASSETS =',1)[-1].split('\n\n',1)[0])
@@ -112,7 +122,53 @@ class RedesignTokensTest(unittest.TestCase):
             contrast = runpy.run_path(str(ROOT/'docs/style-research/contrast.py'))['cr']
         css = (REDESIGN/'demo-spec.css').read_text()
         colors=dict(re.findall(r'--ds-([\w-]+):\s*(#[\da-fA-F]{6})',css))
+        self.assertGreaterEqual(contrast('#FFFFFF','#666666'),4.5)
         for fg,bg,minimum in [('ink-2','stage',7),('ink-3','surface',4.5),
                                ('surface','accent',7),('border','surface',3),
                                ('success','success-soft',4.5),('danger','danger-soft',4.5)]:
             self.assertGreaterEqual(contrast(colors[fg],colors[bg]),minimum,(fg,bg))
+
+    def test_batch_b_specimen_styles_and_motion_contracts(self):
+        skins=REDESIGN/'demo-skins'
+        expected={
+            'ui-modal':['rgb(17 24 39 / .45)','backdrop-filter:blur(4px)','var(--ds-shadow-3)','justify-content:flex-end','font-size:20px'],
+            'ui-tooltip':['background:#111827','color:#fff','13px/1.5','border-radius:8px','border-top-color:#111827'],
+            'motion-scroll-reveal':['translateY(16px)','360ms var(--ds-ease-out)','ds-revealed','prefers-reduced-motion'],
+            'guide-grid':['repeat(auto-fit,minmax(min(100%,128px),1fr))','gap:16px','gap:24px','height:auto'],
+            'ui-skeleton':['background:#E9EBEF','rgb(255 255 255 / .75)','var(--ds-surface)','is-loaded'],
+            'ui-carousel':['border-radius:16px','var(--ds-shadow-2)','width:24px','var(--ds-accent)','min-height:44px'],
+        }
+        for skin,contracts in expected.items():
+            css=(skins/(skin+'.css')).read_text()
+            for contract in contracts:self.assertIn(contract,css,skin)
+            self.assertNotRegex(css,r'rgba\(0,0,0,')
+        source=(REDESIGN/'demos.py').read_text()
+        self.assertIn('setTimeout(finishSkeleton,1400)',source)
+        self.assertIn("setAttribute('aria-busy','false')",source)
+        self.assertIn("rect.top<viewport.bottom-16",source)
+
+    def test_subject_width_and_mobile_clearance_calculations(self):
+        # Mirrors border-box stage padding and the public clamp, with no browser.
+        for stage,padding in [(342,16),(358,16),(390,16),(725.333,32),(768,32),(960,32),(1200,32),(1440,32)]:
+            inner=stage-2-2*padding
+            subject=min(inner,max(320,min(inner*.52,640)))
+            self.assertLessEqual(subject,inner)
+            self.assertGreaterEqual((stage-subject)/2,16)
+            if 725<=stage<=1440:self.assertTrue(.45<=subject/inner<=.60)
+        # Two lines of 12px/1.5 text + capsule padding/border + bottom offset.
+        hint_height=2*12*1.5+2*6+2
+        self.assertLessEqual(hint_height+12+12,76)
+
+    def test_detail_widths_choose_readable_type_and_grid_columns(self):
+        desktop_stage=((1184-64)-32)*2/3
+        mobile_stage=390-32
+        def card_width(stage,padding):
+            return min(stage-2*padding-2,max(320,min(640,(stage-2*padding-2)*.52)))
+        desktop_card=card_width(desktop_stage,32)
+        mobile_card=card_width(mobile_stage,16)
+        self.assertAlmostEqual(desktop_card,342.8533333)
+        self.assertEqual(mobile_card,320)
+        self.assertEqual(int((desktop_card-50+16)/(128+16)),2)
+        self.assertEqual(int((mobile_card-50+16)/(128+16)),1)
+        css=(REDESIGN/'demo-spec.css').read_text()
+        self.assertIn('@media(min-width:1024px)',css)

@@ -1,7 +1,7 @@
 /* Headless-only acceptance check. Build dist first; this script never builds it.
  * NODE_PATH=/Users/zhiguang/Downloads/Kreator/node_modules node tests/demo_redesign_headless.cjs
  * DEMO_URL may point at an existing local server (including its deployment prefix).
- * SHOTS_DIR overrides the sandbox-safe output/demo-redesign/A screenshot folder.
+ * SHOTS_DIR overrides the sandbox-safe output/demo-redesign/AB screenshot folder.
  */
 'use strict';
 const assert = require('node:assert/strict');
@@ -13,9 +13,13 @@ try { playwright = require('playwright'); }
 catch { playwright = require('/Users/zhiguang/Downloads/Kreator/node_modules/playwright'); }
 const workspace = path.resolve(__dirname, '..');
 const dist = path.join(workspace, 'dist');
-const shots = path.resolve(process.env.SHOTS_DIR || path.join(workspace, 'output/demo-redesign/A'));
+const shots = path.resolve(process.env.SHOTS_DIR || path.join(workspace, 'output/demo-redesign/AB'));
 const reportPath = path.join(workspace, 'output/demo-redesign/headless-report.json');
-const routes = ['components/button/', 'components/input/', 'interactions/component-lift/', 'interactions/view-crossfade/'];
+const routes = [
+  'components/button/', 'components/input/', 'interactions/component-lift/', 'interactions/view-crossfade/',
+  'components/modal/', 'components/tooltip/', 'interactions/scroll-reveal/', 'basics/grid/',
+  'components/skeleton/', 'components/carousel/'
+];
 const galleries = ['basics/', 'components/', 'interactions/', 'scenarios/', 'ai/'];
 const report = {started: new Date().toISOString(), checks: [], failures: [], pageErrors: [], resourceErrors: [], screenshots: [], galleries: []};
 const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.avif':'image/avif','.woff2':'font/woff2'};
@@ -210,6 +214,66 @@ async function crossfadeChecks(page, label) {
   await page.waitForTimeout(800); const final = await layers();
   await check(`${label}: rapid toggle settles`, () => {assert.equal(final.filter(l=>l.hidden==='false'&&l.opacity>.98).length,1); assert.equal(final.filter(l=>l.hidden==='true'&&l.opacity<.02).length,1); assert.equal(final[0].hidden,initial[0].hidden); return final;});
 }
+async function specimenGeometry(page) {
+  const result=await page.locator('.demo-scope[data-interactive]').first().evaluate(scope=>{
+    const root=scope.shadowRoot.querySelector('.ds-stage');
+    const subject=root.querySelector('.ds-surface,.lift-card,.mini-scroll,.carousel');
+    const hint=root.querySelector('.ds-hint');
+    const r=root.getBoundingClientRect(),s=subject.getBoundingClientRect(),h=hint.getBoundingClientRect();
+    const style=getComputedStyle(root);
+    const inner=r.width-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)-2;
+    return {stage:r.width,subject:s.width,ratio:s.width/inner,left:s.left-r.left,right:r.right-s.right,
+      hintLeft:h.left-r.left,hintBottom:r.bottom-h.bottom,hintRight:r.right-h.right,clearance:h.top-s.bottom};
+  });
+  assert.ok(result.left>=15.5&&result.right>=15.5,JSON.stringify(result));
+  assert.ok(Math.abs(result.hintLeft-13)<=1.1&&Math.abs(result.hintBottom-13)<=1.1,JSON.stringify(result));
+  assert.ok(result.hintRight>=11.5&&result.clearance>=11.5,JSON.stringify(result));
+  if(result.stage>=640)assert.ok(result.ratio>=.45&&result.ratio<=.60,JSON.stringify(result));
+  return result;
+}
+async function batchBChecks(page, route, label, mobile) {
+  const scope=page.locator('.demo-scope[data-interactive]').first();
+  if (route.includes('/modal/')) {
+    await scope.locator('[data-cmd="openModal"]').click();
+    await scope.locator('[role="dialog"]').waitFor({state:'visible'});
+    assert.equal(await scope.locator('.modal-actions button').count(),2);
+    const file=path.join(shots,`modal-open-${mobile?390:1440}.png`);
+    await page.locator('.demo-stage').first().screenshot({path:file});report.screenshots.push(file);
+    await page.keyboard.press('Escape');
+    await scope.locator('[role="dialog"]').waitFor({state:'hidden'});
+  }
+  if (route.includes('/tooltip/')) {
+    const trigger=scope.locator('[data-tooltip-trigger]');
+    if(mobile)await trigger.tap();else await trigger.hover();
+    await scope.locator('[role="tooltip"]').waitFor({state:'visible'});
+    assert.equal(await scope.locator('[role="tooltip"]').evaluate(node=>getComputedStyle(node).fontSize),'13px');
+    if(mobile){await trigger.tap();await scope.locator('[role="tooltip"]').waitFor({state:'hidden'});await trigger.tap();}
+  }
+  if (route.includes('/scroll-reveal/')) {
+    await scope.locator('.mini-scroll').evaluate(node=>{for(const card of node.querySelectorAll('.ds-reveal-card')){node.scrollTop=card.offsetTop-16;node.dispatchEvent(new Event('scroll'));}});
+    await page.waitForTimeout(400);
+    assert.equal(await scope.locator('.ds-reveal-card.ds-revealed').count(),3);
+  }
+  if (route.includes('/grid/')) {
+    await scope.locator('[data-guide-mode="1"]').click();
+    assert.equal(await scope.locator('.guide-card-stage').getAttribute('data-mode'),'1');
+    await scope.locator('[data-guide-mode="0"]').click();
+    assert.equal(await scope.locator('.ds-grid-card').count(),6);
+  }
+  if (route.includes('/skeleton/')) {
+    await scope.locator('.ds-skeleton-card.is-loaded').waitFor();
+    assert.equal(await scope.locator('.ds-skeleton-card').getAttribute('aria-busy'),'false');
+    assert.equal(await scope.locator('.ds-skeleton-content').getAttribute('aria-hidden'),'false');
+  }
+  if (route.includes('/carousel/')) {
+    await scope.locator('#carPause').click();
+    assert.equal(await scope.locator('#carPause').getAttribute('aria-pressed'),'true');
+    await scope.locator('#carNext').click();
+    assert.equal(await scope.locator('#carDots button').nth(1).getAttribute('aria-current'),'true');
+    await scope.locator('#carPrev').click();
+    assert.equal(await scope.locator('#carDots button').first().getAttribute('aria-current'),'true');
+  }
+}
 async function reducedChecks(page, url, label) {
   await page.emulateMedia({reducedMotion:'reduce'}); await ready(page,url);
   await check(`${label}: reduced motion idle`, async () => {
@@ -263,6 +327,7 @@ function catalogInventory() {
       const label=`${width} ${route}`, url=new URL(route,base).href;
       await check(`${label}: visit and audit`, async () => {
         await ready(page,url); const audit=await page.evaluate(layoutAudit);
+        audit.specimen=await specimenGeometry(page);
         const stageFile=path.join(shots,`${route.replaceAll('/','-').replace(/-$/,'')}-${width}-stage.png`);
         await page.locator('.demo-stage').first().screenshot({path:stageFile}); report.screenshots.push(stageFile);
         assert.equal(audit.pageOverflow,false); assert.deepEqual(audit.failures,[]); assert.ok(audit.scopeCount>0);
@@ -273,6 +338,7 @@ function catalogInventory() {
         if(route.includes('/input/')) await inputChecks(page,label);
         if(route.includes('component-lift')) await liftChecks(page,label,width===390);
         if(route.includes('view-crossfade')) await crossfadeChecks(page,label);
+        await batchBChecks(page,route,label,width===390);
       });
       await check(`${label}: screenshot`, async () => {
         const file=path.join(shots,`${route.replaceAll('/','-').replace(/-$/,'')}-${width}.png`);

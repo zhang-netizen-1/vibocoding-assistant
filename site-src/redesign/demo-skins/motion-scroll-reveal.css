@@ -1,0 +1,18 @@
+.stage.ds-reveal-demo[data-effect="scroll-reveal"]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-height:0;--p:0}
+.stage.ds-reveal-demo .mini-scroll{position:relative;width:min(100%,var(--ds-subject-width));height:380px;max-height:none;padding:16px;background:var(--ds-surface);border:1px solid rgb(17 24 39 / .08);border-radius:16px;box-shadow:var(--ds-shadow-1);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;text-align:left;scrollbar-color:var(--ds-border) transparent;scrollbar-width:thin}
+.ds-reveal-demo .scroll-top{height:auto;padding:8px 0;font:400 12px/1.5 var(--ds-font);color:var(--ds-ink-2);text-align:center}
+.ds-reveal-demo .scroll-spacer{height:160px}
+.ds-reveal-demo .scroll-spacer.end{height:32px}
+.stage.ds-reveal-demo .mini-scroll .ds-reveal-card{display:block;width:100%;margin:0 0 16px;padding:0;min-height:0;border:1px solid var(--ds-line);border-radius:12px;background:var(--ds-surface);color:var(--ds-ink);overflow:hidden;text-align:left;opacity:1;transform:none;transition:opacity 360ms var(--ds-ease-out),transform 360ms var(--ds-ease-out)}
+.stage.ds-reveal-demo .mini-scroll.reveal-ready .ds-reveal-card{opacity:0;transform:translateY(16px)}
+.stage.ds-reveal-demo .mini-scroll.reveal-ready .ds-reveal-card.ds-revealed{opacity:1;transform:translateY(0)}
+.ds-reveal-card .ds-img{height:auto;aspect-ratio:16/9;object-position:50% 48%;border-radius:11px 11px 0 0}
+.ds-reveal-copy{padding:16px}
+.ds-reveal-copy strong{font-size:var(--ds-demo-heading);line-height:1.4;font-weight:600}
+.ds-reveal-copy p{margin:8px 0 0;color:var(--ds-ink-2);font-size:var(--ds-demo-body);line-height:1.6}
+.stage.ds-reveal-demo .scroll-meter{width:min(100%,var(--ds-subject-width));height:4px;background:var(--ds-accent-100);border:0;border-radius:999px}
+.ds-reveal-demo .scroll-meter i{background:var(--ds-accent)}
+@media(prefers-reduced-motion:reduce){.stage.ds-reveal-demo .mini-scroll.reveal-ready .ds-reveal-card{opacity:1;transform:none!important;transition:none}}
+:host(:not([data-interactive])) .stage.ds-reveal-demo .mini-scroll{height:260px;padding:12px}
+:host(:not([data-interactive])) .ds-reveal-demo .scroll-spacer{height:0}
+:host(:not([data-interactive])) .ds-reveal-copy p{display:none}

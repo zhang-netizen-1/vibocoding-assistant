@@ -1,0 +1,17 @@
+<div class="canvas ds-modal-demo">
+  <div class="ds-surface ds-modal-preview">
+    <img class="ds-img" src="{{demo-assets}}/lounge-window-01-640.webp" srcset="{{demo-assets}}/lounge-window-01-640.webp 640w, {{demo-assets}}/lounge-window-01-1280.webp 1280w" sizes="(max-width:767px) 90vw, 52vw" width="1280" height="724" alt="落地窗前的城市客厅" style="background:#5D6566">
+    <div class="ds-modal-preview-copy"><strong>空间灵感集</strong><p>整理与分享你的设计参考。</p><button type="button" class="btn btn-pri" data-cmd="openModal">打开弹窗</button></div>
+  </div>
+  <span class="ctl ds-hint">点击按钮，查看确认弹窗</span>
+</div>
+<div class="modal-mask" id="modal">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+    <h3 id="modal-title">确认操作</h3>
+    <p id="modal-desc">你确定要执行这个操作吗？这是一个模态弹窗（Modal）。</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" data-cmd="closeModal">取消</button>
+      <button type="button" class="btn btn-pri" data-cmd="closeModal" data-arg="确定 ✓">确定</button>
+    </div>
+  </div>
+</div>

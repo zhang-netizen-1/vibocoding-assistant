@@ -477,8 +477,8 @@ class DemoSpecBuildTest(unittest.TestCase):
                 total+=1
         self.assertEqual(total,194)
 
-    def test_four_skin_contracts_and_relative_image_urls_at_every_depth(self):
-        for slug in ['button','input','component-lift','view-crossfade']:
+    def test_ten_skin_contracts_and_relative_image_urls_at_every_depth(self):
+        for slug in ['button','input','component-lift','view-crossfade','modal','tooltip','scroll-reveal','grid','skeleton','carousel']:
             entry=next(e for e in self.entries if e['slug']==slug)
             for prefix in ['./assets/redesign/','../assets/redesign/','../../assets/redesign/','../../../assets/redesign/']:
                 html=self.demos.markup(entry['demo'],prefix,True,slug)
@@ -511,11 +511,52 @@ class DemoSpecBuildTest(unittest.TestCase):
                 self.assertEqual(source.one(cls='stage').attrs['data-effect'],slug)
                 self.assertEqual(source.one(cls='lift-card').tag,'button')
                 self.assertEqual(len(source.find_all('img')),1)
-            else:
+            elif slug=='view-crossfade':
                 stack=source.one(cls='scene-stack')
                 self.assertEqual(len(stack.find_all(cls='mini-view')),2)
                 self.assertEqual(len(stack.find_all('img')),2)
                 self.assertEqual(source.one('button').attrs['data-action'],'next')
+
+    def test_batch_b_original_hooks_and_real_content(self):
+        roots={}
+        for slug in ['modal','tooltip','scroll-reveal','grid','skeleton','carousel']:
+            entry=next(e for e in self.entries if e['slug']==slug)
+            html=self.demos.markup(entry['demo'],'../../assets/redesign/',True,slug)
+            roots[slug]=self.Document(html).root
+            self.assertEqual(html.count('ds-hint-icon'),1,slug)
+            self.assertIn('data-ds-sample',html)
+        modal=roots['modal']
+        self.assertEqual(modal.one(cls='modal-mask').attrs['id'],'modal')
+        dialog=modal.one(cls='modal-box')
+        self.assertEqual(dialog.attrs['role'],'dialog')
+        self.assertEqual(dialog.attrs['aria-labelledby'],'modal-title')
+        self.assertEqual([n.attrs['data-cmd'] for n in modal.find_all('button')],['openModal','closeModal','closeModal'])
+        tooltip=roots['tooltip']
+        self.assertEqual(tooltip.one(cls='bubble').attrs['role'],'tooltip')
+        self.assertEqual(tooltip.one('button').attrs['aria-describedby'],'share-tooltip')
+        self.assertEqual(tooltip.one('button').attrs['aria-label'],'分享')
+        scroll=roots['scroll-reveal']
+        self.assertEqual(scroll.one(cls='stage').attrs['data-effect'],'scroll-reveal')
+        self.assertEqual(len(scroll.find_all(cls='reveal-target')),3)
+        self.assertEqual(len(scroll.find_all('img')),3)
+        self.assertIsNotNone(scroll.one(cls='scroll-meter'))
+        grid=roots['grid']
+        self.assertEqual(grid.one(cls='guide-card-stage').attrs['data-demo'],'grid')
+        self.assertEqual(len(grid.find_all(cls='ds-grid-card')),6)
+        self.assertEqual(len(grid.find_all('img')),6)
+        self.assertEqual([n.attrs['data-guide-mode'] for n in grid.find_all('button')],['0','1'])
+        skeleton=roots['skeleton']
+        self.assertEqual(skeleton.one(cls='skeleton').attrs['aria-busy'],'true')
+        self.assertEqual(len(skeleton.find_all(cls='sk')),4)
+        self.assertEqual(len(skeleton.find_all('img')),1)
+        self.assertEqual(skeleton.one(cls='ds-skeleton-content').attrs['aria-hidden'],'true')
+        carousel=roots['carousel']
+        ids={n.attrs.get('id') for n in carousel.find_all()}
+        self.assertTrue({'carTrack','carPrev','carNext','carDots','carPause'}<=ids)
+        self.assertEqual(len(carousel.find_all(cls='car-slide')),3)
+        self.assertEqual([n.attrs['aria-current'] for n in carousel.one(cls='car-dots').find_all('button')],['true','false','false'])
+        for index,image in enumerate(carousel.find_all('img'),1):
+            self.assertIn(f'garden-dusk-0{index}',image.attrs['src'])
 
     def test_manifest_images_are_byte_identical_and_have_declared_sizes(self):
         manifest=json.loads((ROOT/'site-src/demo-assets/manifest.json').read_text())

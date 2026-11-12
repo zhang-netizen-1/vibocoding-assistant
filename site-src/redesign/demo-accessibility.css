@@ -151,8 +151,5 @@
 .demo-root.ds-stage .ds-hint ~ .ds-hint {display:none}
 @media(max-width:767px){:host([data-interactive]) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:44px}}
 
-/* Sample content reserves room for hints anchored to the public stage. */
-.demo-root.ds-stage :is(.ds-button-demo,.ds-input-demo,.ds-lift-demo,.ds-crossfade-demo){position:static;padding-bottom:48px}
-.demo-root.ds-stage .ds-hint{position:absolute;inset:auto auto 16px 16px;max-width:calc(100% - 32px);margin:0;align-self:auto}
-@media(max-width:767px){:host([data-interactive]) .demo-root.ds-stage :is(.ds-button-demo,.ds-input-demo,.ds-lift-demo,.ds-crossfade-demo){padding-bottom:64px}}
-:host(:not([data-interactive])) .demo-root.ds-stage :is(.ds-button-demo,.ds-input-demo,.ds-lift-demo,.ds-crossfade-demo){padding-bottom:0}
+/* Sample hint positioning and reserved space are owned by demo-spec.css. */
+.demo-root.ds-stage[data-ds-sample] :is(.ds-button-demo,.ds-input-demo,.ds-lift-demo,.ds-crossfade-demo){position:static;padding-bottom:0}
