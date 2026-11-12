@@ -112,3 +112,20 @@ node tests/demo_redesign_headless.cjs
 ```
 
 若已有独立服务，可提供 `DEMO_URL=http://127.0.0.1:4182/vibocoding-assistant/` 验证部署子路径，脚本禁止 4180 和 4181。也支持以 `DEMO_URL=file:///.../dist/` 读取文件，但仍需环境允许启动 Headless Chromium。
+
+## A 段返工
+
+2026-11-13，根据窄屏截图反馈修订公共舞台与样板皮肤。
+
+- 公共提示胶囊改为流式布局的最后一项，按实际换行高度占位，与内容至少相隔 12px。覆盖后加载的绝对定位及样板底部固定留白。旧版横排 canvas 为提示单独换行。舞台保留手机 16px 内边距，直接内容禁止 flex 收缩，容器保持自然高度和可见溢出。
+- 点阵调整为 `rgb(17 24 39 / .07)`，点直径 1px，间距 20px，仅绘制于公共舞台背景。白色承托面保持不透明。
+- component-lift 卡片以更高优先级的 `1px solid var(--ds-line)` 覆盖公共控件边框，并消除旧版 micro-card 内边距。静止和悬停分别沿用 `--ds-shadow-1`、`--ds-shadow-2`，保留上浮交互。图片容器顶部圆角为 15px，对应外层 16px 减去 1px 边框，图片继承该圆角。
+- 邮箱浮动标签与姓名标签统一为 13px、500 字重，明确标签的显示、层级与 44px 容器高度。空值静止时显示在框内，聚焦或有内容时上浮，保留 `input + .fflabel` 关系。补充邮箱 label 与 input 的显式关联。说明文字按输入框宽度左对齐。
+- 其他旧演示继续沿用现有主体样式。公共层的可见溢出与提示占位适用于全部演示。
+
+验证结果如下。
+
+- `PYTHONDONTWRITEBYTECODE=1 python3 -B scripts/build_site.py` 通过，输出 217 页、192 条目。
+- `PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tests -p test_site_build.py` 通过，共 21 项。
+- 修改的 CSS 经 PostCSS 解析通过。
+- 本轮 Headless Chromium 启动被沙箱拒绝，错误为 `MachPortRendezvousServer ... Permission denied (1100)`。390px 截图、实际提示间距及全部演示的浏览器几何尚待视觉复核。

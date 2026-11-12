@@ -37,24 +37,30 @@
   position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center;
   gap:24px; width:100%; min-width:0; min-height:320px; height:auto; aspect-ratio:16/10;
   padding:32px; border:1px solid var(--ds-line); border-radius:12px;
-  background:radial-gradient(circle,rgb(17 24 39 / .05) 1px,transparent 1px) 0 0/24px 24px var(--ds-stage);
+  background:radial-gradient(circle,rgb(17 24 39 / .07) .5px,transparent .5px) 0 0/20px 20px var(--ds-stage);
   color:var(--ds-ink); box-shadow:none; font:14px/1.6 var(--ds-font); overflow:visible;
 }
 .ds-stage > :is(.canvas,.stage,.guide-card-stage) {
   width:100%; min-width:0; min-height:0; height:auto; max-width:100%;
   background:none; background-image:none; border:0; border-radius:0; box-shadow:none;
-  padding:0; overflow:visible;
+  padding:0; overflow:visible; flex-shrink:0;
 }
-.ds-stage > :is(.canvas,.stage):has(.ds-hint) { padding-bottom:48px; }
+.demo-root.ds-stage > :is(.canvas,.stage):has(> .ds-hint) {
+  padding-bottom:0!important; row-gap:12px; flex-wrap:wrap;
+}
+.demo-root.ds-stage > :is(.canvas,.stage) > * { flex-shrink:0; }
 .ds-surface { background:var(--ds-surface); border:1px solid rgb(17 24 39 / .08); border-radius:16px; box-shadow:var(--ds-shadow-1); padding:24px; min-width:0; max-width:100%; }
-.ds-stage .ds-hint {
-  position:absolute; inset:auto auto 0 0; width:max-content; max-width:100%; margin:0;
+.demo-root.ds-stage .ds-hint {
+  position:static!important; inset:auto!important; width:fit-content; max-width:100%!important;
+  margin:12px 0 0!important; order:999; flex-shrink:0; grid-column:1/-1;
+  align-self:flex-start!important; transform:none;
   display:flex; align-items:center; gap:8px; padding:6px 12px;
   background:var(--ds-surface); color:var(--ds-ink-2); border:1px solid var(--ds-line);
   border-radius:999px; font:400 12px/1.5 var(--ds-font); white-space:normal; text-align:left;
   pointer-events:none; letter-spacing:0;
 }
-.ds-stage > .ds-hint { inset:auto auto 16px 16px; max-width:calc(100% - 32px); }
+/* Row-based legacy canvases give their hint a separate final line. */
+.demo-root.ds-stage > .canvas:not(.ds-button-demo):not(.ds-input-demo):has(> .ds-hint) > .ds-hint { flex-basis:100%; }
 .ds-hint-icon { color:var(--ds-accent); flex:none; font-size:12px; }
 .ds-caption { font:400 12px/1.5 var(--ds-font); color:var(--ds-ink-2); }
 .ds-img { display:block; width:100%; max-width:100%; height:auto; object-fit:cover; border-radius:inherit; }
