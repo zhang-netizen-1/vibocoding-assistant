@@ -115,3 +115,24 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
 - 再往后：
   - components 还剩：navigation 的 sidebar、accordion、breadcrumb、pagination、steps、footer、dropdown、mega-menu、context-menu、cmdk；content 的 badge、chip、badge-dot、timeline、kpi、avatar、view-switch、card-link；tables 的其余条目；actions 的 split-button、fab、back-to-top。
   - interactions 的 component、text、data、overlay、mobile、cursor、background 分组。
+
+## 第 7 段（02:35–03:10）
+- 7105fd4（F 段）：19 条单独精修，审过改前改后截图后提交。对比图在 box：`contact_sheet_F1.jpg`、`contact_sheet_F2.jpg`，改后截图在 Mac `shots/after5`。
+  - forms 14 条：checkbox、radio、slider、otp、search、segmented、password-strength、tag-input、stepper、rating、upload、combobox、date、form。
+  - feedback 5 条：alert、empty、loader、drawer、popover。
+  - 全部用了真实场景标题和说明（如「通知与登录设置」「选择工作室方案」「填写收货地址」），层级一致。
+- **单独精修累计 49 / 192**。
+- **G 段 Codex 正在跑**：03:02 启动，约 03:28 结束。说明在 `codex_brief_G.md`，日志在 `codex_log_G.txt`。
+  - 第一项是全局修复：390 宽下主体离舞台四边至少 16px，解决之前离上边只有约 4px 的问题。
+  - 然后精修 navigation 10 条、content 8 条、actions 3 条、tables 5 条，共 26 条。
+  - 改前截图已拍好，在 `shots/before6`，脚本 `shoot6.cjs`，里面也包含 hold-confirm 和 states，用来核对间距修复。
+  - **下一段开头**：确认 G 段已结束，运行 `node shoot6.cjs http://127.0.0.1:4181/vibocoding-assistant/ shots/after6`，再用 `mksheet.sh` 生成对比图，审过后提交。
+- 剩余时间安排：
+  - 03:30–04:10：审 G 段，然后跑 H 段。H 段做 interactions 的 component、text、data、overlay 分组。
+  - 04:10–04:50：审 H 段；只在时间够时再跑 I 段（interactions 的 mobile、cursor、background、media、scroll，加 interactions/rules）。
+  - **04:50–05:30 必须做完整验证**：
+    - 跑全部测试；
+    - 全站页面在 1440 / 768 / 390 三种宽度下检查溢出和报错（`allpages.cjs`）；
+    - 189 个旧链接的跳转（`tests/test_old_anchors.py` 和相关 headless 测试）；
+    - 口语别名命中（`tests/search_queries.cjs`）；
+    - 生成 `/workspace/bench/demo-redesign/morning_summary.jpg`：挑 16 组最好的改前改后对比，4 列 × 8 行，每格是改前 1440 和改后 1440。
