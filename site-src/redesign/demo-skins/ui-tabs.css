@@ -7,3 +7,8 @@
 .demo-root .ds-tabs-panel .tabs .tab:hover { color:var(--ds-accent); background:var(--ds-accent-50); }
 .demo-root .ds-tabs-panel .tab-panel { display:flex; align-items:center; width:100%; min-height:120px; padding:24px 0 8px; color:var(--ds-ink); font:400 14px/1.6 var(--ds-font); }
 @container demo-stage (max-width:480px) { .ds-tabs-panel { padding:16px; } }
+
+@container demo-stage (max-width:240px) {
+  .demo-root .ds-tabs-panel .tabs { flex-wrap:wrap; gap:4px; }
+  .demo-root .ds-tabs-panel .tabs .tab { flex:1 1 44px; min-width:0; max-width:100%; padding:8px 4px; white-space:normal; }
+}

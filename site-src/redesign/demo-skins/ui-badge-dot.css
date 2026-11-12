@@ -19,3 +19,10 @@
 .ds-badge-dot-panel .bdg .num { min-width:28px; min-height:20px; padding:0 4px; border:2px solid var(--ds-surface); border-radius:999px; background:var(--ds-danger); color:var(--ds-surface); font:500 12px/1.5 var(--ds-font); }
 .ds-badge-dot-panel .bdg .dot { width:12px; height:12px; border:2px solid var(--ds-surface); background:var(--ds-danger); }
 .ds-badge-dot-panel .bd-lbl { margin-top:12px; color:var(--ds-ink-2); font-size:12px; }
+
+@container demo-stage (max-width:240px) {
+  .ds-badge-dot-panel .bd-demo { flex-wrap:wrap; gap:12px; }
+  .ds-badge-dot-panel .bd-demo > div { flex:0 1 100%; min-width:0; text-align:center; }
+  .ds-badge-dot-panel .bdg { max-width:100%; }
+  .ds-badge-dot-panel .bdg .num { right:-4px; box-sizing:border-box; }
+}

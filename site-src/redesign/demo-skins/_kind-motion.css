@@ -12,3 +12,11 @@
 [data-ds-kind="motion"] .mini-menu:has(> .menu-items:not([hidden])) { min-height:181px; }
 /* The preview ends at 146px below its positioned parent's top edge. */
 [data-ds-kind="motion"] .hvp-stage { min-height:152px; }
+
+@container demo-stage (max-width:240px) {
+  .demo-root[data-ds-kind="motion"] .stage[data-effect="view-shared"] .shared-box .shared-chip { width:calc(100% - 16px); max-width:140px; }
+  .demo-root[data-ds-kind="motion"] .stage[data-effect="view-shared"] .shared-box.open .shared-chip { left:16px; width:calc(100% - 32px); max-width:220px; }
+  .demo-root[data-ds-kind="motion"] .stage[data-effect="view-shared"] .shared-chip > :is(strong,span) { min-width:0; max-width:100%; }
+  .demo-root[data-ds-kind="motion"] .stage[data-effect="cursor-object-follow"] .obj-stage { width:100%; min-width:0; padding-inline:8px; }
+  .demo-root[data-ds-kind="motion"] .stage[data-effect="cursor-object-follow"] .obj-card { width:min(150px,100%); min-width:0; }
+}

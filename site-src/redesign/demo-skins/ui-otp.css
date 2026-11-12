@@ -25,3 +25,7 @@
 .ds-otp-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
 .ds-otp-panel :is(input,button)[aria-invalid="true"]~.ds-note { color:var(--ds-danger); }
 @media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-otp-panel :is(input,button) { transition:none; transform:none; } }
+
+@container demo-stage (max-width:240px) {
+  .ds-otp-panel .otp-row { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}

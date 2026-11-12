@@ -237,11 +237,16 @@ async function liftChecks(page, label, mobile) {
   const original = await settledSnapshot();
   if (mobile) {
     assert.equal(await card.getAttribute('aria-pressed'),'false');
-    await card.tap(); const lifted = await settledSnapshot();
+    // A tap is a pointer sequence (:active, then click); wait until the click's
+    // touch-open state has taken effect before sampling the settled transform.
+    await card.tap(); await card.evaluate((node, before) => new Promise(resolve => {
+      const end = performance.now() + 1500;
+      (function poll() { if (getComputedStyle(node).transform !== before || performance.now() > end) resolve(); else requestAnimationFrame(poll); })();
+    }), original.transform); const lifted = await settledSnapshot();
     assert.equal(await card.getAttribute('aria-pressed'),'true');
     await card.tap(); const restored = await settledSnapshot();
     assert.equal(await card.getAttribute('aria-pressed'),'false');
-    await check(`${label}: mobile tap toggle`, () => {assert.notEqual(lifted.transform,original.transform); assert.equal(restored.transform,original.transform); return {original,lifted,restored};});
+    await check(`${label}: mobile tap toggle`, () => {const flat = value => (value === 'none' ? 'matrix(1, 0, 0, 1, 0, 0)' : value).replace(/-?\d+(\.\d+)?(e-?\d+)?/g, n => String(Math.round(Number(n) * 100) / 100 || 0)); assert.notEqual(flat(lifted.transform),flat(original.transform)); assert.equal(flat(restored.transform),flat(original.transform)); return {original,lifted,restored};});
   } else {
     await card.hover();
     await check(`${label}: hover lift`, async () => {const lifted = await settledSnapshot(); assert.notEqual(lifted.transform,original.transform); assert.notEqual(lifted.shadow,original.shadow); return lifted;});

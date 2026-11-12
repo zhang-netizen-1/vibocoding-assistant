@@ -6,3 +6,14 @@
 [data-ds-kind="token"] .space-ruler { color:var(--ds-ink-2); background-color:var(--ds-fill); border-radius:6px; }
 [data-ds-kind="token"] output { color:var(--ds-ink-2); font-size:12px; }
 @container demo-stage (max-width:380px) { .demo-root[data-ds-kind="token"] .token-demo { padding:16px; } }
+
+@container demo-stage (max-width:240px) {
+  .demo-root[data-ds-kind="token"] .token-demo:is([data-token="spacing"],[data-token="radius-shadow"]) { grid-template-columns:minmax(0,1fr); gap:12px; }
+  .demo-root[data-ds-kind="token"] .token-demo:is([data-token="spacing"],[data-token="radius-shadow"]) > * { min-width:0; }
+  .demo-root[data-ds-kind="token"] .token-demo:is([data-token="spacing"],[data-token="radius-shadow"]) label { min-width:0; max-width:100%; }
+  .demo-root[data-ds-kind="token"] .token-demo:is([data-token="spacing"],[data-token="radius-shadow"]) select { width:100%; min-width:0; }
+  .demo-root[data-ds-kind="token"] .token-demo[data-token="radius-shadow"] .token-controls { gap:8px; }
+  .demo-root[data-ds-kind="token"] .token-demo[data-token="radius-shadow"] .token-controls > label { width:100%; }
+  .demo-root[data-ds-kind="token"] .token-demo[data-token="radius-shadow"] .elevation-frame { padding:8px; }
+  .demo-root[data-ds-kind="token"] .token-demo[data-token="radius-shadow"] .elevation-card { padding:8px; }
+}

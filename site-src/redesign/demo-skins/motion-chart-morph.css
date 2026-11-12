@@ -32,3 +32,10 @@
 .demo-root .stage[data-effect="extra-chart-morph"] .extra-chart>div { gap:12px; }
 .demo-root .stage[data-effect="extra-chart-morph"] .extra-chart i { background:linear-gradient(var(--ds-accent-400),var(--ds-accent)); border-radius:8px 8px 0 0; }
 .demo-root .stage[data-effect="extra-chart-morph"] .extra-chart small { font-size:12px; color:var(--ds-ink-2); }
+
+@container demo-stage (max-width:240px) {
+  .demo-root .stage[data-effect="extra-chart-morph"] .extra-chart-controls { flex-wrap:wrap; gap:4px; }
+  .demo-root .stage[data-effect="extra-chart-morph"] .extra-chart-controls button { flex:1 1 56px; min-width:0; max-width:100%; padding-inline:4px!important; }
+  .demo-root .stage[data-effect="extra-chart-morph"] .extra-chart { gap:4px; padding-inline:4px; }
+  .demo-root .stage[data-effect="extra-chart-morph"] .extra-chart > div { min-width:0; }
+}

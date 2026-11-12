@@ -35,3 +35,14 @@
 [data-ds-kind="ui"] .dropdown.open { margin-bottom:176px; }
 [data-ds-kind="ui"] .popover-demo:has(> .popover-box:not([hidden])) { margin-bottom:144px; }
 [data-ds-kind="ui"] .splitbtn-demo:has(> .split-menu:not([hidden])) { margin-bottom:152px; }
+
+@container demo-stage (max-width:240px) {
+  .demo-root[data-ds-kind="ui"][id="c-conditional-step"] .cond-demo { width:100%; min-width:0; }
+  .demo-root[data-ds-kind="ui"][id="c-conditional-step"] :is(.cond-choice,.cond-steps) { flex-wrap:wrap; gap:8px; }
+  .demo-root[data-ds-kind="ui"][id="c-conditional-step"] .cond-choice .check { padding:6px 8px; }
+  .demo-root[data-ds-kind="ui"][id="c-table-reorder"] .canvas > div { width:100%; min-width:0; }
+  .demo-root[data-ds-kind="ui"][id="c-table-reorder"] .tblre-wrap { width:100%; min-width:0; overflow:visible; }
+  .demo-root[data-ds-kind="ui"][id="c-table-reorder"] .demo-tbl { table-layout:fixed; width:100%; }
+  .demo-root[data-ds-kind="ui"][id="c-table-reorder"] .demo-tbl :is(th,td) { padding:6px 4px; white-space:normal; overflow-wrap:anywhere; }
+  .demo-root[data-ds-kind="ui"][id="c-table-reorder"] .drag-dot { margin-left:0; }
+}

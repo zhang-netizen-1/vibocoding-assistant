@@ -701,3 +701,29 @@ OK
 - 本轮修改涉及五份独立皮肤、两个测试文件及本节文档。实际三宽渲染、无头交互与截图验收待后续执行。
 
 最终静态复核于北京时间 04:39:58 完成，工作耗时约 7 分钟，处于 11 分钟工作窗口内。
+
+## 390 画廊缩略格溢出
+
+2026-11-13。依据 `dr_fail2.log`，处理 basics、components、interactions 画廊中的 11 个演示。日志中的外层 stage 约 169px，内层 canvas 或 stage 约 137px，带 16px 内边距与边框的面板内部约 103px。新增规则全部置于 `@container demo-stage (max-width:240px)` 内。独立皮肤沿用原文件，其余演示在既有 kind 皮肤中使用演示专属选择器。大于 240px 的容器继续使用原有样式。
+
+| 演示 | 溢出元素与约束 | 窄格处理 | 样式文件 |
+|---|---|---|---|
+| badge-dot | `.bd-demo` 横排包含两个 56px 按钮、32px gap 与两侧 8px padding，超过面板内宽。数字角标还有 `right:-16px` 外伸及 content-box 尺寸。 | 每项占独立行，允许 flex 换行，gap 缩为 12px，按钮约束最大宽度，数字角标改为 `right:-4px` 和 border-box。 | `ui-badge-dot.css` |
+| chart-morph | `.extra-chart-controls` 的双按钮内容宽度、水平 padding 与 gap 叠加，`.extra-chart` 五列各有标签最小宽度，另有四段 16px gap 和两侧 12px padding。 | 控制按钮允许换行并减小水平 padding，图表 gap 与水平 padding 均缩为 4px，柱列解除自动最小宽度，保留五列与原数据。 | `motion-chart-morph.css` |
+| color | `.ds-color-field` 的 64px 色盘、16px gap、两侧 16px padding 与色值文本并排，超过约 103px 内宽。 | 色盘与色值纵向排列，gap 和 padding 缩为 8px，色盘允许随可用宽度收缩，面板 grid 使用 `minmax(0,1fr)`。 | `ui-color.css` |
+| conditional-step | `.cond-demo` 来源宽度为 262px，`.cond-choice` 的两项标签及 16px gap、`.cond-steps` 的文字与 padding 仍保持单行。 | 演示宽度跟随容器，选项与步骤均允许换行，gap 缩为 8px，选项水平 padding 缩为 8px。保留企业步骤显隐钩子。 | `_kind-ui.css`，限定 `c-conditional-step` |
+| cursor-object-follow | `.obj-stage` 内的 `.obj-card` 固定 150px，超过约 137px 的舞台宽度，grid 子项保留最小内容尺寸。 | 承载区设为可收缩的 100% 宽度，左右预留 8px，卡片使用 `min(150px,100%)` 并解除最小宽度。沿用指针旋转行为。 | `_kind-motion.css`，限定 `cursor-object-follow` |
+| otp | 窄档 `.otp-row` 使用 `repeat(3,minmax(44px,1fr))`，三列最低 132px 加两段 8px gap，总计 148px。 | 改为两列 `minmax(0,1fr)`，六个输入框按原 DOM 顺序排列，自动跳格与粘贴逻辑沿用。 | `ui-otp.css` |
+| radius-shadow | `.token-demo` 自动 grid 轨道与 flex 标签受 select 的固有内容宽度约束，阴影选项文字较长，叠加 `.elevation-frame` 和卡片内边距。 | grid 使用 `minmax(0,1fr)`，直接子项与标签解除最小宽度，select 跟随容器，控制标签逐行排布，控制 gap 与两层内边距缩为 8px。 | `_kind-token.css`，限定 `data-token="radius-shadow"` |
+| spacing | `.token-demo` 自动 grid 轨道被间距方案 select 的长选项固有宽度撑大，继续扩大 `.space-frame` 与外层 shadow 根的 scrollWidth。 | grid 使用 `minmax(0,1fr)`，直接子项与标签解除最小宽度，select 使用 100% 宽度并允许收缩，面板 gap 缩为 12px。保留演示卡片的可变内外边距。 | `_kind-token.css`，限定 `data-token="spacing"` |
+| table-reorder | `.tblre-wrap` 固定 262px，`.demo-tbl` 单元格使用 nowrap 与两侧 9px padding，自动表格布局的最小内容宽度继续撑开祖先。 | 外层 flex 容器与表格包装随容器收缩，表格使用 fixed 布局，单元格允许任意位置换行并将水平 padding 缩为 4px，拖动图标左 margin 归零。包装使用 visible，完整呈现换行后的内容。 | `_kind-ui.css`，限定 `c-table-reorder` |
+| tabs | `.tabs` 的三个按钮具有文字最小宽度、两侧 12px padding 与 8px gap，单行布局超过面板内宽。 | tablist 允许换行，gap 缩为 4px，按钮使用可收缩的 44px flex basis、两侧 4px padding 和正常换行。保留角色、焦点顺序与切换钩子。 | `ui-tabs.css` |
+| view-shared | `.shared-chip` 收起态固定 140px 且绝对定位 `left:8px`，在约 137px 的 `.shared-box` 内延伸至 148px。展开态还有 220px 宽度与 `left:32px`。 | 收起态宽度扣除两侧各 8px，展开态改用 16px 左偏移并扣除两侧各 16px，内部文字约束到按钮宽度。保留展开、收起及位置尺寸过渡。 | `_kind-motion.css`，限定 `view-shared` |
+
+### 本轮验证
+
+- `test_redesign_tokens.py` 的 20 项既有静态测试全部通过，退出码 0。
+- 8 份修改后的 CSS 通过 PostCSS 解析，新增的 36 条规则全部位于 240px 容器查询内，未新增隐藏或裁切溢出的声明。
+- 在内存中执行现有 `load_entries` 和 `demos.markup`，核对全部 11 个目标演示的皮肤引用及 kind、id、data-token、data-effect 定位。独立皮肤与类型皮肤保持原有注入路径。
+- 本轮验证限于源码与静态断言。按任务限制未启动浏览器，未执行依赖浏览器及 dist 的无头脚本，实际 `scrollWidth/clientWidth` 渲染验收待后续回归确认。
+- 本轮修改仅涉及上述 8 份皮肤及本节文档，文字、HTML 与行为脚本保持原稿。工作于北京时间 05:31:59 开始，全部检查与记录在 10 分钟窗口内完成。

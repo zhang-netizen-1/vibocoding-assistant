@@ -8,3 +8,10 @@
 .ds-color-value { display:grid; gap:4px; min-width:0; }
 .ds-color-value label { color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
 .ds-color-value #hexc { color:var(--ds-ink); font:600 var(--ds-demo-body)/1.4 var(--ds-font); }
+
+@container demo-stage (max-width:240px) {
+  .ds-color-panel { grid-template-columns:minmax(0,1fr); }
+  .ds-color-field { flex-direction:column; align-items:flex-start; gap:8px; padding:8px; min-width:0; }
+  .ds-color-field input[type=color] { width:min(64px,100%); min-width:0; }
+  .ds-color-value { max-width:100%; }
+}
