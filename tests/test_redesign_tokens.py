@@ -197,8 +197,8 @@ class RedesignTokensTest(unittest.TestCase):
         selector='.demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage):has(> .ds-hint)'
         self.assertIn(selector,css)
         body=css.split(selector,1)[1].split('}',1)[0]
-        for declaration in ('position:relative','flex:1 1 auto','min-height:100%',
-                            'padding-bottom:56px!important','align-content:center','overflow:visible'):
+        for declaration in ('position:relative','flex:1 0 auto','min-height:min-content',
+                            'padding-bottom:56px!important','align-content:safe center','overflow:visible'):
             self.assertIn(declaration,body)
         self.assertIn('.demo-root.ds-stage:has(> :is(.canvas,.stage,.guide-card-stage) > .ds-hint)',css)
         self.assertNotRegex(css,r'data-ds-sample[^{}]*>[^{}]*\{[^}]*position:static')
@@ -316,3 +316,44 @@ class BatchFTokenTest(unittest.TestCase):
         self.assertIn('margin-bottom:168px', (skins / 'ui-popover.css').read_text())
         self.assertIn('var(--ds-shadow-3)', (skins / 'ui-drawer.css').read_text())
         self.assertIn('animation:none', (skins / 'ui-loader.css').read_text())
+
+    def test_g_intrinsic_canvas_keeps_top_clearance_for_long_subjects(self):
+        css = (REDESIGN / 'demo-spec.css').read_text()
+        selector = '.demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage):has(> .ds-hint)'
+        body = css.split(selector, 1)[1].split('}', 1)[0]
+        for declaration in ('flex:1 0 auto', 'min-height:min-content', 'align-items:safe center',
+                            'justify-content:safe center', 'align-content:safe center',
+                            'padding-top:max(16px,var(--ds-stage-inset))!important'):
+            self.assertIn(declaration, body)
+        self.assertIn('height:auto', css)
+        for content_height in (44, 260, 390, 600, 1200):
+            height = max(268.5, 2 + 16 + content_height + 76)
+            top = 1 + 16 + max(0, height - 2 - 16 - 76 - content_height) / 2
+            self.assertGreaterEqual(top, 16)
+            self.assertGreaterEqual(height - top - content_height, 16)
+
+    def test_g_individual_skins_keep_spec_and_popup_clearance(self):
+        skins = REDESIGN / 'demo-skins'
+        slugs = 'cmdk sidebar accordion breadcrumb pagination steps dropdown context-menu mega-menu footer badge chip avatar kpi timeline badge-dot view-switch card-link split-button fab back-to-top table-fixed table-columns table-edit sortable-table load-more'.split()
+        for slug in slugs:
+            with self.subTest(slug=slug):
+                kind = 'guide' if slug == 'sortable-table' else 'ui'
+                css = (skins / (kind + '-' + slug + '.css')).read_text()
+                for contract in ('width:min(100%,var(--ds-subject-width))', 'min-width:0',
+                                 'border-radius:16px', 'var(--ds-shadow-1)', ':focus-visible',
+                                 ':disabled', '[aria-invalid="true"]', 'prefers-reduced-motion',
+                                 '@container demo-stage (max-width:480px)'):
+                    self.assertIn(contract, css, slug)
+                self.assertNotIn('.ds-hint', css)
+                self.assertNotRegex(css, r'#[\da-fA-F]{3,8}|https?://|@import|@font-face')
+                self.assertNotRegex(css, r'font-size:\s*(?:[0-9]|1[01])px')
+        self.assertIn('margin-bottom:188px', (skins / 'ui-dropdown.css').read_text())
+        self.assertIn('margin-bottom:176px', (skins / 'ui-split-button.css').read_text())
+        self.assertIn('min-height:192px', (skins / 'ui-context-menu.css').read_text())
+        self.assertIn('min-width:480px', (skins / 'ui-table-fixed.css').read_text())
+        self.assertIn('position:static', (skins / 'ui-card-link.css').read_text())
+
+    def test_g_cmdk_expanded_height_outweighs_mobile_stage_rule(self):
+        css = (REDESIGN / 'demo-skins/ui-cmdk.css').read_text()
+        self.assertIn('.demo-root.ds-stage:has(.cmdk-mask.show) { min-height:560px; }', css)
+        self.assertIn('var(--ds-shadow-3)', css)

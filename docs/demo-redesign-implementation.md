@@ -486,3 +486,59 @@ Toast 原运行时只输出纯文本。本段在 `demo-runtime.js` 中增加可�
 工作窗口起点为本地时间 02:34:40，24 分钟截止为 02:58:40，进程强制终止截止为 03:00:40。`output/demo-redesign/F/run.py` 在工作截止后拒绝启动新任务，并为本轮启动的构建与测试设置进程组强制终止上限。
 
 本段最终复核于本地时间 02:50:22 完成，工作耗时约 15.7 分钟，处于 24 分钟工作窗口内。
+
+## G 段
+
+日期为 2026-11-13。本段完成 26 个条目的独立 CSS 与 HTML 皮肤，共 52 份新增皮肤。前八批分别完成 3 项后构建，第九批完成最后 2 项后构建，九批均通过。最终构建为 217 页、192 条目，主演示与 secondary 合计 194 份。
+
+### 完成的 slug
+
+| 分组 | 完成条目 |
+|---|---|
+| navigation | `cmdk`、`sidebar`、`accordion`、`breadcrumb`、`pagination`、`steps`、`dropdown`、`context-menu`、`mega-menu`、`footer` |
+| content | `badge`、`chip`、`avatar`、`kpi`、`timeline`、`badge-dot`、`view-switch`、`card-link` |
+| actions | `split-button`、`fab`、`back-to-top` |
+| tables | `table-fixed`、`table-columns`、`table-edit`、`sortable-table`、`load-more` |
+
+跳过条目为零。25 个 UI 演示使用 `ui-<slug>.css/html`。`components/sortable-table` 的源安装器为 guide，因此沿用 `guide-sortable-table.css/html`，保持源演示身份与状态切换入口。`components/sidebar` 使用 `ui-sidebar`，`basics/sidebar` 继续使用原 guide 类型皮肤，构建测试覆盖两者的区分。
+
+全部原条目文字、提示词、验收要求、源演示文案、id、class、data、ARIA、原生控件约束和提示父容器均保留。新增中文上下文覆盖工作室项目、订单、配送、文件交付、成员与渠道统计。承托面为 16px 圆角、中性白底、双层 shadow-1，浮层为 shadow-3。文字按标题、主体与说明建立三级层级。紫色用于选中、主操作与焦点，完成、风险、未读和趋势使用对应语义色。表格内部继续保留演示所需的双向滚动，页面与舞台保持自然高度。
+
+### 公共边距与交互修复
+
+公共 `demo-spec.css` 的提示父容器改为 `flex:1 0 auto`、`min-height:min-content`，使用安全居中，并显式设置 `padding-top:max(16px,var(--ds-stage-inset))!important`。主体按固有内容撑高，提示继续以原父容器为定位参考，保留舞台左下角 13px 外边缘净距及原 56 / 76px 底部占位。这组公共规则覆盖独立皮肤与类型皮肤。
+
+命令面板展开时通过 `.demo-root.ds-stage:has(.cmdk-mask.show)` 提高舞台最小高度至 560px，选择器优先级覆盖手机公共舞台规则。下拉菜单与分裂按钮菜单分别预留 188px 与 176px，右键区域最小高度 192px，确保展开矩形位于舞台内。大型菜单使用流式两列布局，快捷操作展开后自然增高。固定表格保留吸顶表头与吸左首列，列宽表允许文字换行，编辑输入框保持可收缩宽度。
+
+浏览器交互检查发现两处既有脚本问题，均在 `demos.py` 的源适配层修复。
+
+- guide 函数提取的终点原先命中了 `setText` 之前的卡片筛选循环，导致生成脚本缺少 `updateInteraction` 与 `updateData`。终点搜索现从函数起点开始，恢复原函数体。排序表按访问量降序与按渠道名称升序的切换通过回归。
+- 单元格输入框 Enter 保存后，事件继续冒泡至单元格，导致再次进入编辑。单元格开始编辑的键盘入口增加 `e.target===cell`，保留 Enter / 失焦保存与 Esc 取消，并避免重复进入。
+
+### 验证与证据
+
+既有测试保留。类型皮肤覆盖数量同步为 ui 10、motion 68、guide 20、token 4、skill-reference 9，独立皮肤 75、特殊风格排除 6，总计 192。新增回归覆盖全部 26 份皮肤的发布内容、来源属性与原文、提示父容器、同名 sidebar、命令浮层归属、公共固有高度和安全居中、浮层占位及手机命令面板规则优先级。
+
+`tests/demo_g_browser.js` 提供真实 DOM 交互检查，并接入原 `demo_redesign_headless.cjs`。覆盖搜索空态、折叠展开、步骤选中、菜单打开与关闭、标签删除、未读清除、视图切换、独立分享、快捷创建、返回顶部、表头与首列固定、列显隐与调宽、单元格提交与取消、渠道排序和追加加载终态。原 Headless 入口增加全部 G 段路径与四边几何检查。
+
+| 验证项目 | 结果 |
+|---|---|
+| 九批构建与最终构建 | 通过，217 页、192 条目 |
+| `test_demo_audit` | 1 项通过 |
+| `test_redesign_tokens` | 19 项通过 |
+| `test_site_build` | 35 项通过 |
+| `node tests/token_demos.cjs` | 五类 token 的交互、计算、主题与存储回退通过 |
+| `test_redesign_javascript` | 13 项通过，包含 194 份演示初始化和 guide 排序回归 |
+| `node tests/audit_fix_batch3.cjs` | 十组状态回调与减少动态生命周期通过 |
+| CSS / HTML / Python / JS | 26 份独立 CSS 与公共 CSS 经 PostCSS 解析，26 份 HTML 标签平衡与 ID 唯一，修改 Python AST 与两份浏览器脚本语法检查通过 |
+| 原生 Chrome 的舞台双尺寸夹具 | 28 个条目 × 2，56 项几何、106 条交互断言通过，包含原 `hold-confirm` 与 `states` |
+| 原生 Chrome 的 UI 类型皮肤 | 10 个剩余 UI 类型皮肤在 390 档全部通过，最小顶距 20.953px、最小侧距 39px |
+| 真实构建详情页双尺寸夹具 | 56 个真实详情页舞台与 106 条交互断言通过，390 档最小顶距 17px、最小侧距 19px，1440 档主体约占舞台 59.994% |
+
+舞台夹具实测，390 档主体最小顶距为 17px、最小侧距 19px，1440 档主体占舞台约 59.994%。该夹具加载当前真实 markup、公共 / 独立 / 无障碍样式和原安装器。原公共规则的对照夹具中，`hold-confirm` 与 `states` 的约 4px 顶距现象未复现，修复后的边距以当前 Chromium 实测值为准。
+
+Headless Chromium 启动时仍收到 `MachPortRendezvousServer ... Permission denied (1100)`，浏览器接入服务返回 `The browser access host is unavailable`。本段通过原生 Chrome 打开工作区的本地核验文件，完成上述浏览器检查。详情页夹具直接读取最终 `dist/components/<slug>/index.html`，保留完整外框、状态样式与脚本执行顺序，将资源内联以支持本地 file 协议。页面截图在 CUA 工具输出中可查看，独立 PNG 文件未导出。
+
+对 212 份既有 `site-src` 文件逐一核对 SHA-256，修改文件为 `demo-spec.css` 与 `demos.py` 两份，其余 210 份一致。52 份独立皮肤为新增。验证日志、九批构建日志、`source-check.json`、`verification.json`、本地舞台夹具与真实详情页夹具位于 `output/demo-redesign/G/`。
+
+工作起点为本地时间 03:02:20，24 分钟工作截止为 03:26:20，26 分钟进程截止为 03:28:20。`output/demo-redesign/G/run.py` 在工作截止后拒绝启动新任务，并在进程截止时强制结束本轮构建与测试子进程组。本段最终复核于本地时间 03:22:11 完成，耗时约 19.86 分钟，处于 24 分钟工作窗口内。

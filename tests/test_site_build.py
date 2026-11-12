@@ -666,8 +666,8 @@ class BatchCKindSkinTest(unittest.TestCase):
             else:
                 skips+=1
                 self.assertIn(entry['slug'],self.demos.KIND_SKIN_SKIPS.get(kind,()))
-        self.assertEqual(counts,{'ui':35,'motion':68,'guide':21,'token':4,'skill-reference':9})
-        self.assertEqual(samples,49)
+        self.assertEqual(counts,{'ui':10,'motion':68,'guide':20,'token':4,'skill-reference':9})
+        self.assertEqual(samples,75)
         self.assertEqual(skips,6)
         self.assertEqual(sum(counts.values())+samples+skips,192)
 
@@ -867,3 +867,55 @@ class BatchFSkinTest(unittest.TestCase):
         _, popover = self.rendered('popover')
         self.assertIn('hidden', popover.one(cls='popover-box').attrs)
         self.assertEqual(popover.one(cls='popover-demo').one('button').attrs['aria-controls'], 'popover-box')
+
+
+class BatchGSkinTest(unittest.TestCase):
+    setUpClass = classmethod(DemoSpecBuildTest.setUpClass.__func__)
+    SLUGS = tuple('cmdk sidebar accordion breadcrumb pagination steps dropdown context-menu mega-menu footer badge chip avatar kpi timeline badge-dot view-switch card-link split-button fab back-to-top table-fixed table-columns table-edit sortable-table load-more'.split())
+
+    def test_g_publication_source_contracts_and_original_copy(self):
+        for slug in self.SLUGS:
+            with self.subTest(slug=slug):
+                entry = next(row for row in self.entries if row['column'] == 'components' and row['slug'] == slug)
+                kind = entry['demo']['kind']
+                name = 'demo-skins/' + kind + '-' + slug
+                override = (ROOT / 'site-src/redesign' / (name + '.html')).read_text()
+                original = self.Document(entry['demo']['html']).root
+                skin_root = self.Document(override).root
+                result = self.Document(self.demos.markup(entry['demo'], '../../assets/redesign/', True, slug)).root
+                self.assertEqual(result.one('template').attrs['data-skin-css'], '../../assets/redesign/' + name + '.css')
+                self.assertNotIn('data-kind-css', result.one('template').attrs)
+                self.assertIn('data-ds-sample', result.one('article').attrs)
+                self.assertEqual(len(result.find_all(cls='ds-' + slug + '-panel')), 1)
+                for node in original.find_all():
+                    classes = set(node.attrs.get('class', '').split())
+                    protected = {key:value for key,value in node.attrs.items() if key != 'class'}
+                    candidates = [item for item in skin_root.find_all() if item.tag == node.tag and
+                                  classes <= set(item.attrs.get('class', '').split())]
+                    self.assertTrue(any(all(key in item.attrs and item.attrs[key] == value
+                                            for key,value in protected.items()) for item in candidates),
+                                    (slug,node.tag,protected))
+                    for child in node.children:
+                        if isinstance(child,str) and child.strip():
+                            self.assertIn(child.strip(), skin_root.text(), slug)
+                hints = result.find_all(cls='ds-hint')
+                self.assertEqual(len(hints), int(kind == 'ui'))
+                if hints:
+                    self.assertIn(hints[0], result.one(cls='canvas').children)
+                self.assertEqual((DIST / 'assets/redesign' / (name + '.css')).read_text(),
+                                 self.demos.assets(self.entries)[name + '.css'])
+
+    def test_g_kind_prefixes_and_overlay_ownership(self):
+        sidebar = next(row for row in self.entries if row['column'] == 'basics' and row['slug'] == 'sidebar')
+        guide = self.demos.markup(sidebar['demo'], './', True, 'sidebar')
+        self.assertNotIn('ui-sidebar.css', guide)
+        self.assertIn('_kind-guide.css', guide)
+        cmdk = next(row for row in self.entries if row['column'] == 'components' and row['slug'] == 'cmdk')
+        result = self.Document(self.demos.markup(cmdk['demo'], './', True, 'cmdk')).root
+        overlays = result.one(cls='ds-overlays')
+        self.assertEqual(len(overlays.find_all(cls='cmdk-mask')), 1)
+        self.assertIsNotNone(overlays.one(cls='cmdk-mask').attrs.get('data-demo-commands'))
+        sortable = next(row for row in self.entries if row['column'] == 'components' and row['slug'] == 'sortable-table')
+        result = self.Document(self.demos.markup(sortable['demo'], './', True, 'sortable-table')).root
+        self.assertIn('guide-sortable-table.css', result.one('template').attrs['data-skin-css'])
+        self.assertEqual([node.attrs['data-guide-mode'] for node in result.find_all('button')], ['0', '1'])

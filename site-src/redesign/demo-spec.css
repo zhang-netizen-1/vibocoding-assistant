@@ -54,9 +54,9 @@
   padding:0!important;
 }
 :host([data-interactive]) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage):has(> .ds-hint) {
-  position:relative; display:flex; flex:1 1 auto; min-height:100%; box-sizing:border-box;
-  align-items:center; justify-content:center; align-content:center;
-  padding:var(--ds-stage-inset); padding-bottom:56px!important;
+  position:relative; display:flex; flex:1 0 auto; min-height:min-content; box-sizing:border-box;
+  align-items:safe center; justify-content:safe center; align-content:safe center;
+  padding:var(--ds-stage-inset); padding-top:max(16px,var(--ds-stage-inset))!important; padding-bottom:56px!important;
   row-gap:12px; flex-wrap:wrap; overflow:visible;
 }
 /* Controls and live feedback precede the filling subject and its bottom hint. */

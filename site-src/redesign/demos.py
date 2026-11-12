@@ -120,6 +120,9 @@ def css(source):
 
 def _ui_script(source):
     script = _script(source)
+    # Enter inside the editor saves once and leaves the containing cell idle.
+    script = script.replace("cell.addEventListener('keydown',e=>{ if(e.key==='Enter')",
+                            "cell.addEventListener('keydown',e=>{ if(e.target===cell&&e.key==='Enter')")
     script = script.replace("btn.textContent='✓ 已复制';", "btn.textContent='✓ 已复制';btn.classList.add('ds-success');")
     script = script.replace('btn.textContent=original; btn.disabled=false; },1200)', "btn.textContent=original; btn.disabled=false;btn.classList.remove('ds-success'); },1600)")
     script = script[script.index('function demoSearch'):]
@@ -224,7 +227,7 @@ return {replay};
 def _guide_script():
     source = (ROOT / 'site-src/guides.js').read_text()
     start = source.index('  function setText(')
-    end = source.index('  for (const card of cards)')
+    end = source.index('  for (const card of cards)', start)
     # The original state functions are independent of the old page shell.
     return source[start:end] + '''
 const stage=document.querySelector('.guide-card-stage'),section=scope.dataset.demoSection||document.body.dataset.guide;

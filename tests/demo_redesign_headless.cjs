@@ -11,6 +11,7 @@ const http = require('node:http');
 let playwright;
 try { playwright = require('playwright'); }
 catch { playwright = require('/Users/zhiguang/Downloads/Kreator/node_modules/playwright'); }
+const demoGChecks = require('./demo_g_browser.js');
 const workspace = path.resolve(__dirname, '..');
 const dist = path.join(workspace, 'dist');
 const shots = path.resolve(process.env.SHOTS_DIR || path.join(workspace, 'output/demo-redesign/D'));
@@ -27,7 +28,8 @@ const routes = [
   'interactions/scroll-parallax/', 'interactions/scroll-pin/',
   ...['checkbox','radio','slider','otp','search','segmented','password-strength','tag-input',
       'stepper','rating','upload','combobox','date','form','alert','empty','loader','drawer','popover']
-    .map(slug => `components/${slug}/`)
+    .map(slug => `components/${slug}/`),
+  ...'cmdk sidebar accordion breadcrumb pagination steps dropdown context-menu mega-menu footer badge chip avatar kpi timeline badge-dot view-switch card-link split-button fab back-to-top table-fixed table-columns table-edit sortable-table load-more'.split(' ').map(slug => `components/${slug}/`)
 ];
 const galleries = ['basics/', 'components/', 'interactions/', 'scenarios/', 'ai/'];
 const report = {started: new Date().toISOString(), checks: [], failures: [], pageErrors: [], resourceErrors: [], screenshots: [], galleries: []};
@@ -419,16 +421,16 @@ async function batchFChecks(page, route, width) {
 async function specimenGeometry(page) {
   const result=await page.locator('.demo-scope[data-interactive]').first().evaluate(scope=>{
     const root=scope.shadowRoot.querySelector('.ds-stage');
-    const subject=root.querySelector('.ds-surface,.lift-card,.mini-scroll,.carousel,.token-demo,.mini-page,.skill-card,.ds-states-panel,.card2,.ds-toast-panel,.ds-navbar-panel,.ds-table-panel,.ds-tabs-panel,.ds-switch-panel,.ds-select-panel,.ds-hold-panel,.scene-window,.scene-curtain,.art,.canvas>section[class^="ds-"]');
+    const subject=root.querySelector('.ds-surface,.lift-card,.mini-scroll,.carousel,.token-demo,.mini-page,.skill-card,.ds-states-panel,.card2,.ds-toast-panel,.ds-navbar-panel,.ds-table-panel,.ds-tabs-panel,.ds-switch-panel,.ds-select-panel,.ds-hold-panel,.scene-window,.scene-curtain,.art,.canvas>section[class^="ds-"],.guide-card-stage>section[class^="ds-"]');
     const hint=root.querySelector('.ds-hint');
     const r=root.getBoundingClientRect(),s=subject.getBoundingClientRect(),h=hint?.getBoundingClientRect();
     const style=getComputedStyle(root);
     const frame=subject.parentElement, frameStyle=getComputedStyle(frame);
     const inner=frame.clientWidth-parseFloat(frameStyle.paddingLeft)-parseFloat(frameStyle.paddingRight);
-    return {stage:r.width,subject:s.width,ratio:s.width/inner,left:s.left-r.left,right:r.right-s.right,
+    return {stage:r.width,subject:s.width,ratio:s.width/inner,left:s.left-r.left,right:r.right-s.right,top:s.top-r.top,bottom:r.bottom-s.bottom,
       typeBody:style.getPropertyValue('--ds-demo-body').trim(),typeHeading:style.getPropertyValue('--ds-demo-heading').trim(),typeButton:style.getPropertyValue('--ds-demo-button').trim(),hasHint:!!h,hintLeft:h?h.left-r.left:null,hintBottom:h?r.bottom-h.bottom:null,hintRight:h?r.right-h.right:null,clearance:h?h.top-s.bottom:null};
   });
-  assert.ok(result.left>=15.5&&result.right>=15.5,JSON.stringify(result));
+  assert.ok(result.left>=15.5&&result.right>=15.5&&result.top>=15.5&&result.bottom>=15.5,JSON.stringify(result));
   if(result.hasHint) {
   assert.ok(Math.abs(result.hintLeft-13)<=1.1&&Math.abs(result.hintBottom-13)<=1.1,JSON.stringify(result));
   assert.ok(result.hintRight>=11.5&&result.clearance>=11.5,JSON.stringify(result));
@@ -619,6 +621,11 @@ function catalogInventory() {
         await batchCChecks(page,route);
         await batchEChecks(page,route,width);
         await batchFChecks(page,route,width);
+        const slug = route.split('/')[1];
+        if ('cmdk sidebar accordion breadcrumb pagination steps dropdown context-menu mega-menu footer badge chip avatar kpi timeline badge-dot view-switch card-link split-button fab back-to-top table-fixed table-columns table-edit sortable-table load-more'.split(' ').includes(slug)) {
+          const behavior = await page.locator('.demo-scope[data-interactive]').first().evaluate(demoGChecks,slug);
+          assert.ok(behavior.checks);
+        }
       });
       await check(`${label}: screenshot`, async () => {
         const file=path.join(shots,`${route.replaceAll('/','-').replace(/-$/,'')}-${width}.png`);

@@ -115,6 +115,16 @@ popover.fire(popoverTrigger, 'click');
 assert.equal(popover.doc.getElementById('popover-box').hidden, true);
 assert.equal(popoverTrigger.getAttribute('aria-expanded'), 'false');
 console.log('Batch F: checkbox, slider, OTP paste/backspace, five password levels, tag dedup/removal, stepper bounds, rating, file choice, drawer and popover passed.');
+const sortable = interactiveModel('g-data-table');
+const sourceRows = [['自然搜索','68'],['推荐内容','42'],['直接访问','82']];
+sortable.root.querySelectorAll('tbody tr').forEach((row,index) => row.cells.forEach((cell,column) => {cell.textContent=sourceRows[index][column];}));
+sortable.fire(sortable.root.querySelector('[data-guide-mode="1"]'), 'click');
+assert.equal(sortable.root.querySelector('.guide-card-stage').dataset.mode, '1');
+assert.equal(sortable.root.querySelectorAll('tbody tr').map(row => Number(row.cells[1].textContent)).join(','), '82,68,42');
+sortable.fire(sortable.root.querySelector('[data-guide-mode="0"]'), 'click');
+assert.equal(sortable.root.querySelectorAll('th')[0].getAttribute('aria-sort'), 'ascending');
+console.log('Batch G: extracted guide table sorting and reset passed.');
+
 ''')
             result=subprocess.run(['node',str(runner),str(fixture)],cwd=ROOT,text=True,capture_output=True)
         self.assertEqual(result.returncode,0,result.stdout+result.stderr)
@@ -123,6 +133,7 @@ console.log('Batch F: checkbox, slider, OTP paste/backspace, five password level
         self.assertIn('Motion modal: local sibling inert',result.stdout)
         self.assertIn('Batch B: skeleton loading/reduced motion',result.stdout)
         self.assertIn('Batch F: checkbox, slider, OTP paste/backspace', result.stdout)
+        self.assertIn('Batch G: extracted guide table sorting and reset passed.', result.stdout)
 
     def test_real_index_matching_ranking_and_near_names(self):
         code = r'''
