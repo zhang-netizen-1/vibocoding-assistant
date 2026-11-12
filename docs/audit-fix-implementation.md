@@ -162,3 +162,47 @@
 - `node tests/audit_fix_batch3.cjs` 状态与运行时行为测试通过。新增无界面脚本的 Node 语法检查及 `git diff --check` 通过。
 - 无界面脚本使用临时 Chromium 配置、本地文件响应及 `/vibocoding-assistant/` 部署子路径。覆盖真实状态切换、加载宽度、错误文字、标签键盘跳过、减弱动态主动播放时长、静态相位和复制入口命中。
 - 执行 `NODE_PATH=/Users/zhiguang/.npm/_npx/e41f203b7505f1fb/node_modules node tests/audit_fix_batch3_headless.cjs` 时，Chromium 在启动阶段返回 `MachPortRendezvousServer ... Permission denied (1100)`，没有进入页面验证。本批全部浏览器渲染、计算样式和命中结果均待用户验收。
+
+## 第 4 批 · 手机、平板及短中文错字
+
+日期为 2026-11-12，工作目录为 `~/Downloads/vibocoding-audit-fix`，分支为 `audit-fixes`。
+
+### U20 · 平板页头及触屏快捷键提示
+
+- `site-src/redesign/site.css` 删除 761–1000px 的双行导航规则，统一在小于 1024px 时显示手机搜索按钮和「目录」，隐藏桌面导航与大下拉。该断点的导航内层为 63px，加 1px 底边框后为 64px；≥1024px 保留桌面导航规则。
+- `site-src/redesign/site.js` 将页头模式及抽屉清理的媒体查询同步为 `max-width:1023px`，沿用右侧抽屉、关闭及焦点归还逻辑。
+- `site-src/redesign/templates.py` 将导航、首页搜索及五个栏目搜索入口的快捷键拆为 `.shortcut-hint` 节点。共用 CSS 在窄屏、`hover:none` 或 `pointer:coarse` 任一条件成立时隐藏这些节点及搜索底部键盘提示，鼠标桌面仍显示。
+- `site-src/redesign/demos.py` 另将命令面板演示的快捷键文字拆为独立节点，`demo-accessibility.css` 在触屏下隐藏该节点、演示内的 `kbd` 和命令面板底部键盘提示。没有修改条目正文、验收要求或别名。
+- Python 回归检查断点、旧双行规则移除、所有搜索入口的提示节点及运行时一致性。实际 768px 页头高度、抽屉开关和触屏显示效果待浏览器验证。
+
+### U12 · 手机及触屏点击区
+
+- `site-src/redesign/site.css` 在小于 1024px 或触屏条件下，为所有可见链接、按钮及 summary 提供 44px 最小高度；行内链接保留段落排版。面包屑、抽屉「首页 →」、分组、相关条目、播放、状态切换和页头操作沿用共用规则，顶部搜索另有显式高度覆盖，以覆盖宽屏触屏时原来的 40px。
+- 链接使用实际布局高度，按钮补充 44px 最小宽度，没有使用负外边距或扩大伪元素制造点击区。原有分组及状态按钮的 gap 保留，抽屉首页与下方分组另留 8px 间隔。
+- `site-src/redesign/demo-accessibility.css` 同步为交互演示内的链接、按钮和 summary 提供真实最小尺寸；非交互缩略内容保持 inert。轮播的箭头、暂停和圆点改为分行网格，避免按钮放大后互相重叠；移除触屏下轮播暂停、面包屑和搜索按钮原有的外扩伪元素。
+- Python 回归检查共用尺寸规则、五类演示样式覆盖及轮播分行结构。实际点击区高度、相邻重叠及点击命中待浏览器验证。
+
+### U10 · 演示字号及缩略格放大
+
+- `site-src/redesign/demos.py` 在共用演示样式适配层将 `font-size` 和 `font` 简写内不足 12px 的 px 值提升至 12px，包括小数值；只对演示模板的 style 属性做同样处理，不替换说明文字。五类演示及跨文档转场的两个演示页面统一使用此处理，间距及图形尺寸不受字号替换影响。
+- `site-src/redesign/states.css` 将浮动标签的固定聚焦态从 11px 提升为 12px。`demo-accessibility.css` 为浏览器默认的 small/sub/sup 提供 12px 字号，允许小卡片及按钮组换行，并保持表格的内部滚动。
+- 交叉淡化两层改用同一网格单元，卡片高度由较长内容决定；方向滑移轨道保留双面板宽度，面板与幕布卡片允许随文字增高。小尺寸 micro-card 允许增高并增加内边距。
+- 缩略演示在 Shadow DOM 内以 `zoom:1.35` 放大，真实参与尺寸计算，播放按钮及条目链接不随之缩放。外层缩略舞台使用卡片容器宽度的 75% 作为高度下限，且至少 240px，内容较多时允许继续增高；为独立播放按钮预留 60px 底部空间。原有两列/三列布局保留。
+- `site-src/redesign/site.css` 删除无法穿透 Shadow DOM 的旧缩略内部选择器，实际缩略规则统一放入 `demo-accessibility.css`。
+- **残留统计：**扫描八份生成演示/状态 CSS 及全站 464 个演示模板，显式小于 12px 的字号声明为 **0**。没有保留小字号例外。此统计不是浏览器可读文字段数；浏览器实际仍小于 12px 的文字数量目前未知，不能将源码统计当作实际渲染为零。历史测评样本属于冻结证据，保持原样，不纳入统一条目演示的字号修改。
+- Python 回归逐份扫描样式和所有生成演示模板，并检查放大、自动增高及卡片换行规则。实际缩略效果、文字裁切、横向溢出和 U01 三例仍待浏览器验证。
+
+### U21 补充 · 两字中文名称的容错
+
+- `site-src/redesign/search.js` 将查询最小长度由 3 改为 2。中文候选要求共享至少一个汉字、编辑距离至多 1；两字查询的相似度下限为 0.5，其余仍为 2/3。候选按相似度降序及原始条目顺序排序。
+- 非中文查询要求与候选连续共有至少 4 个字符，或连续共有片段占查询长度至少 0.6，同时保留一次编辑及 2/3 相似度要求。「buton」的既有英文容错保持通过。长度差检查放在片段计算之前，避免对长的无关查询进行无效比较。
+- `tests/test_audit_fix_batch4.py` 验证「按扭 → 按钮」「输人框 → 输入框」「滑东条 → 滑动条」「轮拨图 → 轮播图」均为相近名称第一项；`asdfgh`、`qwerty`、`zzzz`、`jkl;`、`xyzxyz` 在正常结果和相近名称中均为空。既有第 2 批错字及全部 62 条口语查询继续执行。
+- 本项自动行为验证完成；本批没有新增或改写任何别名和验收要求。
+
+### 本批验证记录与待验证项
+
+- `python3 scripts/build_site.py` 构建成功，生成 216 个页面、192 个统一条目。`python3 -m unittest discover -s tests -p 'test_*.py'` 共 94 项通过，包含本批新增 6 项回归；62/62 条口语查询命中前三，原有测试断言保留。
+- `git diff --check` 及 `node --check tests/audit_fix_batch4_headless.cjs` 通过。
+- 新增可选无界面验证脚本 `tests/audit_fix_batch4_headless.cjs`：只用临时 Chromium 配置、本地文件响应和 `/vibocoding-assistant/` 子路径，阻止外部请求。覆盖 390、768、1023、1024、1440px 及宽屏触屏；扫描五栏目、192 条目及状态切换的实际文字字号、点击高度、同级按钮重叠、U01/小卡片文字边界、页面横向溢出，并检查抽屉焦点和播放按钮命中。正常执行后报告写入 `output/playwright/audit-fix-batch4.json`。
+- 无界面 Chromium 启动探测返回 `bootstrap_check_in ... MachPortRendezvousServer ... Permission denied (1100)`，尚未进入页面。上述浏览器脚本目前仅完成语法检查；实际渲染统计、页头高度、文字裁切及点击命中均未完成验证，留给用户最终浏览器验收。可在允许启动无界面 Chromium 的环境中运行 `NODE_PATH=/Users/zhiguang/.npm/_npx/e41f203b7505f1fb/node_modules node tests/audit_fix_batch4_headless.cjs`。
+- 本批只改当前工作区中的共用源文件、测试和本记录，未手改 dist，未执行暂存、提交、推送或发布。

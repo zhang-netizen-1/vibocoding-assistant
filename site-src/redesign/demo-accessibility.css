@@ -89,3 +89,53 @@
 .demo-root .holdbtn:not(.completed):hover { color: var(--demo-danger-hover); }
 .demo-root .ctxmenu .danger:active,
 .demo-root .holdbtn:not(.completed):active { color: var(--demo-danger-active); }
+
+/* The source adapter raises explicit font declarations. Cover browser-default
+   small text as well, without flattening larger type or changing graphic sizes. */
+.demo-root :is(small,sub,sup) { font-size:12px; }
+.demo-root { overflow-wrap:anywhere; }
+.demo-root :is(.canvas,.stage,.guide-card-stage) > * { max-width:100%;min-width:0; }
+.demo-root :is(.btn-row,.otp-row,.pag,.tabs,.segmented) { flex-wrap:wrap; }
+.demo-root :is(.micro-card,.stagger-box,.shared-detail) { max-width:100%;height:auto;min-height:106px; }
+.demo-root .micro-card { padding:12px; }
+/* Both crossfade layers share a grid cell whose height follows the longer text.
+   The sliding track keeps its 200% width and two equal panels. */
+.demo-root .stage .scene-stack { display:grid;height:auto;min-height:112px; }
+.demo-root .stage .scene-stack .mini-view { position:relative;inset:auto;grid-area:1/1;height:auto;min-height:112px; }
+.demo-root .stage :is(.scene-window,.scene-curtain) { height:auto;min-height:112px; }
+.demo-root .stage .scene-window .view-track { height:auto;align-items:stretch; }
+.demo-root .stage .scene-window .scene-slide { height:auto;min-height:112px; }
+.demo-root .scene-description { white-space:normal;overflow-wrap:anywhere; }
+.demo-root :is(.tblfix-demo,.table-wrap,.mini-data-table) { max-width:100%;overflow:auto; }
+
+/* zoom participates in layout, so the surrounding stage can grow with the
+   1.35x preview. It never scales the stretched entry link or the play action. */
+:host(:not([data-interactive])) .demo-root { zoom:1.35; }
+:host(:not([data-interactive])) .demo-root :is(.canvas,.stage,.guide-card-stage) { min-height:160px;height:auto;padding:36px 8px 12px; }
+:host(:not([data-interactive])) .demo-root .canvas .ctl { display:none; }
+:host(:not([data-interactive])) .demo-root :is(.btn-row,.btns) { display:flex;flex-wrap:wrap;gap:6px; }
+
+/* Native layout sizing, rather than enlarged pseudo-elements, prevents hit
+   areas from overlapping. Inert gallery illustrations are not touch targets. */
+@media(max-width:1023px), (hover:none), (pointer:coarse) {
+  :host([data-interactive]) :is(a,button,summary) { min-height:44px; }
+  :host([data-interactive]) button { min-width:44px; }
+  :host([data-interactive]) a { display:inline-flex;align-items:center; }
+  :host([data-interactive]) p a { display:inline;min-height:0; }
+  :host([data-interactive]) :is(.btn-row,.btns,.tabs,.pag,.otp-row) { flex-wrap:wrap;gap:8px; }
+  :host([data-interactive]) .car-dots { gap:8px; }
+  :host([data-interactive]) .car-dots button { flex:none; }
+  /* Carousel arrows, pause and page dots need separate rows once enlarged. */
+  :host([data-interactive]) .carousel { display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:8px;height:auto;padding-bottom:8px; }
+  :host([data-interactive]) .car-track { grid-column:1/-1;grid-row:1;height:126px;min-width:0; }
+  :host([data-interactive]) .car-btn { position:static;transform:none;grid-row:2; }
+  :host([data-interactive]) .car-btn.prev { grid-column:1; }
+  :host([data-interactive]) .car-btn.next { grid-column:3; }
+  :host([data-interactive]) .car-pause { position:static;grid-column:2;grid-row:2; }
+  :host([data-interactive]) .car-pause::before { content:none; }
+  :host([data-interactive]) .car-dots { position:static;transform:none;grid-column:1/-1;grid-row:3;justify-content:center; }
+  :host([data-interactive]) :is(.crumb a,.searchbox button)::before { content:none; }
+}
+@media(hover:none), (pointer:coarse) {
+  .demo-root :is(kbd,.cmdk-foot,.demo-shortcut-hint) { display:none; }
+}

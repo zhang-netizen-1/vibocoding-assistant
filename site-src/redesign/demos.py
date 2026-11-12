@@ -24,6 +24,19 @@ def _script(source):
     return '\n'.join(re.findall(r'<script[^>]*>(.*?)</script>', source, re.S))
 
 
+def readable_fonts(text):
+    """Raise source font declarations, including shorthands and inline styles.
+
+    Only font properties change: 9px padding, animation geometry and source
+    content remain untouched. All current source font sizes use px (or clamps
+    with a larger px minimum); inherited small/sub/sup are covered by shared CSS.
+    """
+    def declaration(match):
+        return match[1] + re.sub(r'(?<![\w.-])([\d.]+)px',
+            lambda size: '12px' if float(size[1]) < 12 else size[0], match[2])
+    return re.sub(r'(?<![\w-])(font(?:-size)?\s*:\s*)([^;}"\']+)', declaration, text)
+
+
 def _palette(text):
     # Accent replacements only: charts, illustrative art and danger states retain
     # their semantic colours. The demo's primary action never uses shell blue.
@@ -78,7 +91,7 @@ def css(source):
     hover = '\n'.join(s + b for s, b in re.findall(r'([^{}]+)(\{[^{}]*\})', original)
                       if (':hover' in s or ':active' in s) and '@' not in s)
     hover = hover.replace(':hover', '[data-preview-hover]').replace(':active', '[data-preview-active]')
-    return _palette(original) + '\n' + _palette(hover) + '\n' + SHADOW_BASE + '\n' + (HERE / 'demo-accessibility.css').read_text()
+    return readable_fonts(_palette(original) + '\n' + _palette(hover) + '\n' + SHADOW_BASE + '\n' + (HERE / 'demo-accessibility.css').read_text())
 
 
 def _ui_script(source):
@@ -259,6 +272,8 @@ def markup(demo, prefix, interactive=False):
     classes = {name for value in re.findall(r'class="([^"]+)"', content) for name in value.split()}
     looping = bool(classes & (_loop_classes(kind) | {'carousel', 'morph-stage'})) or '<canvas' in content
     content = content.replace('href="javascript:void 0"', 'href="#"').replace("href='javascript:void 0'", "href='#'")
+    content = content.replace('点按钮，或直接按 ⌘K / Ctrl+K', '点按钮<span class="demo-shortcut-hint">，或直接按 ⌘K / Ctrl+K</span>')
+    content = content.replace('唤起命令面板 ⌘K', '唤起命令面板<span class="demo-shortcut-hint"> ⌘K</span>')
     extra = ''
     if kind == 'ui':
         overlays = _ui_inventory()[1]
@@ -297,7 +312,8 @@ def markup(demo, prefix, interactive=False):
     if kind == 'guide':
         attrs += f' data-guide="{escape(demo["section"])}"'
     result = f'<template data-demo-template data-demo-css="{escape(prefix)}demo-{kind}.css" data-demo-loop="{str(looping).lower()}" data-demo-static="{'true' if category == '静态演示' else 'false'}" data-demo-category="{escape(category)}"><article class="demo-root {cls}"{attrs}>{content}{extra}</article></template>'
-    return result
+    return re.sub(r'\bstyle=(["\'])(.*?)\1',
+                  lambda match: 'style=' + match[1] + readable_fonts(match[2]) + match[1], result, flags=re.S)
 
 
 def assets(entries):
@@ -318,12 +334,12 @@ def _assets():
         'demo-guide.css': css('<style>' + (ROOT / 'site-src/guides.css').read_text() + (ROOT / 'site-src/visual-styles.css').read_text() + '</style>'),
         'demo-skill-reference.css': css('<style>' + (ROOT / 'site-src/skills.css').read_text() + '</style>'),
         'demo-token.js': (HERE / 'token-demo.js').read_text(),
-        'demo-token.css': SHADOW_BASE + _gate_reduced_motion((HERE / 'token-demo.css').read_text()) + (HERE / 'demo-accessibility.css').read_text(),
+        'demo-token.css': readable_fonts(SHADOW_BASE + _gate_reduced_motion((HERE / 'token-demo.css').read_text()) + (HERE / 'demo-accessibility.css').read_text()),
         'demos.css': '.demo-scope{display:block;position:relative;min-width:0;width:100%;isolation:isolate}.demo-secondary{margin-top:16px}.demo-scope>template{display:none}\n',
     }
     for page in ('motion-demo-gallery', 'motion-demo-detail'):
         original = (ROOT / (page + '.html')).read_text()
-        result[page + '.css'] = _palette(_styles(original)) + '\n:root{--demo-primary:#6D28D9}a{color:var(--demo-primary)}a:focus-visible{outline-color:var(--demo-primary)}\n'
+        result[page + '.css'] = readable_fonts(_palette(_styles(original)) + '\n:root{--demo-primary:#6D28D9}a{color:var(--demo-primary)}a:focus-visible{outline-color:var(--demo-primary)}\n')
         result[page + '.html'] = re.sub(r'<style[^>]*>.*?</style>', f'<link rel="stylesheet" href="{page}.css"><link rel="icon" href="../favicon.svg" type="image/svg+xml">', original, flags=re.S)
     return result
 

@@ -3,7 +3,7 @@
   const $ = selector => document.querySelector(selector), $$ = selector => [...document.querySelectorAll(selector)];
   const search = $('#search-dialog'), drawer = $('#directory'), input = $('#search-input'), body = $('#search-body');
   let data = null, indexRequest = null, indexFailed = false;
-  const mobile = matchMedia('(max-width:760px)'), reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const mobile = matchMedia('(max-width:1023px)'), reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const escape = text => String(text).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   let announceTimer;
   function announce(message) { clearTimeout(announceTimer); $('#live').textContent = ''; announceTimer = setTimeout(() => { $('#live').textContent = message; }, 20); }
