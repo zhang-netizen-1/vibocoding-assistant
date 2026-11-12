@@ -150,6 +150,37 @@
           lift.setAttribute('aria-pressed', String(open));
         });
       }
+      if (scope.hasAttribute('data-interactive')) {
+        shadow.querySelectorAll('.ds-h-demo .tilt-card,.ds-h-demo .spot-card,.ds-h-demo .hvp-link,.ds-h-demo .hact-card,.ds-h-demo .magnet-btn').forEach(target => {
+          const toggle = () => {
+            const open = target.classList.toggle('touch-open');
+            target.classList.toggle('touch-closed', !open);
+            target.setAttribute('aria-expanded', String(open));
+          };
+          target.addEventListener('click', event => {
+            if (!nativeWindow.matchMedia('(hover:none), (pointer:coarse)').matches) return;
+            if (event.target.closest('.hact-bar')) return;
+            toggle();
+          });
+          target.addEventListener('pointerenter', event => {
+            if (event.pointerType === 'mouse') target.classList.remove('touch-closed');
+          });
+          target.addEventListener('focusin', () => target.classList.remove('touch-closed'));
+          target.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+              target.classList.remove('touch-open');
+              target.classList.add('touch-closed');
+              target.setAttribute('aria-expanded', 'false');
+              return;
+            }
+            if (event.target !== target || target.tagName === 'BUTTON') return;
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              toggle();
+            }
+          });
+        });
+      }
       const tooltip = shadow.querySelector('.ds-tooltip-demo .tip');
       if (tooltip && scope.hasAttribute('data-interactive')) {
         tooltip.querySelector('[data-tooltip-trigger]').addEventListener('click', () => {

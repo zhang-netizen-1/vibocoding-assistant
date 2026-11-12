@@ -1,0 +1,42 @@
+/* Independent component-hover-action skin. Source timing and interaction hooks are retained. */
+.demo-root .stage[data-effect="component-hover-action"] { display:flex; flex-direction:column; gap:16px; }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-panel { position:relative; width:min(100%,var(--ds-subject-width)); max-width:100%; min-width:0; min-height:0; padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-1); text-align:left; overflow:visible; font:400 14px/1.6 var(--ds-font); }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-heading { margin:0 0 20px; }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-title { display:block; margin:0; color:var(--ds-ink); font:600 var(--ds-demo-heading)/1.5 var(--ds-font); letter-spacing:0; }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-copy { display:block; margin:8px 0 0; color:var(--ds-ink-2); font:400 14px/1.6 var(--ds-font); }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-meta { display:block; margin:8px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-photo { display:block; position:relative; width:100%; overflow:hidden; border-radius:12px; }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-img { display:block; width:100%; height:auto; aspect-ratio:16/9; object-fit:cover; }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-control { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:var(--ds-demo-control); padding:10px 16px!important; border:1px solid var(--ds-accent)!important; border-radius:8px!important; background:var(--ds-accent)!important; color:var(--ds-surface)!important; font:500 14px/1.5 var(--ds-font); cursor:pointer; }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-control:hover { background:var(--ds-accent-hover)!important; filter:none; }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-control:active { background:var(--ds-accent-active)!important; }
+.demo-root .stage[data-effect="component-hover-action"] :is(button,a,[tabindex]):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.demo-root .stage[data-effect="component-hover-action"] button:disabled { opacity:.45; cursor:not-allowed; }
+.demo-root .stage[data-effect="component-hover-action"] .extra-scene .extra-heading { margin-bottom:20px; }
+.demo-root .stage[data-effect="component-hover-action"] .extra-scene .extra-heading strong { font:600 var(--ds-demo-heading)/1.5 var(--ds-font); color:var(--ds-ink); letter-spacing:0; }
+.demo-root .stage[data-effect="component-hover-action"] .extra-scene button { min-height:44px; padding:8px 12px!important; border-radius:8px!important; background:var(--ds-fill)!important; color:var(--ds-ink)!important; font:500 14px/1.5 var(--ds-font)!important; white-space:normal; cursor:pointer; }
+.demo-root .stage[data-effect="component-hover-action"] .extra-scene button:hover { background:var(--ds-accent-50)!important; }
+.demo-root .stage[data-effect="component-hover-action"] .extra-scene button:disabled { cursor:not-allowed; opacity:.45; }
+.demo-root .stage[data-effect="component-hover-action"] .extra-scene button[aria-pressed=true] { background:var(--ds-accent-50)!important; color:var(--ds-accent)!important; box-shadow:var(--ds-shadow-1)!important; }
+.demo-root .stage[data-effect="component-hover-action"] .extra-scene .extra-primary { background:var(--ds-accent)!important; color:var(--ds-surface)!important; }
+.demo-root .stage[data-effect="component-hover-action"] .extra-status { display:block; margin:16px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+@container demo-stage (max-width:480px) {
+  .demo-root .stage[data-effect="component-hover-action"] .ds-h-panel { padding:16px; }
+  .demo-root .stage[data-effect="component-hover-action"] .ds-h-heading { margin-bottom:16px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .demo-root .stage[data-effect="component-hover-action"] .ds-h-panel { scroll-behavior:auto; }
+}
+.demo-root .stage[data-effect="component-hover-action"] .hact-card.ds-h-panel { padding:0; overflow:hidden; border:1px solid var(--ds-line)!important; }
+.demo-root .stage[data-effect="component-hover-action"] .hact-media { position:relative; height:auto; aspect-ratio:16/9; background:var(--ds-fill); border-radius:15px 15px 0 0; overflow:hidden; }
+.demo-root .stage[data-effect="component-hover-action"] .hact-media .ds-h-img { height:100%; }
+.demo-root .stage[data-effect="component-hover-action"] .ds-h-cover-label { position:absolute; left:16px; bottom:12px; padding:4px 8px; color:var(--ds-surface); background:rgb(17 24 39 / .75); border-radius:6px; font-size:12px; }
+.demo-root .stage[data-effect="component-hover-action"] .hact-meta { min-height:72px; padding:16px 20px; gap:12px; background:var(--ds-surface); }
+.demo-root .stage[data-effect="component-hover-action"] .hact-meta b { color:var(--ds-ink); font-size:16px; }
+.demo-root .stage[data-effect="component-hover-action"] .hact-meta span { color:var(--ds-ink-2); font-size:12px; }
+.demo-root .stage[data-effect="component-hover-action"] .hact-bar { right:12px; bottom:84px; gap:8px; }
+.demo-root .stage[data-effect="component-hover-action"] .hact-bar button { min-width:44px; min-height:44px; padding:8px 12px; border:1px solid var(--ds-border); border-radius:8px; background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-2); font-size:14px; }
+.demo-root .stage[data-effect="component-hover-action"] .hact-bar button:last-child { color:var(--ds-danger); }
+.demo-root .stage[data-effect="component-hover-action"] .hact-card.touch-open .hact-bar { opacity:1; transform:none; }
+@container demo-stage (max-width:480px) { .demo-root .stage[data-effect="component-hover-action"] .hact-card.ds-h-panel { padding:0; } .demo-root .stage[data-effect="component-hover-action"] .hact-meta { padding:16px; } }
+.demo-root .stage[data-effect="component-hover-action"] .hact-card.touch-closed .hact-bar { opacity:0; transform:translateY(7px); }

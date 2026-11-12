@@ -666,8 +666,8 @@ class BatchCKindSkinTest(unittest.TestCase):
             else:
                 skips+=1
                 self.assertIn(entry['slug'],self.demos.KIND_SKIN_SKIPS.get(kind,()))
-        self.assertEqual(counts,{'ui':10,'motion':68,'guide':20,'token':4,'skill-reference':9})
-        self.assertEqual(samples,75)
+        self.assertEqual(counts,{'ui':10,'motion':31,'guide':20,'token':4,'skill-reference':9})
+        self.assertEqual(samples,112)
         self.assertEqual(skips,6)
         self.assertEqual(sum(counts.values())+samples+skips,192)
 
@@ -919,3 +919,55 @@ class BatchGSkinTest(unittest.TestCase):
         result = self.Document(self.demos.markup(sortable['demo'], './', True, 'sortable-table')).root
         self.assertIn('guide-sortable-table.css', result.one('template').attrs['data-skin-css'])
         self.assertEqual([node.attrs['data-guide-mode'] for node in result.find_all('button')], ['0', '1'])
+
+
+class BatchHSkinTest(unittest.TestCase):
+    setUpClass = classmethod(DemoSpecBuildTest.setUpClass.__func__)
+    SLUGS = 'component-tilt component-spotlight component-flip component-press component-switch component-morph tab-indicator inline-expand component-magnetic component-hover-preview component-hover-action component-ripple component-underline accordion overlay-menu overlay-drawer overlay-modal overlay-tooltip overlay-sheet toast-stack data-count data-bars data-reorder data-success filter-grid chart-morph skeleton-handoff data-input-shake data-skeleton text-stagger text-mask text-typewriter text-scramble text-draw odometer scroll-highlight text-text-morph'.split()
+
+    def test_h_individual_skin_publication_and_source_contracts(self):
+        assets = self.demos.assets(self.entries)
+        for slug in self.SLUGS:
+            with self.subTest(slug=slug):
+                entry = next(row for row in self.entries if row['slug'] == slug and row['demo']['kind'] == 'motion')
+                name = 'demo-skins/motion-' + slug
+                self.assertTrue((ROOT / 'site-src/redesign' / (name + '.css')).is_file())
+                html = self.demos.markup(entry['demo'], '../../assets/redesign/', True, slug)
+                result = self.Document(html).root
+                self.assertEqual(result.one('template').attrs['data-skin-css'], '../../assets/redesign/' + name + '.css')
+                self.assertNotIn('data-kind-css', result.one('template').attrs)
+                self.assertEqual(len(result.find_all(cls='ds-h-panel')), 1)
+                original = self.Document(entry['demo']['html']).root
+                nodes = result.find_all()
+                for node in original.find_all():
+                    classes = set(node.attrs.get('class', '').split())
+                    protected = {key: ('#' if key == 'href' and value == 'javascript:void 0' else value)
+                                 for key,value in node.attrs.items() if key != 'class'}
+                    candidates = [item for item in nodes if item.tag == node.tag and classes <= set(item.attrs.get('class', '').split())]
+                    self.assertTrue(any(all(key in item.attrs and item.attrs[key] == value for key,value in protected.items()) for item in candidates), (slug,node.tag,protected))
+                    for child in node.children:
+                        if isinstance(child, str) and child.strip():
+                            self.assertIn(child.strip(), result.text(), slug)
+                hints = result.find_all(cls='ds-hint')
+                self.assertEqual(len(hints), 1)
+                self.assertIn(hints[0], result.one(cls='stage').children)
+                self.assertEqual((DIST / 'assets/redesign' / (name + '.css')).read_text(), assets[name + '.css'])
+
+    def test_h_accordion_uses_motion_kind_and_images_resolve(self):
+        import posixpath
+        manifest = json.loads((ROOT / 'site-src/demo-assets/manifest.json').read_text())['images']
+        filenames = {name for image in manifest for name in image['files'].values()}
+        for slug in self.SLUGS:
+            entry = next(row for row in self.entries if row['slug'] == slug and row['demo']['kind'] == 'motion')
+            for depth in range(4):
+                prefix = '../' * depth + 'assets/redesign/'
+                markup = self.demos.markup(entry['demo'], prefix, True, slug)
+                self.assertNotIn('{{demo-assets}}', markup)
+                for image in self.Document(markup).root.find_all('img'):
+                    self.assertTrue(image.attrs['alt'])
+                    self.assertIn(image.attrs['src'].split('/')[-1], filenames)
+                    self.assertTrue(image.attrs['src'].startswith(posixpath.normpath(prefix + '../../demo-assets') + '/'))
+                    self.assertIn('640w', image.attrs['srcset'])
+                    self.assertIn('1280w', image.attrs['srcset'])
+        ui = next(row for row in self.entries if row['slug'] == 'accordion' and row['demo']['kind'] == 'ui')
+        self.assertIn('ui-accordion.css', self.demos.markup(ui['demo'], './', True, 'accordion'))

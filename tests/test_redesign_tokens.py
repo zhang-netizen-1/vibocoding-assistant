@@ -357,3 +357,14 @@ class BatchFTokenTest(unittest.TestCase):
         css = (REDESIGN / 'demo-skins/ui-cmdk.css').read_text()
         self.assertIn('.demo-root.ds-stage:has(.cmdk-mask.show) { min-height:560px; }', css)
         self.assertIn('var(--ds-shadow-3)', css)
+
+    def test_h_motion_skins_keep_subject_size_tokens_and_motion_gate(self):
+        slugs = 'component-tilt component-spotlight component-flip component-press component-switch component-morph tab-indicator inline-expand component-magnetic component-hover-preview component-hover-action component-ripple component-underline accordion overlay-menu overlay-drawer overlay-modal overlay-tooltip overlay-sheet toast-stack data-count data-bars data-reorder data-success filter-grid chart-morph skeleton-handoff data-input-shake data-skeleton text-stagger text-mask text-typewriter text-scramble text-draw odometer scroll-highlight text-text-morph'.split()
+        for slug in slugs:
+            with self.subTest(slug=slug):
+                css = (REDESIGN / 'demo-skins' / ('motion-' + slug + '.css')).read_text()
+                for token in ('width:min(100%,var(--ds-subject-width))', 'min-width:0', 'var(--ds-surface)', 'var(--ds-shadow-1)', 'prefers-reduced-motion', 'data-demo-motion-once', ':focus-visible', '@container demo-stage (max-width:480px)'):
+                    self.assertIn(token, css)
+                self.assertNotIn('.ds-hint', css)
+                self.assertNotRegex(css, r'@import|@font-face|https?://|font-size:\s*(?:[0-9]|1[01])px')
+                self.assertNotIn('@keyframes', css)

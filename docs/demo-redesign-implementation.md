@@ -542,3 +542,70 @@ Headless Chromium 启动时仍收到 `MachPortRendezvousServer ... Permission de
 对 212 份既有 `site-src` 文件逐一核对 SHA-256，修改文件为 `demo-spec.css` 与 `demos.py` 两份，其余 210 份一致。52 份独立皮肤为新增。验证日志、九批构建日志、`source-check.json`、`verification.json`、本地舞台夹具与真实详情页夹具位于 `output/demo-redesign/G/`。
 
 工作起点为本地时间 03:02:20，24 分钟工作截止为 03:26:20，26 分钟进程截止为 03:28:20。`output/demo-redesign/G/run.py` 在工作截止后拒绝启动新任务，并在进程截止时强制结束本轮构建与测试子进程组。本段最终复核于本地时间 03:22:11 完成，耗时约 19.86 分钟，处于 24 分钟工作窗口内。
+
+## H 段
+
+日期为 2026-11-13。本段按指定顺序完成 37 个交互与动效条目的独立 CSS 与 HTML 皮肤，共新增 74 份皮肤文件。前十二批各完成 3 个条目后构建，第十三批完成最后 1 个条目后构建，13 批均通过。精修与测试同步后另行执行最终构建，产物为 217 页、192 条目，主演示与 secondary 合计 194 份。
+
+### 完成的 slug
+
+| 分组 | 完成条目 |
+|---|---|
+| component，14 条 | `component-tilt`、`component-spotlight`、`component-flip`、`component-press`、`component-switch`、`component-morph`、`tab-indicator`、`inline-expand`、`component-magnetic`、`component-hover-preview`、`component-hover-action`、`component-ripple`、`component-underline`、`accordion` |
+| overlay，6 条 | `overlay-menu`、`overlay-drawer`、`overlay-modal`、`overlay-tooltip`、`overlay-sheet`、`toast-stack` |
+| data，9 条 | `data-count`、`data-bars`、`data-reorder`、`data-success`、`filter-grid`、`chart-morph`、`skeleton-handoff`、`data-input-shake`、`data-skeleton` |
+| text，8 条 | `text-stagger`、`text-mask`、`text-typewriter`、`text-scramble`、`text-draw`、`odometer`、`scroll-highlight`、`text-text-morph` |
+
+跳过条目为零。全部采用 `motion-<slug>.css/html`。交互栏目中的手风琴使用 `motion-accordion`，组件栏目的 `ui-accordion` 沿用现有文件，测试覆盖两者的独立接入。
+
+### 主体与视觉精修
+
+倾斜与聚光应用于工作室、会客厅图片卡片。翻面展示庭院采风计划与行程说明。按压按钮放入文件交付卡片，开关放入通知偏好设置，按钮变形用于项目资料分享。标签指示器、行内展开、手风琴分别承载项目概览、任务看板与完整问题说明。悬停预览展示手册封面与页数，悬停操作栏承载真实庭院封面与编辑、复制、删除操作。磁吸与涟漪按钮分别放入项目创建与灵感收录场景，下划线沿用工作室导航。
+
+浮层使用工作室项目上下文、真实素材缩略图与完整面板内容。菜单展开时预留 224px 流式空间，抽屉、弹窗限制在承托面内部，面板采用 shadow-3。底部弹层保留拖动手柄和原关闭阈值，手柄命中区域增至 64×24px。通知列表按实际内容增高，继续保持最多三条的原逻辑。
+
+数据动效使用收藏统计、工作日访问图表、任务优先级、交付结果、带图片的作品筛选、资料加载与成员邀请表单。文字动效放入有配图、分类和正文的中文内容卡片，路径描画嵌入采风路线卡，数字滚动承载实时互动统计，随读高亮保留内部滚动容器，文字变形承载项目工作流。
+
+所有图片均来自已有 `site-src/demo-assets/`，带 640 / 1280 的 srcset、中文 alt、清单中的主色背景和 cover 裁切。主体使用 `width:min(100%,var(--ds-subject-width))`，沿用原公共舞台与提示胶囊机制。按现有外框与 CSS 规则推算，1440 档主体约占舞台 60%，390 档主体两侧约为 19px。四边实际像素净距、字体排版、图片裁切与视觉精致度尚待浏览器核验。
+
+### 行为、时序与减少动态
+
+来源动效生成器、原始 CSS / JS、条目数据、提示词、验收文字与公共舞台规格均保持原文件内容。37 条回归逐节点核对原 id、class、data、ARIA、内联样式、控件属性和文字，提示仍为原 `.stage` 的直接子项。原有链接规范化继续将演示中的 `javascript:void 0` 转为 `#`。
+
+独立皮肤没有新增关键帧，也没有覆盖正常模式中的原动画时长或曲线。按压的 80ms、翻面的 500ms、标签指示器的 320ms 与原曲线、图表的 550ms 与原曲线均继续来自来源样式。JavaScript 回归核对按钮变形的 420 / 1050ms、资料交接的 520 / 230ms 和数字滚动的 850ms，数字轨道继续使用原 47px 步长。
+
+现有 `demo-runtime.js` 增加仅针对 `.ds-h-demo` 五种悬停主体的触屏点按复原、键盘 Enter / Space、Esc 关闭和状态同步。原生按钮保留原键盘触发方式，鼠标进入与重新聚焦会恢复悬停可见性。手机提示通过现有 `data-touch-hint` 机制切换。其余栏目、外框样式与公共胶囊规则沿用现状。
+
+减少动态模式下，倾斜、磁吸、排序位移停止，文字、柱状图与描画保留来源最终状态。两类骨架演示显示已准备好的资料内容，随读文字显示最终高亮。所有新增减少动态规则沿用 `data-demo-motion-once` / `data-demo-motion-step` 门控，主动播放入口继续由原生命周期处理。
+
+### 测试同步与结果
+
+既有测试保留。类型皮肤数量同步为 ui 10、motion 31、guide 20、token 4、skill-reference 9，独立皮肤 112、特殊风格排除 6，总计 192。
+
+新增测试覆盖 37 条独立皮肤的发布、来源节点和原文、提示父容器、同名手风琴、四层相对资源路径、令牌引用和减少动态门控。JavaScript 测试补充来源交互与明确时序，并直接执行新触屏监听器，核对五种主体的首次点按、再次点按、键盘关闭、原生按钮按键以及鼠标和聚焦恢复。
+
+`tests/demo_h_browser.js` 已接入原 `demo_redesign_headless.cjs`，包含 H 段 37 条路径、主体四边与提示净距、桌面宽度比例及可交互状态断言。原 G 段手风琴检查增加组件栏目范围，以分别检查两个同名条目。浏览器脚本通过语法检查，实际浏览器断言尚未执行。
+
+| 验证项目 | 结果 |
+|---|---|
+| 13 批构建与最终构建 | 通过，217 页、192 条目 |
+| `test_demo_audit` | 1 项通过 |
+| `test_redesign_tokens` | 20 项通过 |
+| `test_site_build` | 37 项通过 |
+| `node tests/token_demos.cjs` | 五类 token 的交互、对比度、主题与存储回退通过 |
+| `test_redesign_javascript` | 15 项通过，含 194 份演示初始化与 H 段交互、时序和触屏监听器回归 |
+| `node tests/audit_fix_batch3.cjs` | 十组状态回调与减少动态生命周期通过 |
+| CSS / HTML / Python / JS | 37 份独立 CSS 经 PostCSS 解析及令牌核对，37 份 HTML 标签平衡与 ID 唯一，3 份 Python 测试 AST 与两份浏览器脚本语法检查通过 |
+| 浏览器 1440 / 390 | 沙箱阻止启动，0 张截图，实际视觉与像素几何待验收 |
+
+对 279 份基线文件逐一核对 SHA-256，唯一变化的既有源文件为 `site-src/redesign/demo-runtime.js`。74 份 H 段皮肤为新增。基线覆盖现有 `site-src`、演示规格与来源动效文件，外框和原有皮肤通过哈希核对。
+
+### 未完成事项与时间边界
+
+37 个指定条目的皮肤与自动测试已经完成。1440 / 390 截图、真实渲染的四边 16px 与 55–66% 主体比例验收、看图后的逐条视觉复核仍待执行。
+
+本轮仅尝试 Playwright 自带的 `chrome-headless-shell`，使用独立临时配置目录。启动阶段收到 `MachPortRendezvousServer ... Permission denied (1100)`，进程在渲染前退出。按本轮约束跳过浏览器验证。证据保存在 `output/demo-redesign/H/headless-attempt.log`，构建、测试、CSS / HTML 校核、基线摘要与完成清单位于同目录。
+
+工作起点为本地时间 03:32:16，24 分钟工作截止为 03:56:16，26 分钟进程截止为 03:58:16。`output/demo-redesign/H/run.py` 在工作截止后拒绝启动新任务，并在进程截止时强制终止本轮构建与测试子进程组。
+
+本段最终复核于本地时间 03:52:32 完成，工作耗时约 20.28 分钟，处于 24 分钟工作窗口内。

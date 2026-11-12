@@ -12,6 +12,8 @@ let playwright;
 try { playwright = require('playwright'); }
 catch { playwright = require('/Users/zhiguang/Downloads/Kreator/node_modules/playwright'); }
 const demoGChecks = require('./demo_g_browser.js');
+const demoHChecks = require('./demo_h_browser.js');
+const hSlugs = ["component-tilt", "component-spotlight", "component-flip", "component-press", "component-switch", "component-morph", "tab-indicator", "inline-expand", "component-magnetic", "component-hover-preview", "component-hover-action", "component-ripple", "component-underline", "accordion", "overlay-menu", "overlay-drawer", "overlay-modal", "overlay-tooltip", "overlay-sheet", "toast-stack", "data-count", "data-bars", "data-reorder", "data-success", "filter-grid", "chart-morph", "skeleton-handoff", "data-input-shake", "data-skeleton", "text-stagger", "text-mask", "text-typewriter", "text-scramble", "text-draw", "odometer", "scroll-highlight", "text-text-morph"];
 const workspace = path.resolve(__dirname, '..');
 const dist = path.join(workspace, 'dist');
 const shots = path.resolve(process.env.SHOTS_DIR || path.join(workspace, 'output/demo-redesign/D'));
@@ -31,6 +33,7 @@ const routes = [
     .map(slug => `components/${slug}/`),
   ...'cmdk sidebar accordion breadcrumb pagination steps dropdown context-menu mega-menu footer badge chip avatar kpi timeline badge-dot view-switch card-link split-button fab back-to-top table-fixed table-columns table-edit sortable-table load-more'.split(' ').map(slug => `components/${slug}/`)
 ];
+routes.push(...hSlugs.map(slug => `interactions/${slug}/`));
 const galleries = ['basics/', 'components/', 'interactions/', 'scenarios/', 'ai/'];
 const report = {started: new Date().toISOString(), checks: [], failures: [], pageErrors: [], resourceErrors: [], screenshots: [], galleries: []};
 const mime = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.avif':'image/avif','.woff2':'font/woff2'};
@@ -421,7 +424,7 @@ async function batchFChecks(page, route, width) {
 async function specimenGeometry(page) {
   const result=await page.locator('.demo-scope[data-interactive]').first().evaluate(scope=>{
     const root=scope.shadowRoot.querySelector('.ds-stage');
-    const subject=root.querySelector('.ds-surface,.lift-card,.mini-scroll,.carousel,.token-demo,.mini-page,.skill-card,.ds-states-panel,.card2,.ds-toast-panel,.ds-navbar-panel,.ds-table-panel,.ds-tabs-panel,.ds-switch-panel,.ds-select-panel,.ds-hold-panel,.scene-window,.scene-curtain,.art,.canvas>section[class^="ds-"],.guide-card-stage>section[class^="ds-"]');
+    const subject=root.querySelector('.ds-h-panel,.ds-surface,.lift-card,.mini-scroll,.carousel,.token-demo,.mini-page,.skill-card,.ds-states-panel,.card2,.ds-toast-panel,.ds-navbar-panel,.ds-table-panel,.ds-tabs-panel,.ds-switch-panel,.ds-select-panel,.ds-hold-panel,.scene-window,.scene-curtain,.art,.canvas>section[class^="ds-"],.guide-card-stage>section[class^="ds-"]');
     const hint=root.querySelector('.ds-hint');
     const r=root.getBoundingClientRect(),s=subject.getBoundingClientRect(),h=hint?.getBoundingClientRect();
     const style=getComputedStyle(root);
@@ -622,9 +625,13 @@ function catalogInventory() {
         await batchEChecks(page,route,width);
         await batchFChecks(page,route,width);
         const slug = route.split('/')[1];
-        if ('cmdk sidebar accordion breadcrumb pagination steps dropdown context-menu mega-menu footer badge chip avatar kpi timeline badge-dot view-switch card-link split-button fab back-to-top table-fixed table-columns table-edit sortable-table load-more'.split(' ').includes(slug)) {
+        if (route.startsWith('components/') && 'cmdk sidebar accordion breadcrumb pagination steps dropdown context-menu mega-menu footer badge chip avatar kpi timeline badge-dot view-switch card-link split-button fab back-to-top table-fixed table-columns table-edit sortable-table load-more'.split(' ').includes(slug)) {
           const behavior = await page.locator('.demo-scope[data-interactive]').first().evaluate(demoGChecks,slug);
           assert.ok(behavior.checks);
+        }
+        if (route.startsWith('interactions/') && hSlugs.includes(slug)) {
+          const behavior = await page.locator('.demo-scope[data-interactive]').first().evaluate(demoHChecks,slug);
+          assert.ok(behavior.checks.length >= 3);
         }
       });
       await check(`${label}: screenshot`, async () => {

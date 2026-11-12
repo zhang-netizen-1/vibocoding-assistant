@@ -124,6 +124,87 @@ assert.equal(sortable.root.querySelectorAll('tbody tr').map(row => Number(row.ce
 sortable.fire(sortable.root.querySelector('[data-guide-mode="0"]'), 'click');
 assert.equal(sortable.root.querySelectorAll('th')[0].getAttribute('aria-sort'), 'ascending');
 console.log('Batch G: extracted guide table sorting and reset passed.');
+const flipH = interactiveModel('e-component-flip');
+const flipButtonH = flipH.root.querySelector('.flip-card');
+flipH.fire(flipButtonH, 'click');
+assert.equal(flipButtonH.getAttribute('aria-pressed'), 'true');
+flipH.fire(flipButtonH, 'click');
+assert.equal(flipButtonH.getAttribute('aria-pressed'), 'false');
+const switchH = interactiveModel('e-component-switch');
+const switchButtonH = switchH.root.querySelector('.switch-demo');
+switchH.fire(switchButtonH, 'click');
+assert.equal(switchButtonH.getAttribute('aria-checked'), 'true');
+switchH.fire(switchButtonH, 'click');
+assert.equal(switchButtonH.getAttribute('aria-checked'), 'false');
+const morphH = interactiveModel('e-component-morph');
+const morphButtonH = morphH.root.querySelector('.morph-demo');
+morphH.fire(morphButtonH, 'click');
+assert(morphButtonH.disabled);
+assert([...morphH.timeouts.values()].some(timer => timer.delay === 420));
+morphH.flushTimeouts();
+assert(morphButtonH.classList.contains('done'));
+assert.equal(morphButtonH.disabled, false);
+assert([...morphH.timeouts.values()].some(timer => timer.delay === 1050));
+morphH.flushTimeouts();
+assert.equal(morphButtonH.textContent, '执行动作 →');
+const menuH = interactiveModel('e-overlay-menu');
+menuH.fire(menuH.root.querySelector('[data-action="toggle"]'), 'click');
+assert.equal(menuH.root.querySelector('.menu-items').hidden, false);
+menuH.fire(menuH.root.querySelector('[role="menuitem"]'), 'click');
+assert.equal(menuH.root.querySelector('.menu-items').hidden, true);
+const tabH = interactiveModel('e-extra-tab-indicator');
+tabH.fire(tabH.root.querySelector('#extra-tab-activity'), 'click');
+assert.equal(tabH.root.querySelector('#extra-tab-activity').getAttribute('aria-selected'), 'true');
+assert.equal(tabH.root.querySelector('.extra-tab-indicator').style.transform, 'translateX(100%)');
+const inlineH = interactiveModel('e-extra-inline-expand');
+const inlineButtonH = inlineH.root.querySelector('.extra-inline-card');
+inlineH.fire(inlineButtonH, 'click');
+assert.equal(inlineButtonH.getAttribute('aria-expanded'), 'true');
+inlineH.fire(inlineButtonH, 'click');
+assert.equal(inlineButtonH.getAttribute('aria-expanded'), 'false');
+const faqH = interactiveModel('e-extra-accordion');
+const faqButtonsH = faqH.root.querySelectorAll('[data-extra-action="accordion"]');
+faqH.fire(faqButtonsH[1], 'click');
+assert.equal(faqButtonsH[1].getAttribute('aria-expanded'), 'true');
+assert.equal(faqButtonsH[0].getAttribute('aria-expanded'), 'false');
+const reorderH = interactiveModel('e-data-reorder');
+const listH = reorderH.root.querySelector('.sort-list');
+const firstH = listH.firstElementChild;
+reorderH.fire(reorderH.root.querySelector('[data-action="sort"]'), 'click');
+assert.equal(listH.lastElementChild, firstH);
+const filterH = interactiveModel('e-extra-filter-grid');
+filterH.fire(filterH.root.querySelector('[data-value="摄影"]'), 'click');
+filterH.flushTimeouts();
+assert.equal(filterH.root.querySelector('.extra-filter-empty').hidden, false);
+assert(filterH.root.querySelectorAll('.extra-gallery-tile').every(node => node.hidden));
+filterH.fire(filterH.root.querySelector('[data-value="全部"]'), 'click');
+filterH.flushTimeouts();
+assert(filterH.root.querySelectorAll('.extra-gallery-tile').every(node => !node.hidden));
+const chartH = interactiveModel('e-extra-chart-morph');
+chartH.fire(chartH.root.querySelector('[data-value="previous"]'), 'click');
+assert(chartH.root.querySelector('.extra-chart').getAttribute('aria-label').startsWith('上周'));
+assert(chartH.root.querySelector('.extra-status').textContent.includes('260'));
+const handoffH = interactiveModel('e-extra-skeleton-handoff');
+handoffH.fire(handoffH.root.querySelector('[data-extra-action="load-content"]'), 'click');
+assert([...handoffH.timeouts.values()].some(timer => timer.delay === 520));
+handoffH.flushTimeouts();
+assert([...handoffH.timeouts.values()].some(timer => timer.delay === 230));
+handoffH.flushTimeouts();
+assert.equal(handoffH.root.querySelector('.extra-content-skeleton').hidden, true);
+assert.equal(handoffH.root.querySelector('.extra-content-real').hidden, false);
+const shakeH = interactiveModel('e-data-input-shake');
+shakeH.fire(shakeH.root.querySelector('.shake-go'), 'click');
+assert.equal(shakeH.root.querySelector('.shake-err').hidden, false);
+shakeH.root.querySelector('.shake-input').value = 'studio@example.com';
+shakeH.fire(shakeH.root.querySelector('.shake-go'), 'click');
+assert.equal(shakeH.root.querySelector('.shake-err').hidden, true);
+const rollH = interactiveModel('e-extra-odometer');
+rollH.fire(rollH.root.querySelector('[data-extra-action="roll"]'), 'click');
+assert([...rollH.timeouts.values()].some(timer => timer.delay === 850));
+rollH.flushTimeouts();
+assert.equal(rollH.root.querySelector('.extra-digits').getAttribute('aria-label'), '当前数值 205');
+console.log('Batch H: flip, switch, 420/1050ms morph, menu, tab indicator, inline expansion, accordion, reorder, filtering, chart, 520/230ms handoff, email and 850ms odometer passed.');
+
 
 ''')
             result=subprocess.run(['node',str(runner),str(fixture)],cwd=ROOT,text=True,capture_output=True)
@@ -134,6 +215,7 @@ console.log('Batch G: extracted guide table sorting and reset passed.');
         self.assertIn('Batch B: skeleton loading/reduced motion',result.stdout)
         self.assertIn('Batch F: checkbox, slider, OTP paste/backspace', result.stdout)
         self.assertIn('Batch G: extracted guide table sorting and reset passed.', result.stdout)
+        self.assertIn('Batch H: flip, switch, 420/1050ms morph', result.stdout)
 
     def test_real_index_matching_ranking_and_near_names(self):
         code = r'''
@@ -412,6 +494,74 @@ assert.equal(specimen.preview.children.length,1);
 assert.equal(specimen.preview.children[0],output);
 assert.equal(output.children[1].textContent,'第二条反馈');
 console.log('Scoped toast icon/title/description, plain feedback and output reuse passed.');
+'''
+        result = subprocess.run(['node', '-e', code], cwd=ROOT, text=True, capture_output=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+
+class BatchHRuntimeTest(unittest.TestCase):
+    def test_h_touch_preview_is_scoped_and_keeps_keyboard_actions(self):
+        runtime = (ROOT / 'site-src/redesign/demo-runtime.js').read_text()
+        self.assertIn("'.ds-h-demo .tilt-card,.ds-h-demo .spot-card,.ds-h-demo .hvp-link,.ds-h-demo .hact-card,.ds-h-demo .magnet-btn'", runtime)
+        self.assertIn("target.classList.toggle('touch-closed', !open)", runtime)
+        self.assertIn("target.setAttribute('aria-expanded', String(open))", runtime)
+        self.assertIn("event.target !== target || target.tagName === 'BUTTON'", runtime)
+
+    def test_h_touch_and_keyboard_listener_behavior_in_node(self):
+        code = r'''
+const fs = require('node:fs'), assert = require('node:assert/strict');
+const runtime = fs.readFileSync('site-src/redesign/demo-runtime.js', 'utf8');
+const marker = runtime.indexOf("        shadow.querySelectorAll('.ds-h-demo");
+const start = runtime.lastIndexOf("      if (scope.hasAttribute('data-interactive')) {", marker);
+const end = runtime.indexOf("      const tooltip =", marker);
+const source = runtime.slice(start, end);
+let touch = true;
+function target(tagName = 'DIV') {
+  const classes = new Set(), listeners = new Map(), attrs = {};
+  return {tagName, attrs, listeners,
+    classList:{
+      contains:name => classes.has(name),
+      add:name => classes.add(name),
+      remove:name => classes.delete(name),
+      toggle(name, force) {const value = force === undefined ? !classes.has(name) : force; value ? classes.add(name) : classes.delete(name); return value;}
+    },
+    setAttribute(name, value) {attrs[name] = value;},
+    addEventListener(name, callback) {listeners.set(name, callback);},
+    closest() {return null;}
+  };
+}
+const targets = [target(), target(), target('SPAN'), target(), target('BUTTON')];
+new Function('scope','shadow','nativeWindow',source)(
+  {hasAttribute:name => name === 'data-interactive'},
+  {querySelectorAll:() => targets},
+  {matchMedia:() => ({matches:touch})}
+);
+for (const node of targets) {
+  node.listeners.get('click')({target:node});
+  assert(node.classList.contains('touch-open'));
+  assert.equal(node.attrs['aria-expanded'], 'true');
+  node.listeners.get('click')({target:node});
+  assert(!node.classList.contains('touch-open'));
+  assert(node.classList.contains('touch-closed'));
+  node.listeners.get('pointerenter')({pointerType:'mouse'});
+  assert(!node.classList.contains('touch-closed'));
+}
+touch = false;
+const node = targets[0];
+node.listeners.get('click')({target:node});
+assert(!node.classList.contains('touch-open'));
+let prevented = false;
+node.listeners.get('keydown')({target:node,key:'Enter',preventDefault(){prevented=true;}});
+assert(prevented && node.classList.contains('touch-open'));
+node.listeners.get('keydown')({target:node,key:'Escape'});
+assert(!node.classList.contains('touch-open'));
+assert.equal(node.attrs['aria-expanded'], 'false');
+node.listeners.get('focusin')();
+assert(!node.classList.contains('touch-closed'));
+const button = targets[4];
+button.listeners.get('keydown')({target:button,key:'Enter',preventDefault(){throw new Error('Native button key was intercepted');}});
+assert(!button.classList.contains('touch-open'));
+console.log('Five H touch targets, second-tap close, keyboard open/Escape, native button keys and pointer/focus restoration passed.');
 '''
         result = subprocess.run(['node', '-e', code], cwd=ROOT, text=True, capture_output=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
