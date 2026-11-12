@@ -28,3 +28,19 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
 3. 复制 demo-spec.md 到 docs/，demo-assets 到 site-src/demo-assets/，本文件到 docs/demo-redesign-progress.md，提交一次。
 4. 给 Codex 跑 A 段：`cd ~/Downloads/vibocoding-demo-redesign && nohup perl -e 'alarm 2400; exec @ARGV' ~/.codex/plugins/.plugin-appserver/codex-cli/bin/codex exec -C "$PWD" -s workspace-write - < ~/Downloads/设计意图测评台/demo-redesign-work/codex_brief_A.md > ~/Downloads/设计意图测评台/demo-redesign-work/codex_log_A.txt 2>&1 &`（Mac 上没有 timeout 命令，用 perl alarm 限时）。之后的 B 段做 modal、tooltip、scroll-reveal、grid、skeleton、carousel；C 段做两个 color、dashboard、frontend-design；再往后按栏目铺开。原计划是按 impl-plan.md 给 Codex 下任务：先做 demo-spec.css、注入和皮肤机制，再做 13 个样板；每批由我提交（Codex 写不了 git index）。
 5. 先截改前的图：用 audit-fixes 的构建，1440 和 390 两种宽度，每个样板一张。
+
+## 第 2 段（11-13 00:06–00:45）
+- caffeinate 已开（6 小时）。`/tmp/b4full.log` 的完整 batch4 **没通过**：1449 项检查里有 4 项失败，都是 `components/states/` 在触屏模式下（390、768、1023、1440 四种宽度）有 1 个点击区小于 44px。所以**没有**打「audit-fixes final」空提交。
+- worktree `~/Downloads/vibocoding-demo-redesign`，分支 `demo-redesign`，从 audit-fixes 的 e6827c5 拉出。提交：
+  - f5a50b2：规格、图片库、进度记录；
+  - ffe689c：A 段，公共层（demo-spec.css、皮肤机制 demo-skins/<kind>-<slug>.css/.html、图片发布）和 4 个样板；
+  - a2cf161：A 段返工，提示胶囊占位、卡片描边、输入框标签、点阵。
+- Codex 的沙箱起不了无界面浏览器，截图和视觉审查都由执行者在沙箱外做。Codex 的实施记录在 `docs/demo-redesign-implementation.md`。
+- 预览：`http://127.0.0.1:4181/vibocoding-assistant/`。服务目录是 `demo-redesign-work/preview4181`，里面的软链指向 worktree 的 dist，需要时用 `python3 -m http.server 4181` 重启。
+- 全站检查（脚本 `allpages.cjs`，212 页，1440/768/390 三种宽度）：没有横向溢出，也没有 JS 报错。只有 6 个请求失败，都是 1440 宽最先加载的几页，原因是服务刚启动、加载撞车；那几个资源单独请求都返回 200。
+- 改后截图：Mac `demo-redesign-work/shots/after-A/`，box `/workspace/bench/demo-redesign/after-A/`；改前截图在 box 的 `before/`。前后对比总览：box `contact_sheet_A_before_after.jpg`。
+
+## 下一段：先修这些
+1. **390 宽内容超出 4:3 舞台**：component-lift 和 view-crossfade 的卡片贴着或超出舞台上下边，提示胶囊被截掉。要按规格「放不下就增高」，或在手机上缩小主体。改完要在 390 宽量一遍每个样板的舞台和内容边界。
+2. 按钮缺一张悬停、按下、聚焦状态的截图证据（目前只截了静止状态），去状态切换页 `components/states/` 补截。
+3. 然后做 B 段：modal、tooltip、scroll-reveal、grid、skeleton、carousel。说明照 codex_brief_A.md 改写成 codex_brief_B.md，跑 Codex 时用 `perl alarm` 限 25 分钟。Codex 的沙箱不能截图。
