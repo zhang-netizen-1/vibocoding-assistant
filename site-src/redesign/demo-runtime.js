@@ -83,10 +83,16 @@
       output.textContent = message;
     }
     function mount() {
-      shadow.replaceChildren();
-      const link = nativeDocument.createElement('link');link.rel = 'stylesheet';link.href = template.dataset.demoCss;
-      shadow.append(link);
-      if(template.dataset.stateCss){const states=nativeDocument.createElement('link');states.rel='stylesheet';states.href=template.dataset.stateCss;shadow.append(states);}
+      // Keep already-loaded stylesheet links across remounts (replay, reset,
+      // state changes) so the rebuilt demo never renders unstyled for a frame.
+      let link = shadow.querySelector('link[data-demo-sheet="demo"]');
+      if (link) Array.from(shadow.children).forEach(node => {if (!node.hasAttribute('data-demo-sheet')) node.remove();});
+      else shadow.replaceChildren();
+      if (!link) {
+        link = nativeDocument.createElement('link');link.rel = 'stylesheet';link.href = template.dataset.demoCss;link.dataset.demoSheet = 'demo';
+        shadow.append(link);
+        if(template.dataset.stateCss){const states=nativeDocument.createElement('link');states.rel='stylesheet';states.href=template.dataset.stateCss;states.dataset.demoSheet='state';shadow.append(states);}
+      }
       shadow.append(template.content.cloneNode(true));
       body = shadow.querySelector('.demo-root');
       scope.removeAttribute('data-demo-playing');
@@ -99,15 +105,16 @@
       primeVirtualList();
       particlePreview(false);
       fitGallery();
-      link.addEventListener('load', () => {
+      const onSheet = () => {
         if (!shadow.contains(link)) return;
         if (!scope.hasAttribute('data-demo-playing')) primeVirtualList();
         fitGallery();
         if (scope.hasAttribute('data-demo-motion-once')) scheduleMotionEnd();
         if (scope.hasAttribute('data-demo-motion-step')) renderManualPhase();
-      }, {once:true});
+      };
+      if (link.sheet) queueMicrotask(onSheet); else link.addEventListener('load', onSheet, {once:true});
       const miniStage=scope.closest('.mini-stage');
-      if(miniStage&&typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(()=>{if(!scope.isConnected){observer.disconnect();return;}fitGallery();});observer.observe(miniStage);cleanup.push(()=>observer.disconnect());}
+      if(miniStage&&typeof ResizeObserver!=='undefined'){let lastWidth=-1;const observer=new ResizeObserver(entries=>{if(!scope.isConnected){observer.disconnect();return;}const w=Math.round(entries[entries.length-1].contentRect.width);if(w===lastWidth)return;lastWidth=w;fitGallery();});observer.observe(miniStage);cleanup.push(()=>observer.disconnect());}
     }
     function primeVirtualList() {
       if (!shadow.querySelector('#vlList') || !installers.has(scope.dataset.demoKind)) return;
