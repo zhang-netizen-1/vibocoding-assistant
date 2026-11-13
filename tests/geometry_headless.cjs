@@ -24,7 +24,7 @@ const filter = process.argv[2] || '';
 const routes = [];
 (function walk(dir){ for (const name of fs.readdirSync(dir)) { const p = path.join(dir,name); if (fs.statSync(p).isDirectory()) walk(p); else if (name === 'index.html') { const html = fs.readFileSync(p,'utf8'); if ((html.includes('<body class="entry-active">') || path.relative(root,path.dirname(p)) === 'design-system')) routes.push(path.relative(root,path.dirname(p)) + '/'); } } })(root);
 function audit() {
-  const out = {radius:[], spacing:[], clip:[], indicator:[], narrow:[], segmented:[]};
+  const out = {radius:[], spacing:[], clip:[], indicator:[], narrow:[], segmented:[], cards:[]};
   const px = v => parseFloat(v) || 0;
   // Border radius in px; percentages resolve against the box (horizontal vs width, vertical vs height).
   const rp = (v, b) => { const [h, w = h] = String(v).trim().split(/\s+/); const f = (x, d) => x.endsWith("%") ? parseFloat(x) / 100 * d : (parseFloat(x) || 0); return Math.min(f(h, b.width), f(w, b.height)); };
@@ -160,11 +160,21 @@ function audit() {
     if (s.transitionDuration.split(',').some(v => parseFloat(v) > 0) && ind.getAnimations().length) continue;
     if (Math.max(dl,dr,dt,db) > 2) out.indicator.push({el:label(ind), target:label(target), offset:Math.round(Math.max(dl,dr,dt,db))});
   }
+  // Rule 5 (cards): motion cards are >= 320px wide (or the full column), the caption sits on the card's
+  // bottom edge and a visible play button is vertically centred on the caption (<= 4px).
+  for (const c of document.querySelectorAll('.motion-grid .gallery-card')) {
+    if (!visible(c)) continue;
+    const cr = c.getBoundingClientRect(), grid = c.parentElement.getBoundingClientRect();
+    const cap = c.querySelector('.gallery-caption'); if (!cap) continue; const kr = cap.getBoundingClientRect();
+    const pb = c.querySelector('.play-button'); const br = pb && visible(pb) ? pb.getBoundingClientRect() : null;
+    const issue = cr.width < 320 && cr.width < grid.width - 1 ? 'narrower than 320px' : cr.bottom - kr.bottom > 2 ? 'caption not on the bottom edge' : br && Math.abs((br.top + br.bottom) / 2 - (kr.top + kr.bottom) / 2) > 4 ? 'play button off the caption row' : null;
+    if (issue) out.cards.push({el:label(c), title:(c.querySelector('.gallery-caption strong,.gallery-caption b,.gallery-caption h3')||cap).textContent.trim().slice(0,16), issue, w:Math.round(cr.width)});
+  }
   return out;
 }
 (async () => {
   const browser = await chromium.launch({headless:true});
-  const report = {radius:[], spacing:[], clip:[], indicator:[], narrow:[], segmented:[], pages:0};
+  const report = {radius:[], spacing:[], clip:[], indicator:[], narrow:[], segmented:[], cards:[], pages:0};
   try {
     for (const width of [1440,768,390]) {
       const context = await browser.newContext({viewport:{width,height:900},hasTouch:width===390,isMobile:width===390,reducedMotion:'reduce'});
@@ -174,7 +184,7 @@ function audit() {
         await page.goto(origin + prefix + route, {waitUntil:'networkidle'});
         await page.waitForTimeout(150);
         const result = await page.evaluate(audit); report.pages++;
-        for (const k of ['radius','spacing','clip','indicator','narrow','segmented']) for (const row of result[k]) report[k].push({width, route, ...row});
+        for (const k of ['radius','spacing','clip','indicator','narrow','segmented','cards']) for (const row of result[k]) report[k].push({width, route, ...row});
       }
       await context.close();
     }
@@ -182,6 +192,6 @@ function audit() {
   fs.mkdirSync(path.resolve(__dirname,'../output/geometry'),{recursive:true});
   fs.writeFileSync(path.resolve(__dirname,'../output/geometry/report.json'), JSON.stringify(report,null,1));
   const dedupe = rows => [...new Map(rows.map(r => [r.route+'|'+r.el+'|'+r.rule, r])).values()];
-  console.log(`pages ${report.pages}; ` + ['radius','spacing','clip','indicator','narrow','segmented'].map(k => `${k} ${report[k].length}`).join('; '));
-  if (['radius','spacing','clip','indicator','narrow','segmented'].some(k => report[k].length)) process.exitCode = 1;
+  console.log(`pages ${report.pages}; ` + ['radius','spacing','clip','indicator','narrow','segmented','cards'].map(k => `${k} ${report[k].length}`).join('; '));
+  if (['radius','spacing','clip','indicator','narrow','segmented','cards'].some(k => report[k].length)) process.exitCode = 1;
 })();
