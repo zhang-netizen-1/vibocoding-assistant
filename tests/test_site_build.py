@@ -23,6 +23,11 @@ SKILL_MODULE = importlib.util.module_from_spec(SKILL_SPEC)
 SKILL_SPEC.loader.exec_module(SKILL_MODULE)
 
 
+def setUpModule():
+    """Build once before any test class reads the generated site."""
+    subprocess.run([sys.executable, "scripts/build_site.py"], cwd=ROOT, check=True, capture_output=True)
+
+
 class PageParser(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -64,10 +69,6 @@ def parse(path):
 
 
 class SiteBuildTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        subprocess.run([sys.executable, "scripts/build_site.py"], cwd=ROOT, check=True, capture_output=True)
-
     def test_output_is_explicit_allowlist(self):
         files = {str(path.relative_to(DIST)) for path in DIST.rglob("*") if path.is_file()}
         spec = importlib.util.spec_from_file_location("build_site", ROOT / "scripts/build_site.py")
