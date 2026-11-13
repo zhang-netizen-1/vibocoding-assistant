@@ -12,6 +12,7 @@
    - inset: a gallery thumbnail holding one content card must show the same gray inset on all 4 sides (≤1px).
    - concentric: thumbnail stage/content and gallery/stage radii follow measured outer-edge gaps (≤1px).
    - brand: brand left x agrees with the modal value across audited pages at each width (≤1px).
+   - navx: visible header desktop-nav items and search button left x lists agree with the modal list at each width (≤1px; same count).
    - gap: masonry galleries (CSS columns) keep column gap = row gap between cards (≤1px).
    - states: hover / focus / open screenshots of the nav triggers and primary buttons.
    Usage: node tests/ui_audit_headless.cjs [routeFilter] [--widths=1440,390] [--inject=CSS]
@@ -194,7 +195,9 @@ function collect(tokens) {
   }
   // occlusion: drop pairs whose icon is covered by something else (fixed bars etc.)
   const kept = pairs.filter(p => { const at = deepAt(p.probe[0], p.probe[1]); return !!at && !(at.closest && at.closest('.bottom-bar')); });
-  return {pairs:kept, type, rows, filled, inset, gap, concentric, brandX:document.querySelector('.brand')?.getBoundingClientRect().left ?? null};
+  const navX = [...document.querySelectorAll('.header .desktop-nav .nav-link, .header .desktop-nav .nav-trigger, .header .nav-search')]
+    .filter(visible).map(el => el.getBoundingClientRect().left);
+  return {pairs:kept, type, rows, filled, inset, gap, concentric, brandX:document.querySelector('.brand')?.getBoundingClientRect().left ?? null, navX};
 }
 
 // Ink measurement in the page: decode the screenshot and find ink rows inside boxes.
@@ -256,7 +259,7 @@ async function serve(ctx) {
 
 (async () => {
   fs.mkdirSync(outDir, {recursive:true});
-  const browser = await chromium.launch(), report = {started:new Date().toISOString(), widths, pages:selected.length, icon:[], type:[], rows:[], filled:[], inset:[], gap:[], concentric:[], brand:[], brandMeasurements:[], pairsChecked:0, errors:[]};
+  const browser = await chromium.launch(), report = {started:new Date().toISOString(), widths, pages:selected.length, icon:[], type:[], rows:[], filled:[], inset:[], gap:[], concentric:[], brand:[], brandMeasurements:[], navx:[], navxMeasurements:[], pairsChecked:0, errors:[]};
   for (const width of widths) {
     const ctx = await browser.newContext({viewport:{width, height:900}, hasTouch:width < 500, isMobile:width < 500, reducedMotion:'reduce'}); await serve(ctx);
     let next = 0;
@@ -280,6 +283,7 @@ async function serve(ctx) {
           for (const f of found.gap) report.gap.push({width, route, ...f});
           for (const f of found.concentric) report.concentric.push({width, route, ...f});
           if (found.brandX !== null) report.brandMeasurements.push({width, route, x:found.brandX});
+          report.navxMeasurements.push({width, route, x:found.navX});
         } catch (error) { report.errors.push({width, route, error:error.message.slice(0, 200)}); }
       }
       await page.close(); }));
@@ -291,6 +295,16 @@ async function serve(ctx) {
     for (const m of samples) counts.set(m.x, (counts.get(m.x) || 0) + 1);
     const mode = [...counts].sort((a, b) => b[1] - a[1] || a[0] - b[0])[0]?.[0];
     for (const m of samples) if (Math.abs(m.x - mode) > 1) report.brand.push({...m, el:'.brand', expected:mode, delta:m.x - mode});
+    const navSamples = report.navxMeasurements.filter(m => m.width === width);
+    const navCounts = new Map();
+    for (const m of navSamples) { const key = JSON.stringify(m.x); navCounts.set(key, (navCounts.get(key) || 0) + 1); }
+    const navModeKey = [...navCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0]?.[0];
+    if (navModeKey !== undefined) {
+      const expected = JSON.parse(navModeKey);
+      for (const m of navSamples) if (m.x.length !== expected.length || m.x.some((x, i) => Math.abs(x - expected[i]) > 1))
+        report.navx.push({...m, el:'.header .desktop-nav / .header .nav-search', expected,
+          delta:m.x.length === expected.length ? m.x.map((x, i) => x - expected[i]) : null});
+    }
   }
   report.stateShots = await stateShots(browser);
   await browser.close();
@@ -298,6 +312,6 @@ async function serve(ctx) {
   fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 1));
   const uniq = list => new Set(list.map(x => `${x.el}|${x.icon || x.group || (x.issues || []).join(',')}`)).size;
   console.log(`页面 ${selected.length} × 宽 ${widths.join('/')}；图标文字对 ${report.pairsChecked} 组`);
-  console.log(`icon 未居中 ${report.icon.length}（去重 ${uniq(report.icon)}）；type/color ${report.type.length}（去重 ${uniq(report.type)}）；rows 不等高 ${report.rows.length}（去重 ${uniq(report.rows)}）；filled 实心按钮灰描边 ${report.filled.length}（去重 ${uniq(report.filled)}）；concentric 非同心 ${report.concentric.length}（去重 ${uniq(report.concentric)}）；brand 左边界不一致 ${report.brand.length}；错误 ${report.errors.length}；inset 缩略图内边距不等 ${report.inset.length}（去重 ${uniq(report.inset)}）；gap 瀑布流间距不等 ${report.gap.length}（去重 ${uniq(report.gap)}）`);
-  process.exit(report.icon.length || report.type.length || report.rows.length || report.filled.length || report.inset.length || report.gap.length || report.concentric.length || report.brand.length || report.errors.length ? 1 : 0);
+  console.log(`icon 未居中 ${report.icon.length}（去重 ${uniq(report.icon)}）；type/color ${report.type.length}（去重 ${uniq(report.type)}）；rows 不等高 ${report.rows.length}（去重 ${uniq(report.rows)}）；filled 实心按钮灰描边 ${report.filled.length}（去重 ${uniq(report.filled)}）；concentric 非同心 ${report.concentric.length}（去重 ${uniq(report.concentric)}）；brand 左边界不一致 ${report.brand.length}；navx 导航左边界列表不一致 ${report.navx.length}；错误 ${report.errors.length}；inset 缩略图内边距不等 ${report.inset.length}（去重 ${uniq(report.inset)}）；gap 瀑布流间距不等 ${report.gap.length}（去重 ${uniq(report.gap)}）`);
+  process.exit(report.icon.length || report.type.length || report.rows.length || report.filled.length || report.inset.length || report.gap.length || report.concentric.length || report.brand.length || report.navx.length || report.errors.length ? 1 : 0);
 })().catch(error => { console.error(error); process.exit(2); });

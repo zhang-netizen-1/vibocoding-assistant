@@ -100,7 +100,7 @@
 
 | 工具 | 检查什么 | 阈值 |
 |---|---|---|
-| `node tests/ui_audit_headless.cjs [路由过滤] [--widths=1440,1024,768,390] [--inject=CSS]` | icon：图标/字形中心 vs 文字墨迹中心；type：字号、行高、字重、颜色是否在 token 内；rows：同一行控件/卡片等高；filled：实心按钮不带灰描边；inset：画廊缩略图里单张内容卡到灰色舞台四边距离相等；gap：瀑布流画廊列间距 = 行间距；状态截图 | 偏差 ≤1px；token 外 0 处；结果写 `output/ui-audit/report.json`，有问题退出码 1 |
+| `node tests/ui_audit_headless.cjs [路由过滤] [--widths=1440,1024,768,390] [--inject=CSS]` | icon：图标/字形中心 vs 文字墨迹中心；type：字号、行高、字重、颜色是否在 token 内；rows：同一行控件/卡片等高；filled：实心按钮不带灰描边；inset：画廊缩略图里单张内容卡到灰色舞台四边距离相等；gap：瀑布流画廊列间距 = 行间距；brand：逐宽度比较受审页面标志左边界众数；navx：逐宽度采集每页可见桌面导航项及搜索按钮的左边界列表，与受审页面中出现次数最多的列表比较；状态截图 | 偏差 ≤1px；navx 任一位置偏差 >1px 或项目数量不同即报错，纳入汇总与退出码；token 外 0 处；结果写 `output/ui-audit/report.json`，有问题退出码 1 |
 | `node tests/focus_ring_headless.cjs <站点地址> [--widths=1440,1024,768,390]` | 8 类页面 × 指定宽度，Tab 遍历外框所有可聚焦元素，按像素检查焦点环四边是否都画出来 | 0 处缺边 |
 | `geometry_headless` / `hint_position_headless` / `design_system_headless` | 演示几何、提示标签位置、设计系统页 | 全部通过 |
 | 单元测试 `python3 -B -m unittest discover -s tests -p 'test_*.py'` | 构建产物契约 | 全部 OK |

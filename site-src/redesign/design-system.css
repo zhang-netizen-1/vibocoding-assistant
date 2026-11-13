@@ -1,8 +1,9 @@
 /* Loaded exclusively by design-system/index.html. */
-body:has(.ds-page) :is(a,button,summary,input) { min-height:44px; }
-body:has(.ds-page) a { display:inline-flex; align-items:center; min-width:44px; }
-body:has(.ds-page) button { min-width:44px; }
-body:has(.ds-page) .gallery-link, body:has(.ds-page) .simple-card a { display:block; }
+/* Content touch targets must not change the shared site header. */
+.ds-page :is(a,button,summary,input) { min-height:44px; }
+.ds-page a { display:inline-flex; align-items:center; min-width:44px; }
+.ds-page button { min-width:44px; }
+.ds-page .gallery-link, .ds-page .simple-card a { display:block; }
 .ds-page { min-width:0; font-variant-numeric:tabular-nums; }
 .ds-page code { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px; overflow-wrap:anywhere; }
 .ds-intro { padding:0 0 40px; border-bottom:1px solid var(--line); }
