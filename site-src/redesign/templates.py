@@ -7,6 +7,10 @@ import posixpath
 import re
 import sys
 
+# Chevron for the desktop nav triggers: a 12px stroke icon centred with the label (not a text glyph).
+NAV_CARET = ('<svg class="nav-caret" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" focusable="false">'
+             '<path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import demos
@@ -82,7 +86,7 @@ def header(page, tax):
     for column in tax['columns']:
         slug, name = column['slug'], column['name']
         number = f'{column["order"]:02d}'
-        triggers.append(f'<button class="nav-trigger" data-nav="{slug}" aria-expanded="false" aria-controls="mega-{slug}"><span class="nav-number">{number}</span> {name}</button>')
+        triggers.append(f'<button class="nav-trigger" data-nav="{slug}" aria-expanded="false" aria-controls="mega-{slug}"><span class="nav-number">{number}</span> <span class="nav-name">{name}</span>{NAV_CARET}</button>')
         groups = []
         for group in column['groups']:
             target = group_destination(slug, group['slug'])
