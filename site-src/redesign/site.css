@@ -203,4 +203,6 @@
 .motion-grid.gallery>.gallery-card{display:flex}
 @media(max-width:1023px){.gallery{columns:2}}
 @media(max-width:760px){.gallery{--gallery-gap:12px}}
-.motion-section .gallery.motion-grid{display:block;--gallery-gap:16px;columns:auto min(100%,320px);column-gap:var(--gallery-gap)}
+/* ≤1180 the nav label drops to 13px: its ink centre sits lower, so the caret needs no optical lift */
+@media(max-width:1180px){.nav-caret{top:0}}
+.motion-section .gallery.motion-grid{display:block;--gallery-gap:16px;column-count:auto;column-width:min(100%,320px);column-gap:var(--gallery-gap)}
