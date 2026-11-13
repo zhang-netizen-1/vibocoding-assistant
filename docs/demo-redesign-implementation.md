@@ -804,3 +804,74 @@ UI 的原 `.ctl` 仍是 `.canvas` 的直接子项，提示文本与胶囊生成�
 - 本次开始于北京时间 12:19:05，24 分钟工作截止为 12:43:05，26 分钟进程上限为 12:45:05。构建及完整单测通过独立进程组运行，超时包装器以更早的 24 分钟工作截止为强制终止边界，没有后台常驻进程。
 - 未执行 Git 操作、未启动端口、浏览器或任何应用窗口。实际浏览器渲染、几何与视觉验收未运行，不能由源码与 Node 模型检查替代。
 - 可复核记录：`output/prompt-card-d/build.log`、`unittest.log`、`before-sha256.json` 和 `completion.json`。
+
+
+## I2 段：交互与动效剩余条目逐条精修
+
+日期：2026-11-13。工作区：`~/Downloads/vibocoding-demo-redesign`。按用户给定顺序完成 37 个条目的源码皮肤：31 个 `motion`、6 个 `guide`，每个条目独立 CSS / HTML；跨页演示另外提供两份 iframe 内页 HTML 皮肤。以下属于源码实施及非浏览器验证记录，未作视觉验收声明。
+
+### 完成清单
+
+| kind | slug | 本段变化与保留 |
+|---|---|---|
+| `motion` | `background-aurora` | 秋季设计周语境；紫色极光与白底信息标签，保留色层及原循环。 |
+| `motion` | `background-cursorwave` | 作品集语境；保留 60 个点阵钩子，触屏显示静态起伏。 |
+| `motion` | `background-fluid` | 视觉提案语境；三条紫色阶色带和清晰的信息标签。 |
+| `motion` | `background-particles` | 开放日语境；保留 canvas，由现有 runtime 绘制紫色粒子，底层有静态粒子。 |
+| `motion` | `background-wave` | 创意论坛语境；保留逐点相位和波浪循环，减弱动态显示静态矩阵。 |
+| `guide` | `bulk` | 官网改版文件面板；保留两个文件条目与选中 / 清除状态。 |
+| `motion` | `cross-page` | 空间作品集；外层承托面和两份同源内页皮肤，真实庭院 / 湖景图片。 |
+| `motion` | `cursor-cursor-eyes` | 灵感助手工作台；双眼并排、中央静态视线，保留瞳孔跟随。 |
+| `motion` | `cursor-cursor-follower` | 真实工作室预览；保留圆点和延迟环，触屏显示静态查看标记。 |
+| `motion` | `cursor-cursor-trail` | 创意实验语境；保留动态拖尾，触屏及减弱动态显示静态轨迹。 |
+| `motion` | `cursor-object-follow` | 临窗客厅方案；真实图片与原旋转视角，触屏显示完整静态方案。 |
+| `motion` | `drop-snap` | 项目任务安排；今天 / 稍后目标区、44px 替代按钮和原拖动 / 重置。 |
+| `guide` | `focus` | 项目交付操作面板；原三按钮、焦点回返及明确焦点环。 |
+| `motion` | `image-magnifier` | 黄昏庭院图片；保持镜片背景与原指针 / 键盘 / 复位操作。 |
+| `motion` | `media-carousel` | 三张同系列庭院图片；保留 300% 轨道、循环索引及状态播报。 |
+| `motion` | `media-compare` | 同一庭院图片的明暗对照；保留 clip-path 分界与 range 输入。 |
+| `motion` | `media-glitch` | 庭院作品发布；真实图片和中文场景标题，保留原故障动效。 |
+| `motion` | `media-image-sequence` | 室内方案真实图片；保留 6 档旋转帧与滚动角度播报。 |
+| `motion` | `mobile-drag` | 中文成员和时间的工作清单；保留三行排序及下移首项按钮。 |
+| `motion` | `mobile-pager` | 三页真实空间灵感卡；保留 300% 轨道及拖动 / 按钮分页边界。 |
+| `motion` | `mobile-pull` | 官网改版项目动态；260px 手机列表视口，保留下拉阈值和刷新计数。 |
+| `motion` | `mobile-rubber` | 空间收藏卡；局部预览边界包住原回弹区域，保留 58px 阻尼上限和松手复位。 |
+| `motion` | `mobile-swipe` | 中文待办列表；保留删除 / 相邻行让位 / 恢复，增加窄画廊行高余量。 |
+| `guide` | `optimistic` | 空间灵感收藏面板；保留先收藏及失败回滚状态。 |
+| `motion` | `scroll-hide-header` | 设计观察文章；原 sticky 导航、滚动方向判定和进度条。 |
+| `motion` | `scroll-horizontal` | 日光 / 黄昏 / 湖畔三张图片；轨道宽随窗口增加 210px，保留原位移范围。 |
+| `motion` | `scroll-progress` | 中文空间设计手记；真实阅读段落与原滚动进度。 |
+| `motion` | `scroll-scroll-zoom` | 工作室真实图片；保留随滚动放大，减弱动态保持完整图。 |
+| `motion` | `section-nav` | 项目复盘章节；三段 170px 高度、44px 目录按钮和原滚动定位。 |
+| `motion` | `shrink-header` | 设计手记阅读面板；原页头压缩与文章正文，统一三级字号。 |
+| `motion` | `snap-sections` | 庭院漫游章节；保留 168px 段高与 170px 视口，避免破坏脚本状态映射。 |
+| `guide` | `submit` | 官网改版保存面板；负责人、预算 ¥28,600 与原成功 / 失败反馈。 |
+| `motion` | `timeline-preview` | 庭院短片画面及预览图片；保留 48 秒范围、提交 / 取消与 72px 气泡定位。 |
+| `guide` | `undo` | 项目今日清单；保留原任务节点隐藏 / 恢复与状态消息。 |
+| `guide` | `validation` | 新建项目表单；保留项目名输入、错误关联和原双状态切换。 |
+| `motion` | `view-shared` | 庭院项目概览；同一按钮内的图片与详情，保留展开 / 收起和 aria-expanded。 |
+| `motion` | `view-stagger` | 设计周提案卡；分层标题、说明及动作标签，保留原交错顺序。 |
+
+### 规格与实现边界
+
+- 37 个主体均使用 `width:min(100%,var(--ds-subject-width))`，主卡采用 `--ds-r-surface`，大间距内层采用 `--ds-r-min`，控件 / 标签采用对应圆角 token；画廊主卡半径降至 14px。独立按钮间距 8px，按钮与预览保留至少 16px。图片 / 手机预览内的圆角按内层 6px 处理，没有新增 0 间隙的伪分段按钮组。
+- 按当前规格计算：960px 舞台主体 560px，占 58.33%；358px 舞台主体 320px，左右净距各 19px；239 / 220 / 200px 画廊宿主主体分别 205 / 186 / 166px，左右净距各 17px。主卡以可用宽度收缩，网格使用 `minmax(0,1fr)`，文字允许换行。数值是源码计算，不代表浏览器像素验收。
+- 保留原 `.stage`、`data-effect`、ID、class、data-action / data-extra-action / data-drag、ARIA 状态钩子和原按钮文字；业务示例补充中文项目、人名、日期及金额。条目定义、提示词、验收要求和内容 JSON 未改。手机列表仅替换演示样例文字，动态反馈继续由原脚本生成。
+- 原 `.stage-label` 仍是 stage 的直接子项，由既有机制注入唯一提示胶囊。本段将这些胶囊的本地边距设为 16px；鼠标类使用现有 `data-touch-hint` 机制提供触屏提示，没有增加 runtime 事件。光标类在触屏下有完整静态画面，拖尾提供静态轨迹；减少动态仍受 `data-demo-motion-once` / `data-demo-motion-step` 门控。
+- 新 CSS 的颜色均引用现有 `--ds-*` token，字体按标题 / 正文 / 注释收束。媒体图片全部从 `site-src/demo-assets/manifest.json` 选择，HTML 图片包含本地 `src` / `srcset`；放大镜使用本地图作为背景以保留原镜片算法。没有下载或生成新图片。
+- `site-src/redesign/demos.py` 仅为跨页图片演示增加两份同源 HTML 皮肤的优先读取，并将图片占位符映射到既有 `../../demo-assets`。内页保留 `motion-demo-gallery.html` / `motion-demo-detail.html` 导航地址、共享 `featured-image` 过渡名与原重置机制，独立文档声明同一套 token。没有修改来源画廊文件、来源交互脚本、公共舞台 CSS 或 runtime。
+
+### 验证结果
+
+- 按要求运行 `PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest tests.test_demo_audit tests.test_redesign_tokens`：21 项通过，退出码 0；未修改测试或断言。
+- 37 个皮肤通过 HTML 解析、原 ID / class / data 钩子、操作按钮与提示文字保留、token 引用、字号下限、CSS 引号 / 括号配对、资源清单路径、双路径皮肤注入及宽度计算检查。CSS 检查是静态检查，未使用完整 CSS 解析器或渲染引擎。
+- 仅在内存中调用 `demos.assets` / `demos.smoke_fixture`，未调用网站构建。194 个演示在现有 Node DOM 模型中初始化通过；I2 另核验 13 组动效交互、全部 6 个指南双状态，以及触屏 pointer 下拉刷新、边界回弹、拖动分页。验证涵盖轮播索引 / 播报、对比分界、列表排序 / 删除 / 恢复、任务投放 / 重置、跨页重置、放大镜键盘与复位、时间轴提交 / Esc / 取消、共享元素展开 / 收起、章节定位 / 停靠及图片序列角度。
+- 提取后的 motion / guide JavaScript 通过 `node --check`。证据位于 `output/demo-redesign/I2/`，主要文件为 `source-verification.json`、`verify-source.py`、`smoke-fixture.json`、`interactions.cjs`、`unittest.log`、`interactions.log` 和 `completion.json`。
+
+### 未做到的与时间边界
+
+清单中没有跳过项。1440 / 1024 / 768 / 390 及小于 240px 画廊的实际渲染、文字裁切 / 横向溢出、四边像素净距、嵌套圆角几何和减少动态截图均留待执行者构建后验收；本段没有启动浏览器或以源码检查替代视觉验收。
+
+本段开始于北京时间 13:04:29（UTC 05:04:29），24 分钟工作截止为 13:28:29，26 分钟进程上限为 13:30:29。所有主要生成和验证命令均通过绝对 deadline 包装器运行，截止后拒绝启动新任务，已启动的子进程组最迟在更早的 24 分钟截止被 SIGKILL。未执行 Git 操作、未运行 `build_site.py`、未修改 `dist/`，未启动端口、浏览器或任何应用窗口。
+
+本段最终核验于北京时间 13:22:11 完成，首轮完整交接核验耗时约 17.71 分钟；随后仅补充窄画廊章节目录的单列布局并重新执行最终核验，最终时间与哈希以 `output/demo-redesign/I2/completion.json` 为准。启动阶段的一次性 26 分钟计时进程尝试提前终止时被沙箱拒绝；正式生成 / 验证进程已结束，该计时进程按自身计时到期退出，不占用端口。

@@ -425,7 +425,9 @@ def _assets():
     for path in sorted((HERE / 'demo-skins').glob('*.css')):
         result['demo-skins/' + path.name] = readable_fonts(_gate_reduced_motion(path.read_text()))
     for page in ('motion-demo-gallery', 'motion-demo-detail'):
-        original = (ROOT / (page + '.html')).read_text()
+        page_skin = HERE / 'demo-skins' / (page.replace('motion-demo-', 'motion-cross-page-') + '.html')
+        original = (page_skin if page_skin.is_file() else ROOT / (page + '.html')).read_text()
+        original = original.replace('{{demo-assets}}', '../../demo-assets')
         result[page + '.css'] = readable_fonts(_palette(_styles(original)) + '\n:root{--demo-primary:#6D28D9}a{color:var(--demo-primary)}a:focus-visible{outline-color:var(--demo-primary)}\n')
         result[page + '.html'] = re.sub(r'<style[^>]*>.*?</style>', f'<link rel="stylesheet" href="{page}.css"><link rel="icon" href="../favicon.svg" type="image/svg+xml">', original, flags=re.S)
     return result
