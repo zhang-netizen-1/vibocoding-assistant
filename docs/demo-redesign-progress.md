@@ -179,3 +179,15 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
 - component-lift：功能正常（点按切换 touch-open 和 aria-pressed），失败来自测试取样时机；测试改为等点击生效后再取样，并把亚像素过渡尾巴视为静止。
 - 9a7cc88 提交。最终：单测 147/147；demo_redesign 1887/1887；batch6 通过；batch4 1473/1473（上一轮，之后只改了 240px 以下容器规则和测试）。
 - 晨间报告：box `/workspace/bench/demo-redesign/morning_report.md`。
+
+## 第 13 段（11:36–12:10）新一轮：加宽 + 用户报告问题
+- 新的 Codex 启动方式：`demo-redesign-work/runcodex.sh BRIEF LOG 秒数`，除用户已在配置里关掉的两项外，再用 `-c` 关闭 computer-use / chrome / browser 插件和 computer-use、kimi-cu、node_repl 三个 MCP，并覆盖 `notify=[]`。每份日志用 `cucheck.sh` 检查，必须是 0（G 段旧日志检出 42，证明检查有效）。
+- 26f11d5 条目页演示区加宽：条目页外壳 1376px，使用卡固定 300/320px；1440 下舞台 725→960px，1024 下 619→628，768/390 不变。舞台 ≥880px 时主体 clamp(560px,62%,680px)。对比图 box `wide_1440_before_after.jpg`。batch4 1473/1473 通过；Python 单测 147/147。
+- a26f030 用户报告的三处问题：
+  - 嵌套圆角：舞台 12→16（`--ds-r-stage`），新增 `--ds-r-*` 层级变量，画廊缩略格舞台 11；规则写进 demo-spec.md。
+  - 「它怎么动」卡片：最小 320px，390 下单列；播放按钮放进卡片标题行，离预览 16px、离卡片边 16px（原来离预览 −52px 即重叠、离右边 9px）。
+  - 标签指示器按选中标签的实际位置和宽度放置，ResizeObserver 随尺寸重算。
+  - 新增 `tests/geometry_headless.cjs`：嵌套圆角、按钮贴边/重叠、文字裁切、比内容窄、指示器偏移 >2px。
+  - 对比图：box `fix_menu_card_390_before_after.jpg`、`fix_motion_cards_before_after.jpg`、`fix_radius_before_after.jpg`。
+- Codex I1（组件剩余 ui 10 + 图表 5，共 15 条新皮肤）和 DS（设计系统页、docs/design-system.md、两份新测试）已写完，cua 检查都是 0，**未提交，待评审截图**。
+- 排队顺序（用户定）：全量几何检查结果修复 → 复制提示词方案 D（使用卡变提示词卡，192 条共用模板）→ 390/768 全量移动端目检 → 设计系统页 → 剩余 80 条精修（I1 已做 15 条待审）。
