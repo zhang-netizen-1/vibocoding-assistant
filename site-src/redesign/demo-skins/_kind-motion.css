@@ -6,6 +6,7 @@
 [data-ds-kind="motion"] :is(.press-card,.magnet-btn,.ripple-btn,.mini-btn,.extra-scene button) { border-radius:8px; font-family:var(--ds-font); font-size:15px; }
 [data-ds-kind="motion"] :is(.press-card,.magnet-btn,.ripple-btn,.mini-btn) { background:var(--ds-accent); color:var(--ds-surface); }
 [data-ds-kind="motion"] :is(.sort-list>div,.drag-list>div,.filter-card,.extra-task) { border-color:var(--ds-line); border-radius:8px; background:var(--ds-fill); color:var(--ds-ink); }
+[data-ds-kind="motion"] div.extra-task { border-radius:var(--ds-r-chip); }
 [data-ds-kind="motion"] :is(.extra-tab.active,.extra-filter.active) { background:var(--ds-accent-50); color:var(--ds-accent); }
 
 /* 39px popup offset + 10px padding + three 44px touch targets. */
