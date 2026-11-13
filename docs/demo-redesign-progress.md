@@ -206,3 +206,15 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
 - 597e621 设计系统页：补「嵌套圆角与间距」活例子，按下态示例不再缩小（无头检查的 44px 失败点）；docs/design-system.md 同步。
 - 测试：Python 单测 159/159；design_system_headless 通过（6 组尺寸/动态偏好）；prompt_card_d_runtime 通过。batch4 / demo_redesign / batch6 留到最终验证顺序跑。
 - 移动端目检：390 + 768 全量截图已生成（Mac `demo-redesign-work/shots/qa-mid/`，before 基线 `shots/qa-before/`），总览表 box `qa/`（43 张）。已看完 390 顶部 3/12 张 + 动效卡 1/6 张。
+
+## 第 15 段（12:58–13:42）分段按钮 + 移动端目检 + I2/I3
+- 027ecfc 分段按钮按真结构重做：设计系统页「日/周/月」改成单容器一圈外框 + 1px 分隔线 + 内嵌选中段（圆角 6 = 8 − 2 内边距）；「导出 ▼」由组容器画外框和 8px 圆角、段内直角、单条分隔线。几何检查只豁免符合这个结构的控件组（新增 segmented 项），并把设计系统页纳入检查（反面示例用 data-geo-ignore 标记）。对比图 box `segmented_before_after.jpg`。
+- 移动端目检 390/768 全部 43 张总览看完。真问题 2 个，已修：数字滚轮缩略图只剩「次互动」（1ca7aff）；768 两列动效卡标题与播放按钮不在同一行（c0f4aac）。其余看到的黑色底栏、「跳到主要内容」是整页截图把固定元素拍进去的假象。新增动效卡几何检查（14a8368）。对比图 box `mobile_motion_before_after.jpg`（列 = 前768 前390 后768 后390）。
+- 全量几何第 4 轮（027ecfc 后，579 次页面加载，含设计系统页）：全部 0。
+- 6b32464 I2（交互与动效剩余 37 条，Codex，cua 0），52a73c2 评审修正：光标跟随圆环指针进入前隐藏。interactions 全部 84 条几何检查 0。对比图 box `I2a–I2d_before_after.jpg`。
+- 84256a5 I3（设计基础 / 场景 / AI 技能剩余 25 条，Codex，cua 0）。
+
+## 第 16 段（13:42– ）I3 评审 + I4 + 最终验证
+- 2068514 撤回 I3 的六个视觉风格皮肤：它们把野兽派/编辑/玻璃/极简/新拟态/有机全改成紫白通用样式，违背「保留各自风格」。这 6 条保留原风格 + 已做的圆角修正。I3 对比图 box `I3a–I3c_before_after.jpg`。
+- 全量几何第 5 轮（I3 后）：radius 6，其余 0；6 处都是动效卡舞台被拉高后居中、离卡片圆角太远。已改成舞台内容贴顶，复查 0。
+- 单测发现还有 3 条只用类型通用皮肤（basics/sidebar、scenarios/list、scenarios/settings，slug 与组件重名，之前统计漏了），交给 Codex I4。
