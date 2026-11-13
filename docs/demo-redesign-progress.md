@@ -251,3 +251,17 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
 - 未改、待定：首页与条目页 logo 横向位置不同（有意设计）；桌面端缩略图下方 52px 播放按钮预留白边。
 - 交付：/workspace/bench/ui-audit/（清单、counts.md、nav_caret_before_after.png、fixes_contact_sheet.png、gallery_inset_masonry_before_after.png）。
 - 本段全部手写，未用 Codex（cua 不适用）。16:31 起按用户要求：之后所有代码改动交给本机 Codex，我只写任务说明、跑测试、看截图、提交。
+
+## 第 19 段（16:43–17:50）同心圆角 + 底部留白 + 顶栏统一（全部由本机 Codex 编写）
+- 16:31 起规则：所有代码由本机 Codex 编写（runcodex.sh：perl alarm 限时 + 关闭 computer-use/chrome/browser 插件和 computer-use/kimi-cu/node_repl MCP，只用无头浏览器）；我只写任务说明、跑测试、看截图、提交。
+- Codex R1–R8 共 8 轮，cucheck 全部 0 次 cua_repl/computer-use/chrome 调用。Codex 沙箱内无头浏览器启动失败（MachPort Permission denied），浏览器验收均由我在沙箱外完成：
+  - R1：tokens（--thumb-content-radius 14、--thumb-inset 16、--thumb-stage-border 1、--thumb-stage-radius 31、--gallery-card-border 1、--gallery-card-radius 32，calc 派生）；悬停 + 非减弱动态下去掉 .mini-stage 预留；顶栏统一 --header-width 1376；ui_audit 加 concentric、brand 两条规则；新增 tests/r1_headless.cjs。
+  - R2：翻转卡正反面改内容圆角；设计系统页预留同样处理；r1 断言改公式。
+  - R3：翻转卡图片 13px（同心向内延续）；r1 隐藏控件不按 0 计算。
+  - R4：圆角公式只用于真正位于卡片角落的控件（动效卡）；普通画廊播放按钮在 .mini-stage 内，恢复 8px。
+  - R5–R7：设计系统页减弱动态下加载后约 100ms 内容卡圆角读数为 0（R1 之前就有），r1 测试等待条件修正（async 谓词恒为真）。
+  - R8：design-system.md 角落控件段落按现状改写。
+- 提交 a5619b7（R1–R7）及文档提交（R8）。
+- 实测四个宽度都一样：内容卡 14 / 内缩 17 / 舞台 31 / 画廊卡 32（390 内缩也是 17，所以半径与桌面相同）。brand x：1440 全部 64，其余宽度全部 16。
+- 测试（逐个，期间无 Codex）：单测 160 OK；ui_audit 205 页 × 4 宽全部 0（含 concentric、brand、inset、gap）；几何 579 次加载 0；焦点环 3222 × 4 宽 0；提示胶囊 300 全部通过；设计系统无头检查通过；r1 64 组测量通过。自测：注入 .gallery-card{border-radius:16px} 后 concentric 报 12 处。
+- 待看：画廊卡 32px 明显比站内其他卡片（16px）圆，见 thumbnail_concentric_before_after.png。
