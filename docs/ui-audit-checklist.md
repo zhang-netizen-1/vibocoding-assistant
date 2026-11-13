@@ -105,6 +105,13 @@
 | `geometry_headless` / `hint_position_headless` / `design_system_headless` | 演示几何、提示标签位置、设计系统页 | 全部通过 |
 | 单元测试 `python3 -B -m unittest discover -s tests -p 'test_*.py'` | 构建产物契约 | 全部 OK |
 
+`ui_audit` 的 `select` 规则遍历 light DOM 和所有 open ShadowRoot 中的可见原生 `<select>`。读取直接父层 `.ds-select-wrap` 的实际边框盒，以及 `::after` 的计算位置、尺寸、transform 和 transform-origin，计算箭头盒右边界及垂直中心，再与 select 边框盒和文字 `padding-left` 比较。
+
+- 箭头右侧内缩与文字左内边距之差 ≤1px，箭头与 select 垂直中心之差 ≤1px。
+- select 高度 ≥44px，`appearance` 必须为 `none`。包装层或可见 mask 缺失也报错。
+- 汇总行显示 `select` 违规数与实际检查数量，`report.json` 的 `select` 记录违规，`selectMeasurements` 保留逐控件测量值，任何违规均使退出码为 1。
+- `--inject` 同时注入页面和演示 ShadowRoot。自测可用 `--inject='.demo-root .ds-select-wrap::after{right:4px!important}'`，必须报告 select 内缩违规。
+
 自测：`--inject='.nav-caret{top:3px}'` 必须报出 icon 偏差，证明检查本身有效。
 
 例外（不按 token 查）：6 种视觉风格和排版标本、`.ds-type-sample`、`[data-ui-audit-specimen]`、里程表数字、纯图标文本、svg/pre/code/kbd/提示词正文。

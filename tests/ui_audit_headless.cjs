@@ -14,6 +14,8 @@
    - brand: brand left x agrees with the modal value across audited pages at each width (≤1px).
    - navx: visible header desktop-nav items and search button left x lists agree with the modal list at each width (≤1px; same count).
    - gap: masonry galleries (CSS columns) keep column gap = row gap between cards (≤1px).
+   - select: every visible native select has appearance:none, height ≥44px, and a
+     measurable masked chevron with symmetric insets and vertical centres (≤1px).
    - states: hover / focus / open screenshots of the nav triggers and primary buttons.
    Usage: node tests/ui_audit_headless.cjs [routeFilter] [--widths=1440,390] [--inject=CSS]
    (--inject plants a defect to prove a rule fires, e.g. --inject='.nav-caret{top:3px}')
@@ -64,6 +66,48 @@ function collect(tokens) {
     return rs.reduce((a, q) => ({left:Math.min(a.left,q.left), right:Math.max(a.right,q.right), top:Math.min(a.top,q.top), bottom:Math.max(a.bottom,q.bottom), lines:a.lines + (Math.abs(q.top - a.top) > 2 ? 1 : 0)}), {left:1e9,right:-1e9,top:1e9,bottom:-1e9,lines:1}); };
   const isDemo = el => !!el.getRootNode().host;
   const pairs = [], type = [], rows = [], filled = [], inset = [], gap = [], concentric = [];
+  const select = [], selectMeasurements = [];
+  // Read the actual ::after used box, including margins and transforms.
+  // Resolve auto left/top from right/bottom and the corresponding end margins.
+  // A misplaced wrapper or arrow must fail too.
+  for (const el of all.filter(el => el.matches('select') && visible(el))) {
+    const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+    const wrap = el.parentElement?.matches('.ds-select-wrap') ? el.parentElement : null;
+    const issues = [], measurement = {el:label(el), demo:isDemo(el), height:r.height,
+      appearance:s.appearance, textLeftPadding:parseFloat(s.paddingLeft)};
+    if (s.appearance !== 'none') issues.push(`appearance ${s.appearance}`);
+    if (r.height < 44) issues.push(`height ${r.height}px`);
+    const ps = wrap && getComputedStyle(wrap, '::after');
+    if (!ps || ps.content === 'none' || ps.content === 'normal' || ps.display === 'none' ||
+        ps.visibility !== 'visible' || +ps.opacity === 0 || ps.maskImage === 'none' ||
+        !(parseFloat(ps.width) > 0 && parseFloat(ps.height) > 0)) {
+      issues.push('missing visible masked chevron');
+    } else {
+      const wr = wrap.getBoundingClientRect(), ws = getComputedStyle(wrap);
+      const w = parseFloat(ps.width), h = parseFloat(ps.height);
+      const [ox, oy] = ps.transformOrigin.split(' ').map(parseFloat);
+      const matrix = new DOMMatrixReadOnly(ps.transform === 'none' ? undefined : ps.transform);
+      const corners = [[0,0],[w,0],[0,h],[w,h]].map(([x,y]) =>
+        matrix.transformPoint({x:x - ox, y:y - oy}));
+      const left = (ps.left === 'auto'
+        ? wr.right - parseFloat(ws.borderRightWidth) - parseFloat(ps.right) - parseFloat(ps.marginRight) - w
+        : wr.left + parseFloat(ws.borderLeftWidth) + parseFloat(ps.left) + parseFloat(ps.marginLeft)) + ox;
+      const top = (ps.top === 'auto'
+        ? wr.bottom - parseFloat(ws.borderBottomWidth) - parseFloat(ps.bottom) - parseFloat(ps.marginBottom) - h
+        : wr.top + parseFloat(ws.borderTopWidth) + parseFloat(ps.top) + parseFloat(ps.marginTop)) + oy;
+      const right = left + Math.max(...corners.map(p => p.x));
+      const cy = top + (Math.min(...corners.map(p => p.y)) + Math.max(...corners.map(p => p.y))) / 2;
+      measurement.chevronRightInset = r.right - right;
+      measurement.insetDelta = Math.abs(measurement.chevronRightInset - measurement.textLeftPadding);
+      measurement.centreDelta = Math.abs(cy - (r.top + r.height / 2));
+      if (!Number.isFinite(measurement.insetDelta) || measurement.insetDelta > 1)
+        issues.push(`inset delta ${measurement.insetDelta}px`);
+      if (!Number.isFinite(measurement.centreDelta) || measurement.centreDelta > 1)
+        issues.push(`centre delta ${measurement.centreDelta}px`);
+    }
+    selectMeasurements.push(measurement);
+    if (issues.length) select.push({...measurement, issues});
+  }
   // Text parts of an element: CJK runs (ink mode) or whole non-icon text (box mode).
   function textPart(el, skip, line) {
     const parts = [];
@@ -197,7 +241,7 @@ function collect(tokens) {
   const kept = pairs.filter(p => { const at = deepAt(p.probe[0], p.probe[1]); return !!at && !(at.closest && at.closest('.bottom-bar')); });
   const navX = [...document.querySelectorAll('.header .desktop-nav .nav-link, .header .desktop-nav .nav-trigger, .header .nav-search')]
     .filter(visible).map(el => el.getBoundingClientRect().left);
-  return {pairs:kept, type, rows, filled, inset, gap, concentric, brandX:document.querySelector('.brand')?.getBoundingClientRect().left ?? null, navX};
+  return {pairs:kept, type, rows, filled, inset, gap, concentric, select, selectMeasurements, brandX:document.querySelector('.brand')?.getBoundingClientRect().left ?? null, navX};
 }
 
 // Ink measurement in the page: decode the screenshot and find ink rows inside boxes.
@@ -259,7 +303,7 @@ async function serve(ctx) {
 
 (async () => {
   fs.mkdirSync(outDir, {recursive:true});
-  const browser = await chromium.launch(), report = {started:new Date().toISOString(), widths, pages:selected.length, icon:[], type:[], rows:[], filled:[], inset:[], gap:[], concentric:[], brand:[], brandMeasurements:[], navx:[], navxMeasurements:[], pairsChecked:0, errors:[]};
+  const browser = await chromium.launch({headless:true}), report = {started:new Date().toISOString(), widths, pages:selected.length, icon:[], type:[], rows:[], filled:[], inset:[], gap:[], concentric:[], select:[], selectMeasurements:[], brand:[], brandMeasurements:[], navx:[], navxMeasurements:[], pairsChecked:0, errors:[]};
   for (const width of widths) {
     const ctx = await browser.newContext({viewport:{width, height:900}, hasTouch:width < 500, isMobile:width < 500, reducedMotion:'reduce'}); await serve(ctx);
     let next = 0;
@@ -269,6 +313,14 @@ async function serve(ctx) {
           await page.setViewportSize({width, height:900});
           await page.goto(origin + prefix + route, {waitUntil:'load'}); await page.waitForTimeout(200);
           await page.addStyleTag({content:'.skip{display:none!important}*{caret-color:transparent!important}' + inject});
+          if (inject) await page.evaluate(css => {
+            const apply = root => root.querySelectorAll('*').forEach(el => {
+              if (!el.shadowRoot) return;
+              const style = document.createElement('style'); style.textContent = css;
+              el.shadowRoot.append(style); apply(el.shadowRoot);
+            });
+            apply(document);
+          }, inject);
           const h = Math.min(await page.evaluate(() => document.documentElement.scrollHeight), 7000);
           await page.setViewportSize({width, height:h}); await page.waitForTimeout(250);
           const found = await page.evaluate(collect, TOKENS);
@@ -282,6 +334,8 @@ async function serve(ctx) {
           for (const f of found.inset) report.inset.push({width, route, ...f});
           for (const f of found.gap) report.gap.push({width, route, ...f});
           for (const f of found.concentric) report.concentric.push({width, route, ...f});
+          for (const f of found.select) report.select.push({width, route, ...f});
+          for (const m of found.selectMeasurements) report.selectMeasurements.push({width, route, ...m});
           if (found.brandX !== null) report.brandMeasurements.push({width, route, x:found.brandX});
           report.navxMeasurements.push({width, route, x:found.navX});
         } catch (error) { report.errors.push({width, route, error:error.message.slice(0, 200)}); }
@@ -312,6 +366,6 @@ async function serve(ctx) {
   fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 1));
   const uniq = list => new Set(list.map(x => `${x.el}|${x.icon || x.group || (x.issues || []).join(',')}`)).size;
   console.log(`页面 ${selected.length} × 宽 ${widths.join('/')}；图标文字对 ${report.pairsChecked} 组`);
-  console.log(`icon 未居中 ${report.icon.length}（去重 ${uniq(report.icon)}）；type/color ${report.type.length}（去重 ${uniq(report.type)}）；rows 不等高 ${report.rows.length}（去重 ${uniq(report.rows)}）；filled 实心按钮灰描边 ${report.filled.length}（去重 ${uniq(report.filled)}）；concentric 非同心 ${report.concentric.length}（去重 ${uniq(report.concentric)}）；brand 左边界不一致 ${report.brand.length}；navx 导航左边界列表不一致 ${report.navx.length}；错误 ${report.errors.length}；inset 缩略图内边距不等 ${report.inset.length}（去重 ${uniq(report.inset)}）；gap 瀑布流间距不等 ${report.gap.length}（去重 ${uniq(report.gap)}）`);
-  process.exit(report.icon.length || report.type.length || report.rows.length || report.filled.length || report.inset.length || report.gap.length || report.concentric.length || report.brand.length || report.navx.length || report.errors.length ? 1 : 0);
+  console.log(`icon 未居中 ${report.icon.length}（去重 ${uniq(report.icon)}）；type/color ${report.type.length}（去重 ${uniq(report.type)}）；rows 不等高 ${report.rows.length}（去重 ${uniq(report.rows)}）；filled 实心按钮灰描边 ${report.filled.length}（去重 ${uniq(report.filled)}）；concentric 非同心 ${report.concentric.length}（去重 ${uniq(report.concentric)}）；brand 左边界不一致 ${report.brand.length}；navx 导航左边界列表不一致 ${report.navx.length}；select 违规 ${report.select.length}（检查 ${report.selectMeasurements.length} 个）；错误 ${report.errors.length}；inset 缩略图内边距不等 ${report.inset.length}（去重 ${uniq(report.inset)}）；gap 瀑布流间距不等 ${report.gap.length}（去重 ${uniq(report.gap)}）`);
+  process.exit(report.icon.length || report.type.length || report.rows.length || report.filled.length || report.inset.length || report.gap.length || report.concentric.length || report.select.length || report.brand.length || report.navx.length || report.errors.length ? 1 : 0);
 })().catch(error => { console.error(error); process.exit(2); });

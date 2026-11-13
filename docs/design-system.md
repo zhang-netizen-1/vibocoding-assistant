@@ -177,6 +177,22 @@
 - 三级阴影均有两层，一级用于静止承托面，二级用于悬停浮起，三级用于弹窗、下拉与提示浮层。
 - 桌面控件高度为 32 / 40 / 48px，触屏点击区域至少 44×44px。参考页的 32px 与 40px 控件在触屏环境扩展至 44px。
 
+### Select 下拉
+
+所有原生下拉使用 `.ds-select-wrap > select`，共享规则位于每个演示 ShadowRoot 最后加载的 `demo-accessibility.css`，变量定义于 `demo-spec.css`。
+
+| Token | 实际值 | 用途 |
+|---|---|---|
+| `--ds-select-pad-x` | `12px` | 文字左内边距与箭头盒右侧内缩 |
+| `--ds-select-chevron` | `12px` | 箭头盒宽高 |
+| `--ds-select-gap` | `8px` | 文字区与箭头盒之间的预留间距 |
+
+- `appearance:none`，右内边距为三个变量之和 `32px`。包装层贴合 select 边框盒，箭头盒右侧内缩 `12px`，垂直中心偏差不超过 `0.5px`。
+- `.ds-select-wrap::after` 使用与导航 caret 相同的 `12×12` SVG 路径 `M3 4.5 6 7.5 9 4.5` 作为 CSS mask，通过 `background-color:currentColor` 继承文字颜色，兼容深色主题。
+- 高度至少 `44px`，城市选择器沿用容器对应的 `44/48px` 高度。圆角为 `--ds-r-control`（`8px`），边框为 `1px solid --ds-border`。
+- 默认使用 `--ds-surface` 底色和 `--ds-ink` 文字，悬停使用 `--ds-fill`。`:focus-visible` 为 `2px solid --ds-accent` 外环，偏移 `2px`。
+- 原生 `disabled` 状态保留，包装层整体透明度为 `.45`，箭头与控件同步变淡，鼠标样式为 `not-allowed`。
+
 ### 动效
 
 | Token | 实际值 |
