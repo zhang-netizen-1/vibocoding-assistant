@@ -35,6 +35,15 @@
   --radius-xl: 16px;
   --shadow: 0 16px 48px rgb(17 24 39 / .12);
   --nav-height: 64px;
+  --entry-shell: 1376px;
+  --header-width: var(--entry-shell);
+  /* Concentric thumbnail outer edges: content -> stage -> gallery card. */
+  --thumb-content-radius: 14px;
+  --thumb-inset: 16px;
+  --thumb-stage-border: 1px;
+  --thumb-stage-radius: calc(var(--thumb-content-radius) + var(--thumb-inset) + var(--thumb-stage-border));
+  --gallery-card-border: 1px;
+  --gallery-card-radius: calc(var(--thumb-stage-radius) + var(--gallery-card-border));
 }
 /* Demo tokens are deliberately scoped; shell actions never consume them. */
 .demo-scope {

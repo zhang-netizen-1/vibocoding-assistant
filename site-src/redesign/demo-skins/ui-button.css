@@ -27,7 +27,7 @@
 /* Real copy feedback is independent from the fixed inspection state. */
 .ds-button-demo #copyDemoBtn.ds-success:disabled{opacity:1;background:var(--ds-success-soft);color:var(--ds-success);-webkit-text-fill-color:var(--ds-success);border-color:var(--ds-success)!important;cursor:default}
 /* Inert catalog tiles show the representative action at readable size. */
-:host(:not([data-interactive])) .ds-button-panel{padding:12px}
+:host(:not([data-interactive])) .ds-button-panel{padding:12px;border-radius:var(--thumb-content-radius,14px)}
 :host(:not([data-interactive])) .ds-button-heading{margin-bottom:12px}
 :host(:not([data-interactive])) .ds-button-heading>span{display:none}
 :host(:not([data-interactive])) .ds-button-grid{grid-template-columns:minmax(0,1fr)}

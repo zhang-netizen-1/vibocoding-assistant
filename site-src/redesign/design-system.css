@@ -61,6 +61,12 @@ body:has(.ds-page) .gallery-link, body:has(.ds-page) .simple-card a { display:bl
 .ds-card-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
 .ds-card-grid .simple-card { align-self:start; }
 .ds-card-grid .mini-stage { padding-bottom:60px; }
+@media(hover:hover) and (prefers-reduced-motion:no-preference) {
+  .ds-card-grid .mini-stage { padding-bottom:0; }
+}
+@media(max-width:1023px),(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce) {
+  .ds-card-grid .mini-stage { padding-bottom:60px; }
+}
 .ds-page .gallery-link { min-height:44px; }
 .ds-button-states { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; padding:8px 4px 16px; }
 .ds-button-cell { min-width:0; display:grid; gap:12px; }

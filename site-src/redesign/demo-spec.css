@@ -95,13 +95,13 @@
 /* Gallery thumbnails: one inset token on all four sides. When the stage holds a single
    content card, the card fills the stage width and the stage hugs its height, so the
    gray inset is equal on every side (card height follows content; the gallery is masonry). */
-:host(:not([data-interactive])) .demo-root.ds-stage { --ds-thumb-inset:16px; padding:var(--ds-thumb-inset); }
+:host(:not([data-interactive])) .demo-root.ds-stage { --ds-thumb-inset:var(--thumb-inset,16px); padding:var(--ds-thumb-inset); }
 :host(:not([data-interactive])) .demo-root.ds-stage:has(> :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card)):not(:has(> :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card) > :not(.ds-hint) ~ :not(.ds-hint))) { min-height:0; }
 :host(:not([data-interactive])) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card):not(:has(> :not(.ds-hint) ~ :not(.ds-hint))) { width:100%; max-width:none; align-self:stretch; margin:0; min-height:0; height:auto; padding:0; }
-:host(:not([data-interactive])) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card):not(:has(> :not(.ds-hint) ~ :not(.ds-hint))) > :not(.ds-hint) { width:100%; max-width:none; margin:0; box-sizing:border-box; border-radius:14px; }
+:host(:not([data-interactive])) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card):not(:has(> :not(.ds-hint) ~ :not(.ds-hint))) > :not(.ds-hint) { width:100%; max-width:none; margin:0; box-sizing:border-box; border-radius:var(--thumb-content-radius,14px); }
 :host(:not([data-interactive])) .demo-root.ds-stage:has(> .stage > :is(.view-stack,.view-window)) { min-height:0; }
 :host(:not([data-interactive])) .demo-root.ds-stage > .stage:has(> :is(.view-stack,.view-window)) { width:100%; }
-:host(:not([data-interactive])) .demo-root.ds-stage > .stage > :is(.view-stack,.view-window) { width:100%; max-width:none; border-radius:14px; }
+:host(:not([data-interactive])) .demo-root.ds-stage > .stage > :is(.view-stack,.view-window) { width:100%; max-width:none; border-radius:var(--thumb-content-radius,14px); }
 :host(:not([data-interactive])) #c-popover .canvas { padding-top:0; }
 @media(min-width:768px) and (max-width:1023px) {
   :host([data-interactive]) .demo-root.ds-stage { --ds-stage-inset:24px; aspect-ratio:auto; min-height:max(300px,66.667cqi); padding:24px 24px 76px; }
@@ -187,8 +187,12 @@
 .ds-stage .ds-h-panel .mini-phone { border-radius:var(--ds-r-panel); }
 .ds-stage .style-preview.style-glass .style-art,
 .ds-stage .style-preview.style-neumorphic .style-art { border-radius:var(--ds-r-panel); }
-/* Gallery thumbnails: card 16 - 1px border = 15 for the stage; anything inside
-   it steps down to 14 so it never exceeds the stage. */
-:host(:not([data-interactive])) .demo-root.ds-stage { border-radius:15px; }
-:host(:not([data-interactive])) .demo-root.ds-stage :is(.ds-surface,.ds-h-panel,.phone-demo,.extra-scene,.micro-card,.magnet-wrap,.ds-cmdk-panel) { border-radius:14px; }
+/* Concentric gallery thumbnails: stage = content + padding + stage border;
+   gallery = stage + gallery border. Shell tokens inherit through the host. */
+:host(:not([data-interactive])) .demo-root.ds-stage { border-width:var(--thumb-stage-border,1px); border-radius:var(--thumb-stage-radius,31px); }
+:host(:not([data-interactive])) .demo-root.ds-stage :is(.ds-surface,.ds-h-panel,.phone-demo,.extra-scene,.micro-card,.magnet-wrap,.ds-cmdk-panel) { border-radius:var(--thumb-content-radius,14px); }
+:host(:not([data-interactive])) .demo-root.ds-stage .stage[data-effect="component-flip"] :is(.flip-card,.flip-card .face) { border-radius:var(--thumb-content-radius,14px); }
+/* Media sits 1px inside the content-card border; keep its lower corners square. */
+:host(:not([data-interactive])) .demo-root.ds-stage .stage[data-effect="component-flip"] .flip-card .face :is(.ds-h-photo,.ds-h-img),
+:host(:not([data-interactive])) .demo-root.ds-stage .stage:is([data-effect="component-tilt"],[data-effect="component-spotlight"]) .micro-card .ds-h-photo { border-radius:calc(var(--thumb-content-radius,14px) - 1px) calc(var(--thumb-content-radius,14px) - 1px) 0 0; }
 :host(:not([data-interactive])) .demo-root.ds-stage .ds-button-panel :is(.btn,button) { border-radius:var(--ds-r-chip); }

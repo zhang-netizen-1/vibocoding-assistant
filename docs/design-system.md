@@ -220,7 +220,31 @@
 
 - 外圆角 = 内圆角 + 间隙；内圆角永远不超过外圆角；间隙很大时内圆角取下限 6px（`--ds-r-min`）。
 - 层级变量：`--ds-r-stage` 16 ≥ `--ds-r-surface` 16 > `--ds-r-panel` 12 > `--ds-r-control` 8 > `--ds-r-chip` 6。
-- 画廊缩略图：卡片 16 − 1px 边框 = 舞台 15，舞台里的承托面 14。
+- 画廊缩略图采用严格同心公式，变量定义在 `site-src/redesign/tokens.css` 的 `:root`，通过宿主继承到 Shadow DOM：
+
+| Token | 定义 | 当前值 |
+|---|---|---|
+| `--thumb-content-radius` | 内容卡圆角 | 14px |
+| `--thumb-inset` | 舞台 padding；`--ds-thumb-inset` 读取此值 | 16px |
+| `--thumb-stage-border` | 舞台边框 | 1px |
+| `--thumb-stage-radius` | `calc(var(--thumb-content-radius) + var(--thumb-inset) + var(--thumb-stage-border))` | 31px |
+| `--gallery-card-border` | 画廊卡边框 | 1px |
+| `--gallery-card-radius` | `calc(var(--thumb-stage-radius) + var(--gallery-card-border))` | 32px |
+
+| 视口宽度 | 内容卡圆角 | 舞台 padding / 边框 | 内容卡四边外缘内缩 | 舞台圆角 | 画廊边框 / 圆角 |
+|---|---|---|---|---|---|
+| 1440px | 14px | 16px / 1px | 17px | 31px | 1px / 32px |
+| 1024px | 14px | 16px / 1px | 17px | 31px | 1px / 32px |
+| 768px | 14px | 16px / 1px | 17px | 31px | 1px / 32px |
+| 390px | 14px | 16px / 1px | 17px | 31px | 1px / 32px |
+
+上述为 CSS 定义与公式结果。所有宽度共用同一组公式；如增加 inset 断点，须在该断点同步使用同一组派生变量。`.simple-card` 等其他外框卡片保持 16px，六种视觉风格的专属样式不变。
+
+角落控件采用 `calc(var(--gallery-card-radius) - var(--gallery-card-border) - var(--gallery-control-offset))`：播放按钮和动效卡链接偏移 16px，圆角为 15px；普通画廊 `.reduced-link` 原偏移 8px，公式值为 23px，超过短边一半时由 CSS 归一为完整胶囊。偏移相对卡片内边缘，外缘距离还包含 1px 卡片边框。动效卡播放按钮高度至少 44px，普通播放按钮原最小高度 32px（触屏/窄屏至少 44px），圆角均为 15px。
+
+仅在 `(hover:hover) and (prefers-reduced-motion:no-preference)` 且两个控件均隐藏时移除缩略图底部预留空间。≤1023px 显示播放按钮的规则、触屏和减弱动态模式保留原预留空间；动效卡原本没有预留条。静态预览在上述悬停/动态条件下两个控件始终隐藏，底部空间为 0。
+
+页头 `.nav-inner` 统一使用 `--header-width:var(--entry-shell)`，`--entry-shell:1376px`；保持现有 32px / 16px 水平 padding，正文宽度规则不变。
 - 胶囊与圆形按形状定义，不受此限，但离外框圆角至少一个外圆角半径。
 - 独立按钮之间 8px，按钮与预览框之间至少 12px；只有共用外边框、有分隔线、两端才有圆角的分段按钮组可以 0 间隙。
 - 自动检查：`tests/geometry_headless.cjs`（1440 / 768 / 390，全部条目演示；圆角嵌套、按钮间距、文字裁切、比内容窄、指示条偏移 > 2px）。
