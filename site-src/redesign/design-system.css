@@ -89,7 +89,7 @@ body:has(.ds-page) .gallery-link, body:has(.ds-page) .simple-card a { display:bl
 .ds-motion-play { font-size:13px; min-height:44px; }
 .ds-motion-status { font-size:12px; color:var(--secondary); margin-left:12px; }
 .ds-live-demo { margin-block:24px; min-width:0; }
-.ds-stage-diagram { display:flex; position:relative; align-items:center; justify-content:center; background:radial-gradient(circle,rgb(17 24 39 / .05) .5px,transparent .5px) 0 0/24px 24px var(--ds-stage); border:1px solid var(--ds-line); border-radius:12px; min-height:320px; aspect-ratio:16/10; padding:32px 32px 76px; }
+.ds-stage-diagram { display:flex; position:relative; align-items:center; justify-content:center; background:radial-gradient(circle,rgb(17 24 39 / .05) .5px,transparent .5px) 0 0/24px 24px var(--ds-stage); border:1px solid var(--ds-line); border-radius:16px; min-height:320px; aspect-ratio:16/10; padding:32px 32px 76px; }
 .ds-stage-surface { width:min(100%,400px); background:var(--ds-surface); border:1px solid var(--ds-line); border-radius:16px; box-shadow:var(--ds-shadow-1); padding:24px; display:flex; flex-direction:column; gap:12px; }
 .ds-stage-surface strong { font-size:16px; }
 .ds-stage-surface span { font-size:12px; color:var(--ds-ink-2); }
@@ -151,9 +151,12 @@ body:has(.ds-page) .gallery-link, body:has(.ds-page) .simple-card a { display:bl
 .ds-gap-pair>div{display:flex;flex-wrap:wrap;align-items:center;padding:16px;border:1px solid #E4E4E7;border-radius:12px;background:#fff}
 .ds-gap-sep{gap:8px}
 .ds-gap-sep button{min-height:44px;padding:0 16px;border:1px solid #D4D4D8;border-radius:8px;background:#fff;font:inherit;font-size:14px}
-.ds-gap-seg{gap:0}
-.ds-gap-seg button{min-height:44px;min-width:56px;padding:0 16px;border:1px solid #D4D4D8;background:#fff;font:inherit;font-size:14px;margin-left:-1px}
-.ds-gap-seg button:first-child{border-radius:8px 0 0 8px;margin-left:0}
-.ds-gap-seg button:last-child{border-radius:0 8px 8px 0}
-.ds-gap-seg button[aria-pressed="true"]{background:#EDE9FE;color:#5B21B6;border-color:#A78BFA;position:relative;z-index:1}
-.ds-gap-sep button:focus-visible,.ds-gap-seg button:focus-visible{outline:2px solid #1D4ED8;outline-offset:2px;position:relative;z-index:2}
+/* 真分段按钮：一个容器、一圈外边框、1px 内部分隔线，只有两端随容器圆角；选中段是内嵌填充，圆角 = 8 − 2 内边距 = 6 */
+.ds-gap-pair>.ds-gap-seg{display:flex;justify-content:flex-start}
+.ds-gap-seg .ds-seg{display:inline-flex;align-items:stretch;gap:0;padding:2px;border:1px solid #A1A1AA;border-radius:8px;background:#FFFFFF}
+.ds-gap-seg .ds-seg button{min-height:44px;min-width:56px;padding:0 16px;margin:0;border:0;border-radius:0;background:transparent;color:#3F3F46;font:inherit;font-size:14px;cursor:pointer}
+.ds-gap-seg .ds-seg button+button{border-left:1px solid #E4E4E7}
+.ds-gap-seg .ds-seg button[aria-pressed="true"]{background:#EDE9FE;color:#5B21B6;font-weight:600;border-radius:6px}
+.ds-gap-seg .ds-seg button[aria-pressed="true"]+button,.ds-gap-seg .ds-seg button+button[aria-pressed="true"]{border-left-color:transparent}
+.ds-gap-seg .ds-seg button:focus-visible{outline:2px solid #1D4ED8;outline-offset:-2px;border-radius:6px}
+.ds-gap-sep button:focus-visible{outline:2px solid #1D4ED8;outline-offset:2px;position:relative;z-index:2}

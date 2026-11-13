@@ -119,15 +119,15 @@ def nested_radius():
         '<div class="ds-nest-pair">'
         '<figure class="ds-nest ds-nest-good"><div class="ds-nest-outer"><div class="ds-nest-inner">内 8 · 间隙 8</div></div>'
         '<figcaption>✓ 外 16 = 内 8 + 间隙 8，弧线同心</figcaption></figure>'
-        '<figure class="ds-nest ds-nest-bad"><div class="ds-nest-outer"><div class="ds-nest-inner">内 20 · 间隙 8</div></div>'
+        '<figure class="ds-nest ds-nest-bad" data-geo-ignore><div class="ds-nest-outer"><div class="ds-nest-inner">内 20 · 间隙 8</div></div>'
         '<figcaption>✗ 内 20 大于外 16，角上出现鼓包（旧 cmdk 的问题）</figcaption></figure>'
         '</div>'
         f'<table class="ds-nest-table"><thead><tr><th>变量</th><th>值</th><th>什么时候用</th></tr></thead><tbody>{rows}</tbody></table>'
         '<p>缩略图：卡片 16 − 1px 边框 = 舞台 15，舞台里的承托面 14。</p>'
         '<h4>按钮间距</h4><p>什么时候用 · 各自带边框的独立按钮之间留 8px，按钮与预览框之间至少 12px；'
-        '只有共用外边框、中间有分隔线、两端才有圆角的分段按钮组可以 0 间隙。</p>'
+        '只有真正的分段按钮组可以 0 间隙：一个容器一圈外边框、段与段之间 1px 分隔线、只有两端随容器 8px 圆角，选中段是容器内的内嵌填充（圆角 8 − 2 内边距 = 6）。各自带边框、各自圆角、边框叠成 2px 的「贴在一起的按钮」不算。</p>'
         '<div class="ds-gap-pair"><div class="ds-gap-sep"><button type="button">初始状态</button><button type="button">切换状态</button></div>'
-        '<div class="ds-gap-seg" role="group" aria-label="分段按钮示例"><button type="button" aria-pressed="true">日</button><button type="button" aria-pressed="false">周</button><button type="button" aria-pressed="false">月</button></div></div>'
+        '<div class="ds-gap-seg"><div class="ds-seg" role="group" aria-label="分段按钮示例"><button type="button" aria-pressed="true">日</button><button type="button" aria-pressed="false">周</button><button type="button" aria-pressed="false">月</button></div></div></div>'
         '<p class="ds-note">自动检查：tests/geometry_headless.cjs 在 1440 / 768 / 390 三个宽度检查全部条目演示的圆角嵌套、按钮间距、文字裁切和指示条偏移。</p>'
     )
 

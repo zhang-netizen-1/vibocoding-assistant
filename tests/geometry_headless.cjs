@@ -7,6 +7,14 @@
    Rule 2 (spacing): a button never touches or overlaps another visible box
    (bordered/filled element or media) that is not its ancestor, descendant or a
    member of the same deliberate control group; minimum gap 8px.
+   Rule 2b (segmented): buttons in a control group may touch (gap < 8px) only when
+   the group renders as one segmented control: the group itself draws a single
+   outer outline (border, shadow or fill) with a rounded end radius; touching
+   segments are not each fully bordered, carry no radius on the sides that touch
+   (borderless inset fills excepted) and never double the divider (<= 1.5px).
+   Groups that fail lose the exemption and are reported under "segmented".
+   The design-system page is audited too; [data-geo-ignore] marks deliberate
+   counter-examples.
    Usage: node tests/geometry_headless.cjs [routeFilter]   (serves ../dist) */
 const fs = require('node:fs'), path = require('node:path');
 const {chromium} = require('playwright');
@@ -14,9 +22,9 @@ const root = path.resolve(__dirname, '../dist'), prefix = '/vibocoding-assistant
 const types = {'.html':'text/html','.css':'text/css','.js':'text/javascript','.json':'application/json','.svg':'image/svg+xml','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg'};
 const filter = process.argv[2] || '';
 const routes = [];
-(function walk(dir){ for (const name of fs.readdirSync(dir)) { const p = path.join(dir,name); if (fs.statSync(p).isDirectory()) walk(p); else if (name === 'index.html') { const html = fs.readFileSync(p,'utf8'); if (html.includes('<body class="entry-active">')) routes.push(path.relative(root,path.dirname(p)) + '/'); } } })(root);
+(function walk(dir){ for (const name of fs.readdirSync(dir)) { const p = path.join(dir,name); if (fs.statSync(p).isDirectory()) walk(p); else if (name === 'index.html') { const html = fs.readFileSync(p,'utf8'); if ((html.includes('<body class="entry-active">') || path.relative(root,path.dirname(p)) === 'design-system')) routes.push(path.relative(root,path.dirname(p)) + '/'); } } })(root);
 function audit() {
-  const out = {radius:[], spacing:[], clip:[], indicator:[], narrow:[]};
+  const out = {radius:[], spacing:[], clip:[], indicator:[], narrow:[], segmented:[]};
   const px = v => parseFloat(v) || 0;
   // Border radius in px; percentages resolve against the box (horizontal vs width, vertical vs height).
   const rp = (v, b) => { const [h, w = h] = String(v).trim().split(/\s+/); const f = (x, d) => x.endsWith("%") ? parseFloat(x) / 100 * d : (parseFloat(x) || 0); return Math.min(f(h, b.width), f(w, b.height)); };
@@ -31,7 +39,45 @@ function audit() {
   const inside = (a, b) => { for (let n = b; n; n = n.parentElement || n.getRootNode().host) if (n === a) return true; return false; };
   const all = [];
   (function collect(rootNode){ for (const el of rootNode.querySelectorAll('*')) { all.push(el); if (el.shadowRoot) collect(el.shadowRoot); } })(document);
-  const scopeOk = el => !!(el.closest('.entry-main,.use-card,.entry-layout') || el.getRootNode().host?.closest?.('.entry-demo,.entry-main'));
+  const scopeOk = el => !el.closest('[data-geo-ignore]') && !el.getRootNode().host?.closest?.('[data-geo-ignore]') && !!(el.closest('.entry-main,.use-card,.entry-layout,.ds-page') || el.getRootNode().host?.closest?.('.entry-demo,.entry-main,.ds-page'));
+  const bw = (s, side) => s['border' + side + 'Style'] !== 'none' && !/rgba\(.*, 0\)$/.test(s['border' + side + 'Color']) ? px(s['border' + side + 'Width']) : 0;
+  const segCache = new Map();
+  // Returns null when the group is a proper segmented control (or its members do not touch), else the reason.
+  const segProblem = group => {
+    if (segCache.has(group)) return segCache.get(group);
+    const items = [...group.querySelectorAll('button,[role="tab"],[role="radio"],a')].filter(b => visible(b) && b.closest('[role="group"],[role="tablist"],[role="radiogroup"],.segmented,.seg,.split-button,.split-wrap,.split,.splitbtn,.btn-group,.pagination,.pager,.ds-seg') === group);
+    let why = null;
+    const touching = [];
+    for (let i = 0; i < items.length; i++) for (let j = i + 1; j < items.length; j++) {
+      const a = items[i].getBoundingClientRect(), b = items[j].getBoundingClientRect();
+      const dx = Math.max(b.left - a.right, a.left - b.right), dy = Math.max(b.top - a.bottom, a.top - b.bottom);
+      if (Math.max(dx, dy) < 8) touching.push([items[i], items[j], a, b]);
+    }
+    if (touching.length) {
+      const gs = getComputedStyle(group), gr = group.getBoundingClientRect();
+      const outline = isBox(group);
+      const grad = Math.max(rp(gs.borderTopLeftRadius, gr), rp(gs.borderBottomRightRadius, gr));
+      const endRad = items.some(b => { const t = getComputedStyle(b), r = b.getBoundingClientRect(); return Math.max(rp(t.borderTopLeftRadius, r), rp(t.borderBottomRightRadius, r)) > 0; });
+      if (!outline) why = 'group has no single outer outline';
+      else if (!(grad > 0 || endRad)) why = 'group ends are not rounded';
+      else for (const [x, y, a, b] of touching) {
+        const sx = getComputedStyle(x), sy = getComputedStyle(y);
+        const full = t => ['Top','Right','Bottom','Left'].every(side => bw(t, side) > 0);
+        if (full(sx) && full(sy)) { why = 'segments are separately bordered'; break; }
+        const horiz = Math.abs(a.top - b.top) < 4;
+        const [first, second, s1, s2, r1, r2] = (horiz ? a.left <= b.left : a.top <= b.top) ? [x, y, sx, sy, a, b] : [y, x, sy, sx, b, a];
+        const divider = horiz ? bw(s1, 'Right') + bw(s2, 'Left') : bw(s1, 'Bottom') + bw(s2, 'Top');
+        const overlapPx = horiz ? Math.max(0, r1.right - r2.left) : Math.max(0, r1.bottom - r2.top);
+        if (divider - Math.min(overlapPx, divider / 2) > 1.5) { why = 'doubled divider'; break; }
+        const inset = t => !['Top','Right','Bottom','Left'].some(side => bw(t, side) > 0);
+        const innerA = horiz ? [s1.borderTopRightRadius, s1.borderBottomRightRadius] : [s1.borderBottomLeftRadius, s1.borderBottomRightRadius];
+        const innerB = horiz ? [s2.borderTopLeftRadius, s2.borderBottomLeftRadius] : [s2.borderTopLeftRadius, s2.borderTopRightRadius];
+        if ((!inset(s1) && innerA.some(v => rp(v, r1) > 0.5)) || (!inset(s2) && innerB.some(v => rp(v, r2) > 0.5))) { why = 'touching sides are rounded'; break; }
+      }
+      if (why) out.segmented.push({el:label(group), why, items:items.length});
+    }
+    segCache.set(group, why); return why;
+  };
   for (const el of all) {
     if (!scopeOk(el) || !visible(el)) continue;
     const s = getComputedStyle(el), r = el.getBoundingClientRect();
@@ -59,7 +105,8 @@ function audit() {
       }
     }
     if (el.matches('button,a.btn,[role="button"],.play-button') && isBox(el)) {
-      const group = el.closest('[role="group"],[role="tablist"],[role="radiogroup"],.segmented,.seg,.split-button,.split-wrap,.split,.splitbtn,.btn-group,.pagination,.pager,.ds-seg');
+      let group = el.closest('[role="group"],[role="tablist"],[role="radiogroup"],.segmented,.seg,.split-button,.split-wrap,.split,.splitbtn,.btn-group,.pagination,.pager,.ds-seg');
+      if (group && segProblem(group)) group = null;
       let card = parentOf(el); while (card && card.nodeType === 1 && !(isBox(card) && px(getComputedStyle(card).borderTopLeftRadius) > 0)) card = parentOf(card);
       if (!card || card.nodeType !== 1) continue;
       const within = all.filter(o => o !== el && inside(card, o) && !inside(o, el) && !inside(el, o) && !(group && inside(group, o)) && isBox(o) && visible(o) && getComputedStyle(o).position !== 'fixed');
@@ -117,7 +164,7 @@ function audit() {
 }
 (async () => {
   const browser = await chromium.launch({headless:true});
-  const report = {radius:[], spacing:[], clip:[], indicator:[], narrow:[], pages:0};
+  const report = {radius:[], spacing:[], clip:[], indicator:[], narrow:[], segmented:[], pages:0};
   try {
     for (const width of [1440,768,390]) {
       const context = await browser.newContext({viewport:{width,height:900},hasTouch:width===390,isMobile:width===390,reducedMotion:'reduce'});
@@ -127,7 +174,7 @@ function audit() {
         await page.goto(origin + prefix + route, {waitUntil:'networkidle'});
         await page.waitForTimeout(150);
         const result = await page.evaluate(audit); report.pages++;
-        for (const k of ['radius','spacing','clip','indicator','narrow']) for (const row of result[k]) report[k].push({width, route, ...row});
+        for (const k of ['radius','spacing','clip','indicator','narrow','segmented']) for (const row of result[k]) report[k].push({width, route, ...row});
       }
       await context.close();
     }
@@ -135,6 +182,6 @@ function audit() {
   fs.mkdirSync(path.resolve(__dirname,'../output/geometry'),{recursive:true});
   fs.writeFileSync(path.resolve(__dirname,'../output/geometry/report.json'), JSON.stringify(report,null,1));
   const dedupe = rows => [...new Map(rows.map(r => [r.route+'|'+r.el+'|'+r.rule, r])).values()];
-  console.log(`pages ${report.pages}; ` + ['radius','spacing','clip','indicator','narrow'].map(k => `${k} ${report[k].length}`).join('; '));
-  if (['radius','spacing','clip','indicator','narrow'].some(k => report[k].length)) process.exitCode = 1;
+  console.log(`pages ${report.pages}; ` + ['radius','spacing','clip','indicator','narrow','segmented'].map(k => `${k} ${report[k].length}`).join('; '));
+  if (['radius','spacing','clip','indicator','narrow','segmented'].some(k => report[k].length)) process.exitCode = 1;
 })();

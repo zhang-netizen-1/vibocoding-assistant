@@ -179,3 +179,4 @@
    it steps down to 14 so it never exceeds the stage. */
 :host(:not([data-interactive])) .demo-root.ds-stage { border-radius:15px; }
 :host(:not([data-interactive])) .demo-root.ds-stage :is(.ds-surface,.ds-h-panel,.phone-demo,.extra-scene,.micro-card,.magnet-wrap,.ds-cmdk-panel) { border-radius:14px; }
+:host(:not([data-interactive])) .demo-root.ds-stage .ds-button-panel :is(.btn,button) { border-radius:var(--ds-r-chip); }
