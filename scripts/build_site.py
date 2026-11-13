@@ -68,6 +68,8 @@ def expected_build_files(entries):
     files.update(f"bench/assets/img/{path.name}" for path in (bench/"img").glob("*.jpg"))
     files.update(f"bench/{path.relative_to(bench)}" for path in (bench/"demos").rglob("*.html"))
     files.update(REDESIGN.generated_files(entries))
+    files.add("design-system/index.html")
+    files.add("assets/redesign/design-system.css")
     files.update('demo-assets/' + name for name in demo_image_files())
     return files
 
@@ -154,6 +156,11 @@ def build() -> None:
         shutil.copy2(ROOT / name, OUTPUT / "motion" / name)
     BENCH_MODULE.build(OUTPUT, SITE_SOURCE / "bench", entries, ENTRY_ADAPTER.taxonomy(), REDESIGN)
     REDESIGN.build(OUTPUT, entries, ENTRY_ADAPTER.taxonomy())
+    design_system_output = OUTPUT / "design-system"
+    design_system_output.mkdir(exist_ok=True)
+    (design_system_output / "index.html").write_text(
+        REDESIGN.design_system.render(entries, ENTRY_ADAPTER.taxonomy(), REDESIGN), encoding="utf-8"
+    )
     files = {str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*") if path.is_file()}
     expected = expected_build_files(entries)
     if files != expected:

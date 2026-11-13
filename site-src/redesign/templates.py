@@ -11,6 +11,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import demos
 import states
+import design_system
 
 ASSETS = ('tokens.css', 'base.css', 'site.css', 'site.js', 'search.js', 'states.css')
 EXAMPLES = ('浮起来', '弹出来的小黑框', 'Crossfade', '点了会变的按钮')
@@ -23,11 +24,11 @@ def entry_destination(entry):
 
 def generated_pages(entries):
     return ['index.html', '404.html', *(f'{column}/index.html' for column in ('basics', 'components', 'interactions', 'scenarios', 'ai')),
-            *(entry_destination(e) + 'index.html' for e in entries), 'interactions/spec/index.html', 'ai/prompt-writing/index.html']
+            *(entry_destination(e) + 'index.html' for e in entries), 'interactions/spec/index.html', 'ai/prompt-writing/index.html', 'design-system/index.html']
 
 
 def generated_files(entries):
-    return generated_pages(entries) + ['assets/search-index.json'] + [f'assets/redesign/{name}' for name in (*ASSETS, *demos.assets(entries))]
+    return generated_pages(entries) + ['assets/search-index.json', 'assets/redesign/design-system.css'] + [f'assets/redesign/{name}' for name in (*ASSETS, *demos.assets(entries))]
 
 
 
@@ -141,6 +142,8 @@ def shell(page, title, body, entries, tax, entry=False):
     index_version = hashlib.sha256(search_index_json(entries, tax).encode()).hexdigest()[:8]
     index_url = relative(page, 'assets/search-index.json') + '?v=' + index_version
     selected = [e for e in entries if entry_destination(e) + 'index.html' == page] if entry else [e for e in entries if page == e['column'] + '/index.html']
+    if page == design_system.PAGE:
+        selected = [e for e in entries if e['column'] == 'components' and e['slug'] == 'button']
     bundle_names = set()
     for item in selected:
         bundle_names.update(demos.bundle_names(item['demo']))
@@ -155,10 +158,12 @@ def shell(page, title, body, entries, tax, entry=False):
         url = relative(page, 'assets/redesign/' + name) + '?v=' + hashlib.sha256(content.encode()).hexdigest()[:8]
         return f'<link rel="stylesheet" href="{url}">' if name.endswith('.css') else f'<script defer src="{url}"></script>'
     css = ''.join(asset_tag(name) for name in ASSETS if name.endswith('.css') and name != 'states.css')
+    if page == design_system.PAGE:
+        css += asset_tag('design-system.css')
     css += asset_tag('demos.css')
     css += ''.join(asset_tag(name) for name in sorted(bundle_names) if name.endswith('.css'))
     js = ''.join(asset_tag(name) for name in ('demo-runtime.js', *sorted(name for name in bundle_names if name.endswith('.js') and name != 'demo-runtime.js'), 'search.js', 'site.js'))
-    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="查看界面效果的中英文名称与演示，复制原始实现提示词。"><title>{escape(title)} · Vibe Design 速查</title><link rel="icon" href="{relative(page, "assets/favicon.svg")}">{css}{js}</head><body{' class="entry-active"' if entry else ''}>{header(page,tax)}<main class="wrap view" id="main" tabindex="-1">{body}</main><footer class="wrap"><div class="footer">Vibe Design 速查 · <a href="{relative(page,'bench/')}">测评结果</a></div></footer>
+    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="查看界面效果的中英文名称与演示，复制原始实现提示词。"><title>{escape(title)} · Vibe Design 速查</title><link rel="icon" href="{relative(page, "assets/favicon.svg")}">{css}{js}</head><body{' class="entry-active"' if entry else ''}>{header(page,tax)}<main class="wrap view" id="main" tabindex="-1">{body}</main><footer class="wrap"><div class="footer">Vibe Design 速查 · <a href="{relative(page,'bench/')}">测评结果</a> · <a href="{relative(page,'design-system/')}">设计系统</a></div></footer>
 <dialog class="overlay search-dialog" id="search-dialog" aria-label="搜索条目" data-index-url="{index_url}" data-site-root="{relative(page, '')}"><div class="search-top"><label class="sr" for="search-input">搜索中文名、英文名或已有词</label><input id="search-input" type="search" placeholder="用你自己的说法搜，比如：鼠标放上去浮起来" autocomplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="grid" aria-expanded="false" aria-describedby="search-help"><button class="close-button" data-close="search-dialog">关闭</button></div><div class="search-body" id="search-body"></div><p class="search-help" id="search-help">↑↓ 选择条目 · Enter 打开 · Tab 选择操作 · Esc 关闭</p></dialog><div class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></div></body></html>'''
 
 
@@ -312,6 +317,7 @@ def build(output, entries, tax):
     assets.mkdir(parents=True)
     (output / 'assets/search-index.json').write_text(search_index_json(entries, tax), encoding='utf-8')
     contents = {name:(HERE/name).read_text(encoding='utf-8') for name in ASSETS}
+    contents['design-system.css'] = (HERE / 'design-system.css').read_text(encoding='utf-8')
     contents.update(demos.assets(entries))
     for name, content in contents.items():
         (assets/name).parent.mkdir(parents=True, exist_ok=True)

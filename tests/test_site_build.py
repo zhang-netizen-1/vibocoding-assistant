@@ -75,7 +75,7 @@ class SiteBuildTest(unittest.TestCase):
         spec.loader.exec_module(builder)
         entries = json.loads((ROOT / "build/entries.json").read_text())
         self.assertEqual(files, builder.expected_build_files(entries))
-        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 9 + len(entries))
+        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 10 + len(entries))
 
     def test_bench_pages_navigation_badges_and_local_references(self):
         paths = [DIST / "bench" / "index.html", *(DIST / "bench" / slug / "index.html" for slug in ("button", "crossfade", "grid"))]
