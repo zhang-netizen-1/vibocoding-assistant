@@ -265,3 +265,11 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
 - 实测四个宽度都一样：内容卡 14 / 内缩 17 / 舞台 31 / 画廊卡 32（390 内缩也是 17，所以半径与桌面相同）。brand x：1440 全部 64，其余宽度全部 16。
 - 测试（逐个，期间无 Codex）：单测 160 OK；ui_audit 205 页 × 4 宽全部 0（含 concentric、brand、inset、gap）；几何 579 次加载 0；焦点环 3222 × 4 宽 0；提示胶囊 300 全部通过；设计系统无头检查通过；r1 64 组测量通过。自测：注入 .gallery-card{border-radius:16px} 后 concentric 报 12 处。
 - 待看：画廊卡 32px 明显比站内其他卡片（16px）圆，见 thumbnail_concentric_before_after.png。
+
+## 第 20 段 · Select 下拉箭头统一（d631b8e，2026-11-13 北京时间）
+- 问题：设计基础 5 个 token 演示的原生 select 用浏览器默认箭头，箭头距右边约 4px，文字距左 12px，不对称。
+- 修复（Codex R10/R11 编写，cua 0）：共享 `.demo-root .ds-select-wrap`（demo-accessibility.css），appearance:none + 导航同款 12px 箭头（SVG mask + currentColor）；右内缩 = 左内边距 = `--ds-select-pad-x` 12px，padding-right 32；高 44、圆角 `--ds-r-control` 8；hover / focus-visible / disabled。ui-select 城市选择改用同一箭头。bench 演示未动（哈希一致）。
+- 范围：6 处 select 源（token-dark-mode/typography/spacing/radius-shadow×2、ui-select），站内 7 个路由，4 宽共 48 个实例检查全部通过。
+- ui_audit 新增 select 规则（箭头右内缩与左内边距差 ≤1px、垂直居中 ≤1px、高 ≥44、appearance none）；自检：注入 right:4px / margin-top:3px 均报 10 处。
+- 测试：unit 160 OK；ui_audit 205 页×4 宽全 0；geometry 0；focus ring 3222 个 0；hint 300 OK；DS 通过；r1 64 项通过。
+- 对比图：/workspace/bench/ui-audit/select_before_after.png
