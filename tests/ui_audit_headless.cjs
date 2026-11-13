@@ -9,6 +9,8 @@
      token sets are separate); color values outside the palette.
    - rows: siblings of the same kind laid out in one row (same top) with unequal heights.
    - filled: a filled (saturated) button carrying a grey outline.
+  - inset: a gallery thumbnail holding one content card must show the same gray inset on all 4 sides (≤1px).
+  - gap: masonry galleries (CSS columns) keep column gap = row gap between cards (≤1px).
    - states: hover / focus / open screenshots of the nav triggers and primary buttons.
    Usage: node tests/ui_audit_headless.cjs [routeFilter] [--widths=1440,390] [--inject=CSS]
    (--inject plants a defect to prove a rule fires, e.g. --inject='.nav-caret{top:3px}')
@@ -58,7 +60,7 @@ function collect(tokens) {
   const rangeRect = (node, from, to) => { const r = document.createRange(); r.setStart(node, from); r.setEnd(node, to); const rs = [...r.getClientRects()].filter(q => q.width > 0); if (!rs.length) return null;
     return rs.reduce((a, q) => ({left:Math.min(a.left,q.left), right:Math.max(a.right,q.right), top:Math.min(a.top,q.top), bottom:Math.max(a.bottom,q.bottom), lines:a.lines + (Math.abs(q.top - a.top) > 2 ? 1 : 0)}), {left:1e9,right:-1e9,top:1e9,bottom:-1e9,lines:1}); };
   const isDemo = el => !!el.getRootNode().host;
-  const pairs = [], type = [], rows = [], filled = [];
+  const pairs = [], type = [], rows = [], filled = [], inset = [], gap = [];
   // Text parts of an element: CJK runs (ink mode) or whole non-icon text (box mode).
   function textPart(el, skip, line) {
     const parts = [];
@@ -143,6 +145,7 @@ function collect(tokens) {
     const boxed = k => { const ks = getComputedStyle(k); return parseFloat(ks.borderTopWidth) > 0 || !/rgba\(0, 0, 0, 0\)|transparent/.test(ks.backgroundColor); };
     const families = {control:'button,a,input,select,.chip,.btn,[role=tab],[role=option]', card:'article,.card,.gallery-card,.simple-card,li'};
     for (const [family, sel] of Object.entries(families)) {
+      if (family === 'card' && el.matches('.gallery')) continue; // masonry: card height follows content
       const kids = [...el.children].filter(k => visible(k) && k.matches(sel) && boxed(k));
       if (kids.length < 2) continue;
       const byTop = new Map();
@@ -152,9 +155,31 @@ function collect(tokens) {
         if (Math.max(...hs) - Math.min(...hs) > 1) rows.push({el:label(el), group:family + ':' + list.map(x => label(x.k)).slice(0, 4).join(' / '), heights:hs.map(h => +h.toFixed(1)), demo:isDemo(el)}); }
     }
   }
+  // Gallery thumbnails: a single content card sits with an equal inset on all four sides.
+  for (const card of document.querySelectorAll('.gallery-card')) {
+    if (!visible(card)) continue;
+    const host = card.querySelector('.demo-scope'), root = host && host.shadowRoot && host.shadowRoot.querySelector('.demo-root'); if (!root) continue;
+    const wrap = [...root.children].find(e => getComputedStyle(e).display !== 'none'); if (!wrap) continue;
+    const kids = [...wrap.children].filter(e => { const st = getComputedStyle(e); return st.display !== 'none' && !/absolute|fixed/.test(st.position); });
+    if (kids.length !== 1) continue;
+    const k = kids[0], ks = getComputedStyle(k);
+    if (/rgba\(0, 0, 0, 0\)|transparent/.test(ks.backgroundColor) && !(parseFloat(ks.borderTopWidth) > 0) && ks.boxShadow === 'none') continue;
+    const sr = root.getBoundingClientRect(), kr = k.getBoundingClientRect(), d = [kr.left - sr.left, kr.top - sr.top, sr.right - kr.right, sr.bottom - kr.bottom];
+    if (Math.max(...d) - Math.min(...d) > 1) inset.push({el:`[${host.dataset.demoSlug}] ${label(k)}`, inset:d.map(v => +v.toFixed(1)), demo:true});
+  }
+  // Masonry galleries: every horizontal and vertical gap between neighbouring cards is the same.
+  for (const g of document.querySelectorAll('.gallery')) {
+    if (!visible(g)) continue;
+    const rs = [...g.children].filter(visible).map(c => c.getBoundingClientRect()); if (rs.length < 2) continue;
+    const cols = new Map(); for (const r of rs) { const key = Math.round(r.left); if (!cols.has(key)) cols.set(key, []); cols.get(key).push(r); }
+    const lefts = [...cols.keys()].sort((a, b) => a - b), gaps = [];
+    for (let i = 1; i < lefts.length; i++) gaps.push(lefts[i] - cols.get(lefts[i - 1])[0].right);
+    for (const list of cols.values()) { list.sort((a, b) => a.top - b.top); for (let j = 1; j < list.length; j++) gaps.push(list[j].top - list[j - 1].bottom); }
+    if (gaps.length && Math.max(...gaps) - Math.min(...gaps) > 1) gap.push({el:label(g), gaps:[...new Set(gaps.map(v => +v.toFixed(1)))], demo:false});
+  }
   // occlusion: drop pairs whose icon is covered by something else (fixed bars etc.)
   const kept = pairs.filter(p => { const at = deepAt(p.probe[0], p.probe[1]); return !!at && !(at.closest && at.closest('.bottom-bar')); });
-  return {pairs:kept, type, rows, filled};
+  return {pairs:kept, type, rows, filled, inset, gap};
 }
 
 // Ink measurement in the page: decode the screenshot and find ink rows inside boxes.
@@ -216,7 +241,7 @@ async function serve(ctx) {
 
 (async () => {
   fs.mkdirSync(outDir, {recursive:true});
-  const browser = await chromium.launch(), report = {started:new Date().toISOString(), widths, pages:selected.length, icon:[], type:[], rows:[], filled:[], pairsChecked:0, errors:[]};
+  const browser = await chromium.launch(), report = {started:new Date().toISOString(), widths, pages:selected.length, icon:[], type:[], rows:[], filled:[], inset:[], gap:[], pairsChecked:0, errors:[]};
   for (const width of widths) {
     const ctx = await browser.newContext({viewport:{width, height:900}, hasTouch:width < 500, isMobile:width < 500, reducedMotion:'reduce'}); await serve(ctx);
     let next = 0;
@@ -236,6 +261,8 @@ async function serve(ctx) {
           for (const t of found.type) report.type.push({width, route, ...t});
           for (const r of found.rows) report.rows.push({width, route, ...r});
           for (const f of found.filled) report.filled.push({width, route, ...f});
+          for (const f of found.inset) report.inset.push({width, route, ...f});
+          for (const f of found.gap) report.gap.push({width, route, ...f});
         } catch (error) { report.errors.push({width, route, error:error.message.slice(0, 200)}); }
       }
       await page.close(); }));
@@ -247,6 +274,6 @@ async function serve(ctx) {
   fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 1));
   const uniq = list => new Set(list.map(x => `${x.el}|${x.icon || x.group || (x.issues || []).join(',')}`)).size;
   console.log(`页面 ${selected.length} × 宽 ${widths.join('/')}；图标文字对 ${report.pairsChecked} 组`);
-  console.log(`icon 未居中 ${report.icon.length}（去重 ${uniq(report.icon)}）；type/color ${report.type.length}（去重 ${uniq(report.type)}）；rows 不等高 ${report.rows.length}（去重 ${uniq(report.rows)}）；filled 实心按钮灰描边 ${report.filled.length}（去重 ${uniq(report.filled)}）；错误 ${report.errors.length}`);
-  process.exit(report.icon.length || report.type.length || report.rows.length || report.filled.length || report.errors.length ? 1 : 0);
+  console.log(`icon 未居中 ${report.icon.length}（去重 ${uniq(report.icon)}）；type/color ${report.type.length}（去重 ${uniq(report.type)}）；rows 不等高 ${report.rows.length}（去重 ${uniq(report.rows)}）；filled 实心按钮灰描边 ${report.filled.length}（去重 ${uniq(report.filled)}）；错误 ${report.errors.length}；inset 缩略图内边距不等 ${report.inset.length}（去重 ${uniq(report.inset)}）；gap 瀑布流间距不等 ${report.gap.length}（去重 ${uniq(report.gap)}）`);
+  process.exit(report.icon.length || report.type.length || report.rows.length || report.filled.length || report.inset.length || report.gap.length || report.errors.length ? 1 : 0);
 })().catch(error => { console.error(error); process.exit(2); });

@@ -195,3 +195,12 @@
 
 /* 卡片 overflow:hidden 会裁掉铺满卡片的链接聚焦环，改为内收 */
 .simple-card a:focus-visible{outline-offset:-3px;border-radius:inherit}
+
+/* Category galleries: masonry (CSS columns, no JS). Card height follows its content;
+   column gap = row gap = --gallery-gap. Reading order runs down each column. */
+.gallery{--gallery-gap:16px;display:block;columns:3;column-gap:var(--gallery-gap)}
+.gallery>.gallery-card{display:block;break-inside:avoid;margin:0 0 var(--gallery-gap);width:100%}
+.motion-grid.gallery>.gallery-card{display:flex}
+@media(max-width:1023px){.gallery{columns:2}}
+@media(max-width:760px){.gallery{--gallery-gap:12px}}
+.motion-section .gallery.motion-grid{display:block;--gallery-gap:16px;columns:auto min(100%,320px);column-gap:var(--gallery-gap)}

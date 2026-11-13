@@ -92,6 +92,17 @@
 :host(:not([data-interactive])) .demo-root.ds-stage { aspect-ratio:auto; min-height:75cqi; padding:16px; }
 :host(:not([data-interactive])) .ds-stage > :is(.canvas,.stage,.guide-card-stage) { min-height:0; padding:0; }
 :host(:not([data-interactive])) .ds-hint { display:none; }
+/* Gallery thumbnails: one inset token on all four sides. When the stage holds a single
+   content card, the card fills the stage width and the stage hugs its height, so the
+   gray inset is equal on every side (card height follows content; the gallery is masonry). */
+:host(:not([data-interactive])) .demo-root.ds-stage { --ds-thumb-inset:16px; padding:var(--ds-thumb-inset); }
+:host(:not([data-interactive])) .demo-root.ds-stage:has(> :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card)):not(:has(> :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card) > :not(.ds-hint) ~ :not(.ds-hint))) { min-height:0; }
+:host(:not([data-interactive])) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card):not(:has(> :not(.ds-hint) ~ :not(.ds-hint))) { width:100%; max-width:none; align-self:stretch; margin:0; min-height:0; height:auto; padding:0; }
+:host(:not([data-interactive])) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card):not(:has(> :not(.ds-hint) ~ :not(.ds-hint))) > :not(.ds-hint) { width:100%; max-width:none; margin:0; box-sizing:border-box; border-radius:14px; }
+:host(:not([data-interactive])) .demo-root.ds-stage:has(> .stage > :is(.view-stack,.view-window)) { min-height:0; }
+:host(:not([data-interactive])) .demo-root.ds-stage > .stage:has(> :is(.view-stack,.view-window)) { width:100%; }
+:host(:not([data-interactive])) .demo-root.ds-stage > .stage > :is(.view-stack,.view-window) { width:100%; max-width:none; border-radius:14px; }
+:host(:not([data-interactive])) #c-popover .canvas { padding-top:0; }
 @media(min-width:768px) and (max-width:1023px) {
   :host([data-interactive]) .demo-root.ds-stage { --ds-stage-inset:24px; aspect-ratio:auto; min-height:max(300px,66.667cqi); padding:24px 24px 76px; }
 }
