@@ -140,3 +140,18 @@
   body.entry-active .use-card{right:max(32px,calc((100% - var(--entry-shell))/2 + 32px));width:var(--use-card-w)}
 }
 @media(min-width:1280px){body.entry-active{--use-card-w:320px}}
+
+/* 「它怎么动」 motion cards (owner fix 2026-11-13): cards never get narrower than
+   ~320px (single column at 390), and the play button sits in the caption row,
+   inside the card padding, 16px from every edge and >=12px from the preview. */
+.motion-section .gallery.motion-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:16px}
+.motion-grid .gallery-card .mini-stage{position:static;padding-bottom:0}
+.motion-grid .gallery-caption{padding:16px;min-height:76px;display:flex;flex-direction:column;justify-content:center}
+.motion-grid .play-button,.motion-grid .reduced-link{right:16px;bottom:16px;min-height:44px;padding:0 16px;border-radius:8px}
+.motion-grid .reduced-link{display:none;align-items:center}
+@media(max-width:1023px),(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.motion-grid .gallery-caption{padding-right:120px}}
+/* Gallery-page cards keep the play button in a reserved strip below the preview:
+   16px inset from the card edges, 12px clear of the preview above it. */
+.gallery:not(.motion-grid) .play-button{right:16px;bottom:16px}
+@media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.gallery:not(.motion-grid) .mini-stage{padding-bottom:72px}}
+@media(max-width:1023px){.gallery:not(.motion-grid) .mini-stage{padding-bottom:72px}}

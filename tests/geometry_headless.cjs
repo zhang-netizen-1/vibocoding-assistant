@@ -1,0 +1,136 @@
+/* Nested-radius and spacing audit (headless only).
+   Rule 1 (radius): a child box never has a larger corner radius than the box it
+   sits in; when the child sits within the parent's corner zone (gap < parent
+   radius) its radius must not exceed max(parentRadius - gap, 6px) (+1px slack).
+   Pills/circles (radius >= half their short side) are shape-defined and skipped,
+   but must keep gap >= parent radius from the parent's corner.
+   Rule 2 (spacing): a button never touches or overlaps another visible box
+   (bordered/filled element or media) that is not its ancestor, descendant or a
+   member of the same deliberate control group; minimum gap 8px.
+   Usage: node tests/geometry_headless.cjs [routeFilter]   (serves ../dist) */
+const fs = require('node:fs'), path = require('node:path');
+const {chromium} = require('playwright');
+const root = path.resolve(__dirname, '../dist'), prefix = '/vibocoding-assistant/', origin = 'http://127.0.0.1:4176';
+const types = {'.html':'text/html','.css':'text/css','.js':'text/javascript','.json':'application/json','.svg':'image/svg+xml','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg'};
+const filter = process.argv[2] || '';
+const routes = [];
+(function walk(dir){ for (const name of fs.readdirSync(dir)) { const p = path.join(dir,name); if (fs.statSync(p).isDirectory()) walk(p); else if (name === 'index.html') { const html = fs.readFileSync(p,'utf8'); if (html.includes('<body class="entry-active">')) routes.push(path.relative(root,path.dirname(p)) + '/'); } } })(root);
+function audit() {
+  const out = {radius:[], spacing:[], clip:[], indicator:[], narrow:[]};
+  const px = v => parseFloat(v) || 0;
+  const visible = el => { const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false; for (let n = el; n; n = n.parentElement || n.getRootNode().host) { const s = getComputedStyle(n); if (s.display === 'none' || s.visibility === 'hidden' || Number(s.opacity) === 0) return false; } return true; };
+  const isBox = el => { const s = getComputedStyle(el); if (el.matches('img,video,canvas,svg,iframe')) return true; const bg = s.backgroundColor !== 'rgba(0, 0, 0, 0)' && s.backgroundColor !== 'transparent' || s.backgroundImage !== 'none'; const bd = px(s.borderTopWidth) > 0 && s.borderTopStyle !== 'none' && !/rgba\(.*, 0\)$/.test(s.borderTopColor); return bg || bd || s.boxShadow !== 'none'; };
+  const parentOf = el => el.parentElement || (el.getRootNode().host ?? null);
+  const label = el => { const host = el.getRootNode().host; return (host ? '[' + (host.dataset.demoKey || 'shadow') + '] ' : '') + el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0,3).join('.') : ''); };
+  // Visible part of a box after every overflow-clipping ancestor (scroll areas, clipped stages).
+  const clipped = el => { let b = el.getBoundingClientRect(); b = {left:b.left, right:b.right, top:b.top, bottom:b.bottom};
+    for (let n = parentOf(el); n && n.nodeType === 1; n = parentOf(n)) { const s = getComputedStyle(n); if (/(hidden|clip|auto|scroll)/.test(s.overflowX + s.overflowY)) { const c = n.getBoundingClientRect(); b = {left:Math.max(b.left,c.left), right:Math.min(b.right,c.right), top:Math.max(b.top,c.top), bottom:Math.min(b.bottom,c.bottom)}; if (b.right - b.left < 1 || b.bottom - b.top < 1) return null; } }
+    return b; };
+  const inside = (a, b) => { for (let n = b; n; n = n.parentElement || n.getRootNode().host) if (n === a) return true; return false; };
+  const all = [];
+  (function collect(rootNode){ for (const el of rootNode.querySelectorAll('*')) { all.push(el); if (el.shadowRoot) collect(el.shadowRoot); } })(document);
+  const scopeOk = el => !!(el.closest('.entry-main,.use-card,.entry-layout') || el.getRootNode().host?.closest?.('.entry-demo,.entry-main'));
+  for (const el of all) {
+    if (!scopeOk(el) || !visible(el)) continue;
+    const s = getComputedStyle(el), r = el.getBoundingClientRect();
+    const rad = Math.max(px(s.borderTopLeftRadius), px(s.borderTopRightRadius), px(s.borderBottomLeftRadius), px(s.borderBottomRightRadius));
+    if (rad > 0 && isBox(el)) {
+      let p = parentOf(el);
+      while (p && p.nodeType === 1 && !(isBox(p) && Math.max(px(getComputedStyle(p).borderTopLeftRadius), px(getComputedStyle(p).borderBottomRightRadius)) > 0)) p = parentOf(p);
+      if (p && p.nodeType === 1 && visible(p)) {
+        const ps = getComputedStyle(p), pr = p.getBoundingClientRect();
+        const prad = Math.max(px(ps.borderTopLeftRadius), px(ps.borderTopRightRadius), px(ps.borderBottomLeftRadius), px(ps.borderBottomRightRadius));
+        const pill = rad >= Math.min(r.width, r.height) / 2 - 0.5;
+        const ppill = prad >= Math.min(pr.width, pr.height) / 2 - 0.5;
+        const gaps = {tl:Math.max(r.left-pr.left, r.top-pr.top), tr:Math.max(pr.right-r.right, r.top-pr.top), bl:Math.max(r.left-pr.left, pr.bottom-r.bottom), br:Math.max(pr.right-r.right, pr.bottom-r.bottom)};
+        const radii = {tl:px(s.borderTopLeftRadius), tr:px(s.borderTopRightRadius), bl:px(s.borderBottomLeftRadius), br:px(s.borderBottomRightRadius)};
+        if (!pill && !ppill) {
+          if (rad > prad + 1 && r.width < pr.width + 1 && r.height < pr.height + 1) out.radius.push({el:label(el), parent:label(p), child:rad, outer:prad, rule:'inner>outer'});
+          else for (const k of ['tl','tr','bl','br']) {
+            const g = gaps[k]; if (g < -0.5 || g >= prad) continue;
+            const allowed = Math.max(prad - g, Math.min(6, prad));
+            if (radii[k] > allowed + 1) { out.radius.push({el:label(el), parent:label(p), corner:k, child:radii[k], outer:prad, gap:Math.round(g), allowed:Math.round(allowed), rule:'not-concentric'}); break; }
+          }
+        }
+      }
+    }
+    if (el.matches('button,a.btn,[role="button"],.play-button') && isBox(el)) {
+      const group = el.closest('[role="group"],[role="tablist"],[role="radiogroup"],.segmented,.seg,.split-button,.btn-group,.pagination,.pager,.ds-seg');
+      let card = parentOf(el); while (card && card.nodeType === 1 && !(isBox(card) && px(getComputedStyle(card).borderTopLeftRadius) > 0)) card = parentOf(card);
+      if (!card || card.nodeType !== 1) continue;
+      const within = all.filter(o => o !== el && inside(card, o) && !inside(o, el) && !inside(el, o) && !(group && inside(group, o)) && isBox(o) && visible(o) && getComputedStyle(o).position !== 'fixed');
+      for (const o of within) {
+        const q = clipped(o); if (!q) continue;
+        if (o.closest('.ds-overlays,[aria-hidden="true"]') || el.closest('.ds-overlays')) continue;
+        const dx = Math.max(q.left - r.right, r.left - q.right, 0), dy = Math.max(q.top - r.bottom, r.top - q.bottom, 0);
+        const overlap = !(q.left >= r.right || q.right <= r.left || q.top >= r.bottom || q.bottom <= r.top);
+        const gap = Math.max(dx, dy);
+        if (overlap || gap < 8) {
+          // contained decorations (o fully inside el's parent chain as a background) are ancestors-only; skip boxes that fully contain el
+          if (q.left <= r.left && q.right >= r.right && q.top <= r.top && q.bottom >= r.bottom) continue;
+          out.spacing.push({el:label(el), in:label(card), elText:(el.textContent||"").trim().slice(0,16), other:label(o), otherIn:label(parentOf(o)), rect:[r.left,r.top,r.width,r.height].map(Math.round), otherRect:[q.left,q.top,q.right-q.left,q.bottom-q.top].map(Math.round), gap:Math.round(gap*10)/10, overlap}); break;
+        }
+      }
+    }
+  }
+
+  // Rule 3 (clip): visible text that is cut off by an overflow-clipping ancestor,
+  // or that spills outside its own box. Scroll areas are not truncation.
+  for (const el of all) {
+    if (!scopeOk(el) || !visible(el) || el.matches('script,style,template,svg *,.sr,.sr-only,[aria-hidden="true"] *')) continue;
+    for (const t of el.childNodes) {
+      if (t.nodeType !== 3 || !t.textContent.trim()) continue;
+      const range = document.createRange(); range.selectNodeContents(t); const tr = range.getBoundingClientRect(); if (tr.width < 1) continue;
+      const box = el.getBoundingClientRect();
+      if (tr.right > box.right + 2 || tr.left < box.left - 2) { const s = getComputedStyle(el); if (s.display !== 'inline') { out.narrow.push({el:label(el), text:t.textContent.trim().slice(0,20), box:Math.round(box.width), text_w:Math.round(tr.width)}); break; } }
+      for (let n = parentOf(el); n && n.nodeType === 1; n = parentOf(n)) {
+        const s = getComputedStyle(n); if (!/(hidden|clip)/.test(s.overflowX + s.overflowY)) continue; if (/(auto|scroll)/.test(s.overflowX + s.overflowY)) break;
+        const c = n.getBoundingClientRect();
+        if (tr.right > c.right + 1 || tr.left < c.left - 1 || tr.bottom > c.bottom + 1 || tr.top < c.top - 1) {
+          const inter = Math.max(0, Math.min(tr.right,c.right) - Math.max(tr.left,c.left)) * Math.max(0, Math.min(tr.bottom,c.bottom) - Math.max(tr.top,c.top));
+          if (inter > 0) out.clip.push({el:label(el), text:t.textContent.trim().slice(0,20), by:label(n)});
+          break;
+        }
+        break;
+      }
+      break;
+    }
+  }
+  // Rule 4 (indicator): a moving highlight must cover its selected target (<= 2px offset).
+  for (const ind of all) {
+    if (!scopeOk(ind) || !visible(ind) || !/(indicator|ink-bar|highlight-pill|tab-pill|seg-thumb|slider-thumb-bg)/.test(typeof ind.className === 'string' ? ind.className : '')) continue;
+    const list = parentOf(ind); if (!list || list.nodeType !== 1) continue;
+    const target = list.querySelector('[aria-selected="true"],[aria-pressed="true"],[aria-current="page"],[aria-current="true"],.active,.is-active');
+    if (!target || target === ind) continue;
+    const a = ind.getBoundingClientRect(), b = target.getBoundingClientRect();
+    const s = getComputedStyle(ind);
+    const underline = a.height <= 4;
+    const dl = Math.abs(a.left - b.left), dr = Math.abs(a.right - b.right), dt = underline ? 0 : Math.abs(a.top - b.top), db = underline ? 0 : Math.abs(a.bottom - b.bottom);
+    if (s.transitionDuration.split(',').some(v => parseFloat(v) > 0) && ind.getAnimations().length) continue;
+    if (Math.max(dl,dr,dt,db) > 2) out.indicator.push({el:label(ind), target:label(target), offset:Math.round(Math.max(dl,dr,dt,db))});
+  }
+  return out;
+}
+(async () => {
+  const browser = await chromium.launch({headless:true});
+  const report = {radius:[], spacing:[], clip:[], indicator:[], narrow:[], pages:0};
+  try {
+    for (const width of [1440,768,390]) {
+      const context = await browser.newContext({viewport:{width,height:900},hasTouch:width===390,isMobile:width===390,reducedMotion:'reduce'});
+      const page = await context.newPage();
+      await page.route('**/*', route => { const url = new URL(route.request().url()); if (url.origin !== origin) return route.abort(); let file = path.resolve(root, decodeURIComponent(url.pathname.slice(prefix.length)) || '.'); if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file,'index.html'); if (!file.startsWith(root) || !fs.existsSync(file)) return route.fulfill({status:404,body:''}); return route.fulfill({contentType:types[path.extname(file)] || 'application/octet-stream', body:fs.readFileSync(file)}); });
+      for (const route of routes.filter(r => r.includes(filter))) {
+        await page.goto(origin + prefix + route, {waitUntil:'networkidle'});
+        await page.waitForTimeout(150);
+        const result = await page.evaluate(audit); report.pages++;
+        for (const k of ['radius','spacing','clip','indicator','narrow']) for (const row of result[k]) report[k].push({width, route, ...row});
+      }
+      await context.close();
+    }
+  } finally { await browser.close(); }
+  fs.mkdirSync(path.resolve(__dirname,'../output/geometry'),{recursive:true});
+  fs.writeFileSync(path.resolve(__dirname,'../output/geometry/report.json'), JSON.stringify(report,null,1));
+  const dedupe = rows => [...new Map(rows.map(r => [r.route+'|'+r.el+'|'+r.rule, r])).values()];
+  console.log(`pages ${report.pages}; ` + ['radius','spacing','clip','indicator','narrow'].map(k => `${k} ${report[k].length}`).join('; '));
+  if (['radius','spacing','clip','indicator','narrow'].some(k => report[k].length)) process.exitCode = 1;
+})();
