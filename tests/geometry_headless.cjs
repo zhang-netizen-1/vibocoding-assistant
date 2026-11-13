@@ -18,6 +18,8 @@ const routes = [];
 function audit() {
   const out = {radius:[], spacing:[], clip:[], indicator:[], narrow:[]};
   const px = v => parseFloat(v) || 0;
+  // Border radius in px; percentages resolve against the box (horizontal vs width, vertical vs height).
+  const rp = (v, b) => { const [h, w = h] = String(v).trim().split(/\s+/); const f = (x, d) => x.endsWith("%") ? parseFloat(x) / 100 * d : (parseFloat(x) || 0); return Math.min(f(h, b.width), f(w, b.height)); };
   const visible = el => { if (el.closest('details:not([open])') && !el.closest('summary')) return false; const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false; for (let n = el; n; n = n.parentElement || n.getRootNode().host) { const s = getComputedStyle(n); if (s.display === 'none' || s.visibility === 'hidden' || Number(s.opacity) === 0) return false; } return true; };
   const isBox = el => { const s = getComputedStyle(el); if (el.matches('img,video,canvas,svg,iframe')) return true; const bg = s.backgroundColor !== 'rgba(0, 0, 0, 0)' && s.backgroundColor !== 'transparent' || s.backgroundImage !== 'none'; const bd = px(s.borderTopWidth) > 0 && s.borderTopStyle !== 'none' && !/rgba\(.*, 0\)$/.test(s.borderTopColor); return bg || bd || s.boxShadow !== 'none'; };
   const parentOf = el => el.parentElement || (el.getRootNode().host ?? null);
@@ -33,7 +35,7 @@ function audit() {
   for (const el of all) {
     if (!scopeOk(el) || !visible(el)) continue;
     const s = getComputedStyle(el), r = el.getBoundingClientRect();
-    const rad = Math.max(px(s.borderTopLeftRadius), px(s.borderTopRightRadius), px(s.borderBottomLeftRadius), px(s.borderBottomRightRadius));
+    const rad = Math.max(rp(s.borderTopLeftRadius, r), rp(s.borderTopRightRadius, r), rp(s.borderBottomLeftRadius, r), rp(s.borderBottomRightRadius, r));
     // Leaf decorative shapes (blobs, dots) with no text are not containers.
     const leafShape = !el.matches('img,video,canvas,iframe,button,a,input') && !el.children.length && !el.textContent.trim();
     if (rad > 0 && isBox(el) && !leafShape) {
@@ -41,11 +43,11 @@ function audit() {
       while (p && p.nodeType === 1 && !(isBox(p) && Math.max(px(getComputedStyle(p).borderTopLeftRadius), px(getComputedStyle(p).borderBottomRightRadius)) > 0)) p = parentOf(p);
       if (p && p.nodeType === 1 && visible(p)) {
         const ps = getComputedStyle(p), pr = p.getBoundingClientRect();
-        const prad = Math.max(px(ps.borderTopLeftRadius), px(ps.borderTopRightRadius), px(ps.borderBottomLeftRadius), px(ps.borderBottomRightRadius));
+        const prad = Math.max(rp(ps.borderTopLeftRadius, pr), rp(ps.borderTopRightRadius, pr), rp(ps.borderBottomLeftRadius, pr), rp(ps.borderBottomRightRadius, pr));
         const pill = rad >= Math.min(r.width, r.height) / 2 - 0.5;
         const ppill = prad >= Math.min(pr.width, pr.height) / 2 - 0.5;
         const gaps = {tl:Math.max(r.left-pr.left, r.top-pr.top), tr:Math.max(pr.right-r.right, r.top-pr.top), bl:Math.max(r.left-pr.left, pr.bottom-r.bottom), br:Math.max(pr.right-r.right, pr.bottom-r.bottom)};
-        const radii = {tl:px(s.borderTopLeftRadius), tr:px(s.borderTopRightRadius), bl:px(s.borderBottomLeftRadius), br:px(s.borderBottomRightRadius)};
+        const radii = {tl:rp(s.borderTopLeftRadius, r), tr:rp(s.borderTopRightRadius, r), bl:rp(s.borderBottomLeftRadius, r), br:rp(s.borderBottomRightRadius, r)};
         if (!pill && !ppill) {
           if (rad > prad + 1 && r.width < pr.width + 1 && r.height < pr.height + 1) out.radius.push({el:label(el), parent:label(p), child:rad, outer:prad, rule:'inner>outer'});
           else for (const k of ['tl','tr','bl','br']) {
@@ -57,7 +59,7 @@ function audit() {
       }
     }
     if (el.matches('button,a.btn,[role="button"],.play-button') && isBox(el)) {
-      const group = el.closest('[role="group"],[role="tablist"],[role="radiogroup"],.segmented,.seg,.split-button,.split-wrap,.split,.btn-group,.pagination,.pager,.ds-seg');
+      const group = el.closest('[role="group"],[role="tablist"],[role="radiogroup"],.segmented,.seg,.split-button,.split-wrap,.split,.splitbtn,.btn-group,.pagination,.pager,.ds-seg');
       let card = parentOf(el); while (card && card.nodeType === 1 && !(isBox(card) && px(getComputedStyle(card).borderTopLeftRadius) > 0)) card = parentOf(card);
       if (!card || card.nodeType !== 1) continue;
       const within = all.filter(o => o !== el && inside(card, o) && !inside(o, el) && !inside(el, o) && !(group && inside(group, o)) && isBox(o) && visible(o) && getComputedStyle(o).position !== 'fixed');

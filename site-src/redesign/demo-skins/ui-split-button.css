@@ -17,7 +17,7 @@
 .ds-split-button-panel .splitbtn { display:flex; width:100%; border-radius:8px; box-shadow:var(--ds-shadow-1); }
 .ds-split-button-panel .splitbtn button { min-height:48px; padding:12px 16px; background:var(--ds-accent); color:var(--ds-surface); font:500 14px/1.5 var(--ds-font); }
 .ds-split-button-panel .split-main { flex:1; border-radius:8px 0 0 8px; }
-.ds-split-button-panel .split-caret { width:48px; padding:12px 8px!important; border-radius:0 8px 8px 0; }
+.ds-split-button-panel .split-caret { width:48px; border-left:1px solid rgb(255 255 255 / .36); padding:12px 8px!important; border-radius:0 8px 8px 0; }
 .ds-split-button-panel .splitbtn button:hover:not(:disabled) { background:var(--ds-accent-hover); }
 .ds-split-button-panel .splitbtn button:active:not(:disabled), .ds-split-button-panel .split-caret[aria-expanded="true"] { background:var(--ds-accent-active); }
 .ds-split-button-panel .splitbtn-demo:has(> .split-menu:not([hidden])) { margin-bottom:176px; }

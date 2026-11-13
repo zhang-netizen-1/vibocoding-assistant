@@ -17,6 +17,6 @@
 .ds-sidebar-panel .sidebar .menu { width:auto; padding:8px; background:var(--ds-fill); }
 .ds-sidebar-panel .sidebar .menu div { display:flex; align-items:center; min-height:44px; padding:8px; border-radius:8px; color:var(--ds-ink-2); }
 .ds-sidebar-panel .sidebar .menu div:hover { background:var(--ds-line); }
-.ds-sidebar-panel .sidebar .menu div.active { border-left:0; color:var(--ds-accent); background:var(--ds-accent-50); font-weight:600; }
+.ds-sidebar-panel .sidebar .menu div.active { border-radius:var(--ds-r-min); border-left:0; color:var(--ds-accent); background:var(--ds-accent-50); font-weight:600; }
 .ds-sidebar-panel .sidebar .content { padding:16px; color:var(--ds-ink-2); font-size:12px; }
 .ds-sidebar-panel .sidebar .content strong { display:block; margin-bottom:8px; color:var(--ds-ink); font-size:14px; }
