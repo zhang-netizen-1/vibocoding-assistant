@@ -18,7 +18,7 @@ const routes = [];
 function audit() {
   const out = {radius:[], spacing:[], clip:[], indicator:[], narrow:[]};
   const px = v => parseFloat(v) || 0;
-  const visible = el => { const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false; for (let n = el; n; n = n.parentElement || n.getRootNode().host) { const s = getComputedStyle(n); if (s.display === 'none' || s.visibility === 'hidden' || Number(s.opacity) === 0) return false; } return true; };
+  const visible = el => { if (el.closest('details:not([open])') && !el.closest('summary')) return false; const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false; for (let n = el; n; n = n.parentElement || n.getRootNode().host) { const s = getComputedStyle(n); if (s.display === 'none' || s.visibility === 'hidden' || Number(s.opacity) === 0) return false; } return true; };
   const isBox = el => { const s = getComputedStyle(el); if (el.matches('img,video,canvas,svg,iframe')) return true; const bg = s.backgroundColor !== 'rgba(0, 0, 0, 0)' && s.backgroundColor !== 'transparent' || s.backgroundImage !== 'none'; const bd = px(s.borderTopWidth) > 0 && s.borderTopStyle !== 'none' && !/rgba\(.*, 0\)$/.test(s.borderTopColor); return bg || bd || s.boxShadow !== 'none'; };
   const parentOf = el => el.parentElement || (el.getRootNode().host ?? null);
   const label = el => { const host = el.getRootNode().host; return (host ? '[' + (host.dataset.demoKey || 'shadow') + '] ' : '') + el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0,3).join('.') : ''); };
@@ -34,7 +34,9 @@ function audit() {
     if (!scopeOk(el) || !visible(el)) continue;
     const s = getComputedStyle(el), r = el.getBoundingClientRect();
     const rad = Math.max(px(s.borderTopLeftRadius), px(s.borderTopRightRadius), px(s.borderBottomLeftRadius), px(s.borderBottomRightRadius));
-    if (rad > 0 && isBox(el)) {
+    // Leaf decorative shapes (blobs, dots) with no text are not containers.
+    const leafShape = !el.matches('img,video,canvas,iframe,button,a,input') && !el.children.length && !el.textContent.trim();
+    if (rad > 0 && isBox(el) && !leafShape) {
       let p = parentOf(el);
       while (p && p.nodeType === 1 && !(isBox(p) && Math.max(px(getComputedStyle(p).borderTopLeftRadius), px(getComputedStyle(p).borderBottomRightRadius)) > 0)) p = parentOf(p);
       if (p && p.nodeType === 1 && visible(p)) {
@@ -55,7 +57,7 @@ function audit() {
       }
     }
     if (el.matches('button,a.btn,[role="button"],.play-button') && isBox(el)) {
-      const group = el.closest('[role="group"],[role="tablist"],[role="radiogroup"],.segmented,.seg,.split-button,.btn-group,.pagination,.pager,.ds-seg');
+      const group = el.closest('[role="group"],[role="tablist"],[role="radiogroup"],.segmented,.seg,.split-button,.split-wrap,.split,.btn-group,.pagination,.pager,.ds-seg');
       let card = parentOf(el); while (card && card.nodeType === 1 && !(isBox(card) && px(getComputedStyle(card).borderTopLeftRadius) > 0)) card = parentOf(card);
       if (!card || card.nodeType !== 1) continue;
       const within = all.filter(o => o !== el && inside(card, o) && !inside(o, el) && !inside(el, o) && !(group && inside(group, o)) && isBox(o) && visible(o) && getComputedStyle(o).position !== 'fixed');
