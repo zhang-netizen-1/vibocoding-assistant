@@ -150,5 +150,21 @@
   }
 }
 
-/* Gallery thumbnails sit flush inside a 12px card with a 1px border: 12 - 1. */
-:host(:not([data-interactive])) .demo-root.ds-stage { border-radius:11px; }
+
+/* ===== Geometry sweep fixes (2026-11-13, tests/geometry_headless.cjs) ===== */
+/* Separate buttons (each with its own border and radius) are not a segmented
+   control, so they keep 8px gaps. Real segmented groups opt in with role=group. */
+.ds-stage .demo-controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.ds-stage :is(.media-actions,.pager-actions,.extra-drop-controls) { display:flex; flex-wrap:wrap; gap:8px; }
+.ds-stage .phone-demo > button { margin-top:12px; }
+.ds-stage .mini-focus button { margin:12px 8px 0 0; }
+.ds-stage .extra-section-layout { gap:12px; }
+.ds-stage .extra-drop-board { display:flex; flex-wrap:wrap; gap:12px; }
+/* Nested radii inside scenes. */
+.ds-stage .header-scroll-scene .extra-scroll { border-radius:var(--ds-r-min); }
+.ds-stage .style-preview.style-glass { border-radius:24px; }
+.ds-stage .style-preview.style-neumorphic { border-radius:32px; }
+/* Gallery thumbnails: card 16 - 1px border = 15 for the stage; anything inside
+   it steps down to 14 so it never exceeds the stage. */
+:host(:not([data-interactive])) .demo-root.ds-stage { border-radius:15px; }
+:host(:not([data-interactive])) .demo-root.ds-stage :is(.ds-surface,.ds-h-panel,.phone-demo,.extra-scene,.micro-card,.magnet-wrap,.ds-cmdk-panel) { border-radius:14px; }
