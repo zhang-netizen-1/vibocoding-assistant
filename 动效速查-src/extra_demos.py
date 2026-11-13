@@ -48,9 +48,9 @@ DEMOS = {
     "extra-accordion": scene(
         "常见问题",
         '<div class="extra-accordion">'
-        '<div class="extra-faq"><button type="button" data-extra-action="accordion" aria-expanded="true" aria-controls="extra-faq-a">如何开始？<i aria-hidden="true">⌄</i></button><div id="extra-faq-a" class="extra-faq-panel"><div><p>先选一个场景，再观察触发、变化和结束状态。</p></div></div></div>'
-        '<div class="extra-faq"><button type="button" data-extra-action="accordion" aria-expanded="false" aria-controls="extra-faq-b">可以随时调整吗？<i aria-hidden="true">⌄</i></button><div id="extra-faq-b" class="extra-faq-panel" aria-hidden="true"><div><p>可以。改变选项后，内容会在原位置连续展开。</p></div></div></div>'
-        '<div class="extra-faq"><button type="button" data-extra-action="accordion" aria-expanded="false" aria-controls="extra-faq-c">如何回到初始状态？<i aria-hidden="true">⌄</i></button><div id="extra-faq-c" class="extra-faq-panel" aria-hidden="true"><div><p>再次点击当前问题，内容就会平稳收起。</p></div></div></div>'
+        '<div class="extra-faq"><button type="button" data-extra-action="accordion" aria-expanded="true" aria-controls="extra-faq-a">如何开始？<i aria-hidden="true"><svg width="16" height="16" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></button><div id="extra-faq-a" class="extra-faq-panel"><div><p>先选一个场景，再观察触发、变化和结束状态。</p></div></div></div>'
+        '<div class="extra-faq"><button type="button" data-extra-action="accordion" aria-expanded="false" aria-controls="extra-faq-b">可以随时调整吗？<i aria-hidden="true"><svg width="16" height="16" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></button><div id="extra-faq-b" class="extra-faq-panel" aria-hidden="true"><div><p>可以。改变选项后，内容会在原位置连续展开。</p></div></div></div>'
+        '<div class="extra-faq"><button type="button" data-extra-action="accordion" aria-expanded="false" aria-controls="extra-faq-c">如何回到初始状态？<i aria-hidden="true"><svg width="16" height="16" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></button><div id="extra-faq-c" class="extra-faq-panel" aria-hidden="true"><div><p>再次点击当前问题，内容就会平稳收起。</p></div></div></div>'
         '</div>', "accordion-scene"
     ),
     "extra-submit-flow": scene(
@@ -103,7 +103,7 @@ DEMOS = {
     "extra-inline-expand": scene(
         "项目看板",
         '<div class="extra-inline-list"><button type="button" class="extra-inline-card" data-extra-action="expand" aria-expanded="false">'
-        '<span class="extra-inline-art"></span><span class="extra-inline-copy"><strong>探索新布局</strong><small>界面设计 · 进行中</small></span><i aria-hidden="true">⌄</i>'
+        '<span class="extra-inline-art"></span><span class="extra-inline-copy"><strong>探索新布局</strong><small>界面设计 · 进行中</small></span><i aria-hidden="true"><svg width="16" height="16" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i>'
         '<span class="extra-inline-detail">拆解主要模块与页面层级。<em>查看任务说明 ↗</em></span></button>'
         '<div class="extra-inline-neighbor">○　动效细节检查 <span>下一项</span></div>'
         '<div class="extra-inline-neighbor">○　完善交互文案 <span>待开始</span></div></div>',

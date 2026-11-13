@@ -19,4 +19,7 @@
 .ds-accordion-panel .acc-head:hover:not(:disabled) { background:var(--ds-fill); }
 .ds-accordion-panel .acc-head[aria-expanded="true"] { color:var(--ds-accent); background:var(--ds-accent-50); }
 .ds-accordion-panel .acc-body { padding:12px; color:var(--ds-ink-2); font:400 14px/1.6 var(--ds-font); }
-.ds-accordion-panel .arr { color:var(--ds-ink-2); }
+.ds-accordion-panel .arr { color:var(--ds-ink-2); display:inline-flex; flex:none; transition:transform var(--ds-dur-fast) var(--ds-ease-standard); }
+.ds-accordion-panel .arr svg { display:block; }
+.ds-accordion-panel .acc-head[aria-expanded="true"] .arr { transform:rotate(180deg); }
+@media(prefers-reduced-motion:reduce) { .ds-accordion-panel .arr { transition:none; } }

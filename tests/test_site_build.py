@@ -914,6 +914,10 @@ class BatchGSkinTest(unittest.TestCase):
                                     (slug,node.tag,protected))
                     for child in node.children:
                         if isinstance(child,str) and child.strip():
+                            if child.strip() in {'▾', '▼', '⌄'}:
+                                # Decorative text chevrons sit on the baseline; skins draw them as a centred SVG chevron instead.
+                                self.assertTrue(any(svg.one('path') for svg in skin_root.find_all('svg')), (slug, child.strip()))
+                                continue
                             self.assertIn(child.strip(), skin_root.text(), slug)
                 hints = result.find_all(cls='ds-hint')
                 self.assertEqual(len(hints), int(kind == 'ui'))

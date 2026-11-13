@@ -41,7 +41,7 @@
 .extra-accordion{display:flex;flex-direction:column;gap:5px}
 .extra-faq{background:#fff;border:1px solid #e1e6ee;border-radius:8px;overflow:hidden}
 .extra-faq button{display:flex;justify-content:space-between;width:100%;text-align:left;font-weight:700}
-.extra-faq button i{font-style:normal;transition:transform .28s}
+.extra-faq button i{font-style:normal;display:inline-flex;flex:none;transition:transform .28s}.extra-faq button i svg,.extra-inline-card>i svg{display:block}
 .extra-faq button[aria-expanded=true] i{transform:rotate(180deg)}
 .extra-faq-panel{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .36s cubic-bezier(.22,.73,.27,1),opacity .22s}
 .extra-faq button[aria-expanded=true]+.extra-faq-panel{grid-template-rows:1fr;opacity:1}
@@ -53,7 +53,7 @@
 .extra-inline-art{height:34px;border-radius:6px;background:linear-gradient(140deg,#D8AFA0,#d2e7db);position:relative;overflow:hidden}
 .extra-inline-art:after{content:"";position:absolute;width:35px;height:20px;border-radius:50%;left:10px;top:18px;background:#2e6e7199}
 .extra-inline-copy{display:flex;flex-direction:column;gap:2px}.extra-inline-copy strong{font-size:11px}.extra-inline-copy small{color:#96948B;font-size:9px}
-.extra-inline-card>i{font-style:normal;transition:transform .3s}.extra-inline-card[aria-expanded=true]>i{transform:rotate(180deg)}
+.extra-inline-card>i{font-style:normal;display:inline-flex;flex:none;transition:transform .3s}.extra-inline-card[aria-expanded=true]>i{transform:rotate(180deg)}
 .extra-inline-detail{grid-column:1/-1;display:grid;grid-template-rows:0fr;opacity:0;max-height:0;overflow:hidden;color:#96948B;transition:max-height .35s,opacity .2s;padding:0 2px}
 .extra-inline-card[aria-expanded=true] .extra-inline-detail{max-height:75px;opacity:1;padding-top:7px;border-top:1px solid #edf0f3;display:block}
 .extra-inline-detail em{display:block;margin-top:5px;font-style:normal;color:#C73A24;font-weight:700}
