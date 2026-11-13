@@ -29,7 +29,7 @@
 }
 .demo-root .stage[data-effect="extra-scroll-highlight"] .extra-highlight-scroll { height:256px; padding:0 24px; border:1px solid var(--ds-line); border-radius:12px; background:var(--ds-surface); scrollbar-width:thin; }
 .demo-root .stage[data-effect="extra-scroll-highlight"] .extra-highlight-spacer { height:120px; color:var(--ds-ink-2); font-size:12px; text-align:center; }
-.demo-root .stage[data-effect="extra-scroll-highlight"] .extra-highlight-text { padding:16px 0; margin:0; font:600 var(--ds-demo-heading)/1.7 var(--ds-font); color:var(--ds-ink-2); }
+.demo-root .stage[data-effect="extra-scroll-highlight"] .extra-highlight-text { padding:16px 0; margin:0; font:600 var(--ds-demo-heading)/1.5 var(--ds-font); color:var(--ds-ink-2); }
 .demo-root .stage[data-effect="extra-scroll-highlight"] .extra-highlight-text span { display:block; }
 .demo-root .stage[data-effect="extra-scroll-highlight"] .extra-highlight-text span.lit { color:var(--ds-accent); }
 @media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .demo-root .stage[data-effect="extra-scroll-highlight"] .extra-highlight-text span { color:var(--ds-accent); } }

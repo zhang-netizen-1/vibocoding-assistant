@@ -1,4 +1,4 @@
-.token-demo{padding:24px;display:grid;gap:16px;min-width:0;color:var(--demo-ink);font-size:14px;line-height:1.7}
+.token-demo{padding:24px;display:grid;gap:16px;min-width:0;color:var(--demo-ink);font-size:14px;line-height:1.6}
 .token-demo label{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .token-controls{display:flex;flex-wrap:wrap;gap:16px}
 .token-demo select,.token-demo input,.token-demo button{font:inherit;min-height:32px;max-width:100%;border:1px solid var(--demo-border,#868E9C);border-radius:8px;background:var(--demo-white);color:var(--demo-ink);padding:4px 8px}
@@ -8,7 +8,7 @@
 .token-card{padding:24px;background:var(--demo-white);border:1px solid var(--demo-border,#868E9C);border-radius:12px}
 .contrast-sample{padding:24px;border-radius:12px;background:var(--sample-bg,#FFFFFF);color:var(--sample-fg,#6D28D9)}
 .contrast-sample strong{font-size:24px}
-.type-ladder{display:grid;gap:8px;line-height:1.7;overflow-wrap:anywhere}
+.type-ladder{display:grid;gap:8px;line-height:1.6;overflow-wrap:anywhere}
 .type-ladder strong{line-height:1.3;color:var(--demo-primary)}
 .space-ruler{font:12px/1.5 ui-monospace,monospace;padding:8px;background:repeating-linear-gradient(90deg,var(--demo-line) 0 1px,transparent 1px 8px)}
 .space-frame{border:1px dashed var(--demo-border,#868E9C);background:var(--demo-soft)}

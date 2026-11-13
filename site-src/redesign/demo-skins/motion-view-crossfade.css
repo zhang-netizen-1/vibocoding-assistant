@@ -27,3 +27,6 @@
 .stage[data-effect="view-crossfade"] .view-b .ds-img{object-position:50% 50%}
 
 @container demo-stage (min-width:640px){.stage[data-effect="view-crossfade"] .view-stack.scene-stack .mini-view{padding:32px;min-height:260px}.stage[data-effect="view-crossfade"] .ds-scene-copy{gap:12px;padding-top:104px}}
+
+/* UI audit: legacy generic stage-button colour (#3A0F06) is off-palette; controls use ink. */
+.demo-root .stage[data-effect="view-crossfade"] > button { color:var(--ds-ink)!important; }

@@ -34,7 +34,7 @@
 @media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-i2-panel .mini-scroll { scroll-behavior:auto; } }
 
 .demo-root .ds-i2-panel .hh-head { min-height:64px; padding:8px 12px; gap:12px; background:var(--ds-surface); color:var(--ds-ink); border-bottom:1px solid var(--ds-line); font:600 14px/1.5 var(--ds-font); }
-.demo-root .ds-i2-panel .hh-content { padding:16px; color:var(--ds-ink-2); font:400 14px/1.8 var(--ds-font); }
+.demo-root .ds-i2-panel .hh-content { padding:16px; color:var(--ds-ink-2); font:400 14px/1.6 var(--ds-font); }
 @media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-i2-panel .hh-head { transform:none!important; transition:none!important; } }
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }

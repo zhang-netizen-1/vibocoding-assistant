@@ -7,7 +7,7 @@
 .demo-root .mini-page-top span { color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
 .demo-root .mini-page-content { padding:24px; }
 .demo-root .mini-page-content h4 { margin:24px 0 12px; color:var(--ds-ink); font:600 var(--ds-demo-title)/1.35 var(--ds-font); }
-.demo-root .mini-page-content > p { margin:0 0 20px; color:var(--ds-ink-2); font:400 14px/1.7 var(--ds-font); }
+.demo-root .mini-page-content > p { margin:0 0 20px; color:var(--ds-ink-2); font:400 14px/1.6 var(--ds-font); }
 .demo-root .mini-page-cta { display:inline-flex; align-items:center; justify-content:space-between; gap:16px; min-height:44px; max-width:100%; margin-top:16px; padding:10px 16px; border-radius:var(--ds-r-min); color:var(--ds-surface); background:var(--ds-accent); font:500 14px/1.5 var(--ds-font); }
 .demo-root .guide-card-stage[data-mode="1"] .mini-page-foot { position:static; display:block; padding:16px; border-top:1px solid var(--ds-line); border-radius:0 0 calc(var(--ds-r-surface) - 1px) calc(var(--ds-r-surface) - 1px); background:var(--ds-fill); color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
 @container demo-stage (max-width:480px) { .demo-root .mini-page-top,.demo-root .mini-page-content { padding:16px; } }

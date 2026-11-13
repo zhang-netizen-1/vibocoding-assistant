@@ -13,6 +13,8 @@ a:hover { color: var(--blue-hover); text-decoration: underline; }
 [hidden] { display: none !important; }
 h1, h2, h3, p { margin: 0; }
 h1, h2, h3 { line-height: 1.3; }
+/* Spec weights only: browser-bold headings, strong, table heads and terms render at 600. */
+:where(h1,h2,h3,h4,h5,h6,strong,b,th,dt) { font-weight: 600; }
 h1 { font-size: var(--text-title); font-weight: 650; }
 h2 { font-size: var(--text-section); font-weight: 600; }
 h3 { font-size: var(--text-body); }

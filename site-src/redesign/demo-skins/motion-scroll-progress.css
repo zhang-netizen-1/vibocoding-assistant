@@ -36,7 +36,7 @@
 .demo-root .ds-i2-panel .reading { min-height:240px; padding:24px 16px; gap:12px; color:var(--ds-ink); align-items:flex-start; text-align:left; }
 .demo-root .ds-i2-panel .reading strong { font:600 16px/1.5 var(--ds-font); }
 .demo-root .ds-i2-panel .reading span { color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
-.demo-root .ds-i2-panel .reading p { margin:0; color:var(--ds-ink-2); font:400 14px/1.8 var(--ds-font); }
+.demo-root .ds-i2-panel .reading p { margin:0; color:var(--ds-ink-2); font:400 14px/1.6 var(--ds-font); }
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
 

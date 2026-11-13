@@ -32,6 +32,6 @@
 .demo-root .stage[data-effect="extra-tab-indicator"] .extra-scene .extra-tabs button { padding:10px 8px!important; background:transparent!important; }
 .demo-root .stage[data-effect="extra-tab-indicator"] .extra-scene .extra-tabs button[aria-selected=true] { color:var(--ds-accent)!important; }
 .demo-root .stage[data-effect="extra-tab-indicator"] .extra-tab-content { margin-top:16px; min-height:128px; padding:24px; background:var(--ds-accent-50); border:1px solid var(--ds-accent-100); border-radius:12px; gap:20px; }
-.demo-root .stage[data-effect="extra-tab-indicator"] .extra-stat-number { color:var(--ds-accent); font-size:28px; letter-spacing:-.01em; }
+.demo-root .stage[data-effect="extra-tab-indicator"] .extra-stat-number { color:var(--ds-accent); font-size:28px; line-height:1.2; letter-spacing:-.01em; }
 .demo-root .stage[data-effect="extra-tab-indicator"] .extra-tab-content strong { font-size:14px; }
 .demo-root .stage[data-effect="extra-tab-indicator"] .extra-tab-content small { font-size:12px; color:var(--ds-ink-2); }

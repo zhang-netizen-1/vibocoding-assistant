@@ -399,6 +399,12 @@ def markup(demo, prefix, interactive=False, slug=''):
                   lambda match: 'style=' + match[1] + readable_fonts(match[2]) + match[1], result, flags=re.S)
 
 
+def spec_weights(text):
+    """UI audit: demo type uses spec weights only (400/500/600/650); legacy bold becomes 600."""
+    text = re.sub(r'font-weight:\s*(?:bold|bolder|[7-9]00|750)\b', 'font-weight:600', text)
+    return re.sub(r'(font:\s*(?:italic\s+)?)(?:bold|[7-9]00|750)\b', r'\g<1>600', text)
+
+
 def assets(entries):
     return _assets()
 
@@ -413,9 +419,9 @@ def _assets():
         'demo-motion.js': _package('motion', _motion_script(motion)),
         'demo-guide.js': _package('guide', _guide_script()),
         'demo-skill-reference.js': _package('skill-reference', 'return {};'),
-        'demo-ui.css': css(ui), 'demo-motion.css': css(motion),
-        'demo-guide.css': css('<style>' + (ROOT / 'site-src/guides.css').read_text() + (ROOT / 'site-src/visual-styles.css').read_text() + '</style>'),
-        'demo-skill-reference.css': css('<style>' + (ROOT / 'site-src/skills.css').read_text() + '</style>'),
+        'demo-ui.css': spec_weights(css(ui)), 'demo-motion.css': spec_weights(css(motion)),
+        'demo-guide.css': spec_weights(css('<style>' + (ROOT / 'site-src/guides.css').read_text() + '</style>')) + css('<style>' + (ROOT / 'site-src/visual-styles.css').read_text() + '</style>'),
+        'demo-skill-reference.css': spec_weights(css('<style>' + (ROOT / 'site-src/skills.css').read_text() + '</style>')),
         'demo-token.js': (HERE / 'token-demo.js').read_text(),
         'demo-token.css': readable_fonts(SHADOW_BASE + _gate_reduced_motion((HERE / 'token-demo.css').read_text())),
         'demo-spec.css': readable_fonts(_gate_reduced_motion((HERE / 'demo-spec.css').read_text())),

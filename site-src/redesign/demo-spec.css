@@ -70,6 +70,7 @@
 }
 .demo-root.ds-stage > :is(.canvas,.stage) > * { flex-shrink:0; }
 .ds-surface { width:min(100%,var(--ds-subject-width)); box-sizing:border-box; background:var(--ds-surface); border:1px solid rgb(17 24 39 / .08); border-radius:16px; box-shadow:var(--ds-shadow-1); padding:24px; min-width:0; max-width:100%; }
+:host(:not([data-demo-slug="brutalist"]):not([data-demo-slug="editorial"]):not([data-demo-slug="glass"]):not([data-demo-slug="minimal"]):not([data-demo-slug="neumorphic"]):not([data-demo-slug="organic"])) .demo-root :where(h1,h2,h3,h4,h5,h6,strong,b,th,dt) { font-weight:600; }
 .demo-root.ds-stage .ds-hint {
   position:absolute!important; inset:auto auto 12px 12px!important; width:fit-content; max-width:calc(100% - 24px)!important;
   margin:0!important; order:999; flex-shrink:0; grid-column:1/-1;

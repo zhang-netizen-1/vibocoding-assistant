@@ -11,3 +11,6 @@
 @container demo-stage (max-width:480px) { .demo-root .stage[data-effect="view-slide"] .scene-window .scene-slide { padding:20px; min-height:220px; } }
 :host(:not([data-interactive])) .stage[data-effect="view-slide"]>button { display:none; }
 :host(:not([data-interactive])) .demo-root .stage[data-effect="view-slide"] .scene-window .scene-slide { padding:16px; min-height:180px; }
+
+/* UI audit: legacy generic stage-button colour (#3A0F06) is off-palette; controls use ink. */
+.demo-root .stage[data-effect="view-slide"] button { color:var(--ds-ink)!important; }
