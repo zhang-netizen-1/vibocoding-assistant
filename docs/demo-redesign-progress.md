@@ -242,3 +242,12 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
 - c1e6892 后交互类几何复查（84 条 × 3 宽 = 252 次）：全部 0。
 - 总结图 box `final_summary.jpg`：16 对 1440 前后对比 + 4 对 390，左 = 会话起点 26f11d5，右 = 当前。
 - cua 检查：今天 17 个 Codex 日志中，H 段起（含 D、DS、I1–I4、T 系列）全部 0；早先 C/E/F/G（01:23–03:22）各有 2/2/2/21 次 cua_repl 调用，已在 c29e631 记录，之后改为命令行禁用。
+
+## 第 18 段（15:00–16:40）UI 分层走查方法 + 修复
+- 起因：顶栏 ⌄ 箭头比文字低（用户指出），说明走查缺方法。新增分层清单 docs/ui-audit-checklist.md 和自动检查 tests/ui_audit_headless.cjs（icon / type / color / rows / filled / inset / gap + 状态截图）、tests/focus_ring_headless.cjs。
+- 提交：a7fc330 顶栏箭头 SVG；5bdc095 其余文字箭头换 SVG；b12bc15 实心按钮描边/状态色；9b97327 字体与颜色收敛到 token；ea60b61 审查脚本；dc2887e 焦点环被裁；8c569b7 画廊瀑布流 + 缩略图四边等距；e657f7d 动效画廊列宽修正 + 1024 箭头 + 清单文档。
+- 修复前（41cb38a）：icon 1046、type 1650、color 16、filled 60、焦点环被裁 6 种、缩略图内边距不等 164/174（1440）、画廊间距 24/16 不等。
+- 最终（e657f7d）：ui_audit 205 页 × 4 宽全部 0；焦点环 0；几何 579 次加载 0；单测 160 OK。
+- 未改、待定：首页与条目页 logo 横向位置不同（有意设计）；桌面端缩略图下方 52px 播放按钮预留白边。
+- 交付：/workspace/bench/ui-audit/（清单、counts.md、nav_caret_before_after.png、fixes_contact_sheet.png、gallery_inset_masonry_before_after.png）。
+- 本段全部手写，未用 Codex（cua 不适用）。16:31 起按用户要求：之后所有代码改动交给本机 Codex，我只写任务说明、跑测试、看截图、提交。
