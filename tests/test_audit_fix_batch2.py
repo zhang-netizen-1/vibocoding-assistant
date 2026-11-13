@@ -103,7 +103,9 @@ assert.ok(vm.runInContext('thumbnail(entry)',context).includes('&lt;</span>'));
         for rule in ('.result-name::after', '.result-row:hover', 'cursor:pointer',
                      '.result-actions{position:relative;z-index:2}',
                      '@media(min-width:1024px)', 'max-height:calc(100dvh - var(--nav-height) - 32px)',
-                     '.use-card .criteria[open]', 'min-height:0', 'overflow:auto',
+                     '.use-card .criteria[open]', '.prompt-body', 'min-height:0', 'overflow:auto',
+                     'overscroll-behavior:contain', '.prompt-head .copy-btn',
+                     '.prompt-card.is-copied{background:#6D28D9', '.bottom-bar[hidden]',
                      '@media(max-width:1023px), (hover:none), (pointer:coarse)'):
             self.assertIn(rule, css)
 

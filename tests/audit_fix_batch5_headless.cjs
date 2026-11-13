@@ -100,6 +100,60 @@ function inspectShell() {
       assert.equal(await page.locator('[data-copy-source=button-edit-example]').evaluate(node => getComputedStyle(node).backgroundColor),'rgb(17, 24, 39)');
       for (const destination of ['basics/','components/','interactions/','scenarios/','ai/',...destinations]) {
         await visit(destination);
+        const entry = entries.find(entry => destination === `${entry.column}/${entry.column === 'ai' ? 'skills/' : ''}${entry.slug}/`);
+        if (!entry) continue;
+        assert.equal(await page.locator('.prompt-card').count(),1);
+        assert.equal(await page.locator('.prompt-card #entry-prompt').textContent(),entry.prompt);
+        assert.equal(await page.locator('.entry-main .prompt-box').count(),0);
+        const notice = page.locator('.prompt-card .prompt-meta');
+        assert.equal(await notice.count(),Number(entry.acceptance.length > 0));
+        if (entry.acceptance.length) assert.equal(await notice.textContent(),`复制时自动附带 ${entry.acceptance.length} 条验收要求`);
+        const payload = await page.locator('#copy-prompt').textContent();
+        for (const criterion of entry.acceptance) assert.ok(payload.includes(criterion));
+        const geometry = await page.locator('.prompt-card').evaluate(card => {
+          const button = card.querySelector('.prompt-head button').getBoundingClientRect();
+          const rect = card.getBoundingClientRect();
+          const demos = [...document.querySelectorAll('.entry-main > .entry-demo')];
+          return {position:getComputedStyle(card).position,height:rect.height,
+            viewport:innerHeight,top:rect.top,
+            afterDemo:demos.every(demo => demo.getBoundingClientRect().bottom <= rect.top + 1),
+            beforeMotion:[...document.querySelectorAll('.motion-section,.usage-section')]
+              .every(section => section.getBoundingClientRect().top >= rect.bottom - 1),
+            buttonWidth:button.width,buttonHeight:button.height,
+            overscroll:getComputedStyle(card.querySelector('.prompt-body')).overscrollBehavior};
+        });
+        assert.ok(geometry.buttonWidth >= 44 && geometry.buttonHeight >= 44);
+        assert.equal(geometry.overscroll,'contain');
+        if (width >= 1024) {
+          assert.equal(geometry.position,'fixed');
+          assert.ok(geometry.height + geometry.top <= geometry.viewport);
+        } else {
+          assert.equal(geometry.position,'static');
+          assert.equal(geometry.afterDemo,true);
+          assert.equal(geometry.beforeMotion,true);
+        }
+      }
+      // Shared card feedback and real viewport-driven keyboard exclusion.
+      await visit('components/cmdk/');
+      await page.evaluate(() => Object.defineProperty(navigator,'clipboard',{configurable:true,
+        value:{writeText:async text => {window.__promptCopiedText = text;}}}));
+      await page.locator('.prompt-head [data-copy-source="copy-prompt"]').click();
+      assert.equal(await page.locator('.prompt-card').evaluate(card => getComputedStyle(card).backgroundColor),'rgb(109, 40, 217)');
+      assert.equal(await page.locator('.prompt-card').evaluate(card => getComputedStyle(card).color),'rgb(255, 255, 255)');
+      assert.equal(await page.locator('.prompt-head button').textContent(),'✓ 已复制');
+      assert.equal(await page.locator('.prompt-head button').evaluate(button => getComputedStyle(button).backgroundColor),'rgb(255, 255, 255)');
+      assert.equal(await page.locator('.prompt-card').evaluate(card => getComputedStyle(card).transitionDuration),'0s');
+      assert.equal(await page.evaluate(() => window.__promptCopiedText === document.querySelector('#copy-prompt').textContent),true);
+      await page.waitForFunction(() => document.querySelector('#live').textContent === '已复制');
+      await page.waitForFunction(() => !document.querySelector('.prompt-card').classList.contains('is-copied'));
+      assert.equal(await page.locator('.prompt-head button').textContent(),'复制');
+      if (width <= 1023) {
+        await page.locator('.prompt-card').scrollIntoViewIfNeeded();
+        await page.waitForFunction(() => document.querySelector('.bottom-bar').hidden);
+        assert.equal(await page.locator('.bottom-bar').evaluate(bar => bar.inert),true);
+        await page.evaluate(() => scrollTo(0,document.documentElement.scrollHeight));
+        await page.waitForFunction(() => !document.querySelector('.bottom-bar').hidden);
+        assert.equal(await page.locator('.bottom-bar').evaluate(bar => bar.inert),false);
       }
       for (const missing of ['missing','a/b/c/missing/','components/missing/index.html']) {
         await visit(missing);

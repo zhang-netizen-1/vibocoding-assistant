@@ -39,8 +39,8 @@
   .entry-layout{display:flex;flex-direction:column}
   .entry-main{display:contents}
   .entry-heading,.demo-stage,.entry-section,.bench-line,.use-card{width:100%}
-  .entry-heading{order:0}.demo-stage{order:1}.usage-section{order:2}.prompt-box{order:3}
-  .use-card{order:4}.new-section{order:5}.related-section{order:6}.bench-line{order:7}
+  .entry-heading{order:0}.demo-stage{order:1}.use-card{order:2}.usage-section{order:4}
+  .new-section{order:5}.related-section{order:6}.bench-line{order:7}
 }
 
 .static-preview .play-button,.static-preview .reduced-link{display:none!important}
@@ -53,7 +53,7 @@
 .state-picker{margin-bottom:16px}.state-picker h2{font-size:14px;margin-bottom:8px}.state-picker button{font-size:13px}.state-picker [aria-pressed="true"]{background:var(--ink);color:var(--white);border-color:var(--ink)}.state-caption{margin-top:12px;font-size:14px;color:var(--secondary)}
 
 .motion-section{margin-bottom:32px}.motion-grid .gallery-caption{padding:12px}.more-motions{margin-top:16px}.more-motions>summary{font-size:14px;margin-bottom:12px}
-@media(max-width:1023px){.motion-section{order:2}.usage-section{order:3}.prompt-box{order:4}.use-card{order:5}.new-section{order:6}.related-section{order:7}.bench-line{order:8}}
+@media(max-width:1023px){.demo-hint{order:1}.use-card{order:2}.motion-section{order:3}.usage-section{order:4}.new-section{order:5}.related-section{order:6}.bench-line{order:7}}
 
 .result-alias { margin: 4px 0; color: var(--secondary); font-size: 13px; }
 
@@ -96,14 +96,14 @@
 }
 @media(max-width:1023px), (hover:none), (pointer:coarse){.shortcut-hint,.search-help{display:none}}
 
-/* Keep the primary action above an independently scrolling acceptance list. */
+/* Keep the primary action above independently scrolling prompt and acceptance text. */
 @media(min-width:1024px){
   /* Match the 1184px shell (64px padding) and the 2:1 grid's 32px gap.
      Viewport anchoring keeps the action available beyond the article's end. */
-  .use-card{position:fixed;top:calc(var(--nav-height) + 16px);right:max(32px,calc((100% - 1120px)/2));width:calc((min(100%,1184px) - 96px)/3);display:flex;flex-direction:column;max-height:calc(100dvh - var(--nav-height) - 32px);background:var(--white);z-index:10}
-  .use-card>h2,.use-card>.btn-primary,.use-card>.use-actions,.use-card>.bench-badge{flex-shrink:0}
+  .use-card{position:fixed;top:calc(var(--nav-height) + 16px);right:max(32px,calc((100% - 1120px)/2));width:calc((min(100%,1184px) - 96px)/3);display:flex;flex-direction:column;max-height:calc(100dvh - var(--nav-height) - 32px);overflow:auto;overscroll-behavior:contain;background:var(--white);z-index:10}
+  .use-card>.prompt-head,.use-card>.prompt-meta,.use-card>.use-actions,.use-card>.bench-badge{flex-shrink:0}
   .use-card .criteria[open]{min-height:0;overflow:auto;overscroll-behavior:contain}
-  .use-card .criteria summary{position:sticky;top:0;background:var(--white);z-index:1}
+  .use-card .criteria summary{position:sticky;top:0;background:inherit;z-index:1}
 }
 
 /* Touch targets occupy real layout space, leaving adjacent targets separate.
@@ -158,3 +158,34 @@
 
 /* Cards share the 16px card radius (use card, prompt box); thumbnails inside step down to 15. */
 .gallery-card,.simple-card{border-radius:16px}
+
+/* Copy prompt, option D. Purple is limited to the temporary copied state. */
+.prompt-card{padding:16px;border-radius:16px;background:var(--white);color:var(--ink);scroll-margin-top:calc(var(--nav-height) + 16px);transition:background-color .16s,color .16s,border-color .16s}
+.prompt-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:none}
+.prompt-card .prompt-head h2{font-size:var(--text-section);font-weight:600;line-height:1.3;margin:0;min-width:0}
+.prompt-head .copy-btn{min-width:104px;min-height:44px;border-radius:8px;padding:8px 16px;flex:none}
+.prompt-body{min-width:0;min-height:80px;max-height:min(38vh,320px);overflow:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px;background:var(--stage)}
+.prompt-card .prompt-text{font-size:14px;line-height:1.7;margin:0;color:var(--secondary)}
+.prompt-body .prompt-text + .prompt-text{margin-top:16px}
+.prompt-meta{font-size:12px;line-height:1.5;color:var(--muted);margin-top:12px}
+.prompt-card .criteria{margin-top:12px;min-height:44px;background:inherit}
+.prompt-card .criteria summary{min-height:44px;font-size:var(--text-section);line-height:1.3}
+.prompt-card button,.prompt-card .bench-badge{min-width:44px;min-height:44px;border-radius:8px}
+.prompt-card .bench-badge{display:flex;align-items:center}
+.prompt-card .use-actions{gap:8px;margin-top:12px}
+.entry-main>.new-section>summary{min-height:44px;padding-block:8px}
+.prompt-card.is-copied{background:#6D28D9;border-color:#6D28D9;color:#FFFFFF}
+.prompt-card.is-copied .prompt-body{background:transparent;border-color:#FFFFFF}
+.prompt-card.is-copied :is(h2,.prompt-text,.prompt-meta,.criteria,.bench-badge,.bench-badge:hover){color:#FFFFFF}
+.prompt-card.is-copied :is(button,button:hover){background:#FFFFFF;border-color:#FFFFFF;color:#6D28D9}
+.prompt-card.is-copied .criteria li{border-color:#FFFFFF}
+.prompt-card.is-copied :focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
+.prompt-card.is-copied button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
+.bottom-bar .btn-primary.is-copied{background:#6D28D9;border-color:#6D28D9;color:#FFFFFF}
+.bottom-bar[hidden]{display:none!important}
+@media(min-width:1024px){.prompt-card .prompt-body{flex:1 1 auto}.prompt-card .criteria{flex:0 1 auto}}
+@media(max-width:1023px){
+  .prompt-card{position:static;order:2;margin-top:0;margin-bottom:0;width:100%}
+  .prompt-card .prompt-body{max-height:none;overflow:visible}
+}
+@media(prefers-reduced-motion:reduce){.prompt-card,.prompt-card button,.bottom-bar{transition:none}}

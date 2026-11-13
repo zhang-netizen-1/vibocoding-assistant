@@ -1,5 +1,6 @@
 """State coverage, deliberate reduced-motion playback and fixed copy access."""
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -84,12 +85,26 @@ class AuditFixBatch3Test(unittest.TestCase):
         self.assertIn('top:calc(var(--nav-height) + 16px)', desktop)
         self.assertIn('max-height:calc(100dvh - var(--nav-height) - 32px)', desktop)
         self.assertIn('min-height:0;overflow:auto', desktop)
+        self.assertIn('.prompt-card .prompt-body{flex:1 1 auto}', desktop)
+        self.assertIn('overscroll-behavior:contain', desktop)
+        template = (SOURCE / 'templates.py').read_text()
+        self.assertIn('class="use-card prompt-card"', template)
+        self.assertNotIn('entry-section prompt-box', template)
 
     def test_all_content_acceptance_and_aliases_are_frozen(self):
-        for file in (ROOT / 'site-src/content').glob('*.json'):
-            original = subprocess.run(['git', 'show', 'HEAD:site-src/content/' + file.name],
-                                      cwd=ROOT, capture_output=True, text=True, check=True)
-            self.assertEqual(json.loads(file.read_text()), json.loads(original.stdout), file.name)
+        # Frozen before option D; compare every field without invoking Git.
+        expected = {
+            'ai.json': '0609768ab56007a808cf62632735a720edc7f79baed95f2bf1e17c39b1bd813c',
+            'basics.json': '42fbb09385dbc3692dd2f850d09efc9bb0556ce984e1403ab71453fbd5eeebc1',
+            'components.json': '9ec87aa11d172b27eb452eba93da4278af6da9e2bdbdff9474a529e067bc2d62',
+            'interactions.json': 'cbe1976d806da91d5e03c306fd3ae737c0bb0a4b0d90a1305f3fb99eaacc3b65',
+            'scenarios.json': '09bf6a4a779280b6642eafcaefc5f76781cef94a690b7a442b93bed5b8f7b1e4',
+        }
+        files = {file.name: file for file in (ROOT / 'site-src/content').glob('*.json')}
+        self.assertEqual(set(files), set(expected))
+        for name, file in files.items():
+            payload = json.dumps(json.loads(file.read_text()), ensure_ascii=False, sort_keys=True).encode()
+            self.assertEqual(hashlib.sha256(payload).hexdigest(), expected[name], name)
 
     def test_state_and_motion_runtime_behavior(self):
         result = subprocess.run(['node', 'tests/audit_fix_batch3.cjs'], cwd=ROOT,

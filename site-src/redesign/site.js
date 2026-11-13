@@ -142,10 +142,29 @@
       if (!success) throw new Error('Copy failed');
     }
   }
+  const promptCopyButtons = $$('[data-copy-source="copy-prompt"]');
+  const promptCard = $('.prompt-card');
+  const promptLabels = new Map(promptCopyButtons.map(button => [button,button.textContent]));
+  let promptCopyTimer;
+  function markPromptCopied() {
+    clearTimeout(promptCopyTimer);
+    promptCard?.classList.add('is-copied');
+    promptCopyButtons.forEach(button => { button.textContent = '✓ 已复制'; button.classList.add('is-copied'); });
+    promptCopyTimer = setTimeout(() => {
+      promptCard?.classList.remove('is-copied');
+      promptCopyButtons.forEach(button => { button.textContent = promptLabels.get(button); button.classList.remove('is-copied'); });
+    },2000);
+  }
   const copyTimers = new WeakMap();
   async function copy(button,text) {
     if (button.dataset.copying) return;
     button.dataset.copying = 'true';
+    if (button.dataset.copySource === 'copy-prompt') {
+      try { await writeClipboard(text); markPromptCopied(); announce('已复制'); }
+      catch (_) { announce('复制未完成，请选择提示词文字后手动复制。'); }
+      finally { delete button.dataset.copying; }
+      return;
+    }
     const previous = copyTimers.get(button), label = previous?.label || button.textContent;
     if (previous) clearTimeout(previous.timer);
     // Fix both dimensions before changing the label; restore after feedback.
@@ -158,6 +177,37 @@
     } catch (_) { button.textContent = label; button.style.width = width; button.style.height = height; announce('复制未完成，请选择提示词文字后手动复制。'); }
     finally { delete button.dataset.copying; }
   }
+  function setupPromptVisibility() {
+    const bottomBar = $('.bottom-bar');
+    if (!promptCard || !bottomBar) return;
+    let promptInView = false;
+    function syncBottomBar() {
+      const hide = !mobile.matches || promptInView;
+      if (hide && bottomBar.contains(document.activeElement)) {
+        promptCard.querySelector('[data-copy-source="copy-prompt"]')?.focus({preventScroll:true});
+      }
+      bottomBar.hidden = hide;
+      bottomBar.inert = hide;
+    }
+    function measurePrompt() {
+      const rect = promptCard.getBoundingClientRect();
+      promptInView = rect.top < window.innerHeight && rect.bottom > 0;
+      syncBottomBar();
+    }
+    if (typeof IntersectionObserver !== 'undefined') {
+      const observer = new IntersectionObserver(entries => {
+        promptInView = entries.some(entry => entry.isIntersecting);
+        syncBottomBar();
+      },{threshold:0});
+      observer.observe(promptCard);
+    } else {
+      window.addEventListener('scroll',measurePrompt,{passive:true});
+    }
+    mobile.addEventListener('change',measurePrompt);
+    window.addEventListener('resize',measurePrompt,{passive:true});
+    measurePrompt();
+  }
+  setupPromptVisibility();
   document.addEventListener('click', event => {
     const button = event.target.closest('button'); if (!button) return;
     if (button.hasAttribute('data-query')) openSearch(button.dataset.query,button);

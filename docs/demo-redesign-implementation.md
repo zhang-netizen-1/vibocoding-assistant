@@ -777,3 +777,30 @@ UI 的原 `.ctl` 仍是 `.canvas` 的直接子项，提示文本与胶囊生成�
 检测到并行工作对 `site-src/redesign/templates.py`、`tests/test_site_build.py` 与 `docs/design-system.md` 的修改；它们未由本段写入或回退，已在验证记录中单列。
 
 本段最终校核于北京时间 11:55:06（UTC 03:55:06）完成，耗时约 12.37 分钟，位于 24 分钟工作窗口内。完成清单与文件哈希见 `output/demo-redesign/I1/completion.json`。
+
+## 方案 D：使用卡变成提示词卡
+
+2026-11-13，按已选定的 `copy-prompt-options/site/components/cmdk/option-d.html` 及用户补充规格，在当前站点结构中统一实现全部 192 个条目。默认外观沿用 PRD 第 15 节的黑白灰、链接蓝及墨黑主按钮；仅复制成功后的两秒反馈按本方案使用 `#6D28D9`。
+
+### 实施文件与行为
+
+- `site-src/redesign/templates.py`：新增共用 `use_card()`，由现有条目入口 `detail()` 调用。每页只输出一张提示词卡，源码位置在全部演示之后、「它怎么动」和使用说明之前；桌面将其固定到现有右栏，移动端按相同阅读顺序显示。卡头为「提示词」及内联「复制」，卡体保留提示词全文；验收条数来自当前条目的真实列表，零条时省略提示。验收折叠区、逐条复制、复制英文名和复制本页链接保留。主栏原 `.prompt-box` 重复块移除，「新做一个」仍在使用说明之后，原第二演示提示词进入同一张卡。隐藏的 `#copy-prompt` 和 `copy_payload()` 内容协议保持原样。
+- `site-src/redesign/site.css`：保留当前 1376px 外框、桌面固定右栏及 1024px 断点。卡片圆角 16px、内块和按钮圆角 8px、卡内留白 16px，按钮和提示词框相隔 12px，次操作间隔 8px。桌面整卡限制在视口内，全文区域独立滚动，并设置 `overscroll-behavior:contain`；移动端展示完整自然高度。相关复制操作与折叠入口至少 44px 高。复制成功时整卡紫底白字、按钮反白，白字对紫底的 WCAG 对比度超过 7.1:1；焦点环保持可辨识，减弱动态时无过渡。
+- `site-src/redesign/site.js`：沿用现有剪贴板写入和回退机制，仅在写入成功后同步卡片、内联按钮及底栏按钮的状态，文字为「✓ 已复制」，2000ms 后复原，重复复制重置同一个反馈计时器。通过现有 `aria-live` 播报「已复制」。移动端使用 `IntersectionObserver`，提示词卡进入视口即设置底栏 `hidden` 和 `inert`，离开后恢复；同步处理尺寸变化、断点切换、缺少观察器时的滚动回退，以及隐藏底栏前的焦点转移。
+
+### 测试同步
+
+- `tests/test_site_build.py`、`tests/test_editorial_content.py`：旧提示词块及其嵌套结构断言改为唯一提示词卡、卡内完整原文、真实验收条数、主栏无重复块，并继续精确验证两版复制载荷及验收要求。
+- `tests/test_audit_fix_batch2.py`、`tests/test_audit_fix_batch3.py`、`tests/test_redesign_tokens.py`：同步固定卡、独立滚动区域、卡头排版、成功配色及隐藏底栏结构。原内容冻结检查由调用 `git show` 改为本次修改前冻结的五个内容 JSON 的完整规范化 SHA-256 指纹，同时精确校验文件集合，遵守本次禁止 Git 操作的约束。
+- 新增 `tests/test_prompt_card_d.py` 和 `tests/prompt_card_d_runtime.cjs`：覆盖全部 192 页的单卡结构、完整提示词、源码及移动端排序、验收条数和复制载荷；验证零验收条目、尺寸与圆角约束、紫白对比度、焦点环、减弱动态，以及实际生产 JavaScript 的复制成功、失败和回退、两个入口同步、两秒恢复、观察器显隐、`inert`、焦点转移及断点切换。Node 测试使用受控 DOM 模型，不启动浏览器。
+- `tests/audit_fix_batch3_headless.cjs`、`tests/audit_fix_batch5_headless.cjs`：更新卡头复制按钮选择器，补充桌面全文与卡高、主栏无重复、移动排序、复制载荷、整卡紫色、减弱动态及底栏不可聚焦等断言。仅同步脚本并检查语法，本次未运行浏览器审计。
+- 完整单测暴露的既有测试漂移一并按现有实现同步：`tests/test_design_system_page.py` 的当前页自链接精确断言改为 `./`，目标解析校验保留；`tests/test_redesign_javascript.py` 为动效指示器提供不等宽标签尺寸，替换旧的百分比假设，同时精确断言两次切换的位置、宽高和选中状态；`tests/test_site_build.py` 将独立皮肤精确计数更新为既有 I1 完成后的 127 个独立样例、59 个通用皮肤及 6 个保留材质条目，并核验 I1 的 15 个明确 slug，总数仍严格等于 192。未删测试或降低验收阈值。
+
+### 验证与时间边界
+
+- 运行 `PYTHONDONTWRITEBYTECODE=1 python3 -B scripts/build_site.py`：退出码 0，生成 218 个页面、192 个统一条目页；构建产物同步到 `dist/` 及现有构建输出。
+- 运行 `PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tests -p 'test_*.py'`：159 项全部通过，退出码 0。
+- 修改前后核对 257 个皮肤文件及 5 个内容 JSON 的 SHA-256：262 个文件均未变化，皮肤文件集合也无增删。生产 JavaScript 和三份已更新 CJS 脚本通过 `node --check`。
+- 本次开始于北京时间 12:19:05，24 分钟工作截止为 12:43:05，26 分钟进程上限为 12:45:05。构建及完整单测通过独立进程组运行，超时包装器以更早的 24 分钟工作截止为强制终止边界，没有后台常驻进程。
+- 未执行 Git 操作、未启动端口、浏览器或任何应用窗口。实际浏览器渲染、几何与视觉验收未运行，不能由源码与 Node 模型检查替代。
+- 可复核记录：`output/prompt-card-d/build.log`、`unittest.log`、`before-sha256.json` 和 `completion.json`。

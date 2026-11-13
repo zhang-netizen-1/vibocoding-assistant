@@ -153,9 +153,24 @@ assert.equal(menuH.root.querySelector('.menu-items').hidden, false);
 menuH.fire(menuH.root.querySelector('[role="menuitem"]'), 'click');
 assert.equal(menuH.root.querySelector('.menu-items').hidden, true);
 const tabH = interactiveModel('e-extra-tab-indicator');
+// The implementation measures each selected tab; supply unequal DOM geometry
+// and verify position AND size instead of assuming percentage-sized tabs.
+const measuredTabsH = tabH.root.querySelectorAll('[role="tab"]');
+measuredTabsH.forEach((tab,index) => Object.assign(tab,{
+  offsetLeft:[0,88,217][index],offsetWidth:[80,117,102][index],offsetTop:4,offsetHeight:44
+}));
 tabH.fire(tabH.root.querySelector('#extra-tab-activity'), 'click');
 assert.equal(tabH.root.querySelector('#extra-tab-activity').getAttribute('aria-selected'), 'true');
-assert.equal(tabH.root.querySelector('.extra-tab-indicator').style.transform, 'translateX(100%)');
+const measuredIndicatorH = tabH.root.querySelector('.extra-tab-indicator');
+assert.equal(measuredIndicatorH.style.transform, 'translateX(88px)');
+assert.equal(measuredIndicatorH.style.width, '117px');
+assert.equal(measuredIndicatorH.style.top, '4px');
+assert.equal(measuredIndicatorH.style.height, '44px');
+tabH.fire(measuredTabsH[2], 'click');
+assert.equal(measuredTabsH[2].getAttribute('aria-selected'), 'true');
+assert.equal(measuredTabsH[1].getAttribute('aria-selected'), 'false');
+assert.equal(measuredIndicatorH.style.transform, 'translateX(217px)');
+assert.equal(measuredIndicatorH.style.width, '102px');
 const inlineH = interactiveModel('e-extra-inline-expand');
 const inlineButtonH = inlineH.root.querySelector('.extra-inline-card');
 inlineH.fire(inlineButtonH, 'click');

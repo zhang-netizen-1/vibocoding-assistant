@@ -99,11 +99,18 @@ const types = {'.html':'text/html','.css':'text/css','.js':'text/javascript','.j
     destinations.sort((a,b) => fs.statSync(path.join(root,a,'index.html')).size - fs.statSync(path.join(root,b,'index.html')).size);
     for (const destination of ['interactions/component-lift/',...destinations.slice(0,5)]) {
       await visit(destination);
+      const entry = entries.find(entry => destination === `${entry.column}/${entry.column === 'ai' ? 'skills/' : ''}${entry.slug}/`);
+      assert.equal(await page.locator('.prompt-card').count(),1);
+      assert.equal(await page.locator('.prompt-card #entry-prompt').textContent(),entry.prompt);
+      assert.equal(await page.locator('.entry-main .prompt-box').count(),0);
+      for (const criterion of entry.acceptance) {
+        assert.ok((await page.locator('#copy-prompt').textContent()).includes(criterion));
+      }
       const details = page.locator('.use-card .criteria');
       if (await details.count()) await details.evaluate(node => {node.open = true; node.scrollTop = node.scrollHeight;});
       for (const fraction of [0,.5,1]) {
         await page.evaluate(value => scrollTo(0,(document.documentElement.scrollHeight-innerHeight)*value),fraction);
-        const result = await page.locator('.use-card > .btn-primary').evaluate(button => {
+        const result = await page.locator('.prompt-card .prompt-head .btn-primary').evaluate(button => {
           const r = button.getBoundingClientRect();
           const hit = document.elementFromPoint(r.left + r.width/2,r.top + r.height/2);
           return {top:r.top,bottom:r.bottom,viewport:innerHeight,header:document.querySelector('#header').getBoundingClientRect().bottom,

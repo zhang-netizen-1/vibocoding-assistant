@@ -20,7 +20,7 @@ class RedesignTokensTest(unittest.TestCase):
             self.assertTrue(rules, selector)
             return dict(re.findall(r'([\w-]+)\s*:\s*([^;]+)', rules[0]))
 
-        for selector in ('.entry-section h2', '.use-card h2', '.criteria summary', '.new-section>summary', '.group-section h2'):
+        for selector in ('.entry-section h2', '.use-card h2', '.prompt-card .prompt-head h2', '.criteria summary', '.new-section>summary', '.group-section h2'):
             rule = declarations(site, selector)
             self.assertEqual(rule['font-size'], 'var(--text-section)', selector)
             self.assertEqual(rule['line-height'], '1.3', selector)

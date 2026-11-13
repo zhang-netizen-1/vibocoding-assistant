@@ -268,8 +268,15 @@ class SiteBuildTest(unittest.TestCase):
         for entry in entries:
             path = DIST/templates.entry_destination(entry)/'index.html'
             page = path.read_text()
-            prompt = re.search(r'<pre class="prompt-text" id="entry-prompt">(.*?)</pre>',page,re.S)
+            card = re.search(r'<aside class="use-card prompt-card".*?</aside>', page, re.S)[0]
+            self.assertNotIn('entry-section prompt-box', page)
+            self.assertEqual(page.count('id="entry-prompt"'), 1)
+            prompt = re.search(r'<pre class="prompt-text" id="entry-prompt">(.*?)</pre>',card,re.S)
             self.assertEqual(unescape(prompt[1]),entry['prompt'])
+            self.assertIn('data-copy-source="copy-prompt">复制</button>', card)
+            self.assertEqual('复制时自动附带' in card, bool(entry['acceptance']))
+            if entry['acceptance']:
+                self.assertIn(f'复制时自动附带 {len(entry["acceptance"])} 条验收要求', card)
             payload = re.search(r'<pre class="sr" id="copy-prompt" hidden>(.*?)</pre>',page,re.S)
             self.assertEqual(unescape(payload[1]),templates.copy_payload(entry))
             self.assertIn('data-copy-source="copy-prompt"',page)
@@ -653,6 +660,7 @@ class BatchCKindSkinTest(unittest.TestCase):
             self.assertEqual((DIST/'assets/redesign'/name).read_text(),assets[name])
         counts={kind:0 for kind in self.demos.KINDS}
         samples=skips=0
+        sample_slugs = set()
         for entry in self.entries:
             kind=entry['demo']['kind']
             html=self.demos.markup(entry['demo'],'../../assets/redesign/',True,entry['slug'])
@@ -663,11 +671,17 @@ class BatchCKindSkinTest(unittest.TestCase):
                 self.assertNotIn('data-ds-sample',html)
             elif 'data-ds-sample' in html:
                 samples+=1
+                sample_slugs.add(entry['slug'])
             else:
                 skips+=1
                 self.assertIn(entry['slug'],self.demos.KIND_SKIN_SKIPS.get(kind,()))
-        self.assertEqual(counts,{'ui':10,'motion':31,'guide':20,'token':4,'skill-reference':9})
-        self.assertEqual(samples,112)
+        # I1 added 10 UI + 5 guide samples; all 192 entries still require a skin.
+        self.assertEqual(counts,{'ui':0,'motion':31,'guide':15,'token':4,'skill-reference':9})
+        self.assertEqual(samples,127)
+        for slug in ('advanced-settings', 'conditional-step', 'context-options', 'infinite-scroll',
+                     'inline-edit', 'progress', 'table-reorder', 'textarea', 'virtual-list',
+                     'auto-save', 'bar', 'donut', 'heatmap', 'line', 'stacked'):
+            self.assertIn(slug, sample_slugs)
         self.assertEqual(skips,6)
         self.assertEqual(sum(counts.values())+samples+skips,192)
 

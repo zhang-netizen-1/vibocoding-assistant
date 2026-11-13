@@ -78,7 +78,7 @@ class DesignSystemPageTest(unittest.TestCase):
     def test_footer_relative_links_from_root_and_deep_entries(self):
         cases = [('index.html', './design-system/'),
                  ('components/button/index.html', '../../design-system/'),
-                 ('design-system/index.html', '../design-system/')]
+                 ('design-system/index.html', './')]
         ai_pages = sorted((DIST / 'ai/skills').glob('*/index.html'))
         self.assertTrue(ai_pages, '应包含深层 AI 条目页')
         cases.append((str(ai_pages[0].relative_to(DIST)), '../../../design-system/'))

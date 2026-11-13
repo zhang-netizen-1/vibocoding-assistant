@@ -87,16 +87,22 @@ class EditorialPageTest(unittest.TestCase):
         html = self.templates.detail(entry, edited, self.tax)
         self.assertIn('也叫：轻点执行、执行控件、主操作入口', html)
         self.assertIn('关键参数', html)
-        self.assertIn('共 3 条验收要求，见使用卡；复制提示词时自动包含', html)
+        self.assertIn('复制时自动附带 3 条验收要求', html)
         self.assertIn('复制这一版', html)
-        prompt_sections = MODULE.Document(html).root.find_all('section', 'prompt-box')
-        self.assertTrue(any(section.find_all('details', 'new-section') for section in prompt_sections))
+        document = MODULE.Document(html).root
+        self.assertEqual(document.find_all('section', 'prompt-box'), [])
+        card = document.one('aside', 'prompt-card')
+        self.assertEqual(card.one('pre', 'prompt-text').text(), entry['prompt'])
+        self.assertEqual(card.one('h2').text(), '提示词')
+        new_section = document.one('details', 'new-section')
+        self.assertGreater(new_section.start, card.end)
+        self.assertEqual(new_section.one('pre', 'prompt-text').text(), entry['prompt_new'])
         self.assertIn('data-copy-source="copy-new-prompt"', html)
         self.assertNotIn('open', re.search(r'<details class="criteria"[^>]*>', html)[0])
         self.assertNotIn('open', re.search(r'<details class="entry-section new-section"[^>]*>', html)[0])
         payload = re.search(r'id="copy-new-prompt" hidden>(.*?)</pre>', html, re.S)[1]
         self.assertEqual(unescape(payload), self.templates.copy_payload(entry, 'prompt_new'))
-        self.assertIn('<div class="bottom-bar"><button data-show-acceptance>验收要求</button>', html)
+        self.assertIn('<div class="bottom-bar" hidden inert><button data-show-acceptance>验收要求</button>', html)
         self.assertEqual(html.count('复制这条'), 3)
 
     def test_unedited_entry_keeps_original_optional_sections(self):

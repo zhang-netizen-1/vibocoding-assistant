@@ -228,6 +228,13 @@ def copy_button(source, label='复制提示词', primary=False):
     return f'<button class="copy-btn{" btn-primary" if primary else ""}" data-copy-source="{source}">{label}</button>'
 
 
+def use_card(entry, criteria, bench):
+    """One prompt surface: fixed on desktop, after the demos on mobile."""
+    notice = f'<p class="prompt-meta">复制时自动附带 {len(entry["acceptance"])} 条验收要求</p>' if entry['acceptance'] else ''
+    secondary = f'<pre class="prompt-text" id="secondary-prompt">{escape(entry["prompt_secondary"])}</pre>' if entry.get('prompt_secondary') and not entry.get('prompt_edit') else ''
+    return f'''<aside class="use-card prompt-card" aria-labelledby="use-card-title"><div class="prompt-head"><h2 id="use-card-title">提示词</h2>{copy_button("copy-prompt", "复制", primary=True)}</div><div class="prompt-body" tabindex="0" role="region" aria-label="提示词全文"><pre class="prompt-text" id="entry-prompt">{escape(entry['prompt'])}</pre>{secondary}</div>{notice}{criteria}<div class="use-actions">{copy_button("entry-english", "复制英文名")}<button class="copy-btn" data-copy-link>复制本页链接</button></div>{bench}</aside>'''
+
+
 def detail(e, entries, tax):
     page = entry_destination(e) + 'index.html'
     column = next(c for c in tax['columns'] if c['slug'] == e['column'])
@@ -239,7 +246,6 @@ def detail(e, entries, tax):
     if params:
         usage += '<section class="entry-section usage-section"><h2>关键参数</h2><ul>' + ''.join(f'<li>{escape(item)}</li>' for item in params) + '</ul></section>'
     aliases = '<p class="entry-aliases small">也叫：' + escape('、'.join(e['aliases'][:5])) + '</p>' if e.get('aliases') else ''
-    notice = f'<p class="small">共 {len(e["acceptance"])} 条验收要求，见使用卡；复制提示词时自动包含</p>' if e.get('prompt_edit') else ''
     related = ''.join(f'<a class="link-block" href="{relative(page,entry_destination(other))}">{escape(other["zh"])}<span aria-hidden="true">→</span></a>' for other in entries if (other['column'] == e['column'] and other['group'] == e['group'] and other['slug'] != e['slug']) or other['column'] + '/' + other['slug'] in e.get('related', []))
     criteria = ''
     if e['acceptance']:
@@ -250,7 +256,7 @@ def detail(e, entries, tax):
     prompt_new = ''
     if e.get('prompt_new'):
         prompt_new = f'<details class="entry-section new-section"><summary>新做一个</summary><pre class="prompt-text" id="new-prompt">{escape(e["prompt_new"])}</pre>{copy_button("copy-new-prompt", "复制这一版")}<pre class="sr" id="copy-new-prompt" hidden>{escape(copy_payload(e, "prompt_new"))}</pre></details>'
-    use_card = f'<aside class="use-card" aria-labelledby="use-card-title"><h2 id="use-card-title">使用卡</h2>{copy_button("copy-prompt",primary=True)}{criteria}<div class="use-actions">{copy_button("entry-english","复制英文名")}<button class="copy-btn" data-copy-link>复制本页链接</button></div>{bench}</aside>'
+    prompt_card = use_card(e, criteria, bench)
     def demonstration(demo):
         controls = '<div class="demo-controls"><button type="button" data-demo-replay>重播</button><button type="button" data-demo-slow aria-pressed="false">慢放 0.25 倍</button><button type="button" data-demo-step hidden>下一步</button><span class="reduced-note small" hidden>已开启减弱动态：点播放看一次</span></div>' if demo['kind'] in ('motion', 'ui', 'guide', 'token') else ''
         return '<div class="entry-demo"><div class="demo-stage">' + demo_scope(demo, page, True, e['slug']) + '</div>' + controls + '</div>'
@@ -261,12 +267,11 @@ def detail(e, entries, tax):
         demonstrations = demonstrations.replace('<div class="demo-stage">',states.render(e['slug']) + '<div class="demo-stage">',1)
     if e['demo'].get('secondary'):
         demonstrations += demonstration(e['demo']['secondary'])
-    secondary = f'<section class="entry-section prompt-box"><h2>提示词 · 第二演示</h2><pre class="prompt-text" id="secondary-prompt">{escape(e["prompt_secondary"])}</pre>{copy_button("secondary-prompt")}</section>' if e.get('prompt_secondary') and not e.get('prompt_edit') else ''
     source_link = ''
     if e['demo']['kind'] == 'skill-reference':
         links = re.findall(r'<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>', e['demo']['html'], re.S)
         source_link = '<section class="entry-section"><h2>来源</h2>' + ''.join(f'<p><a href="{escape(url)}" rel="noopener noreferrer">{text}</a></p>' for url,text in links) + '</section>'
-    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span>{aliases}</div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{motion_links(e,page,entries,tax)}{usage}<section class="entry-section prompt-box"><h2>提示词</h2><pre class="prompt-text" id="entry-prompt">{escape(e['prompt'])}</pre>{notice}{prompt_new}</section>{secondary}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article>{use_card}</div><div class="bottom-bar">{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
+    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span>{aliases}</div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{prompt_card}{motion_links(e,page,entries,tax)}{usage}{prompt_new}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article></div><div class="bottom-bar" hidden inert>{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
     return shell(page, e['zh']+' '+e['en'], body, entries, tax, entry=True)
 
 
