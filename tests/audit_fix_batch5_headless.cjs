@@ -152,8 +152,20 @@ function inspectShell() {
         await page.waitForFunction(() => document.querySelector('.bottom-bar').hidden);
         assert.equal(await page.locator('.bottom-bar').evaluate(bar => bar.inert),true);
         await page.evaluate(() => scrollTo(0,document.documentElement.scrollHeight));
+        // Short pages (e.g. 768 two-column) can keep part of the prompt card on screen at the very bottom;
+        // the bar must track the card: hidden+inert while any of it is visible, back once it has left.
+        await page.waitForFunction(() => {
+          const card = document.querySelector('.prompt-card').getBoundingClientRect(), bar = document.querySelector('.bottom-bar');
+          const inView = card.top < innerHeight && card.bottom > 0;
+          return bar.hidden === inView && bar.inert === inView;
+        });
+        if (await page.locator('.prompt-card').evaluate(card => { const r = card.getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; })) {
+          await page.evaluate(() => document.documentElement.style.paddingBottom = '2000px');
+          await page.evaluate(() => scrollTo(0,document.documentElement.scrollHeight));
+        }
         await page.waitForFunction(() => !document.querySelector('.bottom-bar').hidden);
         assert.equal(await page.locator('.bottom-bar').evaluate(bar => bar.inert),false);
+        await page.evaluate(() => document.documentElement.style.paddingBottom = '');
       }
       for (const missing of ['missing','a/b/c/missing/','components/missing/index.html']) {
         await visit(missing);

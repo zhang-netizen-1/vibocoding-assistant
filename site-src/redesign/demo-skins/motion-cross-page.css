@@ -31,7 +31,6 @@
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
 
-.demo-root.ds-stage .stage[data-effect="extra-cross-page"] > .ds-hint { inset:auto auto 16px 16px!important; max-width:calc(100% - 32px)!important; }
 
 .demo-root .ds-i2-panel .extra-page-frame { height:430px; }
 

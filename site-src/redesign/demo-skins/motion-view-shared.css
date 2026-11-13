@@ -39,7 +39,6 @@
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
 
-.demo-root.ds-stage .stage[data-effect="view-shared"] > .ds-hint { inset:auto auto 16px 16px!important; max-width:calc(100% - 32px)!important; }
 
 .demo-root .ds-i2-panel .shared-destination-label { bottom:auto; }
 /* Keep the image, label and expanded copy intrinsic at thumbnail widths. */

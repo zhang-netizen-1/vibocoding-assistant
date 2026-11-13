@@ -38,7 +38,6 @@
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
 
-.demo-root.ds-stage .stage[data-effect="mobile-rubber"] > .ds-hint { inset:auto auto 16px 16px!important; max-width:calc(100% - 32px)!important; }
 
 .demo-root .ds-i2-panel .ds-i2-rubber-viewport { width:100%; min-width:0; overflow:clip; border:1px solid var(--ds-line); border-radius:var(--ds-r-min); background:var(--ds-stage); }
 .demo-root .ds-i2-panel .ds-i2-rubber-viewport .rubber-zone { border:0; }

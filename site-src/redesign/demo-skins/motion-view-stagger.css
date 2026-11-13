@@ -34,7 +34,6 @@
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
 
-.demo-root.ds-stage .stage[data-effect="view-stagger"] > .ds-hint { inset:auto auto 16px 16px!important; max-width:calc(100% - 32px)!important; }
 
 /* Keep the specimen to three typographic levels. */
 .demo-root .ds-i2-panel .stagger-box strong { font-size:var(--ds-demo-heading); }

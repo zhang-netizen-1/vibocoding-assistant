@@ -57,7 +57,10 @@ async function demoHChecks(scope, slug) {
   if (slug === 'tab-indicator') {
     click('#extra-tab-activity');
     assert(root.querySelector('#extra-tab-activity').getAttribute('aria-selected') === 'true', 'tab selects');
-    assert(root.querySelector('.extra-tab-indicator').style.transform === 'translateX(100%)', 'indicator advances');
+    // The indicator is measured from the selected tab (unequal widths), so it must cover that tab exactly.
+    await wait(400);
+    const tab = root.querySelector('#extra-tab-activity').getBoundingClientRect(), bar = root.querySelector('.extra-tab-indicator').getBoundingClientRect();
+    assert(root.querySelector('.extra-tab-indicator').style.transform !== '' && Math.abs(bar.left - tab.left) < 1.5 && Math.abs(bar.width - tab.width) < 1.5 && Math.abs(bar.top - tab.top) < 1.5, 'indicator advances onto the selected tab');
     click('#extra-tab-overview');
   }
   if (slug === 'inline-expand') {

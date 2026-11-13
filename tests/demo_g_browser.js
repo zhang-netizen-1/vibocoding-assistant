@@ -111,7 +111,9 @@ async function demoGChecks(scope, slug) {
     await wait(20);
     const scroller = table.getBoundingClientRect();
     const heading = root.querySelector('.fixcol').getBoundingClientRect();
-    assert(table.scrollTop > 0 && table.scrollLeft > 0 && Math.abs(heading.top - scroller.top - 1) < 2 &&
+    // At wide stages every column fits, so horizontal scrolling is only required when the table overflows.
+    const overflowsX = table.scrollWidth > table.clientWidth + 1;
+    assert(table.scrollTop > 0 && (!overflowsX || table.scrollLeft > 0) && Math.abs(heading.top - scroller.top - 1) < 2 &&
       Math.abs(heading.left - scroller.left - 1) < 2, 'header and first column stay fixed');
   }
   if (slug === 'table-columns') {

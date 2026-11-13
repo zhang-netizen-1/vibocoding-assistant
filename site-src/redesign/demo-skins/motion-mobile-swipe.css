@@ -38,7 +38,6 @@
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
 
-.demo-root.ds-stage .stage[data-effect="mobile-swipe"] > .ds-hint { inset:auto auto 16px 16px!important; max-width:calc(100% - 32px)!important; }
 /* Four-line metadata remains visible in a gallery host narrower than 240px. */
 .demo-root .ds-i2-panel .swipe-slot { max-height:240px; }
 .demo-root .ds-i2-panel .swipe-slot.dismissed { max-height:0; }

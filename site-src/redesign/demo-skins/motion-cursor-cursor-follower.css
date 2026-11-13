@@ -42,7 +42,6 @@
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
 
-.demo-root.ds-stage .stage[data-effect="cursor-cursor-follower"] > .ds-hint { inset:auto auto 16px 16px!important; max-width:calc(100% - 32px)!important; }
 
 @media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-i2-panel :is(.cf-dot,.cf-ring) { display:none!important; } :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-i2-panel .cf-stage { cursor:auto; } }
 @container demo-stage (max-width:240px) { .demo-root .ds-i2-panel .cf-stage { padding-bottom:88px; } }

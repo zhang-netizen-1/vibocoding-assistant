@@ -605,7 +605,7 @@ function catalogInventory() {
         const source=fs.readFileSync(file,'utf8');
         const count=[...source.matchAll(/<div\b[^>]*class="demo-scope"[^>]*data-interactive\b/g)].length;
         const kind=source.match(/<div\b[^>]*class="demo-scope"[^>]*data-demo-kind="([^"]+)"[^>]*data-interactive\b/)?.[1];
-        if(count) details.push({route:path.relative(dist,path.dirname(file)).split(path.sep).join('/')+'/',demos:count,kind});
+        if(count && !file.includes(`${path.sep}design-system${path.sep}`)) details.push({route:path.relative(dist,path.dirname(file)).split(path.sep).join('/')+'/',demos:count,kind});
       }
     }
   }

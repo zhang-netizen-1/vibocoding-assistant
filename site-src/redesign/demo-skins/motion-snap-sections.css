@@ -38,7 +38,6 @@
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
 
-.demo-root.ds-stage .stage[data-effect="extra-snap-sections"] > .ds-hint { inset:auto auto 16px 16px!important; max-width:calc(100% - 32px)!important; }
 
 /* Status mapping in the original source uses 168px sections. */
 .demo-root .ds-i2-panel .extra-snap-scroll { height:170px; }

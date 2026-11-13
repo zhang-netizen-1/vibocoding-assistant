@@ -36,7 +36,6 @@
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
 
-.demo-root.ds-stage .stage[data-effect="cursor-object-follow"] > .ds-hint { inset:auto auto 16px 16px!important; max-width:calc(100% - 32px)!important; }
 
 /* Keep the specimen to three typographic levels. */
 .demo-root .ds-i2-panel .obj-card strong { font:600 16px/1.5 var(--ds-font); }
