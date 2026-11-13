@@ -44,3 +44,7 @@
   .ds-states-panel .states-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 :host(:not([data-interactive])) .ds-states-panel .states-grid .st-btn { font-size:12px; }
+
+/* UI audit: filled states are bounded by their fill, not a grey outline. */
+.ds-states-panel .st-btn:is(.ac,.sel) { border-color:var(--ds-accent); }
+.ds-states-panel .st-btn.pr { border-color:var(--ds-accent-active); }

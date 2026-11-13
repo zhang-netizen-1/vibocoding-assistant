@@ -18,3 +18,6 @@
 .ds-pagination-panel .pager button:first-child, .ds-pagination-panel .pager button:last-child { flex-basis:56px; }
 .ds-pagination-panel .pager button.on { color:var(--ds-surface); background:var(--ds-accent); }
 .ds-pagination-panel .pager button:hover:not(.on):not(:disabled) { background:var(--ds-fill); box-shadow:var(--ds-shadow-2); }
+
+/* UI audit: the current page is bounded by its fill, not a grey outline. */
+.ds-pagination-panel .pager button.on { border-color:var(--ds-accent); }

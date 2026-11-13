@@ -27,3 +27,6 @@
 .ds-split-button-panel .split-menu { left:0; top:calc(100% + 8px); width:100%; min-width:0; padding:8px; border:1px solid var(--ds-line); border-radius:12px; background:var(--ds-surface); box-shadow:var(--ds-shadow-3); gap:8px; }
 .ds-split-button-panel .split-menu button { min-height:44px; padding:8px 12px; border-radius:8px; color:var(--ds-ink); font-size:14px; }
 .ds-split-button-panel .split-menu button:hover { background:var(--ds-fill); color:var(--ds-ink); }
+
+/* UI audit: the main label never wraps per character in narrow tiles. */
+.ds-split-button-panel .splitbtn .split-main { white-space:nowrap; }

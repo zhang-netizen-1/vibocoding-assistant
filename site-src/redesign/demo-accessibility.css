@@ -158,3 +158,9 @@
 .demo-root.ds-stage .ds-hint ~ .ds-hint {display:none}
 @media(max-width:767px){:host([data-interactive]) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){min-height:44px}}
 
+
+/* UI audit: filled actions (primary / danger / selected fills) are bounded by their fill; the grey 3:1
+   control outline above would read as a stray border, so their border lets the fill show through. */
+.demo-root :is(button, [role="button"]):is(.btn-pri, .btn-danger, .btn-primary, .ds-primary, .extra-primary, .lm-btn, .st-btn.ac, .st-btn.pr, .st-btn.sel, .pager .on, .theme-sample button, [data-filled]) {
+  border-color: transparent !important;
+}

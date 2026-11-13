@@ -37,7 +37,7 @@
 .demo-root .ds-i2-panel .extra-section-scroll section { height:170px; padding:16px 12px; }
 .demo-root .ds-i2-panel .extra-section-links { gap:8px; }
 .demo-root .ds-i2-panel .extra-section-links button { width:44px; height:44px; padding:8px!important; }
-.demo-root .ds-i2-panel .extra-section-links button[aria-current=true] { color:var(--ds-surface)!important; background:var(--ds-accent)!important; }
+.demo-root .ds-i2-panel .extra-section-links button[aria-current=true] { color:var(--ds-surface)!important; background:var(--ds-accent)!important; border-color:var(--ds-accent)!important; }
 
 :host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
 
