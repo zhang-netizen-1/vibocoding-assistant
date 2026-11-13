@@ -93,12 +93,43 @@ def geometry(tokens, group):
         value = value.strip()
         if token.startswith(('--space-', '--ds-space-')):
             spaces.append(f'<div class="ds-measure"><code>{token}</code><div class="ds-ruler" style="width:{value}"></div><span>{value}</span><p>什么时候用 · {spacing_use(value)}。</p></div>')
-        elif token.startswith(('--radius-', '--ds-radius-')):
+        elif token.startswith(('--radius-', '--ds-radius-')) and not token.startswith('--ds-r-'):
             radii.append(f'<div class="ds-radius-item"><div class="ds-radius-box" style="border-radius:{value}">{value}</div><code>{token}</code><p>什么时候用 · {radius_use(value)}。</p></div>')
         elif token == '--shadow' or token.startswith('--ds-shadow-'):
             use = '外框搜索浮层与大下拉' if group == 'shell' else {'--ds-shadow-1': '静止卡片与承托面', '--ds-shadow-2': '悬停与浮起', '--ds-shadow-3': '弹窗、下拉与提示浮层'}[token]
             shadows.append(f'<article class="ds-shadow-card" style="box-shadow:{value}"><h4>{"外框浮层" if group == "shell" else "层级 " + token[-1]}</h4><code>{token}</code><code class="ds-shadow-value">{escape(value)}</code><p>什么时候用 · {use}。</p></article>')
     return f'<h4>间距</h4><div class="ds-measures">{"".join(spaces)}</div><h4>圆角</h4><div class="ds-radius-grid">{"".join(radii)}</div><h4>阴影</h4><div class="ds-shadow-grid">{"".join(shadows)}</div>'
+
+
+NESTED_LEVELS = [
+    ('--ds-r-stage', '16px', '演示舞台外框（条目页）'),
+    ('--ds-r-surface', '16px', '承托面、弹窗；与舞台间隔 ≥ 16px 时可同为 16'),
+    ('--ds-r-panel', '12px', '承托面里的面板、列表、预览框'),
+    ('--ds-r-control', '8px', '按钮、输入框、分段按钮组两端'),
+    ('--ds-r-chip', '6px', '标签、角内小框、行内高亮'),
+    ('--ds-r-min', '6px', '内外间隙很小时的下限，不再往下减'),
+]
+
+
+def nested_radius():
+    rows = ''.join(f'<tr><td><code>{t}</code></td><td>{v}</td><td>{u}</td></tr>' for t, v, u in NESTED_LEVELS)
+    return (
+        '<p>什么时候用 · 框里再套框时都要套用：外圆角 = 内圆角 + 间隙，内圆角永远不超过外圆角；间隙很大时内圆角取 6px 下限。'
+        '胶囊与圆形按形状定义，不受此限，但离外框圆角至少一个外圆角半径。</p>'
+        '<div class="ds-nest-pair">'
+        '<figure class="ds-nest ds-nest-good"><div class="ds-nest-outer"><div class="ds-nest-inner">内 8 · 间隙 8</div></div>'
+        '<figcaption>✓ 外 16 = 内 8 + 间隙 8，弧线同心</figcaption></figure>'
+        '<figure class="ds-nest ds-nest-bad"><div class="ds-nest-outer"><div class="ds-nest-inner">内 20 · 间隙 8</div></div>'
+        '<figcaption>✗ 内 20 大于外 16，角上出现鼓包（旧 cmdk 的问题）</figcaption></figure>'
+        '</div>'
+        f'<table class="ds-nest-table"><thead><tr><th>变量</th><th>值</th><th>什么时候用</th></tr></thead><tbody>{rows}</tbody></table>'
+        '<p>缩略图：卡片 16 − 1px 边框 = 舞台 15，舞台里的承托面 14。</p>'
+        '<h4>按钮间距</h4><p>什么时候用 · 各自带边框的独立按钮之间留 8px，按钮与预览框之间至少 12px；'
+        '只有共用外边框、中间有分隔线、两端才有圆角的分段按钮组可以 0 间隙。</p>'
+        '<div class="ds-gap-pair"><div class="ds-gap-sep"><button type="button">初始状态</button><button type="button">切换状态</button></div>'
+        '<div class="ds-gap-seg" role="group" aria-label="分段按钮示例"><button type="button" aria-pressed="true">日</button><button type="button" aria-pressed="false">周</button><button type="button" aria-pressed="false">月</button></div></div>'
+        '<p class="ds-note">自动检查：tests/geometry_headless.cjs 在 1440 / 768 / 390 三个宽度检查全部条目演示的圆角嵌套、按钮间距、文字裁切和指示条偏移。</p>'
+    )
 
 
 def spacing_use(value):
@@ -187,6 +218,7 @@ def render(entries, tax, templates):
 <p class="ds-note">--ds-ink-3 只放白底，不放演示舞台或浅底。浅色强调色与语义浅底用作背景，文字使用 --ds-ink 或对应深色语义色。演示主操作使用紫色。</p></section>
 <section class="ds-section" id="demo-type"><h3>字号阶梯</h3><p>什么时候用 · 单个演示最多使用三级字号，数字采用等宽数字排列。</p>{typography(demo_tokens, DEMO_TYPE, 'demo')}<p class="ds-note">演示容器达到 640px 时，正文 / 标题 / 按钮 / 控件高度还有上下文覆盖值，见全部变量表。</p></section>
 <section class="ds-section" id="demo-geometry"><h3>间距、圆角与阴影</h3>{geometry(demo_tokens, 'demo')}<div class="ds-control-sizes">{''.join(f'<div><button type="button" class="ds-height-example" style="height:{demo_tokens[token]}">{demo_tokens[token]}</button><code>{token}</code><p>什么时候用 · {use}。</p></div>' for token, use in [('--ds-control-small', '桌面紧凑工具条'), ('--ds-control-default', '桌面常规表单'), ('--ds-control-large', '大号操作控件')])}</div><p class="ds-note">触屏点击区至少 44×44px。32px、40px 控件在触屏环境扩展到 44px。</p></section>
+<section class="ds-section" id="demo-nesting"><h3>嵌套圆角与间距</h3>{nested_radius()}</section>
 <section class="ds-section" id="demo-motion"><h3>动效</h3><p>什么时候用 · 通过位移和透明度反馈状态变化。悬停或点击「播放」可重放，减弱动态时直接到终点。</p>{motion(demo_tokens)}</section>
 <section class="ds-section" id="demo-stage"><h3>演示舞台与提示胶囊</h3><p>什么时候用 · 演示真实组件的操作与反馈时，复用独立作用域的舞台。</p><div class="ds-live-demo" id="design-system-live-demo">{templates.demo_scope(button['demo'], PAGE, True, 'button')}</div>
 <h4>舞台结构示意</h4><p>什么时候用 · 校验舞台比例、内容安全边距和底部操作提示的位置。</p><div class="ds-stage-diagram"><div class="ds-stage-surface"><strong>内容承托面</strong><span>白底 · 16px 圆角 · 一级双层阴影</span></div><span class="ds-stage-hint"><span aria-hidden="true">↖</span> 点击组件，查看状态变化</span></div>
