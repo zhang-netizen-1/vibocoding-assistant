@@ -240,7 +240,7 @@
 
 上述为 CSS 定义与公式结果。所有宽度共用同一组公式；如增加 inset 断点，须在该断点同步使用同一组派生变量。`.simple-card` 等其他外框卡片保持 16px，六种视觉风格的专属样式不变。
 
-角落控件采用 `calc(var(--gallery-card-radius) - var(--gallery-card-border) - var(--gallery-control-offset))`：播放按钮和动效卡链接偏移 16px，圆角为 15px；普通画廊 `.reduced-link` 原偏移 8px，公式值为 23px，超过短边一半时由 CSS 归一为完整胶囊。偏移相对卡片内边缘，外缘距离还包含 1px 卡片边框。动效卡播放按钮高度至少 44px，普通播放按钮原最小高度 32px（触屏/窄屏至少 44px），圆角均为 15px。
+角落控件采用 `calc(var(--gallery-card-radius) - var(--gallery-card-border) - var(--gallery-control-offset))`，仅适用于定位在画廊卡片自身角落的 `.motion-grid .gallery-card :is(.play-button,.reduced-link)`：动效卡的 `.mini-stage` 为 `position:static`，播放按钮和链接相对卡片内边缘偏移 16px，圆角为 15px，外缘距离还包含 1px 卡片边框。普通画廊和设计系统页的控件定位于 `position:relative` 的 `.mini-stage` 内，不在卡片自身角落区域，保留 R1 前的圆角：`.play-button` 为 8px，`.reduced-link` 为 0。动效卡播放按钮高度至少 44px，普通播放按钮最小高度 32px（触屏/窄屏至少 44px）。
 
 仅在 `(hover:hover) and (prefers-reduced-motion:no-preference)` 且两个控件均隐藏时移除缩略图底部预留空间。≤1023px 显示播放按钮的规则、触屏和减弱动态模式保留原预留空间；动效卡原本没有预留条。静态预览在上述悬停/动态条件下两个控件始终隐藏，底部空间为 0。
 
