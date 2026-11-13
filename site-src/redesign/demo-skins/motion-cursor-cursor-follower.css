@@ -46,3 +46,5 @@
 
 @media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-i2-panel :is(.cf-dot,.cf-ring) { display:none!important; } :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-i2-panel .cf-stage { cursor:auto; } }
 @container demo-stage (max-width:240px) { .demo-root .ds-i2-panel .cf-stage { padding-bottom:88px; } }
+/* hidden until the pointer enters, so the ring never parks in the top-left corner */
+.demo-root .ds-i2-panel :is(.cf-dot,.cf-ring) { opacity:0; }
