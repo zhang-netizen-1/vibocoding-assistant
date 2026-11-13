@@ -875,3 +875,63 @@ UI 的原 `.ctl` 仍是 `.canvas` 的直接子项，提示文本与胶囊生成�
 本段开始于北京时间 13:04:29（UTC 05:04:29），24 分钟工作截止为 13:28:29，26 分钟进程上限为 13:30:29。所有主要生成和验证命令均通过绝对 deadline 包装器运行，截止后拒绝启动新任务，已启动的子进程组最迟在更早的 24 分钟截止被 SIGKILL。未执行 Git 操作、未运行 `build_site.py`、未修改 `dist/`，未启动端口、浏览器或任何应用窗口。
 
 本段最终核验于北京时间 13:22:11 完成，首轮完整交接核验耗时约 17.71 分钟；随后仅补充窄画廊章节目录的单列布局并重新执行最终核验，最终时间与哈希以 `output/demo-redesign/I2/completion.json` 为准。启动阶段的一次性 26 分钟计时进程尝试提前终止时被沙箱拒绝；正式生成 / 验证进程已结束，该计时进程按自身计时到期退出，不占用端口。
+
+
+## I3 段：设计基础、场景与 AI 技能剩余条目逐条精修
+
+日期：2026-11-13。仅在当前工作区新增独立源码皮肤，按用户清单顺序完成 25 个条目：9 个 `skill-reference`、12 个 `guide`、4 个 `token`；共 25 份 CSS、10 份必要的 HTML 覆盖。皮肤名均先按 `demos.py` 第 330–400 行的 `kind-slug` 接入规则及实际条目映射确认。以下为源码实施和非浏览器核验记录。
+
+### 完成清单
+
+| kind | slug | 本段变化与保留 |
+|---|---|---|
+| `skill-reference` | `baseline-ui` | 双栏键值行，明确用途与范围。 |
+| `skill-reference` | `create-design-md` | 文档式层级与浅底规范摘要面板。 |
+| `skill-reference` | `fixing-accessibility` | 用途与技术范围纵向分组，清晰分隔。 |
+| `skill-reference` | `fixing-motion-performance` | 突出动画技术范围，统一正文节奏。 |
+| `skill-reference` | `ui-ux-pro-max` | 处理长仓库名换行，分清摘要和使用条件。 |
+| `skill-reference` | `vercel-composition-patterns` | 以细竖线组织组件用途与 React 范围。 |
+| `skill-reference` | `vercel-react-view-transitions` | 独立显示 API 适用前提。 |
+| `skill-reference` | `web-design-guidelines` | 审计用途与规则读取范围采用文档键值结构。 |
+| `skill-reference` | `webapp-testing` | 用途与运行环境分层，保留全部原文。 |
+| `guide` | `brutalist` | 保留硬边框、重字与实体偏移阴影，收束紫色 token。 |
+| `guide` | `container` | 真实项目工作区；按自身容器断点切换列数。 |
+| `token` | `dark-mode` | 真实项目主题卡；保留系统主题、手动选择、存储及保存反馈。 |
+| `guide` | `density` | 同宽工作区对比舒适 / 紧凑间距，正文不缩小。 |
+| `guide` | `editorial` | 保留宋体标题、出版物分隔与编号，整理留白。 |
+| `guide` | `glass` | 保留透明层、模糊与不支持模糊时的实色降级。 |
+| `guide` | `minimal` | 保留低装饰、清晰层级与留白。 |
+| `guide` | `neumorphic` | 保留凸起 / 内凹质感，并显示控件边界。 |
+| `guide` | `organic` | 保留有机图形、柔和曲线和圆形操作。 |
+| `token` | `radius-shadow` | 保留 6 / 8 / 12 / 16px 及阴影教学变量，移除额外可见包框。 |
+| `token` | `spacing` | 保留内外边距教学变量与刻度；补充中文项目语境。 |
+| `guide` | `split` | 主次信息按 2:1 对照，窄容器纵排，原顺序不变。 |
+| `guide` | `sticky` | 真实项目进展；保留实际滚动区、吸顶标题及 0 / 95px 状态。 |
+| `token` | `typography` | 保留全部八档字号与行高，补充排版文档语境。 |
+| `guide` | `detail` | 本地庭院图片与中文作者 / 日期，保留收藏及双状态结构。 |
+| `guide` | `wizard` | 项目名、项目类型与预算示例；保留原步骤、动作和双状态结构。 |
+
+### 规格与保留边界
+
+- 9 个技能卡仅新增 CSS，标题、slug、来源、摘要、适用条件、范围和标签逐项与原输出比对一致；没有添加或改写技能原文。六个风格条目也没有 HTML 覆盖，保留原页面 / 组件细节两套结构和全部文字；材质特征分别保留，颜色按规格收束为现有 token。
+- 25 个主体默认均使用 `width:min(100%,var(--ds-subject-width))`。按当前源码计算，960px 舞台主体 560px，占 58.33%；358px 舞台主体 320px，左右净距各 19px。239 / 220 / 200px 画廊宿主主体分别 205 / 186 / 166px。主动切换的窄容器 / 手机示例使用 `min(320px,100%)`，密度和吸顶示例保持相同主体宽度。上述为宽度计算，并非浏览器像素验收。
+- 主卡使用 `--ds-r-surface`，大间隙的内部面板 / 图片使用 `--ds-r-min`，按钮及标签使用对应圆角 token；画廊主卡降至 14px，贴边顶栏降至 13px。圆角教学样本保留原 `--sample-radius` 和 `--sample-shadow`，不覆盖交互结果；画廊内部半径上限为 14px。粗野风格主卡偏移阴影控制为 3px，为 390 阶段保留外侧余量。
+- 独立状态按钮保持 8px 间隔及至少 44px 点击区，操作与示例面板之间保留原舞台 24px 分组距离；组件细节的输入预览与操作间隔为 16px。没有新增伪分段控件、鼠标专属交互或自动动画。原提示胶囊机制、触屏操作、减弱动态门控与最终静态状态继续由既有外壳 / runtime 提供。
+- 四个 token 演示保留原教学文字、控件、选项、输出节点、字号 / 内外间距 / 圆角阴影变量和主题状态；仅增加真实中文项目元信息。布局与场景样例补充「秋季官网改版」、陈雨、日期及 ¥28,600 预算，原 ID、class、data、ARIA、可聚焦属性和原操作文字保留。条目定义、提示词、验收要求和内容 JSON 未改。
+- 详情图片仅使用 `site-src/demo-assets/manifest.json` 中的 `garden-dusk-01`，包含本地 `src` / `srcset`、尺寸、中文 alt 及内描边。没有引入外链图片、下载资源或新增字体。
+
+### 验证结果
+
+- 最后运行 `PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest tests.test_demo_audit tests.test_redesign_tokens`：21 项通过，退出码 0。没有修改测试或断言。
+- 25 个皮肤通过原条目全文、技能卡原文、token 教学文字顺序、原选择器 / 行为属性、HTML 解析、CSS 引号和括号配对、token 引用、字号下限、本地图片清单、交互 / 画廊双路径皮肤注入及宽度计算检查。CSS 核验是静态检查，不是完整 CSS 解析或实际布局计算。
+- 194 个演示通过原生产安装器的 Node DOM 模型初始化；I3 的 12 个指南在普通 / 减弱动态模式下共 48 次状态切换通过，含吸顶滚动 0 / 95px。原 token 测试经源码路径适配后验证对比度、八档字号、间距、圆角 / 阴影、深浅主题、系统跟随、存储持久化和存储禁用回退。适配脚本仅写入本段 output，原测试文件未改；生产指南与 token JavaScript 通过 `node --check`。
+- 初始保护快照中 474 个既有源码 / 测试文件保持一致。另检测到 `site-src/redesign/demo-skins/motion-cursor-cursor-follower.css` 在本段期间发生范围外并行变动，本段未写入或还原该文件；前后 SHA-256 单独记录于 `concurrent-source-changes.json`，后续核验按该观察值精确比较，没有忽略其它漂移。
+- 交接证据位于 `output/demo-redesign/I3/`：`source-verification.json`、`source-entries.json`、`before-sha256.json`、`concurrent-source-changes.json`、`guide-interactions.log`、`token-interactions.log`、`unittest.log` 和 `completion.json`。
+
+### 未做到的与时间边界
+
+清单内无跳过项。1440 / 1024 / 768 / 390、低于 240px 画廊的实际渲染、四边像素净距、文字裁切 / 横向溢出、嵌套圆角几何及减弱动态截图留待执行者构建后验收；本段不以源码与 Node 模型结果代替视觉验收。分步表单只精修原有示意与双状态，不扩展为新的提交业务流程。
+
+开始时间为北京时间 13:26:29，24 分钟工作截止为 13:50:29，26 分钟进程上限为 13:52:29；最终检查完成于北京时间 13:41:38，耗时 15.15 分钟，早于 24 分钟截止。命令通过专用子进程组执行器运行，执行器设有绝对 26 分钟 SIGALRM，超时会 SIGKILL 当前命令子进程组；最终检查另受更早的 24 分钟 deadline 限制。完成后关闭本段执行器，没有常驻计时进程。
+
+未执行 Git 操作、未运行 `build_site.py`、未写入 `dist/`，未启动或操作浏览器、应用窗口、端口或电脑操控工具；未修改其它目录。
