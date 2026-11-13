@@ -190,4 +190,4 @@
 }
 @media(prefers-reduced-motion:reduce){.prompt-card,.prompt-card button,.bottom-bar{transition:none}}
 /* 2-up motion cards: the stage absorbs the row height so the caption and its play button stay on one bottom line */
-.motion-grid .gallery-card{display:flex;flex-direction:column}.motion-grid .gallery-card>.mini-stage{flex:1 1 auto}.motion-grid .gallery-card>.gallery-link{flex:none}
+.motion-grid .gallery-card{display:flex;flex-direction:column}.motion-grid .gallery-card>.mini-stage{flex:1 1 auto;align-items:flex-start}.motion-grid .gallery-card>.gallery-link{flex:none}
