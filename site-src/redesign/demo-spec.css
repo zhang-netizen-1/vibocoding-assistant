@@ -137,3 +137,11 @@
   .ds-stage[data-ds-sample] :is(.ds-button-heading,.ds-lift-details,.ds-scene-copy) { gap:12px; }
   .ds-stage[data-ds-sample] :is(.ds-modal-preview,.ds-scene) { padding:0; }
 }
+
+/* Wide entry stages (≥880px, entry pages at ≥1280): subject and type scale up
+   one step so the content keeps ~60% of the stage instead of floating small. */
+@container demo-stage (min-width:880px) {
+  :host([data-interactive]) .demo-root.ds-stage {
+    --ds-subject-width:clamp(560px,62%,680px);
+  }
+}

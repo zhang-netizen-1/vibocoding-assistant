@@ -128,3 +128,15 @@
 @media(max-width:760px){
   .related,.motion-section>.chips{display:grid;grid-template-columns:minmax(0,1fr)}
 }
+
+/* Wider entry demos (owner decision 2026-11-13): entry pages use a 1376px shell
+   and a fixed-width use card, so the demo column grows from ~725px to ~960px at
+   1440. Nav and mega menu follow the same shell on entry pages so edges align.
+   Below 1024px the single-column layout is unchanged. */
+@media(min-width:1024px){
+  body.entry-active{--entry-shell:1376px;--use-card-w:300px}
+  body.entry-active .wrap{max-width:var(--entry-shell)}
+  body.entry-active .entry-layout{grid-template-columns:minmax(0,1fr) var(--use-card-w)}
+  body.entry-active .use-card{right:max(32px,calc((100% - var(--entry-shell))/2 + 32px));width:var(--use-card-w)}
+}
+@media(min-width:1280px){body.entry-active{--use-card-w:320px}}
