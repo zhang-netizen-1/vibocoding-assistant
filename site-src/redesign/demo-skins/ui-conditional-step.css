@@ -1,0 +1,33 @@
+/* I1: presentation only; source hooks and lifecycle remain unchanged. */
+.demo-root .ds-conditional-step-panel { width:min(100%,var(--ds-subject-width)); min-width:0; max-width:100%; padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-1); text-align:left; font:400 14px/1.6 var(--ds-font); overflow-wrap:anywhere; }
+.ds-conditional-step-panel > header { margin-bottom:24px; }
+.ds-conditional-step-panel > header > strong { display:block; font:600 16px/1.5 var(--ds-font); }
+.ds-conditional-step-panel > header > p { margin:8px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-conditional-step-panel .ds-i1-content { width:100%; min-width:0; }
+.ds-conditional-step-panel .ds-i1-content > * { min-width:0; max-width:100%; }
+.demo-root .ds-conditional-step-panel :is(input.i,textarea.i,.ie-input) { width:100%; min-width:0; min-height:48px; padding:12px; border:1px solid var(--ds-border); border-radius:8px; color:var(--ds-ink); background:var(--ds-surface); font:400 14px/1.6 var(--ds-font); box-shadow:none; }
+.ds-conditional-step-panel :is(input.i,textarea.i,.ie-input)::placeholder { color:var(--ds-ink-2); opacity:1; }
+.ds-conditional-step-panel :is(input.i,textarea.i,.ie-input):focus { border-color:var(--ds-accent); box-shadow:0 0 0 2px var(--ds-accent-100); }
+.ds-conditional-step-panel :is(button,input,textarea,[tabindex]):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-conditional-step-panel :is(button,input,textarea):disabled { opacity:.45; cursor:not-allowed; }
+.ds-conditional-step-panel :is(input,textarea)[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
+.ds-conditional-step-panel :is(button,[role="button"]):not(:disabled):active { transform:scale(.98); }
+.ds-conditional-step-panel .ds-i1-field { display:grid; gap:8px; width:100%; min-width:0; color:var(--ds-ink-2); font:500 12px/1.5 var(--ds-font); }
+.ds-conditional-step-panel .ds-i1-meta { margin:12px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-conditional-step-panel [hidden] { display:none!important; }
+@container demo-stage (max-width:480px) { .demo-root .ds-conditional-step-panel { padding:20px 16px; } }
+@container demo-stage (max-width:240px) { .demo-root .ds-conditional-step-panel { padding:16px 8px; } .ds-conditional-step-panel > header { margin-bottom:16px; } }
+@media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-conditional-step-panel :is(button,input,textarea,[role="button"]) { transition:none; transform:none; } }
+
+.demo-root .ds-conditional-step-panel .cond-demo { width:100%; gap:24px; }
+.ds-conditional-step-panel .cond-choice { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.ds-conditional-step-panel .cond-choice .check { display:flex; align-items:center; gap:8px; min-height:48px; min-width:0; margin:0; padding:12px; border:1px solid var(--ds-border); border-radius:8px; background:var(--ds-surface); color:var(--ds-ink); font:500 14px/1.5 var(--ds-font); cursor:pointer; }
+.ds-conditional-step-panel .check:has(:checked) { border-color:var(--ds-accent); background:var(--ds-accent-50); color:var(--ds-accent); }
+.ds-conditional-step-panel .check:hover { background:var(--ds-fill); }
+.ds-conditional-step-panel .check:has(:focus-visible) { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-conditional-step-panel .cond-steps { display:flex; flex-wrap:wrap; gap:8px; counter-reset:step; }
+.ds-conditional-step-panel .cond-steps li { display:flex; align-items:center; gap:8px; flex:1 1 96px; min-width:0; min-height:48px; padding:8px 12px; border:1px solid var(--ds-line); border-radius:8px; background:var(--ds-fill); color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); counter-increment:step; }
+.ds-conditional-step-panel .cond-steps li::before { content:counter(step); flex:none; color:var(--ds-accent); font-weight:600; }
+.ds-conditional-step-panel .cond-steps li.cur { background:var(--ds-accent-50); border-color:var(--ds-accent-200); color:var(--ds-accent); }
+.ds-conditional-step-panel .cond-note { margin:0; padding:12px; border-radius:8px; background:var(--ds-accent-50); color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+@container demo-stage (max-width:240px) { .ds-conditional-step-panel .cond-choice { grid-template-columns:minmax(0,1fr); } }
