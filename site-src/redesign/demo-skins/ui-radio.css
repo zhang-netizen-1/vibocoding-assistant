@@ -1,0 +1,26 @@
+
+.ds-radio-panel { width:min(100%,var(--ds-subject-width)); min-width:0; padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); box-shadow:var(--ds-shadow-1); text-align:left; color:var(--ds-ink); }
+.ds-radio-panel header { margin-bottom:24px; }
+.ds-radio-panel header strong { display:block; font:600 16px/1.5 var(--ds-font); }
+.ds-radio-panel header p,.ds-radio-panel .ds-note { margin:8px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-radio-panel :is(input,button,label) { font-family:inherit; }
+.ds-radio-panel :is(input,button):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-radio-panel :is(input,button):disabled { opacity:.45; cursor:not-allowed; }
+.ds-radio-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger); }
+@container demo-stage (max-width:480px) { .ds-radio-panel { padding:20px 16px; } }
+
+.ds-radio-panel .radio-group { display:grid; gap:12px; }
+.ds-radio-panel .check { display:flex; align-items:center; gap:12px; min-height:64px; padding:12px 16px; border:1px solid var(--ds-border); border-radius:8px; background:var(--ds-surface); color:var(--ds-ink); font-size:14px; cursor:pointer; box-shadow:var(--ds-shadow-1); }
+.ds-radio-panel .check:hover:not(:has(:disabled)) { background:var(--ds-fill); box-shadow:var(--ds-shadow-2); }
+.ds-radio-panel .check:has(:checked) { border-color:var(--ds-accent); background:var(--ds-accent-50); }
+.ds-radio-panel .check:has(:disabled) { cursor:not-allowed; }
+.demo-root .ds-radio-panel .check input { width:20px; height:20px; flex:none; margin:0; accent-color:var(--ds-accent); }
+.ds-radio-panel small { display:block; margin-top:4px; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+
+/* Native controls retain the same feedback in free interaction and fixed states. */
+.ds-radio-panel :is(input,button) { transition:background-color var(--ds-dur-fast) var(--ds-ease-standard),box-shadow var(--ds-dur-fast) var(--ds-ease-standard); }
+.ds-radio-panel :is(input,button):disabled:hover { box-shadow:none; }
+.ds-radio-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
+.ds-radio-panel :is(input,button)[aria-invalid="true"]~.ds-note { color:var(--ds-danger); }
+@media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-radio-panel :is(input,button) { transition:none; transform:none; } }
+.ds-radio-panel .check:active:not(:has(:disabled)) { background:var(--ds-line); }

@@ -355,20 +355,13 @@ body.site-reference[data-section="motion"] { --acc: #ff6a4a; --acc-solid: #ed462
   background-image: linear-gradient(#d9e1e81f 1px, transparent 1px), linear-gradient(90deg,#d9e1e81f 1px, transparent 1px);
   background-size: 22px 22px;
 }
-.site-reference[data-section="motion"] .stage > :not(.stage-label):not(.stage-live):not(.stage-signature):not(.overlay-shade) { z-index: 1; }
-.site-reference[data-section="motion"] .stage-label,
-.site-reference[data-section="motion"] .stage-live,
-.site-reference[data-section="motion"] .stage-signature { position: absolute; z-index: 2; color: #96948b; font: 10px/1.3 var(--font-mono); letter-spacing: .04em; }
+.site-reference[data-section="motion"] .stage > :not(.stage-label):not(.overlay-shade) { z-index: 1; }
+.site-reference[data-section="motion"] .stage-label { position: absolute; z-index: 2; color: #4B5563; font-size: 13px; }
 .site-reference[data-section="motion"] .stage-label { top: 15px; left: 17px; }
-.site-reference[data-section="motion"] .stage-live { top: 15px; right: 16px; display: inline-flex; align-items: center; gap: 6px; }
-.site-reference[data-section="motion"] .stage-live i { width: 6px; height: 6px; border-radius: 50%; background: var(--scene-accent); box-shadow: 0 0 0 3px var(--scene-wash); }
-.site-reference[data-section="motion"] .stage-signature { right: 15px; bottom: 12px; opacity: .75; }
 .site-reference[data-section="motion"] .stage button[data-action] { box-shadow: 0 2px 5px #182c3d12; }
 .site-reference[data-section="motion"] .dark-stage { background: radial-gradient(circle at 80% 0%,#241F1A,#101b28 68%); border-color: #241F1A; color: #e7f0f0; }
 .site-reference[data-section="motion"] .dark-stage::before { opacity: .18; background-image: linear-gradient(#a6cbd827 1px,transparent 1px),linear-gradient(90deg,#a6cbd827 1px,transparent 1px); }
-.site-reference[data-section="motion"] .dark-stage .stage-label,
-.site-reference[data-section="motion"] .dark-stage .stage-live,
-.site-reference[data-section="motion"] .dark-stage .stage-signature { color: #96948b; }
+.site-reference[data-section="motion"] .dark-stage .stage-label { color: #4B5563; background: #F6F7F9; }
 
 /* The five view transitions use miniature content layouts instead of A/B placeholders. */
 .site-reference[data-section="motion"] .scene-stack,
@@ -482,5 +475,4 @@ body.site-reference[data-section="motion"] { --acc: #ff6a4a; --acc-solid: #ed462
 
 @media (max-width: 480px) {
   .site-reference[data-section="motion"] .stage { min-height: 254px; padding-left: 12px; padding-right: 12px; }
-  .site-reference[data-section="motion"] .stage-live { right: 12px; }
 }

@@ -1,0 +1,47 @@
+/* I4 · scenarios/settings. Preferences remain a static page-layout example. */
+
+.demo-root .guide-card-stage { display:flex; align-items:center; justify-content:center; }
+.demo-root .guide-card-stage .mini-page { width:min(100%,var(--ds-subject-width)); min-width:0; height:auto; max-height:none; overflow:visible; border:1px solid var(--ds-line); border-radius:var(--ds-r-surface); background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-1); transition:none; container-type:inline-size; container-name:i4-page; }
+.demo-root .guide-card-stage[data-mode="1"] .mini-page { width:min(320px,100%); }
+.demo-root .mini-page-top { display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px; padding:16px 24px; border-bottom:1px solid var(--ds-line); border-radius:calc(var(--ds-r-surface) - 1px) calc(var(--ds-r-surface) - 1px) 0 0; background:var(--ds-fill); color:var(--ds-ink); font:600 14px/1.5 var(--ds-font); }
+.demo-root .mini-page-top span { color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.demo-root .mini-page-content { padding:24px; }
+.demo-root .i4-page-heading { margin-bottom:24px; }
+.demo-root .i4-page-heading h4 { margin:0 0 8px; color:var(--ds-ink); font:600 20px/1.35 var(--ds-font); letter-spacing:0; }
+.demo-root .i4-page-heading p { margin:0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.demo-root .mini-page-foot { display:none; position:static; padding:16px; border-top:1px solid var(--ds-line); border-radius:0 0 calc(var(--ds-r-surface) - 1px) calc(var(--ds-r-surface) - 1px); background:var(--ds-fill); color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); text-align:center; }
+.demo-root .guide-card-stage[data-mode="1"] .mini-page-foot { display:block; position:static; background:var(--ds-fill); }
+.demo-root .mini-page :is(strong,b,small,span,p) { min-width:0; overflow-wrap:anywhere; }
+@container i4-page (max-width:380px) {
+  .demo-root .mini-page-top,.demo-root .mini-page-content { padding:16px; }
+  .demo-root .mini-page-foot { display:block; }
+}
+@container demo-stage (max-width:240px) {
+  .demo-root .mini-page-top,.demo-root .mini-page-content { padding:16px 12px; }
+}
+:host(:not([data-interactive])) .demo-root .mini-page { --ds-r-surface:14px; }
+
+.demo-root .i4-account { display:grid; gap:4px; margin-bottom:24px; padding:16px; border:1px solid var(--ds-line); border-radius:var(--ds-r-min); background:var(--ds-fill); }
+.demo-root .i4-account strong { color:var(--ds-ink); font:500 14px/1.6 var(--ds-font); }
+.demo-root .i4-account small { color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.demo-root .mini-page-settings p { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0; padding:20px 0; border-bottom:1px solid var(--ds-line); color:var(--ds-ink); font:400 14px/1.6 var(--ds-font); }
+.demo-root .mini-page-settings p:first-child { padding-top:0; }
+.demo-root .mini-page-settings p:last-child { padding-bottom:0; border-bottom:0; }
+.demo-root .mini-page-settings strong { display:grid; gap:4px; flex:1; font-weight:400; }
+.demo-root .mini-page-settings b { font:500 14px/1.6 var(--ds-font); }
+.demo-root .mini-page-settings small { color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.demo-root .mini-page-settings p > span { flex:none; max-width:100%; padding:4px 8px; border-radius:var(--ds-r-chip); background:var(--ds-fill); color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.demo-root .mini-page-settings .i4-setting-on { color:var(--ds-success); background:var(--ds-success-soft); }
+.demo-root .mini-page-settings .i4-setting-link { color:var(--ds-accent); background:var(--ds-accent-50); }
+@container i4-page (max-width:380px) {
+  .demo-root .mini-page-settings p { flex-direction:column; align-items:flex-start; gap:8px; }
+}
+
+.demo-root .demo-controls { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:0; }
+.demo-root .demo-controls button { min-height:44px; min-width:44px; padding:10px 16px; border:1px solid var(--ds-border); border-radius:var(--ds-r-control); background:var(--ds-surface); color:var(--ds-ink); font:500 14px/1.5 var(--ds-font); cursor:pointer; }
+.demo-root .demo-controls button:hover:not(:disabled) { background:var(--ds-fill); }
+.demo-root .demo-controls button:active:not(:disabled) { background:var(--ds-accent-100); color:var(--ds-accent-active); }
+.demo-root .demo-controls button:focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+@media(prefers-reduced-motion:reduce) {
+  :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .demo-root :is(.mini-layout,.mini-page,button) { transition:none; animation:none; transform:none; }
+}

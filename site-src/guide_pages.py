@@ -181,14 +181,14 @@ def demo_markup(section, entry):
                 '<div class="style-main"><div class="style-copy"><span class="style-eyebrow">IDEA JOURNAL · 2026</span>'
                 '<strong class="style-title">让灵感，<br>有迹可循。</strong>'
                 '<p>把日常想法整理成值得回看的作品。</p>'
-                '<span class="style-action">探索作品 <i aria-hidden="true">↗</i></span></div>'
+                '<span class="style-action">探索作品 <i aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></span></div>'
                 '<div class="style-art" aria-hidden="true"><span class="style-art-shape"></span><span class="style-art-detail"></span><small>01 / FORM</small></div></div>'
                 '<div class="style-bottom"><span>SELECTED STORIES</span><span>SCROLL TO EXPLORE ↓</span></div></div>'
                 '<div class="style-detail"><div class="style-detail-top">FORM / COMPONENT SET <span>02</span></div>'
                 '<div class="style-detail-card"><span class="style-chip">新系列 · 2026</span><strong>灵感手记</strong>'
                 '<p>收集片段、整理想法，把下一步放在眼前。</p>'
                 '<div class="style-field">输入项目名称 <span aria-hidden="true">＋</span></div>'
-                '<span class="style-action">创建项目 <i aria-hidden="true">↗</i></span></div>'
+                '<span class="style-action">创建项目 <i aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M3.5 8.5 8.5 3.5M4.5 3.5h4v4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></i></span></div>'
                 '<div class="style-detail-foot">TYPE　/　COLOR　/　SURFACE　/　SPACE</div></div></div>')
     if section == "interaction":
         if demo == "validation":
@@ -232,10 +232,7 @@ def render_card(section, entry):
     labels = [escape(label) for label in entry["labels"]]
     prompt = build_prompt(section, entry)
     search = escape(' '.join((entry["title"], entry["english"], entry["description"], entry["fit"])), quote=True)
-    bench_link = '<a class="guide-card-type" href="../bench/grid/">测评结果 →</a>' if section == "layout" and entry["demo"] == "grid" else ""
     card_label = '<span class="guide-card-type">LIVE STUDY</span>'
-    if bench_link:
-        card_label = f'<div>{bench_link} {card_label}</div>'
     return f'''<article class="guide-card" id="g-{section}-{entry["demo"]}" data-search="{search}">
       <div class="guide-card-head"><div><h3>{title}</h3><span>{escape(entry["english"])}</span></div>{card_label}</div>
       <div class="guide-card-stage" data-demo="{entry["demo"]}" data-mode="0">{demo_markup(section, entry)}</div>

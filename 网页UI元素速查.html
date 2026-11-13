@@ -222,7 +222,7 @@
   .kpi .vl{font-size:23px;font-weight:700;color:#111827;letter-spacing:-.5px;margin:2px 0 4px;font-variant-numeric:tabular-nums;}
   .kpi .tr{font-size:11.5px;font-weight:600;}
   .kpi .up{color:#ED462D;}
-  .kpi .dn{color:#dc2626;}
+  .kpi .dn{color:#B91C1C;}
 
   .states-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
   .st-cell{display:flex;flex-direction:column;align-items:center;}
@@ -257,8 +257,8 @@
   .btn-pri:hover{background:#ff5b41;}
   .btn-ghost{background:#fff;color:#1a1d21;border-color:#e5e7eb;}
   .btn-ghost:hover{background:#f9fafb;border-color:#d1d5db;}
-  .btn-danger{background:#dc2626;color:#fff;}
-  .btn-danger:hover{background:#b91c1c;}
+  .btn-danger{background:#B91C1C;color:#fff;}
+  .btn-danger:hover{background:#991B1B;}
 
   input.i, select.i, textarea.i{
     font:inherit;font-size:14px;padding:9px 12px;border:1px solid #e5e7eb;
@@ -517,7 +517,7 @@
   .ctxmenu{position:absolute;z-index:30;min-width:132px;background:#fff;border:1px solid #e2e5ea;border-radius:9px;box-shadow:0 12px 26px rgba(15,25,40,.16);padding:5px;display:flex;flex-direction:column;}
   .ctxmenu button{border:0;background:none;text-align:left;font:inherit;font-size:12.5px;padding:6px 9px;border-radius:6px;cursor:pointer;color:#1f2937;}
   .ctxmenu button:hover,.ctxmenu button:focus-visible{background:#fdeeea;color:#9a2e1a;}
-  .ctxmenu .danger{color:#dc2626;}
+  .ctxmenu .danger{color:#B91C1C;}
   .ctxmenu .danger:hover,.ctxmenu .danger:focus-visible{background:#fee2e2;color:#b91c1c;}
 
   .viewsw-demo{display:flex;flex-direction:column;gap:9px;align-items:center;}
@@ -578,7 +578,7 @@
   .st-spin{display:inline-block;width:11px;height:11px;border:2px solid #cbd0d6;border-top-color:#6b7280;border-radius:50%;margin-right:5px;vertical-align:-2px;animation:st-rot .8s linear infinite}
   @keyframes st-rot{to{transform:rotate(360deg)}}
   .st-btn.suc{border-color:#16a34a;color:#15803d;background:#f0fdf4}
-  .st-btn.err{border-color:#dc2626;color:#dc2626;background:#fef2f2}
+  .st-btn.err{border-color:#B91C1C;color:#B91C1C;background:#fef2f2}
   .st-btn.warn{border-color:#d97706;color:#b45309;background:#fffbeb}
   .inf-demo{width:250px;height:132px;overflow-y:auto;background:#fff;border:1px solid #e2e5ea;padding:7px;scrollbar-width:thin}
   .inf-item{padding:7px 9px;border-bottom:1px solid #eef0f3;font-size:12px;color:#374151;background:#fff}
@@ -1222,7 +1222,7 @@
       </div>
       <div class="canvas"><span class="ctl">试一试：点击切换</span>
         <div>
-          <div class="tabs" role="tablist" aria-label="产品信息"><button type="button" class="tab active" role="tab" id="tab-intro" aria-controls="tp" aria-selected="true" tabindex="0" data-cmd="switchTab" data-arg="0">简介</button><button type="button" class="tab" role="tab" id="tab-reviews" aria-controls="tp" aria-selected="false" tabindex="-1" data-cmd="switchTab" data-arg="1">评价</button></div>
+          <div class="tabs" role="tablist" aria-label="产品信息"><button type="button" class="tab active" role="tab" id="tab-intro" aria-controls="tp" aria-selected="true" tabindex="0" data-cmd="switchTab" data-arg="0">简介</button><button type="button" class="tab" role="tab" id="tab-reviews" aria-controls="tp" aria-selected="false" tabindex="-1" data-cmd="switchTab" data-arg="1">评价</button><button type="button" class="tab" role="tab" id="tab-help" aria-controls="tp" aria-selected="false" tabindex="-1" data-cmd="switchTab" data-arg="2">帮助</button></div>
           <div class="tab-panel" id="tp" role="tabpanel" aria-labelledby="tab-intro" tabindex="0">这是「简介」的内容区域。</div>
         </div>
       </div>
@@ -2225,6 +2225,7 @@
 
   /* ---- 演示交互 ---- */
   function switchTab(el,idx){
+    if(el.disabled)return;
     el.parentNode.querySelectorAll('.tab').forEach(t=>{
       const current=t===el;
       t.classList.toggle('active',current);
@@ -2232,16 +2233,16 @@
       t.tabIndex=current?0:-1;
     });
     const panel=document.getElementById('tp');
-    panel.textContent=idx===0?'这是「简介」的内容区域。':'这是「评价」的内容区域。';
+    panel.textContent=['这是「简介」的内容区域。','这是「评价」的内容区域。','这是「帮助」的内容区域。'][idx];
     panel.setAttribute('aria-labelledby',el.id);
   }
   document.querySelector('#c-tabs [role="tablist"]').addEventListener('keydown',e=>{
     if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
     e.preventDefault();
-    const tabs=[...e.currentTarget.querySelectorAll('[role="tab"]')];
+    const tabs=[...e.currentTarget.querySelectorAll('[role="tab"]:not(:disabled)')];
     const i=tabs.indexOf(document.activeElement);
     const next=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
-    switchTab(tabs[next],next); tabs[next].focus();
+    switchTab(tabs[next],Number(tabs[next].dataset.arg)); tabs[next].focus();
   });
   function toggleAcc(head){
     const item=head.parentNode;

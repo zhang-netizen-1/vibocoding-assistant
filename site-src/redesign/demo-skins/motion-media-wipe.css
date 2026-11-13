@@ -1,0 +1,15 @@
+/* The source animation remains on the complete media surface. */
+.demo-root .stage[data-effect="media-wipe"] .art {
+  position:relative; display:flex; flex-direction:column; align-items:flex-start;
+  justify-content:flex-end; gap:8px; width:min(100%,var(--ds-subject-width));
+  height:auto; min-height:260px; padding:24px;
+  border:1px solid rgb(17 24 39 / .08); border-radius:16px;
+  background:#754B35; color:#fff; box-shadow:var(--ds-shadow-1);
+  font-weight:400; letter-spacing:0; text-shadow:none; overflow:hidden;
+}
+.stage[data-effect="media-wipe"] .art::after { content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,transparent 10%,rgb(0 0 0 / .6) 55%,rgb(0 0 0 / .6)); box-shadow:inset 0 0 0 1px rgb(17 24 39 / .06); pointer-events:none; }
+.stage[data-effect="media-wipe"] .art .ds-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:0; }
+.demo-root .stage[data-effect="media-wipe"] .ds-media-title { position:relative; z-index:2; color:#fff; font:600 var(--ds-demo-heading)/1.5 var(--ds-font); }
+.demo-root .stage[data-effect="media-wipe"] .art>span { position:relative; z-index:2; color:#fff; font:400 14px/1.6 var(--ds-font); }
+@container demo-stage (max-width:480px) { .demo-root .stage[data-effect="media-wipe"] .art { min-height:220px; padding:20px; } }
+:host(:not([data-interactive])) .demo-root .stage[data-effect="media-wipe"] .art { min-height:180px; padding:16px; }

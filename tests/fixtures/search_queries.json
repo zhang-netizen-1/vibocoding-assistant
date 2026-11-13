@@ -238,5 +238,13 @@
   {
     "query": "夜间模式",
     "expected": "basics/dark-mode"
+  },
+  {
+    "query": "滚动时背景动得慢",
+    "expected": "interactions/scroll-parallax"
+  },
+  {
+    "query": "鼠标光晕",
+    "expected": "interactions/component-spotlight"
   }
 ]

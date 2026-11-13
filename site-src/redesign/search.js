@@ -91,8 +91,44 @@ const VibeSearch = (() => {
     return row.alias ? '也叫：' + row.alias : '';
   }
   function similar(entries, query) {
-    const queryChars = new Set(normalize(query));
-    return entries.map((entry,index) => ({entry,index,score:[...new Set(normalize(entry.zh + entry.en))].filter(char => queryChars.has(char)).length})).sort((a,b) => b.score-a.score || a.index-b.index).slice(0,3).map(row => row.entry);
+    const q = normalize(query);
+    if (q.length < 2) return [];
+    function similarity(name) {
+      const value = normalize(name);
+      if (Math.abs(q.length - value.length) > 1) return 0;
+      const chinese = /[\u3400-\u9fff]/.test(q);
+      if (chinese && ![...q].some(char => /[\u3400-\u9fff]/.test(char) && value.includes(char))) return 0;
+      if (!chinese) {
+        // Noise must share a substantial contiguous fragment with the name.
+        let longest = 0;
+        for (let start = 0; start < q.length; start++) {
+          for (let end = start + longest + 1; end <= q.length; end++) {
+            if (value.includes(q.slice(start,end))) longest = end-start;
+          }
+        }
+        if (longest < 4 && longest / q.length < .6) return 0;
+      }
+      let previous = Array.from({length:value.length + 1}, (_,index) => index);
+      for (let i = 1; i <= q.length; i++) {
+        const current = [i];
+        for (let j = 1; j <= value.length; j++) {
+          current[j] = Math.min(current[j-1] + 1, previous[j] + 1, previous[j-1] + Number(q[i-1] !== value[j-1]));
+        }
+        previous = current;
+      }
+      const distance = previous[value.length];
+      // One typo in a two-character Chinese name is useful; longer names still
+      // preserve at least two thirds. ASCII also needs the fragment gate above.
+      const score = 1 - distance / Math.max(q.length,value.length);
+      return distance <= 1 && score >= (chinese && q.length === 2 ? .5 : 2/3) ? score : 0;
+    }
+    return entries.map((entry,index) => {
+      const names = [entry.zh, ...String(entry.en || '').split('/'), ...(entry.aliases || [])];
+      const score = Math.max(...names.map(similarity));
+      return {entry,index,score};
+    })
+      .filter(row => row.score > 0)
+      .sort((a,b) => b.score-a.score || a.index-b.index).slice(0,3).map(row => row.entry);
   }
   return {normalize,rank,match,similar,aliasLabel};
 })();

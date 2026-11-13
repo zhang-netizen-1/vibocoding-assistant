@@ -1,4 +1,4 @@
-/* Run the real search function against the generated homepage index. */
+/* Run the real search function against the generated shared index. */
 'use strict';
 
 const assert = require('node:assert/strict');
@@ -8,13 +8,10 @@ const search = require('../site-src/redesign/search.js');
 
 const root = path.resolve(__dirname, '..');
 const fixtures = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/search_queries.json'), 'utf8'));
-const html = fs.readFileSync(path.join(root, 'dist/index.html'), 'utf8');
-const indexMatch = html.match(/id="redesign-search-index">(.*?)<\/script>/s);
-assert.ok(indexMatch, 'Generated homepage must contain its search index');
-const index = JSON.parse(indexMatch[1]).entries;
+const index = JSON.parse(fs.readFileSync(path.join(root, 'dist/assets/search-index.json'), 'utf8')).entries;
 
 function entryKey(entry) {
-  assert.ok(entry.href.startsWith('./'), 'Homepage result links must use relative paths');
+  assert.ok(entry.href.startsWith('./'), 'Shared result links must use relative paths');
   return entry.href.replace(/^\.\//, '').replace(/^ai\/skills\//, 'ai/').replace(/\/$/, '');
 }
 
@@ -23,8 +20,8 @@ const taxonomy = JSON.parse(fs.readFileSync(path.join(root, 'site-src/taxonomy.j
 const count = taxonomy.columns.reduce((sum, column) => sum + column.expected, 0);
 assert.equal(index.length, count);
 assert.equal(indexKeys.size, count);
-assert.equal(fixtures.length, 60);
-assert.equal(new Set(fixtures.map(test => search.normalize(test.query))).size, 60);
+assert.equal(fixtures.length, 62);
+assert.equal(new Set(fixtures.map(test => search.normalize(test.query))).size, 62);
 assert.deepEqual([...new Set(fixtures.map(test => test.expected.split('/')[0]))].sort(),
   ['ai', 'basics', 'components', 'interactions', 'scenarios']);
 for (const test of fixtures) {
@@ -93,4 +90,4 @@ const report = {
   results
 };
 process.stdout.write(JSON.stringify(report, null, 2) + '\n');
-process.exitCode = report.hit_rate < 0.9 || mandatoryMissed.length || caseFailures.length ? 1 : 0;
+process.exitCode = report.hit_rate < 1 || mandatoryMissed.length || caseFailures.length ? 1 : 0;

@@ -1,0 +1,64 @@
+/* PRD 15.3: shell palette. Only locally available system fonts. */
+:root {
+  color-scheme: light;
+  --white: #FFFFFF;
+  --stage: #F6F7F9;
+  --soft: #F3F4F6;
+  --line: #E4E7EC;
+  --control: #868E9C;
+  --ink: #111827;
+  --secondary: #4B5563;
+  --muted: #6B7280;
+  --blue: #1D4ED8;
+  --blue-hover: #1E40AF;
+  --black-hover: #374151;
+  --font: "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", system-ui, -apple-system, sans-serif;
+  --text-xs: 12px;
+  --text-label: 13px;
+  --text-small: 14px;
+  --text-body: 16px;
+  --text-lead: 18px;
+  --text-section: 22px;
+  --text-title: 28px;
+  --text-hero: 36px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --shadow: 0 16px 48px rgb(17 24 39 / .12);
+  --nav-height: 64px;
+  --entry-shell: 1376px;
+  --header-width: var(--entry-shell);
+  /* Concentric thumbnail outer edges: content -> stage -> gallery card. */
+  --thumb-content-radius: 14px;
+  --thumb-inset: 16px;
+  --thumb-stage-border: 1px;
+  --thumb-stage-radius: calc(var(--thumb-content-radius) + var(--thumb-inset) + var(--thumb-stage-border));
+  --gallery-card-border: 1px;
+  --gallery-card-radius: calc(var(--thumb-stage-radius) + var(--gallery-card-border));
+}
+/* Demo tokens are deliberately scoped; shell actions never consume them. */
+.demo-scope {
+  --demo-primary: #6D28D9;
+  --demo-primary-hover: #5B21B6;
+  --demo-primary-active: #4C1D95;
+  --demo-danger: #B91C1C;
+  --demo-danger-hover: #991B1B;
+  --demo-danger-active: #7F1D1D;
+  --demo-white: #FFFFFF;
+  --demo-stage: #F6F7F9;
+  --demo-soft: #F3F4F6;
+  --demo-line: #E4E7EC;
+  --demo-border: #868E9C;
+  --demo-ink: #111827;
+  --demo-secondary: #4B5563;
+  --demo-focus: #111827;
+}

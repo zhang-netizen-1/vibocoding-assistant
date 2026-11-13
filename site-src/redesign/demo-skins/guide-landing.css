@@ -1,0 +1,29 @@
+.demo-root .guide-card-stage[data-demo="landing"] { display:flex; justify-content:center; }
+.guide-card-stage[data-demo="landing"] .mini-page {
+  width:min(100%,var(--ds-subject-width)); height:auto; overflow:hidden;
+  border:1px solid var(--ds-line); border-radius:16px;
+  background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-1); transition:none;
+}
+.guide-card-stage[data-demo="landing"][data-mode="1"] .mini-page { width:min(320px,100%); }
+.ds-landing .mini-page-top { display:flex; align-items:center; gap:12px; padding:16px 24px; border-color:var(--ds-line); color:var(--ds-ink); font:600 14px/1.5 var(--ds-font); }
+.ds-landing .mini-page-top span { color:var(--ds-ink-2); font-size:12px; font-weight:400; }
+.ds-landing .mini-page-content { padding:24px; }
+.ds-landing .mini-page-hero { padding:0; border-radius:0; background:transparent; color:var(--ds-ink); }
+.ds-landing .mini-page-hero small { color:var(--ds-accent); font:500 12px/1.5 var(--ds-font); }
+.ds-landing .mini-page-hero b { margin:8px 0 0; font:600 22px/1.4 var(--ds-font); letter-spacing:-.01em; }
+.ds-landing .mini-page-hero p { margin:12px 0 16px; color:var(--ds-ink-2); font:400 14px/1.6 var(--ds-font); }
+.ds-landing .mini-page-hero>span { display:inline-flex; align-items:center; min-height:44px; padding:8px 16px; border-radius:8px; background:var(--ds-accent); color:#fff; font:500 14px/1.5 var(--ds-font); box-shadow:var(--ds-shadow-1); }
+.ds-landing-cover { position:relative; margin-top:24px; aspect-ratio:16/9; overflow:hidden; border-radius:12px; background:#684E3C; box-shadow:inset 0 0 0 1px rgb(17 24 39 / .06); }
+.ds-landing-cover .ds-img { width:100%; height:100%; object-fit:cover; }
+.ds-landing .mini-page-tiles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:16px; }
+.ds-landing .mini-page-tiles i { height:auto; padding:8px 0; border-radius:6px; background:var(--ds-fill); color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); text-align:center; }
+.ds-landing .mini-page-foot { position:static; padding:12px; border-color:var(--ds-line); color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.guide-card-stage[data-mode="1"] .ds-landing .mini-page-hero b { font-size:22px; }
+.demo-root .demo-controls button { min-height:var(--ds-demo-control); padding:8px 16px; border:1px solid var(--ds-border); border-radius:8px; background:var(--ds-surface); color:var(--ds-ink); font:500 14px/1.5 var(--ds-font); box-shadow:var(--ds-shadow-1); }
+.demo-root .demo-controls button:hover { background:var(--ds-fill); }
+@container demo-stage (max-width:480px) {
+  .ds-landing .mini-page-top { padding:16px; flex-wrap:wrap; gap:4px 12px; }
+  .ds-landing .mini-page-content { padding:16px; }
+}
+:host(:not([data-interactive])) .ds-landing .mini-page-content { padding:16px; }
+:host(:not([data-interactive])) .ds-landing :is(.mini-page-top span,.mini-page-tiles,.mini-page-hero p) { display:none; }

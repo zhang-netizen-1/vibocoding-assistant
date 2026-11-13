@@ -39,7 +39,7 @@ class Element{
  insertBefore(el,ref){el.remove();el.parentNode=el.parentElement=this;const i=this.children.indexOf(ref);this.children.splice(i<0?this.children.length:i,0,el);}
  remove(){if(this.parentNode){this.parentNode.children=this.parentNode.children.filter(x=>x!==this);this.parentNode=this.parentElement=null;}}
  querySelectorAll(s){const result=[];for(const el of this.children){if(matches(el,s))result.push(el);result.push(...el.querySelectorAll(s));}return result;}querySelector(s){return this.querySelectorAll(s)[0]||null;}closest(s){for(let e=this;e;e=e.parentNode)if(matches(e,s))return e;return null;}matches(s){return matches(this,s);}contains(el){return el===this||this.children.some(c=>c.contains(el));}
- addEventListener(k,fn){const a=this.listeners.get(k)||[];a.push(fn);this.listeners.set(k,a);}removeEventListener(){}focus(){}select(){}getBoundingClientRect(){return {top:0,left:0,width:200,height:100};}setPointerCapture(){}animate(){return {cancel(){}};}
+ addEventListener(k,fn){const a=this.listeners.get(k)||[];a.push(fn);this.listeners.set(k,a);}removeEventListener(){}focus(){}select(){}getBoundingClientRect(){return {top:0,left:0,bottom:100,right:200,width:200,height:100};}setPointerCapture(){}animate(){return {cancel(){}};}
 }
 function make(n){return new Element(n.tag,n.attrs,n.children);}
 const installers=new Map();const context={window:{VibeDemos:{register:(k,fn)=>installers.set(k,fn)}},performance,console,Event,Math};
@@ -57,16 +57,22 @@ for(const row of data.demos){
 if(errors.length){console.error(errors.join('\n'));process.exit(1);}console.log('Initialized '+total+' original demos in a Node DOM model; no browser or visual claim.');
 
 const assert=require('node:assert/strict');
-function interactiveModel(anchor) {
+function interactiveModel(anchor, reduced=false) {
  const row=data.demos.find(row=>row.anchor===anchor),body=make(row.node),root=new Element('root');root.append(body);
  let focused=body;const delegates=new Map(),navigated=[];
  context.location={assign:url=>navigated.push(url)};
  Element.prototype.focus=function(){focused=this;};
  const doc={body,querySelector:s=>root.querySelector(s),querySelectorAll:s=>root.querySelectorAll(s),getElementById:id=>root.querySelector('#'+id),createElement:t=>new Element(t),addEventListener:(type,fn)=>{const a=delegates.get(type)||[];a.push(fn);delegates.set(type,a);},get activeElement(){return focused;},hidden:false};
- let id=0;const schedule=()=>++id,env={scope:{dataset:{demoSection:row.section}},document:doc,window:{},performance,toast(){},matchMedia:()=>({matches:false,addEventListener(){}}),setTimeout:schedule,setInterval:schedule,requestAnimationFrame:schedule,clearTimeout(){},clearInterval(){},cancelAnimationFrame(){},animate:(el,k,o)=>el.animate(k,o)};
+ let id=0;
+ const timeouts=new Map();
+ const schedule=(callback,delay)=>{timeouts.set(++id,{callback,delay});return id;};
+ const env={scope:{dataset:{demoSection:row.section}},document:doc,window:{},performance,toast(){},
+  matchMedia:()=>({matches:reduced,addEventListener(){}}),setTimeout:schedule,setInterval:()=>++id,
+  requestAnimationFrame:()=>++id,clearTimeout:timer=>timeouts.delete(timer),clearInterval(){},cancelAnimationFrame(){},animate:(el,k,o)=>el.animate(k,o)};
  installers.get(row.kind)(env);
- function fire(target,type,properties={}){const event={target,currentTarget:target,preventDefault(){},stopPropagation(){},...properties};for(const fn of target.listeners.get(type)||[])fn(event);for(const fn of delegates.get(type)||[])fn(event);}
- return {root,body,doc,fire,navigated,get focused(){return focused;}};
+ function fire(target,type,properties={}){const event={target,currentTarget:target,preventDefault(){},stopPropagation(){},...properties};for(const fn of target.listeners.get(type)||[])fn(event);target['on'+type]?.(event);for(const fn of delegates.get(type)||[])fn(event);}
+ return {root,body,doc,fire,navigated,timeouts,get focused(){return focused;},
+  flushTimeouts(){const pending=[...timeouts.values()];timeouts.clear();pending.forEach(timer=>timer.callback());}};
 }
 const cmd=interactiveModel('c-cmdk'),panel=cmd.doc.getElementById('cmdk'),input=cmd.doc.getElementById('cmdkInput'),list=cmd.doc.getElementById('cmdkList');
 assert.equal(JSON.parse(panel.dataset.demoCommands).length,70);
@@ -86,3 +92,54 @@ focusables.at(-1).focus();modal.fire(focusables.at(-1),'keydown',{key:'Tab',shif
 modal.fire(focusables[0],'keydown',{key:'Tab',shiftKey:true});assert.equal(modal.focused,focusables.at(-1));
 modal.fire(focusables.at(-1),'keydown',{key:'Escape'});assert.equal(shade.hidden,true);assert.equal(open.inert,false);
 console.log('Motion modal: local sibling inert; Tab/Shift+Tab loop; Escape/restore passed.');
+
+const uiModal=interactiveModel('c-modal');
+const modalTrigger=uiModal.root.querySelector('[data-cmd="openModal"]');
+modalTrigger.isConnected=true;modalTrigger.focus();
+uiModal.fire(modalTrigger,'click');
+assert.equal(uiModal.doc.getElementById('modal').style.display,'flex');
+uiModal.fire(uiModal.root.querySelector('.modal-actions button'),'keydown',{key:'Escape'});
+assert.equal(uiModal.doc.getElementById('modal').style.display,'none');
+assert.equal(uiModal.focused,modalTrigger);
+const skeleton=interactiveModel('c-skeleton');
+const skeletonCard=skeleton.root.querySelector('.ds-skeleton-card');
+const skeletonImage=skeletonCard.querySelector('img');
+assert.equal(skeletonCard.getAttribute('aria-busy'),'true');
+assert([...skeleton.timeouts.values()].some(timer=>timer.delay===1400));
+skeletonImage.complete=true;skeletonImage.naturalWidth=640;
+skeleton.flushTimeouts();
+assert(skeletonCard.classList.contains('is-loaded'));
+assert.equal(skeletonCard.getAttribute('aria-busy'),'false');
+assert.equal(skeletonCard.querySelector('.ds-skeleton-content').getAttribute('aria-hidden'),'false');
+const reducedSkeleton=interactiveModel('c-skeleton',true);
+const reducedCard=reducedSkeleton.root.querySelector('.ds-skeleton-card');
+assert.equal(reducedSkeleton.timeouts.size,0);
+reducedSkeleton.fire(reducedCard.querySelector('img'),'load');
+assert(reducedCard.classList.contains('is-loaded'));
+const carousel=interactiveModel('c-carousel');
+carousel.fire(carousel.doc.getElementById('carNext'),'click');
+assert.equal(carousel.doc.getElementById('carTrack').style.transform,'translateX(-100%)');
+assert.equal(carousel.doc.getElementById('carDots').children[1].getAttribute('aria-current'),'true');
+carousel.fire(carousel.doc.getElementById('carPause'),'click');
+assert.equal(carousel.doc.getElementById('carPause').getAttribute('aria-pressed'),'true');
+carousel.fire(carousel.doc.getElementById('carPrev'),'click');
+assert.equal(carousel.doc.getElementById('carDots').children[0].getAttribute('aria-current'),'true');
+const reveal=interactiveModel('e-scroll-reveal');
+const scroller=reveal.root.querySelector('.mini-scroll');
+const revealCards=reveal.root.querySelectorAll('.ds-reveal-card');
+scroller.getBoundingClientRect=()=>({top:0,bottom:380});
+revealCards.forEach((card,index)=>{
+ card.classList.remove('ds-revealed');
+ card.getBoundingClientRect=()=>({top:150+250*index,bottom:350+250*index});
+});
+reveal.fire(scroller,'scroll');
+assert.deepEqual(revealCards.map(card=>card.classList.contains('ds-revealed')),[true,false,false]);
+revealCards[1].getBoundingClientRect=()=>({top:300,bottom:500});
+reveal.fire(scroller,'scroll');
+assert.deepEqual(revealCards.map(card=>card.classList.contains('ds-revealed')),[true,true,false]);
+const grid=interactiveModel('g-layout-grid');
+grid.fire(grid.root.querySelector('[data-guide-mode="1"]'),'click');
+assert.equal(grid.root.querySelector('.guide-card-stage').dataset.mode,'1');
+grid.fire(grid.root.querySelector('[data-guide-mode="0"]'),'click');
+assert.equal(grid.root.querySelector('.guide-card-stage').dataset.mode,'0');
+console.log('Batch B: skeleton loading/reduced motion, carousel arrows/pause/dots, independent scroll reveal and grid state controls passed.');

@@ -1,0 +1,22 @@
+
+.ds-combobox-panel { width:min(100%,var(--ds-subject-width)); min-width:0; padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); box-shadow:var(--ds-shadow-1); text-align:left; color:var(--ds-ink); }
+.ds-combobox-panel header { margin-bottom:24px; }
+.ds-combobox-panel header strong { display:block; font:600 16px/1.5 var(--ds-font); }
+.ds-combobox-panel header p,.ds-combobox-panel .ds-note { margin:8px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-combobox-panel :is(input,button,label) { font-family:inherit; }
+.ds-combobox-panel :is(input,button):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-combobox-panel :is(input,button):disabled { opacity:.45; cursor:not-allowed; }
+.ds-combobox-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger); }
+@container demo-stage (max-width:480px) { .ds-combobox-panel { padding:20px 16px; } }
+
+
+.ds-combobox-panel .combo-demo { display:grid; gap:8px; color:var(--ds-ink); font:500 14px/1.5 var(--ds-font); }
+.demo-root .ds-combobox-panel .combo-demo .i { width:100%; min-width:0; min-height:48px; padding:12px; border:1px solid var(--ds-border); border-radius:8px; color:var(--ds-ink); background:var(--ds-surface); font:400 14px/1.5 var(--ds-font); box-shadow:var(--ds-shadow-1); }
+.ds-combobox-panel .combo-demo .i:hover:not(:disabled) { background:var(--ds-fill); }
+
+/* Native controls retain the same feedback in free interaction and fixed states. */
+.ds-combobox-panel :is(input,button) { transition:background-color var(--ds-dur-fast) var(--ds-ease-standard),box-shadow var(--ds-dur-fast) var(--ds-ease-standard); }
+.ds-combobox-panel :is(input,button):disabled:hover { box-shadow:none; }
+.ds-combobox-panel :is(input,button)[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
+.ds-combobox-panel :is(input,button)[aria-invalid="true"]~.ds-note { color:var(--ds-danger); }
+@media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-combobox-panel :is(input,button) { transition:none; transform:none; } }

@@ -1,0 +1,199 @@
+/* Demo Spec v1. This sheet is only loaded inside demo ShadowRoots. */
+:host {
+  --ds-ink:#111827; --ds-ink-2:#4B5563; --ds-ink-3:#6B7280;
+  --ds-line:#E4E7EC; --ds-border:#868E9C; --ds-fill:#F3F4F6;
+  --ds-surface:#FFFFFF; --ds-stage:#F7F7F8;
+  --ds-accent-50:#F5F3FF; --ds-accent-100:#EDE9FE; --ds-accent-200:#DDD6FE;
+  --ds-accent-400:#A78BFA; --ds-accent:#6D28D9; --ds-accent-hover:#5B21B6; --ds-accent-active:#4C1D95;
+  --ds-success:#047857; --ds-success-soft:#ECFDF5; --ds-warning:#B45309; --ds-warning-soft:#FFFBEB;
+  --ds-danger:#B91C1C; --ds-danger-soft:#FEF2F2;
+  --ds-chart-1:#6D28D9; --ds-chart-2:#0F766E; --ds-chart-3:#B45309; --ds-chart-4:#868E9C;
+  --ds-font:"PingFang SC","HarmonyOS Sans SC","MiSans","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",system-ui,-apple-system,sans-serif;
+  --font-sans:var(--ds-font); --ds-text-display-letter-spacing:-.01em;
+  --ds-text-caption:12px; --ds-text-caption-line-height:1.5; --ds-text-caption-weight:400;
+  --ds-text-label:13px; --ds-text-label-line-height:1.4; --ds-text-label-weight:500;
+  --ds-text-body:14px; --ds-text-body-line-height:1.6; --ds-text-body-weight:400;
+  --ds-text-strong:16px; --ds-text-strong-line-height:1.5; --ds-text-strong-weight:600;
+  --ds-text-title:20px; --ds-text-title-line-height:1.35; --ds-text-title-weight:600;
+  --ds-text-display:28px; --ds-text-display-line-height:1.2; --ds-text-display-weight:650;
+  --ds-radius-6:6px; --ds-radius-8:8px; --ds-radius-12:12px; --ds-radius-16:16px; --ds-radius-full:999px;
+  /* Nested radii (owner rule 2026-11-13): outer = inner + gap; an inner radius
+     never exceeds its outer one; tight gaps clamp to a 6px minimum.
+     stage 16 > surface/card 16 (inset >=24) > panel 12 > control 8 > chip 6. */
+  --ds-r-stage:16px; --ds-r-surface:16px; --ds-r-panel:12px; --ds-r-control:8px; --ds-r-chip:6px; --ds-r-min:6px;
+  --ds-space-4:4px; --ds-space-8:8px; --ds-space-12:12px; --ds-space-16:16px; --ds-space-24:24px; --ds-space-32:32px; --ds-space-48:48px;
+  --ds-select-pad-x:12px; --ds-select-chevron:12px; --ds-select-gap:8px;
+  --ds-control-small:32px; --ds-control-default:40px; --ds-control-large:48px;
+  --ds-shadow-1:0 1px 2px rgb(17 24 39 / .06), 0 1px 1px rgb(17 24 39 / .04);
+  --ds-shadow-2:0 10px 24px -8px rgb(17 24 39 / .16), 0 2px 6px rgb(17 24 39 / .06);
+  --ds-shadow-3:0 24px 64px -16px rgb(17 24 39 / .28), 0 4px 12px rgb(17 24 39 / .08);
+  --ds-dur-instant:100ms; --ds-dur-fast:160ms; --ds-dur-base:240ms; --ds-dur-slow:360ms; --ds-dur-scene:560ms;
+  --ds-ease-standard:cubic-bezier(.2,0,0,1); --ds-ease-out:cubic-bezier(.16,1,.3,1);
+  --ds-ease-in:cubic-bezier(.4,0,1,1); --ds-ease-spring:cubic-bezier(.34,1.36,.64,1);
+  --demo-primary:var(--ds-accent); --demo-primary-hover:var(--ds-accent-hover); --demo-primary-active:var(--ds-accent-active);
+  --demo-stage:var(--ds-stage); --demo-ink:var(--ds-ink); --demo-secondary:var(--ds-ink-2);
+  --demo-white:var(--ds-surface); --demo-soft:var(--ds-fill); --demo-line:var(--ds-line); --demo-border:var(--ds-border);
+  --demo-danger:var(--ds-danger); --demo-focus:var(--ds-accent);
+  --guide-ink:var(--ds-ink); --guide-muted:var(--ds-ink-2); --guide-accent:var(--ds-accent);
+  --skill-ink:var(--ds-ink); --skill-muted:var(--ds-ink-2); --skill-accent:var(--ds-accent);
+  --ds-subject-width:clamp(320px,52%,640px);
+  --ds-demo-body:14px; --ds-demo-heading:16px; --ds-demo-title:20px;
+  --ds-demo-button:14px; --ds-demo-control:44px;
+  container-type:inline-size; container-name:demo-stage;
+  font-family:var(--ds-font); font-variant-numeric:tabular-nums;
+}
+.demo-root.ds-stage {
+  --ds-stage-inset:32px;
+  position:relative; display:flex; flex-direction:column; justify-content:center; align-items:center;
+  gap:24px; width:100%; min-width:0; min-height:max(320px,62.5cqi); height:auto; aspect-ratio:auto;
+  padding:32px 32px 76px; border:1px solid var(--ds-line); border-radius:var(--ds-r-stage);
+  background:radial-gradient(circle,rgb(17 24 39 / .05) .5px,transparent .5px) 0 0/24px 24px var(--ds-stage);
+  color:var(--ds-ink); box-shadow:none; font:14px/1.6 var(--ds-font); overflow:visible;
+}
+.ds-stage > :is(.canvas,.stage,.guide-card-stage) {
+  width:100%; min-width:0; min-height:0; height:auto; max-width:100%;
+  background:none; background-image:none; border:0; border-radius:0; box-shadow:none;
+  padding:0; overflow:visible; flex-shrink:0;
+}
+:host([data-interactive]) .demo-root.ds-stage:has(> :is(.canvas,.stage,.guide-card-stage) > .ds-hint) {
+  padding:0!important;
+}
+:host([data-interactive]) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage):has(> .ds-hint) {
+  position:relative; display:flex; flex:1 0 auto; min-height:min-content; box-sizing:border-box;
+  align-items:safe center; justify-content:safe center; align-content:safe center;
+  padding:var(--ds-stage-inset); padding-top:max(16px,var(--ds-stage-inset))!important; padding-bottom:56px!important;
+  row-gap:12px; flex-wrap:wrap; overflow:visible;
+}
+/* Controls and live feedback precede the filling subject and its bottom hint. */
+:host([data-interactive]) .demo-root.ds-stage:has(> :is(.canvas,.stage,.guide-card-stage) > .ds-hint) > :is(.demo-controls,.demo-status) {
+  order:-1; flex-shrink:0; margin:var(--ds-stage-inset) var(--ds-stage-inset) 0;
+  max-width:calc(100% - 2 * var(--ds-stage-inset));
+}
+.demo-root.ds-stage > :is(.canvas,.stage) > * { flex-shrink:0; }
+.ds-surface { width:min(100%,var(--ds-subject-width)); box-sizing:border-box; background:var(--ds-surface); border:1px solid rgb(17 24 39 / .08); border-radius:16px; box-shadow:var(--ds-shadow-1); padding:24px; min-width:0; max-width:100%; }
+:host(:not([data-demo-slug="brutalist"]):not([data-demo-slug="editorial"]):not([data-demo-slug="glass"]):not([data-demo-slug="minimal"]):not([data-demo-slug="neumorphic"]):not([data-demo-slug="organic"])) .demo-root :where(h1,h2,h3,h4,h5,h6,strong,b,th,dt) { font-weight:600; }
+.demo-root.ds-stage .ds-hint {
+  position:absolute!important; inset:auto auto 12px 12px!important; width:fit-content; max-width:calc(100% - 24px)!important;
+  margin:0!important; order:999; flex-shrink:0; grid-column:1/-1;
+  align-self:flex-start!important; transform:none;
+  display:flex; align-items:center; gap:8px; padding:6px 12px;
+  background:var(--ds-surface); color:var(--ds-ink-2); border:1px solid var(--ds-line);
+  border-radius:999px; font:400 12px/1.5 var(--ds-font); white-space:normal; text-align:left;
+  pointer-events:none; letter-spacing:0;
+}
+.ds-hint-icon { color:var(--ds-accent); flex:none; font-size:12px; }
+.ds-caption { font:400 12px/1.5 var(--ds-font); color:var(--ds-ink-2); }
+.ds-img { display:block; width:100%; max-width:100%; height:auto; object-fit:cover; border-radius:inherit; }
+.ds-image { position:relative; overflow:hidden; border-radius:12px; }
+.ds-image::after { content:''; position:absolute; inset:0; border:1px solid rgb(17 24 39 / .06); border-radius:inherit; pointer-events:none; }
+.ds-stage :focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-stage :is(button,input,select,textarea):disabled { opacity:.45; cursor:not-allowed; }
+.ds-stage :is(button,[role=button]):not(:disabled):active { transform:scale(.98); }
+.ds-stage .demo-controls { flex-wrap:wrap; gap:8px; }
+:host(:not([data-interactive])) .demo-root.ds-stage { aspect-ratio:auto; min-height:75cqi; padding:16px; }
+:host(:not([data-interactive])) .ds-stage > :is(.canvas,.stage,.guide-card-stage) { min-height:0; padding:0; }
+:host(:not([data-interactive])) .ds-hint { display:none; }
+/* Gallery thumbnails: one inset token on all four sides. When the stage holds a single
+   content card, the card fills the stage width and the stage hugs its height, so the
+   gray inset is equal on every side (card height follows content; the gallery is masonry). */
+:host(:not([data-interactive])) .demo-root.ds-stage { --ds-thumb-inset:var(--thumb-inset,16px); padding:var(--ds-thumb-inset); }
+:host(:not([data-interactive])) .demo-root.ds-stage:has(> :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card)):not(:has(> :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card) > :not(.ds-hint) ~ :not(.ds-hint))) { min-height:0; }
+:host(:not([data-interactive])) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card):not(:has(> :not(.ds-hint) ~ :not(.ds-hint))) { width:100%; max-width:none; align-self:stretch; margin:0; min-height:0; height:auto; padding:0; }
+:host(:not([data-interactive])) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage,.token-demo,.skill-card):not(:has(> :not(.ds-hint) ~ :not(.ds-hint))) > :not(.ds-hint) { width:100%; max-width:none; margin:0; box-sizing:border-box; border-radius:var(--thumb-content-radius,14px); }
+:host(:not([data-interactive])) .demo-root.ds-stage:has(> .stage > :is(.view-stack,.view-window)) { min-height:0; }
+:host(:not([data-interactive])) .demo-root.ds-stage > .stage:has(> :is(.view-stack,.view-window)) { width:100%; }
+:host(:not([data-interactive])) .demo-root.ds-stage > .stage > :is(.view-stack,.view-window) { width:100%; max-width:none; border-radius:var(--thumb-content-radius,14px); }
+:host(:not([data-interactive])) #c-popover .canvas { padding-top:0; }
+@media(min-width:768px) and (max-width:1023px) {
+  :host([data-interactive]) .demo-root.ds-stage { --ds-stage-inset:24px; aspect-ratio:auto; min-height:max(300px,66.667cqi); padding:24px 24px 76px; }
+}
+@media(max-width:767px) {
+  :host([data-interactive]) .demo-root.ds-stage { --ds-stage-inset:16px; aspect-ratio:auto; min-height:max(260px,75cqi); padding:16px 16px 76px; }
+  :host([data-interactive]) .ds-stage :is(button,input:not([type=checkbox]):not([type=radio]),select,textarea) { min-height:44px; }
+  :host([data-interactive]) .ds-stage :is(button,[role=button]) { min-width:44px; }
+  .ds-surface { padding:16px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .ds-stage :is(button,[role=button]):not(:disabled):active { transform:none; }
+  .ds-stage .ds-img { animation:none; }
+}
+/* Replaced controls respect the actual stage width at every nesting depth. */
+.ds-stage :is(input,select,textarea,canvas,iframe,.floatfield){max-width:100%;min-width:0}
+.ds-stage :is(button,input,select,textarea){font-family:var(--ds-font)}
+.ds-stage :is(button,input,select,textarea):disabled{filter:none;transform:none}
+
+/* Only moving overlay layers are clipped to the stage; content stays intrinsic. */
+.ds-stage > .ds-overlays{position:absolute;inset:0;overflow:clip;border-radius:inherit;pointer-events:none;z-index:20}
+.ds-overlays > :is(.modal-mask,.drawer-mask,.drawer-panel,.cmdk-mask){pointer-events:auto}
+
+/* Type responds to the actual stage width, including embedded previews. */
+@container demo-stage (min-width:640px) {
+  .demo-root.ds-stage {
+    --ds-demo-body:16px; --ds-demo-heading:22px; --ds-demo-title:24px;
+    --ds-demo-button:15px; --ds-demo-control:48px;
+  }
+}
+
+/* Narrow stages reserve enough room for a two-line capsule. */
+@container demo-stage (max-width:380px) {
+  :host([data-interactive]) .demo-root.ds-stage > :is(.canvas,.stage,.guide-card-stage):has(> .ds-hint) {
+    padding-bottom:76px!important;
+  }
+}
+
+.ds-stage[data-ds-sample] :is(.ds-button-heading,.ds-lift-details,.ds-scene-copy) { gap:8px; }
+.ds-stage[data-ds-sample] .ds-button-grid { gap:12px; }
+
+/* Scale samples only when the actual demo host has enough space. */
+@container demo-stage (min-width:640px) {
+  .demo-root.ds-stage {
+    --ds-subject-width:clamp(420px,66%,560px);
+  }
+  .ds-stage[data-ds-sample] .ds-surface { padding:32px; }
+  .ds-stage[data-ds-sample] .ds-button-grid { gap:16px; }
+  .ds-stage[data-ds-sample] :is(.ds-button-heading,.ds-lift-details,.ds-scene-copy) { gap:12px; }
+  .ds-stage[data-ds-sample] :is(.ds-modal-preview,.ds-scene) { padding:0; }
+}
+
+/* Wide entry stages (≥880px, entry pages at ≥1280): subject and type scale up
+   one step so the content keeps ~60% of the stage instead of floating small. */
+@container demo-stage (min-width:880px) {
+  :host([data-interactive]) .demo-root.ds-stage {
+    --ds-subject-width:clamp(560px,62%,680px);
+  }
+}
+
+
+/* ===== Geometry sweep fixes (2026-11-13, tests/geometry_headless.cjs) ===== */
+/* Separate buttons (each with its own border and radius) are not a segmented
+   control, so they keep 8px gaps. Real segmented groups opt in with role=group. */
+.ds-stage .demo-controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.ds-stage :is(.media-actions,.pager-actions,.extra-drop-controls) { display:flex; flex-wrap:wrap; gap:8px; }
+.ds-stage .phone-demo > button { margin-top:12px; }
+.ds-stage .mini-focus button { margin:12px 8px 0 0; }
+.ds-stage .extra-section-layout { gap:12px; grid-template-columns:minmax(0,1fr) 44px; }
+.ds-stage .extra-drop-board { display:flex; flex-wrap:wrap; gap:12px; }
+/* Nested radii inside scenes. */
+.ds-stage .header-scroll-scene .extra-scroll { border-radius:var(--ds-r-min); }
+.ds-stage .style-preview.style-glass,
+.ds-stage .style-preview.style-neumorphic { border-radius:var(--ds-r-surface); }
+/* inner boxes that sit near a rounded corner: outer − gap, clamped to the 6px minimum */
+.ds-stage .extra-section-scroll,
+.ds-stage .extra-task,
+.ds-stage .pin-scene,
+.ds-stage .sidebar .active { border-radius:var(--ds-r-min); }
+.ds-stage .micro-card .ds-img,
+.ds-stage .micro-card .ds-h-img,
+.ds-stage .hact-media { border-top-left-radius:12px; border-top-right-radius:12px; }
+.ds-stage .ds-h-panel .mini-phone { border-radius:var(--ds-r-panel); }
+.ds-stage .style-preview.style-glass .style-art,
+.ds-stage .style-preview.style-neumorphic .style-art { border-radius:var(--ds-r-panel); }
+/* Concentric gallery thumbnails: stage = content + padding + stage border;
+   gallery = stage + gallery border. Shell tokens inherit through the host. */
+:host(:not([data-interactive])) .demo-root.ds-stage { border-width:var(--thumb-stage-border,1px); border-radius:var(--thumb-stage-radius,31px); }
+:host(:not([data-interactive])) .demo-root.ds-stage :is(.ds-surface,.ds-h-panel,.phone-demo,.extra-scene,.micro-card,.magnet-wrap,.ds-cmdk-panel) { border-radius:var(--thumb-content-radius,14px); }
+:host(:not([data-interactive])) .demo-root.ds-stage .stage[data-effect="component-flip"] :is(.flip-card,.flip-card .face) { border-radius:var(--thumb-content-radius,14px); }
+/* Media sits 1px inside the content-card border; keep its lower corners square. */
+:host(:not([data-interactive])) .demo-root.ds-stage .stage[data-effect="component-flip"] .flip-card .face :is(.ds-h-photo,.ds-h-img),
+:host(:not([data-interactive])) .demo-root.ds-stage .stage:is([data-effect="component-tilt"],[data-effect="component-spotlight"]) .micro-card .ds-h-photo { border-radius:calc(var(--thumb-content-radius,14px) - 1px) calc(var(--thumb-content-radius,14px) - 1px) 0 0; }
+:host(:not([data-interactive])) .demo-root.ds-stage .ds-button-panel :is(.btn,button) { border-radius:var(--ds-r-chip); }

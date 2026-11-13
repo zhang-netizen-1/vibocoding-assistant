@@ -1,0 +1,221 @@
+.header{position:sticky;top:0;z-index:20;background:var(--white);border-bottom:1px solid var(--line)}
+.nav-inner{display:flex;align-items:center;gap:16px;height:var(--nav-height)}
+.brand{display:flex;align-items:center;gap:8px;flex:none;font-size:16px;font-weight:650;color:var(--ink);white-space:nowrap}
+.brand:hover{color:var(--ink);text-decoration:none}.logo{width:24px;height:24px;background:var(--ink);border-radius:6px}
+.desktop-nav{display:flex;align-items:center;gap:0}.nav-link,.nav-trigger{border:0;font-size:14px;color:var(--secondary);padding:8px;white-space:nowrap;display:block;border-radius:6px}
+.nav-trigger[aria-expanded="true"]{background:var(--soft);color:var(--ink)}.nav-link,.nav-trigger{display:inline-flex;align-items:center;gap:4px}.nav-trigger:hover{color:var(--ink)}.nav-link:hover{color:var(--ink);text-decoration:none;background:var(--soft)}.nav-caret{flex:none;display:block;width:12px;height:12px;position:relative;top:-1px;transition:transform .2s ease}.nav-trigger[aria-expanded="true"] .nav-caret{transform:rotate(180deg)}@media(prefers-reduced-motion:reduce){.nav-caret{transition:none}}.nav-number{font-size:12px}
+/* 聚焦环要压在相邻白底触发器之上，否则右边被下一个按钮盖住 */.nav-link:focus-visible,.nav-trigger:focus-visible{position:relative;z-index:1}
+.nav-actions{margin-left:auto;display:flex;gap:8px;flex:none}.nav-search{font-size:13px;color:var(--secondary);white-space:nowrap;min-height:40px}.mobile-only{display:none}
+.search-icon{width:16px;height:16px;border:2px solid currentColor;border-radius:50%;display:inline-block;position:relative;flex:none}
+.search-icon::after{content:'';position:absolute;width:6px;height:2px;background:currentColor;right:-4px;bottom:-4px;transform:rotate(45deg)}
+.mega{position:absolute;inset:100% 0 auto;background:var(--white);border-bottom:1px solid var(--line);box-shadow:var(--shadow)}
+.mega-inner{padding-block:24px;max-height:70vh;overflow:auto;overscroll-behavior:contain}.mega-heading{border-bottom:1px solid var(--line);padding-bottom:16px}.mega-heading h2{font-size:18px}
+.mega-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-block:24px}.menu-group{min-width:0}.menu-group-link{font-size:14px;font-weight:600;color:var(--ink);display:block;padding:8px 0}.count{font-size:var(--text-label);color:var(--muted);font-weight:500;line-height:1.5}.menu-note{font-size:12px;color:var(--muted);font-weight:400}.menu-intro{margin-top:16px}
+.view{padding-block:48px 64px}.hero{padding:8px 0 48px;max-width:900px}.hero h1{font-size:36px;max-width:860px;letter-spacing:-.02em}.hero .sub{margin:16px 0 24px;color:var(--secondary)}
+.home-search{display:flex;align-items:center;gap:16px;border:1px solid var(--control);border-radius:8px;padding:12px 16px;width:100%;max-width:760px;min-height:56px;text-align:left;color:var(--secondary)}.home-search span:nth-child(2){flex:1;min-width:0}.examples{margin-top:16px}kbd{font:13px var(--font);padding:0 8px;border:1px solid var(--line);border-radius:6px;background:var(--white);color:var(--muted)}
+.section-head{margin-bottom:16px}.layers{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.layer{border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}.number{font-size:12px;color:var(--muted)}.stat{font-size:var(--text-label);font-weight:500;line-height:1.5;color:var(--muted)}.layer h3{font-size:16px;font-weight:600;line-height:1.5}.layer h3 a{color:var(--ink)}.layer p{font-size:14px;color:var(--secondary);min-height:72px}.layer .start{font-size:13px;margin-top:auto}.method{border-top:1px solid var(--line);margin-top:48px;padding-top:24px}.steps{list-style:none;padding:0;display:flex;gap:16px;flex-wrap:wrap;margin:16px 0 8px}.steps li:not(:last-child)::after{content:'→';margin-left:16px;color:var(--muted)}
+.breadcrumbs{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-bottom:16px}.landing-title{margin-bottom:12px}.title-count{font-size:var(--text-label);font-weight:500;line-height:1.5;border:1px solid var(--line);padding:4px 12px;border-radius:6px}.lead{color:var(--secondary);margin-bottom:24px}.column-search{display:block;margin-bottom:24px;width:100%;text-align:left;color:var(--secondary)}.group-tabs{margin-bottom:32px}.group-section{margin-top:48px;scroll-margin-top:88px}.group-section h2{font-size:var(--text-section);font-weight:600;line-height:1.3;margin-bottom:16px}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 16px}.gallery-card,.simple-card{position:relative;min-width:0;border:1px solid var(--line);border-radius:16px;overflow:hidden}.gallery-card:hover,.simple-card:hover{border-color:var(--control)}.gallery-link,.simple-card a{display:block;color:var(--ink)}.gallery-link:hover,.simple-card a:hover{color:var(--ink);text-decoration:none}.gallery-link::after{content:'';position:absolute;inset:0;border-radius:calc(var(--gallery-card-radius) - var(--gallery-card-border))}.gallery-link:focus-visible{outline:none}.gallery-card:focus-within{outline:2px solid var(--blue);outline-offset:2px}
+.gallery-card{container-type:inline-size}
+.gallery-card{border-width:var(--gallery-card-border);border-radius:var(--gallery-card-radius)}
+/* Preserve 4:3 as a minimum; larger readable previews may grow vertically. */
+.gallery-caption,.simple-card a{padding:16px}.gallery-caption strong,.simple-card strong{display:block;font-size:16px;font-weight:600;line-height:1.5}.english{font-size:13px;color:var(--secondary);font-weight:400;overflow-wrap:anywhere}.gallery-caption p,.simple-card p{font-size:14px;color:var(--secondary);margin-top:8px;white-space:pre-line}.mini-stage{min-height:0;height:auto;position:relative;overflow:visible;padding:0 0 52px;display:flex;align-items:center;justify-content:center}.mini-stage .demo-scope{pointer-events:none}
+/* List previews use the actual extracted UI nodes. Inactive cards retain no JS controller. */
+.gallery-card:not(.playing) .demo-scope *{animation:none!important;transition:none!important}.play-button{display:none;position:absolute;right:8px;bottom:8px;z-index:3;font-size:12px;min-height:32px;padding:4px 8px}.reduced-link{display:none;font-size:12px;color:var(--secondary);position:absolute;right:8px;bottom:8px}
+.entry-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:32px;align-items:start}.entry-main{min-width:0}.entry-heading{margin-bottom:24px}.entry-title{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.entry-title .english{font-size:18px}.definition{font-size:18px;margin-top:16px;white-space:pre-line}.demo-stage{min-width:0;width:100%}.entry-section{margin-top:32px}.entry-section h2{font-size:var(--text-section);font-weight:600;line-height:1.3;margin-bottom:12px}.prompt-box{border:1px solid var(--line);border-radius:12px;padding:24px}.prompt-text{white-space:pre-wrap;overflow-wrap:anywhere;font:16px/1.7 var(--font);margin:12px 0;color:var(--secondary)}.related{margin-top:12px}.bench-line{font-size:14px;padding-top:24px;border-top:1px solid var(--line);margin-top:32px}.use-card{border:1px solid var(--line);border-radius:16px;padding:24px;position:sticky;top:calc(var(--nav-height) + 16px)}.use-card h2{font-size:var(--text-section);font-weight:600;line-height:1.3;margin-bottom:16px}.use-card>.btn-primary{width:100%}.use-actions{display:grid;gap:8px;margin-top:16px}.bench-badge{display:inline-block;font-size:var(--text-label);font-weight:500;line-height:1.5;margin-top:16px}.criteria{scroll-margin-top:88px}.criteria summary{font-size:var(--text-section);font-weight:600;line-height:1.3;padding:12px 0}.criteria ol{padding-left:24px}.criteria li{border-top:1px solid var(--line);padding:12px 0;font-size:14px}.criteria button{margin-top:8px}.bottom-bar{display:none}.footer{border-top:1px solid var(--line);font-size:12px;color:var(--muted);padding-block:24px}
+.overlay{border:1px solid var(--line);color:var(--ink);background:var(--white);box-shadow:var(--shadow);padding:0}dialog::backdrop{background:rgb(17 24 39 / .28)}.search-dialog{width:min(920px,calc(100vw - 48px));max-width:none;max-height:calc(100dvh - 96px);border-radius:16px;margin:auto}.search-top{display:flex;align-items:center;gap:16px;padding:24px;border-bottom:1px solid var(--line)}.search-top input{flex:1;min-width:0;width:100%;border:1px solid var(--control);border-radius:8px;padding:12px 16px;font-size:16px}.close-button{font-size:14px;min-width:64px;min-height:44px;padding:8px 12px}.search-body{padding:24px;max-height:calc(100dvh - 236px);overflow:auto;overscroll-behavior:contain}.search-help{font-size:12px;color:var(--muted);padding:12px 24px;border-top:1px solid var(--line)}.common-title{font-size:14px;margin-bottom:12px}.result-count{font-size:var(--text-label);font-weight:500;line-height:1.5;color:var(--muted);margin-bottom:12px}.result-row{display:flex;align-items:center;gap:16px;padding:16px 8px;border-bottom:1px solid var(--line);border-radius:8px}.result-row.selected{background:var(--stage)}.result-info{flex:1;min-width:0}.result-name{font-size:16px;font-weight:600}.result-info .english{margin-left:8px}.result-meta{font-size:12px;color:var(--secondary);margin-top:4px}.result-actions{display:flex;align-items:center;gap:8px;flex:none;font-size:13px}.result-actions .copy-btn{width:120px;min-width:120px;font-size:13px;padding:8px 12px}.empty-title{font-size:18px;margin-bottom:24px;overflow-wrap:anywhere}.empty-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.empty-block{border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}.empty-block h3{font-size:14px;margin-bottom:12px}.empty-block p,.empty-block a{font-size:14px;color:var(--secondary)}.empty-block a{display:block;padding:4px 0}
+.drawer{height:100dvh;max-height:none;width:min(400px,calc(100vw - 32px));max-width:none;margin:0 0 0 auto;border-radius:0;border-width:0 0 0 1px;animation:drawer-in .2s ease;overflow:auto}.drawer-head{padding:24px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--white);z-index:2}.drawer-head h2{font-size:18px}.drawer-body{padding:16px 24px}.drawer-category{border-bottom:1px solid var(--line)}.drawer-category>summary{font-size:16px;padding:16px 0}.drawer-category .menu-group{padding:8px 0}@keyframes drawer-in{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@media(max-width:1180px){.nav-inner{gap:8px;padding-inline:16px}.brand{font-size:14px}.logo,.nav-number{display:none}.nav-link,.nav-trigger{padding:8px 4px;font-size:13px}.nav-search{padding:8px}.layers{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+@media(max-width:1023px){.entry-layout{grid-template-columns:minmax(0,1fr);gap:0}.use-card{position:static;margin-top:24px}.use-card>.btn-primary{display:none}.bottom-bar{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:15;gap:12px;justify-content:center;padding:12px 24px calc(12px + env(safe-area-inset-bottom));background:var(--white);border-top:1px solid var(--line)}.bottom-bar button{min-height:44px}.bottom-bar .btn-primary{flex:1;max-width:440px}body.entry-active{padding-bottom:calc(88px + env(safe-area-inset-bottom))}.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1023px){
+.nav-inner{height:calc(var(--nav-height) - 1px);min-height:0;flex-wrap:nowrap;gap:12px;padding-block:0}.desktop-nav,.desktop-search,.mega{display:none}.mobile-only{display:inline-flex;align-items:center;justify-content:center}.nav-search{width:44px;min-height:44px;padding:8px}.nav-search .search-icon{margin:0 4px 4px 0}.brand{font-size:14px}.menu-button{font-size:14px;min-height:44px;padding:8px 12px}
+}
+@media(max-width:760px){.view{padding-block:32px 48px}.hero{padding:0 0 32px}.hero h1{font-size:26px}.home-search{gap:12px;padding:12px;font-size:14px}.home-search kbd{display:none}.layers{grid-template-columns:1fr 1fr}.layer{gap:8px}.method{margin-top:32px}.steps{gap:12px}.steps li{font-size:14px}.gallery{gap:16px 12px}.gallery-caption,.simple-card a{padding:12px}.gallery-caption strong,.simple-card strong,.layer h3{font-size:14px}.gallery-caption p,.simple-card p{font-size:13px}.mini-stage{align-items:center}.play-button{display:block}.prompt-box,.use-card{padding:16px}.search-dialog{width:100vw;height:100dvh;max-height:none;border:0;border-radius:0;margin:0}.search-dialog[open]{display:flex;flex-direction:column}.search-top{padding:16px;gap:8px}.search-top input{padding:12px;font-size:14px}.search-body{padding:16px;max-height:none;flex:1;overflow:auto}.search-help{padding:12px 16px}.result-row{gap:8px;flex-wrap:wrap;padding:16px 4px}.result-info{width:100%;flex:auto}.result-name{font-size:14px}.result-info .english{display:block;margin-left:0;font-size:12px}.result-actions{flex-wrap:wrap}.empty-grid{grid-template-columns:1fr}.bottom-bar{padding-inline:16px}.bottom-bar button{font-size:14px}.mega{display:none}}
+@media(hover:none), (pointer:coarse){.play-button{display:block}.mini-stage{padding-bottom:60px}}
+@media(prefers-reduced-motion:reduce){.drawer{animation:none}.play-button{display:block}.reduced-link{display:none}.mini-stage{padding-bottom:60px}}
+
+.entry-points{font-size:14px;color:var(--secondary);padding-left:24px;margin:12px 0 0}
+
+@media(max-width:1023px){
+  .entry-layout{display:flex;flex-direction:column}
+  .entry-main{display:contents}
+  .entry-heading,.demo-stage,.entry-section,.bench-line,.use-card{width:100%}
+  .entry-heading{order:0}.demo-stage{order:1}.use-card{order:2}.usage-section{order:4}
+  .new-section{order:5}.related-section{order:6}.bench-line{order:7}
+}
+
+.static-preview .play-button,.static-preview .reduced-link{display:none!important}
+.entry-demo{width:100%;margin-bottom:24px}
+.demo-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.spec-table-wrap{max-width:100%;overflow-x:auto}.spec-table{border-collapse:collapse;min-width:600px;font-size:14px}.spec-table th,.spec-table td{padding:12px;border:1px solid var(--line);text-align:left}
+.spec-group{margin-top:32px;scroll-margin-top:88px}.spec-group h3{margin-bottom:12px}.spec-note{color:var(--secondary);margin-bottom:16px}
+@media(max-width:1023px){.entry-demo{order:1}.entry-layout>.entry-demo{width:100%}}
+
+.state-picker{margin-bottom:16px}.state-picker h2{font-size:14px;margin-bottom:8px}.state-picker button{font-size:13px}.state-picker [aria-pressed="true"]{background:var(--ink);color:var(--white);border-color:var(--ink)}.state-caption{margin-top:12px;font-size:14px;color:var(--secondary)}
+
+.motion-section{margin-bottom:32px}.motion-grid .gallery-caption{padding:12px}.more-motions{margin-top:16px}.more-motions>summary{font-size:14px;margin-bottom:12px}
+@media(max-width:1023px){.demo-hint{order:1}.use-card{order:2}.motion-section{order:3}.usage-section{order:4}.new-section{order:5}.related-section{order:6}.bench-line{order:7}}
+
+.result-alias { margin: 4px 0; color: var(--secondary); font-size: 13px; }
+
+.entry-aliases { flex-basis: 100%; margin: 0; color: var(--secondary); overflow-wrap: anywhere; }
+
+.result-definition { margin: 4px 0; color: var(--secondary); font-size: 14px; overflow-wrap: anywhere; }
+
+/* Search rows share the gallery's stretched-link pattern. */
+.result-row{position:relative;cursor:pointer}
+.result-row:hover,.result-row:focus-within{background:var(--stage)}
+.result-name{color:var(--ink);overflow-wrap:anywhere}
+.result-name::after{content:'';position:absolute;inset:0;border-radius:8px}
+.result-name:focus-visible{outline:none}
+.result-name:focus-visible::after{outline:2px solid var(--blue);outline-offset:-2px}
+.result-actions{position:relative;z-index:2}
+.result-actions{pointer-events:none}
+.result-actions a,.result-actions button{pointer-events:auto}
+.result-visual{flex:none}
+.result-thumb{position:relative;display:flex;align-items:center;justify-content:center;width:64px;height:48px;overflow:hidden;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--secondary);pointer-events:none}
+.result-thumb i{position:absolute;display:block;border:1px solid var(--control);border-radius:3px;background:var(--white)}
+.result-thumb-basics i{width:14px;height:28px;top:13px;left:9px}
+.result-thumb-basics i:nth-child(2){left:29px;height:12px}
+.result-thumb-basics i:nth-child(3){left:29px;top:29px;height:12px}
+.result-thumb-components i{width:34px;height:10px;left:10px;top:10px}
+.result-thumb-components i:nth-child(2){top:24px}
+.result-thumb-components i:nth-child(3){top:38px;width:20px;background:var(--secondary)}
+.result-thumb-interactions i{width:26px;height:22px;left:8px;top:8px}
+.result-thumb-interactions i:nth-child(2){left:14px;top:16px}
+.result-thumb-interactions i:nth-child(3){left:20px;top:24px}
+.result-thumb-scenarios i{inset:9px;border-radius:2px}
+.result-thumb-scenarios i:nth-child(2){inset:16px 9px auto;height:1px;border:0;background:var(--control)}
+.result-thumb-scenarios i:nth-child(3){inset:22px 15px 15px}
+.result-thumb-ai i{width:30px;height:3px;left:12px;top:15px;border:0;background:var(--control)}
+.result-thumb-ai i:nth-child(2){top:25px}
+.result-thumb-ai i:nth-child(3){top:35px;width:18px}
+@media(max-width:760px){
+  .result-row{display:grid;grid-template-columns:64px minmax(0,1fr);align-items:start}
+  .result-info{width:auto}
+  .result-actions{grid-column:2;min-width:0}
+}
+@media(max-width:1023px), (hover:none), (pointer:coarse){.shortcut-hint,.search-help{display:none}}
+
+/* Keep the primary action above independently scrolling prompt and acceptance text. */
+@media(min-width:1024px){
+  /* Match the 1184px shell (64px padding) and the 2:1 grid's 32px gap.
+     Viewport anchoring keeps the action available beyond the article's end. */
+  .use-card{position:fixed;top:calc(var(--nav-height) + 16px);right:max(32px,calc((100% - 1120px)/2));width:calc((min(100%,1184px) - 96px)/3);display:flex;flex-direction:column;max-height:calc(100dvh - var(--nav-height) - 32px);overflow:auto;overscroll-behavior:contain;background:var(--white);z-index:10}
+  .use-card>.prompt-head,.use-card>.prompt-meta,.use-card>.use-actions,.use-card>.bench-badge{flex-shrink:0}
+  .use-card .criteria[open]{min-height:0;overflow:auto;overscroll-behavior:contain}
+  .use-card .criteria summary{position:sticky;top:0;background:inherit;z-index:1}
+}
+
+/* Touch targets occupy real layout space, leaving adjacent targets separate.
+   Paragraph links retain normal prose flow; the drawer home is a standalone action. */
+@media(max-width:1023px), (hover:none), (pointer:coarse){
+  :where(a,button,summary){min-height:44px}
+  a:where(:not(p a)){display:inline-flex;align-items:center}
+  .gallery-link,.simple-card a,.menu-group-link,.empty-block a{display:block}
+  .breadcrumbs{align-items:center}
+  .breadcrumbs a,.drawer-body>p>a{display:inline-flex;align-items:center;min-height:44px;padding-block:8px}
+  .drawer-body>p{margin-bottom:8px}
+  .drawer-category summary{min-height:44px}
+  button{min-width:44px}
+  .play-button{min-height:44px;display:block}
+  .nav-search{min-height:44px}
+  .result-actions{flex-wrap:wrap}
+}
+
+.entry-section p + h3 { margin-top: var(--space-6); }
+.new-section>summary{font-size:var(--text-section);font-weight:600;line-height:1.3}
+.recovery-home{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:var(--space-2) var(--space-4);border:1px solid var(--ink);border-radius:var(--radius-md)}
+@media(max-width:760px){
+  .related,.motion-section>.chips{display:grid;grid-template-columns:minmax(0,1fr)}
+}
+
+/* Wider entry demos (owner decision 2026-11-13): entry pages use a 1376px shell
+   and a fixed-width use card, so the demo column grows from ~725px to ~960px at
+   1440. The mega menu follows the entry shell; the header has one shared width.
+   Below 1024px the single-column layout is unchanged. */
+@media(min-width:1024px){
+  body.entry-active{--use-card-w:300px}
+  body.entry-active .wrap{max-width:var(--entry-shell)}
+  body.entry-active .entry-layout{grid-template-columns:minmax(0,1fr) var(--use-card-w)}
+  body.entry-active .use-card{right:max(32px,calc((100% - var(--entry-shell))/2 + 32px));width:var(--use-card-w)}
+}
+@media(min-width:1280px){body.entry-active{--use-card-w:320px}}
+
+/* 「它怎么动」 motion cards (owner fix 2026-11-13): cards never get narrower than
+   ~320px (single column at 390), and the play button sits in the caption row,
+   inside the card padding, 16px from every edge and >=12px from the preview. */
+.motion-section .gallery.motion-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:16px}
+.motion-grid .gallery-card .mini-stage{position:static;padding-bottom:0}
+.motion-grid .gallery-caption{padding:16px;min-height:76px;display:flex;flex-direction:column;justify-content:center}
+.motion-grid .play-button,.motion-grid .reduced-link{right:16px;bottom:16px;min-height:44px;padding:0 16px;border-radius:8px}
+.motion-grid .reduced-link{display:none;align-items:center}
+@media(max-width:1023px),(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.motion-grid .gallery-caption{padding-right:120px}}
+/* Gallery-page cards keep the play button in a reserved strip below the preview:
+   16px inset from the card edges, 12px clear of the preview above it. */
+.gallery:not(.motion-grid) .play-button{right:16px;bottom:16px}
+/* Hidden hover controls reserve no space; visible-control rules below take precedence. */
+@media(hover:hover) and (prefers-reduced-motion:no-preference){.gallery:not(.motion-grid) .mini-stage{padding-bottom:0}}
+@media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.gallery:not(.motion-grid) .mini-stage{padding-bottom:72px}}
+@media(max-width:1023px){.gallery:not(.motion-grid) .mini-stage{padding-bottom:72px}}
+
+/* One header width on all page types; keep each existing padding breakpoint. */
+.header .wrap.nav-inner{max-width:var(--header-width)}
+/* Motion controls are anchored to the card because their mini-stage is static.
+   Other galleries (including design-system specimens) anchor controls to the
+   relative mini-stage, retaining the base button radius and plain span radius.
+   CSS clamps equal radii to a full pill when they exceed half the short side. */
+.motion-grid .gallery-card :is(.play-button,.reduced-link){--gallery-control-offset:16px;border-radius:calc(var(--gallery-card-radius) - var(--gallery-card-border) - var(--gallery-control-offset))}
+/* Only hidden controls lose their reserved strip. Width/touch/reduced-motion rules
+   above still show controls and keep their existing 52/60/72px reservation. */
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+  .gallery:not(.motion-grid) .static-preview .mini-stage{padding-bottom:0}
+}
+
+/* Copy prompt, option D. Purple is limited to the temporary copied state. */
+.prompt-card{padding:16px;border-radius:16px;background:var(--white);color:var(--ink);scroll-margin-top:calc(var(--nav-height) + 16px);transition:background-color .16s,color .16s,border-color .16s}
+.prompt-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:none}
+.prompt-card .prompt-head h2{font-size:var(--text-section);font-weight:600;line-height:1.3;margin:0;min-width:0}
+.prompt-head .copy-btn{min-width:104px;min-height:44px;border-radius:8px;padding:8px 16px;flex:none}
+.prompt-body{min-width:0;min-height:80px;max-height:min(38vh,320px);overflow:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px;background:var(--stage)}
+.prompt-card .prompt-text{font-size:14px;line-height:1.7;margin:0;white-space:break-spaces;overflow-wrap:anywhere;color:var(--secondary)}
+.prompt-body .prompt-text + .prompt-text{margin-top:16px}
+.prompt-meta{font-size:12px;line-height:1.5;color:var(--muted);margin-top:12px}
+.prompt-card .criteria{margin-top:12px;min-height:44px;background:inherit}
+.prompt-card .criteria summary{min-height:44px;font-size:var(--text-section);line-height:1.3}
+.prompt-card button,.prompt-card .bench-badge{min-width:44px;min-height:44px;border-radius:8px}
+.prompt-card .bench-badge{display:flex;align-items:center}
+.prompt-card .use-actions{gap:8px;margin-top:12px}
+.entry-main>.new-section>summary{min-height:44px;padding-block:8px}
+.prompt-card.is-copied{background:#6D28D9;border-color:#6D28D9;color:#FFFFFF}
+.prompt-card.is-copied .prompt-body{background:transparent;border-color:#FFFFFF}
+.prompt-card.is-copied :is(h2,.prompt-text,.prompt-meta,.criteria,.bench-badge,.bench-badge:hover){color:#FFFFFF}
+.prompt-card.is-copied :is(button,button:hover){background:#FFFFFF;border-color:#FFFFFF;color:#6D28D9}
+.prompt-card.is-copied .criteria li{border-color:#FFFFFF}
+.prompt-card.is-copied :focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
+.prompt-card.is-copied button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}
+.bottom-bar .btn-primary.is-copied{background:#6D28D9;border-color:#6D28D9;color:#FFFFFF}
+.bottom-bar[hidden]{display:none!important}
+@media(min-width:1024px){.prompt-card .prompt-body{flex:1 1 auto}.prompt-card .criteria{flex:0 1 auto}}
+@media(max-width:1023px){
+  .prompt-card{position:static;order:2;margin-top:0;margin-bottom:0;width:100%}
+  .prompt-card .prompt-body{max-height:none;overflow:visible}
+}
+@media(prefers-reduced-motion:reduce){.prompt-card,.prompt-card button,.bottom-bar{transition:none}}
+/* 2-up motion cards: the stage absorbs the row height so the caption and its play button stay on one bottom line */
+.motion-grid .gallery-card{display:flex;flex-direction:column}.motion-grid .gallery-card>.mini-stage{flex:1 1 auto;align-items:flex-start}.motion-grid .gallery-card>.gallery-link{flex:none}
+
+/* 卡片 overflow:hidden 会裁掉铺满卡片的链接聚焦环，改为内收 */
+.simple-card a:focus-visible{outline-offset:-3px;border-radius:inherit}
+
+/* Category galleries: masonry (CSS columns, no JS). Card height follows its content;
+   column gap = row gap = --gallery-gap. Reading order runs down each column. */
+.gallery{--gallery-gap:16px;display:block;columns:3;column-gap:var(--gallery-gap)}
+.gallery>.gallery-card{display:block;break-inside:avoid;margin:0 0 var(--gallery-gap);width:100%}
+.motion-grid.gallery>.gallery-card{display:flex}
+@media(max-width:1023px){.gallery{columns:2}}
+@media(max-width:760px){.gallery{--gallery-gap:12px}}
+/* ≤1180 the nav label drops to 13px: its ink centre sits lower, so the caret needs no optical lift */
+@media(max-width:1180px){.nav-caret{top:0}}
+.motion-section .gallery.motion-grid{display:block;--gallery-gap:16px;column-count:auto;column-width:min(100%,320px);column-gap:var(--gallery-gap)}

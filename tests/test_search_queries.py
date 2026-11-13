@@ -1,4 +1,4 @@
-"""Fixed spoken queries exercise the generated index through Node, without a browser."""
+"""Fixed spoken queries exercise the generated shared index through Node, without a browser."""
 import json
 from pathlib import Path
 import re
@@ -18,15 +18,15 @@ class SearchQueriesTest(unittest.TestCase):
             raise AssertionError(cls.result.stderr)
         cls.report = json.loads(cls.result.stdout)
         cls.home = (ROOT / 'dist/index.html').read_text()
-        cls.data = json.loads(re.search(r'id="redesign-search-index">(.*?)</script>', cls.home, re.S)[1])
+        cls.data = json.loads((ROOT / 'dist/assets/search-index.json').read_text())
 
     def test_fixed_queries_hit_expected_entries_in_top_three(self):
         report = self.report
         print(f"口语搜索前 3 条命中 {report['hits']}/{report['total']}，命中率 {report['hit_rate']:.0%}，未命中 {len(report['missed'])} 条。")
         for missed in report['missed']:
             print(f"未命中查询「{missed['query']}」，期望 {missed['expected']}，前 3 条为 {missed['top3']}。")
-        self.assertEqual(report['total'], 60)
-        self.assertGreaterEqual(report['hit_rate'], 0.9, self.result.stdout)
+        self.assertEqual(report['total'], 62)
+        self.assertGreaterEqual(report['hit_rate'], 1, self.result.stdout)
         self.assertEqual(report['mandatory_missed'], [], self.result.stdout)
         self.assertEqual(self.result.returncode, 0, self.result.stderr + self.result.stdout)
 

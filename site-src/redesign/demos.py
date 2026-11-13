@@ -14,6 +14,9 @@ import re
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 KINDS = ('ui', 'motion', 'guide', 'skill-reference', 'token')
+# These guide entries teach a particular visual material. Preserve that material.
+KIND_SKIN_SKIPS = {'guide': frozenset(('minimal', 'editorial', 'organic', 'glass', 'brutalist', 'neumorphic'))}
+
 
 
 def _styles(source):
@@ -24,6 +27,19 @@ def _script(source):
     return '\n'.join(re.findall(r'<script[^>]*>(.*?)</script>', source, re.S))
 
 
+def readable_fonts(text):
+    """Raise source font declarations, including shorthands and inline styles.
+
+    Only font properties change: 9px padding, animation geometry and source
+    content remain untouched. All current source font sizes use px (or clamps
+    with a larger px minimum); inherited small/sub/sup are covered by shared CSS.
+    """
+    def declaration(match):
+        return match[1] + re.sub(r'(?<![\w.-])([\d.]+)px',
+            lambda size: '12px' if float(size[1]) < 12 else size[0], match[2])
+    return re.sub(r'(?<![\w-])(font(?:-size)?\s*:\s*)([^;}"\']+)', declaration, text)
+
+
 def _palette(text):
     # Accent replacements only: charts, illustrative art and danger states retain
     # their semantic colours. The demo's primary action never uses shell blue.
@@ -32,6 +48,8 @@ def _palette(text):
         '#ff6a4a': 'var(--demo-primary)', '#ff5b41': 'var(--demo-primary-hover)',
         '#ff8a70': 'var(--demo-primary)', '#ff9a85': '#C4B5FD',
         '#ffd6cc': '#EDE9FE', '#fdeeea': '#F5F3FF', '#a5321f': 'var(--demo-primary-active)',
+        '#dc2626': 'var(--demo-danger)', '#b91c1c': 'var(--demo-danger)',
+        '#991b1b': 'var(--demo-danger-hover)', '#7f1d1d': 'var(--demo-danger-active)',
         '#1d4ed8': 'var(--demo-primary)', '#2448a4': 'var(--demo-primary-hover)',
     }
     text = re.sub(r'#[\da-fA-F]{3,8}\b', lambda m: colors.get(m[0].lower(), m[0]), text)
@@ -39,32 +57,74 @@ def _palette(text):
 
 
 SHADOW_BASE = '''
-:host{display:block;position:relative;isolation:isolate;contain:layout style;min-width:0;width:100%;color:var(--demo-ink,#111827);font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;--demo-primary:#6D28D9;--demo-primary-hover:#5B21B6;--demo-primary-active:#4C1D95;--demo-stage:#F6F7F9;--demo-ink:#111827;--demo-secondary:#4B5563;--demo-line:#E4E7EC;--demo-soft:#F3F4F6;--text:var(--demo-ink);--bg:#fff;--bg2:#fff;--bg3:var(--demo-soft);--panel:#fff;--panel2:var(--demo-soft);--line2:var(--demo-line);--demo-white:#fff;--font-sans:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;--font-mono:ui-monospace,monospace;--acc:var(--demo-primary);--acc-solid:var(--demo-primary);--accent:var(--demo-primary);--accent-dark:var(--demo-primary-active);--ink:var(--demo-ink);--muted:var(--demo-secondary);--line:var(--demo-line)}
-*{box-sizing:border-box} .demo-root{position:relative;min-width:0;overflow:hidden;background:var(--demo-stage);color:var(--demo-ink);border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important}
-.demo-root>.canvas,.demo-root>.stage,.guide-card-stage{border:0;background:var(--demo-stage);background-image:none;min-height:224px;max-width:100%;margin:0;overflow:hidden}
+:host{display:block;position:relative;isolation:isolate;contain:layout style;min-width:0;width:100%;color:var(--demo-ink,#111827);font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;--demo-primary:#6D28D9;--demo-primary-hover:#5B21B6;--demo-primary-active:#4C1D95;--demo-stage:#F6F7F9;--demo-ink:#111827;--demo-secondary:#4B5563;--demo-line:#E4E7EC;--demo-border:#868E9C;--demo-danger:#B91C1C;--demo-danger-hover:#991B1B;--demo-danger-active:#7F1D1D;--demo-soft:#F3F4F6;--text:var(--demo-ink);--bg:#fff;--bg2:#fff;--bg3:var(--demo-soft);--panel:#fff;--panel2:var(--demo-soft);--line2:var(--demo-line);--demo-white:#fff;--font-sans:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;--font-mono:ui-monospace,monospace;--acc:var(--demo-primary);--acc-solid:var(--demo-primary);--accent:var(--demo-primary);--accent-dark:var(--demo-primary-active);--ink:var(--demo-ink);--muted:var(--demo-secondary);--line:var(--demo-line)}
+*{box-sizing:border-box} .demo-root{position:relative;min-width:0;color:var(--demo-ink);margin:0!important}
+.demo-root>.canvas,.demo-root>.stage,.guide-card-stage{border:0;max-width:100%;margin:0}
 :host(:not([data-demo-playing])) *,:host(:not([data-demo-playing])) *::before,:host(:not([data-demo-playing])) *::after{animation-play-state:paused!important}
+:host([data-demo-motion-step]) *{transition:none!important}
 :host(:not([data-interactive])) .demo-root{pointer-events:none;user-select:none}
 :host([data-demo-playing]) .demo-root{pointer-events:auto}
 .modal-mask,.drawer-mask,.drawer-panel,.cmdk-mask{position:absolute!important;inset-block:0;max-height:100%;z-index:20}
 .drawer-panel{inset-inline-start:auto;max-width:90%}.modal-box{max-width:92%;width:360px}.toast-wrap{position:absolute!important;inset:auto 12px 12px;pointer-events:none}
 .canvas .check,.tab-panel,.segmented,.ie-text,.tl-item.done .tt{color:var(--demo-ink)}.ie-text{border-bottom-color:var(--demo-secondary)}.demo-root input,.demo-root select,.demo-root textarea{accent-color:var(--demo-primary)}.stage .magnet-btn,.stage .ripple-btn{color:#fff!important}.demo-status{display:block;padding:8px 12px;color:var(--demo-secondary);font-size:12px;background:var(--demo-stage)}
 :focus-visible{outline:2px solid var(--demo-primary);outline-offset:3px}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media(prefers-reduced-motion:reduce){:host(:not([data-demo-motion-once]):not([data-demo-motion-step])) *,:host(:not([data-demo-motion-once]):not([data-demo-motion-step])) *::before,:host(:not([data-demo-motion-once]):not([data-demo-motion-step])) *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}:host([data-demo-motion-once]) *,:host([data-demo-motion-once]) *::before,:host([data-demo-motion-once]) *::after{animation-iteration-count:1!important}}
 '''
+
+
+def _gate_reduced_motion(css):
+    """Gate source overrides too, including transform/opacity final states.
+
+    Each source reduced-motion block contains flat style rules. Keep the
+    original declarations and scope every selector to the idle host.
+    """
+    gate = ':host(:not([data-demo-motion-once]):not([data-demo-motion-step]))'
+
+    def selectors(text):
+        # Commas inside :is(), :not() and attribute values are not separators.
+        start = depth = 0
+        quote = ''
+        for index, char in enumerate(text):
+            if quote:
+                if char == quote and (index == 0 or text[index - 1] != chr(92)):
+                    quote = ''
+            elif char in ('"', "'"):
+                quote = char
+            elif char in '([':
+                depth += 1
+            elif char in ')]':
+                depth -= 1
+            elif char == ',' and depth == 0:
+                yield text[start:index].strip()
+                start = index + 1
+        yield text[start:].strip()
+
+    def gate_block(match):
+        body = re.sub(r'([^{}]+)\{', lambda rule: ','.join(
+            selector if selector.startswith(gate) else gate + ' ' + selector
+            for selector in selectors(rule[1])) + '{', match[1])
+        return '@media(prefers-reduced-motion:reduce){' + body + '}'
+    return re.sub(r'@media\s*\(\s*prefers-reduced-motion\s*:\s*reduce\s*\)\s*\{((?:[^{}]|\{[^{}]*\})*)\}',
+                  gate_block, css)
 
 
 def css(source):
     """Compatibility API; this stylesheet is loaded inside a ShadowRoot only."""
-    original = _styles(source).replace(':root', ':host')
+    original = _gate_reduced_motion(_styles(source).replace(':root', ':host'))
     # Also expose source hover effects to the deliberate automated preview.
     hover = '\n'.join(s + b for s, b in re.findall(r'([^{}]+)(\{[^{}]*\})', original)
                       if (':hover' in s or ':active' in s) and '@' not in s)
     hover = hover.replace(':hover', '[data-preview-hover]').replace(':active', '[data-preview-active]')
-    return _palette(original) + '\n' + _palette(hover) + '\n' + SHADOW_BASE
+    return readable_fonts(_palette(original) + '\n' + _palette(hover) + '\n' + SHADOW_BASE)
 
 
 def _ui_script(source):
     script = _script(source)
+    # Enter inside the editor saves once and leaves the containing cell idle.
+    script = script.replace("cell.addEventListener('keydown',e=>{ if(e.key==='Enter')",
+                            "cell.addEventListener('keydown',e=>{ if(e.target===cell&&e.key==='Enter')")
+    script = script.replace("btn.textContent='✓ 已复制';", "btn.textContent='✓ 已复制';btn.classList.add('ds-success');")
+    script = script.replace('btn.textContent=original; btn.disabled=false; },1200)', "btn.textContent=original; btn.disabled=false;btn.classList.remove('ds-success'); },1600)")
     script = script[script.index('function demoSearch'):]
     # Retain interaction functions; discard the page's copy/search/shortcuts.
     start = script.index('/* ---- 点击英文名复制术语')
@@ -101,6 +161,24 @@ def _ui_script(source):
     script = script.replace('    auto();\n  })();', '    auto();\n  })();')
     script += "\ndocument.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCmdk();if(document.getElementById('modal'))closeModal();if(document.getElementById('dmask'))closeDrawer();closePopover();}});\n"
     script = re.sub(r'(\w+)\.setPointerCapture\(e\.pointerId\)', r'e.isTrusted&&\1.setPointerCapture(e.pointerId)', script)
+    script += r"""
+const skeletonCard=document.querySelector('.ds-skeleton-card');
+if(skeletonCard){
+  const image=skeletonCard.querySelector('img');
+  function revealSkeleton(){
+    skeletonCard.classList.add('is-loaded');
+    skeletonCard.setAttribute('aria-busy','false');
+    skeletonCard.querySelector('.ds-skeleton-content').setAttribute('aria-hidden','false');
+    skeletonCard.querySelector('[role=status]').textContent='场景加载完成';
+  }
+  function finishSkeleton(){
+    if(image.complete&&image.naturalWidth)revealSkeleton();
+    else image.addEventListener('load',revealSkeleton,{once:true});
+  }
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)finishSkeleton();
+  else setTimeout(finishSkeleton,1400);
+}
+"""
     return script
 
 
@@ -118,12 +196,26 @@ def _motion_script(source):
     script = script.replace('  initializeDigits(currentNumber);', '  if(odometer)initializeDigits(currentNumber);')
     script = script.replace("reduce.addEventListener('change', () => updateHeader(headerScroll));", "if(headerScroll)reduce.addEventListener('change', () => updateHeader(headerScroll));")
     script = script.replace('  setInterval(()=>{\n    if(reduce.matches||paused()||switching)return;', '  if(!reduce.matches)setInterval(()=>{\n    if(reduce.matches||paused()||switching)return;')
+    # Expose the source-owned word sequence for static manual stepping.
+    script = re.sub(r'(const words=\[[^;]+\]);let idx=', r'\1;stage.dataset.demoWords=JSON.stringify(words);let idx=', script)
+    # Photo cards reveal independently when each enters the local scrollport.
+    script = script.replace("stage.style.setProperty('--p',p);", "stage.style.setProperty('--p',p);revealVisibleCards(scroller);")
     script = script.replace('Number(timeline.value)', 'Number(timeline?.value||0)')
     script = script.replace("||document.getElementById('pauseAll').getAttribute('aria-pressed')==='true'", '')
     # Never navigate to a path relative to the outer entry page.
     script = script.replace("scene.querySelector('iframe').src = 'motion-demo-gallery.html'", "scene.querySelector('iframe').src = scene.querySelector('iframe').dataset.initialSrc")
     script = script.replace('el.setPointerCapture(e.pointerId)', 'e.isTrusted&&el.setPointerCapture(e.pointerId)').replace('chip.setPointerCapture(event.pointerId)', 'event.isTrusted&&chip.setPointerCapture(event.pointerId)')
     return '''const reduce=matchMedia('(prefers-reduced-motion: reduce)'),coarse=matchMedia('(pointer: coarse)');
+function revealVisibleCards(scroller){
+  if(!scroller.closest('.ds-reveal-demo'))return;
+  const viewport=scroller.getBoundingClientRect();
+  scroller.querySelectorAll('.ds-reveal-card').forEach(card=>{
+    const rect=card.getBoundingClientRect();
+    if(rect.top<viewport.bottom-16&&rect.bottom>viewport.top){
+      card.classList.add('ds-revealed');
+    }
+  });
+}
 let activeDialog=null,inerted=[];
 function openDialog(layer){if(!layer||activeDialog)return;layer.hidden=false;let child=layer;while(child!==document.body){for(const sibling of child.parentElement.children){if(sibling!==child&&!sibling.inert){sibling.inert=true;inerted.push(sibling)}}child=child.parentElement}activeDialog=layer;layer.querySelector('[data-action=close]')?.focus();}
 ''' + script + '''
@@ -135,7 +227,7 @@ return {replay};
 def _guide_script():
     source = (ROOT / 'site-src/guides.js').read_text()
     start = source.index('  function setText(')
-    end = source.index('  for (const card of cards)')
+    end = source.index('  for (const card of cards)', start)
     # The original state functions are independent of the old page shell.
     return source[start:end] + '''
 const stage=document.querySelector('.guide-card-stage'),section=scope.dataset.demoSection||document.body.dataset.guide;
@@ -218,7 +310,17 @@ def _source_anchor(demo):
     return ''
 
 
-def markup(demo, prefix, interactive=False):
+@lru_cache(maxsize=None)
+def _loop_classes(kind):
+    files = {'ui': ROOT / '网页UI元素速查.html', 'motion': ROOT / '动效速查.html'}
+    if kind not in files:
+        return set()
+    return {name for selector, body in re.findall(r'([^{}]+)\{([^{}]*)\}', _styles(files[kind].read_text()))
+            if re.search(r'animation[^;{}]*\binfinite\b', body)
+            for name in re.findall(r'\.([\w-]+)', selector)}
+
+
+def markup(demo, prefix, interactive=False, slug=''):
     """Return a dormant template INSIDE the caller's .demo-scope host.
 
     prefix is the relative assets/redesign/ directory, including trailing slash.
@@ -226,7 +328,18 @@ def markup(demo, prefix, interactive=False):
     """
     from entries import Document
     kind, content = demo['kind'], demo['html']
+    anchor = _source_anchor(demo)  # Preserve source identity before HTML overrides.
+    skin = f'{kind}-{slug}' if slug else ''
+    override = HERE / 'demo-skins' / f'{skin}.html'
+    if skin and override.is_file():
+        content = override.read_text(encoding='utf-8')
+    image_prefix = posixpath.normpath(prefix + '../../demo-assets')
+    content = content.replace('{{demo-assets}}', image_prefix)
+    classes = {name for value in re.findall(r'class="([^"]+)"', content) for name in value.split()}
+    looping = bool(classes & (_loop_classes(kind) | {'carousel', 'morph-stage'})) or '<canvas' in content
     content = content.replace('href="javascript:void 0"', 'href="#"').replace("href='javascript:void 0'", "href='#'")
+    content = content.replace('点按钮，或直接按 ⌘K / Ctrl+K', '点按钮<span class="demo-shortcut-hint">，或直接按 ⌘K / Ctrl+K</span>')
+    content = content.replace('唤起命令面板 ⌘K', '唤起命令面板<span class="demo-shortcut-hint"> ⌘K</span>')
     extra = ''
     if kind == 'ui':
         overlays = _ui_inventory()[1]
@@ -236,7 +349,8 @@ def markup(demo, prefix, interactive=False):
                     overlay = overlays[identifier]
                     if identifier == 'cmdk':
                         overlay = overlay.replace('id="cmdk"', 'id="cmdk" data-demo-commands="' + _cmdk_metadata(prefix) + '"', 1)
-                    extra += overlay
+                    if f'id="{identifier}"' not in content:
+                        extra += overlay
         cls = 'cmp'
     elif kind == 'motion':
         cls = 'effect-card'
@@ -259,13 +373,36 @@ def markup(demo, prefix, interactive=False):
         content = '<div class="skill-card">' + ''.join(n.outer(content) for n in head+body) + '</div>'
     # The source has a damaged hex-label ID; repair only that attribute.
     content = content.replace('id=#ed462d" data-x="x" data-hexc="', 'id="hexc"')
-    anchor = _source_anchor(demo)
     category = '静态演示' if kind == 'skill-reference' else _classification().get(anchor, '')
     attrs = f' id="{escape(anchor)}"' if anchor else ''
+    has_sample = bool(skin and (HERE / 'demo-skins' / f'{skin}.css').is_file())
+    kind_skin = not has_sample and slug not in KIND_SKIN_SKIPS.get(kind, ())
+    if has_sample:
+        attrs += ' data-ds-sample'
+    elif kind_skin:
+        attrs += f' data-ds-kind="{escape(kind)}"'
+
     if kind == 'guide':
         attrs += f' data-guide="{escape(demo["section"])}"'
-    result = f'<template data-demo-template data-demo-css="{escape(prefix)}demo-{kind}.css" data-demo-static="{'true' if category == '静态演示' else 'false'}" data-demo-category="{escape(category)}"><article class="demo-root {cls}"{attrs}>{content}{extra}</article></template>'
-    return result
+    skin_attr = f' data-skin-css="{escape(prefix)}demo-skins/{escape(skin)}.css"' if skin and (HERE / 'demo-skins' / f'{skin}.css').is_file() else ''
+    if kind_skin:
+        skin_attr += f' data-kind-css="{escape(prefix)}demo-skins/_kind-{escape(kind)}.css"'
+    # Existing hints keep their original selector and parent relationships.
+    content = re.sub(r'class="([^"]*(?:stage-label|\bctl\b)[^"]*)"',
+                     lambda m: f'class="{m[1]}"' if 'ds-hint' in m[1].split() else f'class="{m[1]} ds-hint"', content)
+    content = re.sub(r'(<(?:span|div)\b[^>]*class="([^"]+)"[^>]*>)',
+                     lambda m: m[1] + ('<span class="ds-hint-icon" aria-hidden="true">↖</span>' if 'ds-hint' in m[2].split() else ''), content)
+    if extra:
+        extra = '<div class="ds-overlays">' + extra + '</div>'
+    result = f'<template data-demo-template data-spec-css="{escape(prefix)}demo-spec.css" data-a11y-css="{escape(prefix)}demo-accessibility.css"{skin_attr} data-demo-css="{escape(prefix)}demo-{kind}.css" data-demo-loop="{str(looping).lower()}" data-demo-static="{'true' if category == '静态演示' else 'false'}" data-demo-category="{escape(category)}"><article class="demo-root ds-stage {cls}"{attrs}>{content}{extra}</article></template>'
+    return re.sub(r'\bstyle=(["\'])(.*?)\1',
+                  lambda match: 'style=' + match[1] + readable_fonts(match[2]) + match[1], result, flags=re.S)
+
+
+def spec_weights(text):
+    """UI audit: demo type uses spec weights only (400/500/600/650); legacy bold becomes 600."""
+    text = re.sub(r'font-weight:\s*(?:bold|bolder|[7-9]00|750)\b', 'font-weight:600', text)
+    return re.sub(r'(font:\s*(?:italic\s+)?)(?:bold|[7-9]00|750)\b', r'\g<1>600', text)
 
 
 def assets(entries):
@@ -282,16 +419,22 @@ def _assets():
         'demo-motion.js': _package('motion', _motion_script(motion)),
         'demo-guide.js': _package('guide', _guide_script()),
         'demo-skill-reference.js': _package('skill-reference', 'return {};'),
-        'demo-ui.css': css(ui), 'demo-motion.css': css(motion),
-        'demo-guide.css': css('<style>' + (ROOT / 'site-src/guides.css').read_text() + (ROOT / 'site-src/visual-styles.css').read_text() + '</style>'),
-        'demo-skill-reference.css': css('<style>' + (ROOT / 'site-src/skills.css').read_text() + '</style>'),
+        'demo-ui.css': spec_weights(css(ui)), 'demo-motion.css': spec_weights(css(motion)),
+        'demo-guide.css': spec_weights(css('<style>' + (ROOT / 'site-src/guides.css').read_text() + '</style>')) + css('<style>' + (ROOT / 'site-src/visual-styles.css').read_text() + '</style>'),
+        'demo-skill-reference.css': spec_weights(css('<style>' + (ROOT / 'site-src/skills.css').read_text() + '</style>')),
         'demo-token.js': (HERE / 'token-demo.js').read_text(),
-        'demo-token.css': SHADOW_BASE + (HERE / 'token-demo.css').read_text(),
+        'demo-token.css': readable_fonts(SHADOW_BASE + _gate_reduced_motion((HERE / 'token-demo.css').read_text())),
+        'demo-spec.css': readable_fonts(_gate_reduced_motion((HERE / 'demo-spec.css').read_text())),
+        'demo-accessibility.css': readable_fonts((HERE / 'demo-accessibility.css').read_text()),
         'demos.css': '.demo-scope{display:block;position:relative;min-width:0;width:100%;isolation:isolate}.demo-secondary{margin-top:16px}.demo-scope>template{display:none}\n',
     }
+    for path in sorted((HERE / 'demo-skins').glob('*.css')):
+        result['demo-skins/' + path.name] = readable_fonts(_gate_reduced_motion(path.read_text()))
     for page in ('motion-demo-gallery', 'motion-demo-detail'):
-        original = (ROOT / (page + '.html')).read_text()
-        result[page + '.css'] = _palette(_styles(original)) + '\n:root{--demo-primary:#6D28D9}a{color:var(--demo-primary)}a:focus-visible{outline-color:var(--demo-primary)}\n'
+        page_skin = HERE / 'demo-skins' / (page.replace('motion-demo-', 'motion-cross-page-') + '.html')
+        original = (page_skin if page_skin.is_file() else ROOT / (page + '.html')).read_text()
+        original = original.replace('{{demo-assets}}', '../../demo-assets')
+        result[page + '.css'] = readable_fonts(_palette(_styles(original)) + '\n:root{--demo-primary:#6D28D9}a{color:var(--demo-primary)}a:focus-visible{outline-color:var(--demo-primary)}\n')
         result[page + '.html'] = re.sub(r'<style[^>]*>.*?</style>', f'<link rel="stylesheet" href="{page}.css"><link rel="icon" href="../favicon.svg" type="image/svg+xml">', original, flags=re.S)
     return result
 
@@ -305,7 +448,7 @@ def smoke_fixture(entries):
     for entry in entries:
         demos = [entry['demo']] + ([entry['demo']['secondary']] if entry['demo'].get('secondary') else [])
         for demo in demos:
-            source = Document(markup({k:v for k,v in demo.items() if k != 'secondary'}, './', True)).root
+            source = Document(markup({k:v for k,v in demo.items() if k != 'secondary'}, './', True, entry['slug'])).root
             article = source.one('article')
             rows.append(dict(kind=demo['kind'],section=demo.get('section',''),anchor=_source_anchor(demo) or entry['id'],node=node_data(article)))
     return dict(demos=rows, sources={kind:_assets()[f'demo-{kind}.js'] for kind in KINDS})

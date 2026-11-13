@@ -1,0 +1,28 @@
+.ds-badge-dot-panel { width:min(100%,var(--ds-subject-width)); min-width:0; max-width:100%; padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-1); text-align:left; font:400 14px/1.6 var(--ds-font); }
+.ds-badge-dot-panel > header { margin-bottom:24px; }
+.ds-badge-dot-panel > header > strong { display:block; font:600 16px/1.5 var(--ds-font); }
+.ds-badge-dot-panel > header > p { margin:8px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-badge-dot-panel .ds-g-content { width:100%; min-width:0; }
+.ds-badge-dot-panel .ds-g-content > * { max-width:100%; min-width:0; }
+.ds-badge-dot-panel :is(button,a,[tabindex]) { font-family:inherit; }
+.ds-badge-dot-panel :is(button,a):not(:disabled) { cursor:pointer; transition:background-color var(--ds-dur-fast) var(--ds-ease-standard),box-shadow var(--ds-dur-fast) var(--ds-ease-standard); }
+.ds-badge-dot-panel :is(button,a,[tabindex]):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-badge-dot-panel :is(button,input):disabled { opacity:.45; cursor:not-allowed; transform:none; }
+.ds-badge-dot-panel :is(button,input):disabled:hover { box-shadow:none; }
+.ds-badge-dot-panel :is(button,input)[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
+.ds-badge-dot-panel button:not(:disabled):active { transform:scale(.98); }
+@container demo-stage (max-width:480px) { .ds-badge-dot-panel { padding:20px 16px; } }
+@media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-badge-dot-panel :is(button,a) { transition:none; transform:none; } }
+.ds-badge-dot-panel .bd-demo { display:flex; justify-content:center; gap:32px; padding:8px; }
+.ds-badge-dot-panel .bdg { position:relative; width:56px; height:56px; border:1px solid var(--ds-border); border-radius:12px; background:var(--ds-fill); color:var(--ds-ink); font-size:20px; box-shadow:var(--ds-shadow-1); }
+.ds-badge-dot-panel .bdg:hover:not(:disabled) { background:var(--ds-line); box-shadow:var(--ds-shadow-2); }
+.ds-badge-dot-panel .bdg .num { min-width:28px; min-height:20px; padding:0 4px; border:2px solid var(--ds-surface); border-radius:999px; background:var(--ds-danger); color:var(--ds-surface); font:500 12px/1.5 var(--ds-font); }
+.ds-badge-dot-panel .bdg .dot { width:12px; height:12px; border:2px solid var(--ds-surface); background:var(--ds-danger); }
+.ds-badge-dot-panel .bd-lbl { margin-top:12px; color:var(--ds-ink-2); font-size:12px; }
+
+@container demo-stage (max-width:240px) {
+  .ds-badge-dot-panel .bd-demo { flex-wrap:wrap; gap:12px; }
+  .ds-badge-dot-panel .bd-demo > div { flex:0 1 100%; min-width:0; text-align:center; }
+  .ds-badge-dot-panel .bdg { max-width:100%; }
+  .ds-badge-dot-panel .bdg .num { right:-4px; box-sizing:border-box; }
+}

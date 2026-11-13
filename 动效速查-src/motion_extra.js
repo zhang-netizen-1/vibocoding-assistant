@@ -144,10 +144,24 @@
     {number: '08', label: '最新活动', note: '3 项等待处理'},
     {number: '03', label: '偏好设置', note: '个性化选项'}
   ];
+  // The indicator is measured from the selected tab itself (unequal widths, gaps,
+  // padding), and re-measured whenever the tab list changes size.
+  function placeTabIndicator(list, animate = true) {
+    const selected = list && list.querySelector('[role=tab][aria-selected=true]'), indicator = list && list.querySelector('.extra-tab-indicator');
+    if (!selected || !indicator) return;
+    if (!animate) indicator.style.transition = 'none';
+    indicator.style.left = '0px';
+    indicator.style.width = `${selected.offsetWidth}px`;
+    indicator.style.top = `${selected.offsetTop}px`;
+    indicator.style.height = `${selected.offsetHeight}px`;
+    indicator.style.bottom = 'auto';
+    indicator.style.transform = `translateX(${selected.offsetLeft}px)`;
+    if (!animate) { void indicator.offsetWidth; indicator.style.transition = ''; }
+  }
   function selectTab(button, focus = false) {
     const tabs = [...button.parentElement.querySelectorAll('[role=tab]')], index = tabs.indexOf(button);
     tabs.forEach(tab => {const active = tab === button; tab.setAttribute('aria-selected', String(active)); tab.tabIndex = active ? 0 : -1;});
-    button.parentElement.querySelector('.extra-tab-indicator').style.transform = `translateX(${index * 100}%)`;
+    placeTabIndicator(button.parentElement);
     const content = sceneOf(button).querySelector('.extra-tab-content');
     content.setAttribute('aria-labelledby', button.id);
     content.querySelector('.extra-stat-number').textContent = tabData[index].number;
@@ -378,6 +392,11 @@
     const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
     selectTab(tabs[next], true);
   });
+  const extraTabList = document.querySelector('#e-extra-tab-indicator .extra-tabs');
+  if (extraTabList) {
+    placeTabIndicator(extraTabList, false);
+    if (typeof ResizeObserver === 'function') new ResizeObserver(() => placeTabIndicator(extraTabList, false)).observe(extraTabList);
+  }
 })();
 
 /* ===== P0-2 新增动效演示 ===== */

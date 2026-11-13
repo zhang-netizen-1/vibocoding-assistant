@@ -148,8 +148,6 @@ def load_entries(content=None, *, strict=None):
     raw = {item['anchor']: item for item in source_entries()}
     if set(raw) != set(tax['anchors']):
         raise ValueError('Taxonomy must cover exactly every source anchor')
-    bench = json.loads((SOURCE / 'bench/data/narrative.json').read_text(encoding='utf-8'))['entries']
-    scores = json.loads((SOURCE / 'bench/data/round2-results.json').read_text(encoding='utf-8'))['scores']
     result = []
     for anchor, item in raw.items():
         if anchor in tax['merges']:
@@ -162,9 +160,6 @@ def load_entries(content=None, *, strict=None):
                 entry['prompt_secondary'] = raw[old]['prompt']
                 entry['source']['secondary'] = raw[old]['source']
                 entry['terms'] += ' ' + raw[old]['terms']
-        for slug, report in bench.items():
-            if report['site_link'].split('#')[-1] == anchor:
-                entry['bench'] = dict(slug=slug, totals={agent:scores[slug][agent]['total'] for agent in ('codex','hermes')})
         result.append(entry)
     native = load_module('native_token_entries', SOURCE / 'token_entries.py')
     result.extend(native.entries())

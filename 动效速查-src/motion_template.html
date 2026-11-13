@@ -74,6 +74,44 @@ button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allow
 @media(max-width:700px){.top-main{flex-wrap:wrap}.search{min-width:0;width:100%}.count{display:none}.intro{display:block}.intro strong{display:block;margin-bottom:4px}.wrap{padding:17px 12px 40px}.top-inner{padding:10px 12px}.grid{grid-template-columns:1fr}.category-section{scroll-margin-top:160px}.section-head h2{font-size:19px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.reveal-target{opacity:1!important;transform:none!important}.text-mask span,.type-line span,.bar-chart i{opacity:1;transform:none}.mini-scroll{scroll-behavior:auto}}
 __EXTRA_CSS__
+
+/* Compact view cards share readable typography in details and gallery previews. */
+.stage .scene-stack, .stage .scene-window, .stage .scene-curtain {
+  width: min(260px, 100%);
+  height: 112px;
+}
+.stage .scene-stack .mini-view, .stage .scene-window .scene-slide, .stage .scene-curtain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px;
+  color: var(--demo-white, #FFFFFF);
+  background: linear-gradient(135deg, var(--demo-primary, #6D28D9), var(--demo-primary-active, #4C1D95));
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+}
+.stage .scene-stack strong, .stage .scene-slide strong, .stage .scene-curtain strong {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.stage .scene-description { font-size: 13px; line-height: 1.5; }
+.stage .scene-window .view-track { height: 100%; }
+.stage .scene-window .scene-slide { flex: 0 0 50%; min-width: 0; }
+.stage .scene-stack .view-b, .stage .scene-window .scene-slide + .scene-slide {
+  background: linear-gradient(135deg, var(--demo-primary-hover, #5B21B6), var(--demo-primary-active, #4C1D95));
+  color: var(--demo-white, #FFFFFF);
+}
+.stage .stagger-box { color: var(--demo-ink, #111827); font-size: 14px; }
+.stage .stagger-box strong { font-size: 14px; line-height: 1.5; }
+.stage .stagger-box span { font-size: 13px; }
+
+.stage .shared-box { width: min(260px, 100%); height: 160px; }
+.stage .shared-chip { width: 140px; height: 56px; }
+.stage .shared-chip strong { font-size: 14px; line-height: 1.5; white-space: normal; }
+.stage .shared-chip span { font-size: 13px; line-height: 1.5; overflow: hidden; }
 </style>
 </head>
 <body>

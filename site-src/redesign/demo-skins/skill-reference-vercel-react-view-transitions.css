@@ -1,0 +1,33 @@
+/* I3 · skill-reference/vercel-react-view-transitions. Original source behavior and copy remain authoritative. */
+
+.demo-root.ds-stage .skill-card { width:min(100%,var(--ds-subject-width)); min-width:0; max-width:100%; height:auto; overflow:visible; border:1px solid var(--ds-line); border-radius:var(--ds-r-surface); background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-1); text-align:left; }
+.demo-root .skill-card-top { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:8px 16px; min-height:48px; padding:16px 24px; border-bottom:1px solid var(--ds-line); border-radius:calc(var(--ds-r-surface) - 1px) calc(var(--ds-r-surface) - 1px) 0 0; background:var(--ds-fill); color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.demo-root .skill-card-top span { min-width:0; max-width:100%; overflow-wrap:anywhere; }
+.demo-root .skill-card-top span:first-child { flex:none; color:var(--ds-accent); font-weight:600; letter-spacing:.06em; }
+.demo-root .skill-card-body { padding:24px; }
+.demo-root .skill-card h3 { margin:0 0 16px; color:var(--ds-ink); font:600 var(--ds-demo-title)/1.35 var(--ds-font); letter-spacing:-.01em; overflow-wrap:anywhere; }
+.demo-root .skill-card h3 small { display:block; margin-top:8px; color:var(--ds-accent); font:500 12px/1.5 ui-monospace,monospace; letter-spacing:0; overflow-wrap:anywhere; }
+.demo-root .skill-summary { min-height:0; margin:0 0 24px; color:var(--ds-ink-2); font:400 var(--ds-demo-body)/1.6 var(--ds-font); }
+.demo-root .skill-card dl { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:24px; margin:0; padding:20px 0; border-top:1px solid var(--ds-line); border-bottom:1px solid var(--ds-line); }
+.demo-root .skill-card dl > div { min-width:0; padding:0; border:0; border-radius:0; background:none; box-shadow:none; }
+.demo-root.ds-stage .skill-card dt { margin:0 0 8px; color:var(--ds-ink); font:600 12px/1.5 var(--ds-font); }
+.demo-root .skill-card dd { margin:0; color:var(--ds-ink-2); font:400 var(--ds-demo-body)/1.6 var(--ds-font); overflow-wrap:anywhere; }
+.demo-root .skill-tags { display:flex; flex-wrap:wrap; gap:8px; margin:24px 0 0; }
+.demo-root .skill-tags span { max-width:100%; padding:4px 8px; border:1px solid var(--ds-accent-200); border-radius:var(--ds-r-chip); background:var(--ds-accent-50); color:var(--ds-accent); font:500 12px/1.5 var(--ds-font); overflow-wrap:anywhere; }
+@container demo-stage (max-width:480px) {
+  .demo-root .skill-card-top { padding:16px; }
+  .demo-root .skill-card-body { padding:20px 16px; }
+  .demo-root .skill-card dl { grid-template-columns:minmax(0,1fr); gap:16px; }
+}
+@container demo-stage (max-width:240px) {
+  .demo-root .skill-card-top { flex-direction:column; gap:8px; }
+  .demo-root .skill-card h3 { font-size:20px; }
+  .demo-root .skill-card-body { padding:16px 12px; }
+}
+:host(:not([data-interactive])) .demo-root.ds-stage .skill-card { border-radius:14px; }
+:host(:not([data-interactive])) .demo-root .skill-card-top { border-radius:13px 13px 0 0; }
+.demo-root .skill-card dl { grid-template-columns:minmax(0,1fr); gap:16px; }
+.demo-root .skill-card dl > div:last-child { padding:16px; background:var(--ds-accent-50); border-radius:var(--ds-r-min); }
+@media(prefers-reduced-motion:reduce) {
+  :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .demo-root :is(.skill-card,.mini-layout,.style-preview,.token-demo,.mini-page,button) { transition:none; animation:none; }
+}

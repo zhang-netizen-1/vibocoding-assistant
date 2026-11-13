@@ -1,0 +1,35 @@
+/* I1: presentation only; source hooks and lifecycle remain unchanged. */
+.demo-root .ds-table-reorder-panel { width:min(100%,var(--ds-subject-width)); min-width:0; max-width:100%; padding:24px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-1); text-align:left; font:400 14px/1.6 var(--ds-font); overflow-wrap:anywhere; }
+.ds-table-reorder-panel > header { margin-bottom:24px; }
+.ds-table-reorder-panel > header > strong { display:block; font:600 16px/1.5 var(--ds-font); }
+.ds-table-reorder-panel > header > p { margin:8px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-table-reorder-panel .ds-i1-content { width:100%; min-width:0; }
+.ds-table-reorder-panel .ds-i1-content > * { min-width:0; max-width:100%; }
+.demo-root .ds-table-reorder-panel :is(input.i,textarea.i,.ie-input) { width:100%; min-width:0; min-height:48px; padding:12px; border:1px solid var(--ds-border); border-radius:8px; color:var(--ds-ink); background:var(--ds-surface); font:400 14px/1.6 var(--ds-font); box-shadow:none; }
+.ds-table-reorder-panel :is(input.i,textarea.i,.ie-input)::placeholder { color:var(--ds-ink-2); opacity:1; }
+.ds-table-reorder-panel :is(input.i,textarea.i,.ie-input):focus { border-color:var(--ds-accent); box-shadow:0 0 0 2px var(--ds-accent-100); }
+.ds-table-reorder-panel :is(button,input,textarea,[tabindex]):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.ds-table-reorder-panel :is(button,input,textarea):disabled { opacity:.45; cursor:not-allowed; }
+.ds-table-reorder-panel :is(input,textarea)[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
+.ds-table-reorder-panel :is(button,[role="button"]):not(:disabled):active { transform:scale(.98); }
+.ds-table-reorder-panel .ds-i1-field { display:grid; gap:8px; width:100%; min-width:0; color:var(--ds-ink-2); font:500 12px/1.5 var(--ds-font); }
+.ds-table-reorder-panel .ds-i1-meta { margin:12px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.ds-table-reorder-panel [hidden] { display:none!important; }
+@container demo-stage (max-width:480px) { .demo-root .ds-table-reorder-panel { padding:20px 16px; } }
+@container demo-stage (max-width:240px) { .demo-root .ds-table-reorder-panel { padding:16px 8px; } .ds-table-reorder-panel > header { margin-bottom:16px; } }
+@media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-table-reorder-panel :is(button,input,textarea,[role="button"]) { transition:none; transform:none; } }
+
+.ds-table-reorder-panel .ds-i1-content > div { width:100%; align-items:stretch!important; gap:12px!important; }
+.demo-root .ds-table-reorder-panel .tblre-wrap { width:100%; min-width:0; border:1px solid var(--ds-line); border-radius:12px; background:var(--ds-surface); overflow:visible; }
+.ds-table-reorder-panel .demo-tbl { width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0; color:var(--ds-ink); font:400 14px/1.5 var(--ds-font); }
+.ds-table-reorder-panel .demo-tbl :is(th,td) { height:48px; padding:12px; text-align:left; white-space:normal; overflow-wrap:anywhere; border:0; border-bottom:1px solid var(--ds-line); }
+.ds-table-reorder-panel .demo-tbl th { min-height:48px; background:var(--ds-fill); color:var(--ds-ink-2); font-size:12px; font-weight:500; }
+.ds-table-reorder-panel .demo-tbl th:first-child { border-top-left-radius:12px; }
+.ds-table-reorder-panel .demo-tbl th:last-child { border-top-right-radius:12px; }
+.ds-table-reorder-panel .demo-tbl tr:last-child td { border-bottom:0; }
+.ds-table-reorder-panel .demo-tbl th:hover { background:var(--ds-accent-50); }
+.ds-table-reorder-panel .demo-tbl th.col-dragging { color:var(--ds-accent); background:var(--ds-accent-100); box-shadow:inset 0 0 0 1px var(--ds-accent); }
+.ds-table-reorder-panel .drag-dot { margin-left:4px; color:var(--ds-ink-2); }
+.ds-table-reorder-panel .ie-hint { margin:0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+@container demo-stage (max-width:480px) { .ds-table-reorder-panel .demo-tbl :is(th,td) { padding:12px 8px; } }
+@container demo-stage (max-width:240px) { .ds-table-reorder-panel .demo-tbl :is(th,td) { padding:8px 4px; font-size:12px; } .ds-table-reorder-panel .drag-dot { display:block; margin:0; } }

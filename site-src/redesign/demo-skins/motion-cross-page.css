@@ -1,0 +1,39 @@
+/* I2 individual specimen. Original source hooks and timing are retained. */
+.demo-root .ds-i2-panel { position:relative; width:min(100%,var(--ds-subject-width)); max-width:100%; min-width:0; padding:24px; border:1px solid var(--ds-line); border-radius:var(--ds-r-surface); background:var(--ds-surface); color:var(--ds-ink); box-shadow:var(--ds-shadow-1); text-align:left; font:400 14px/1.6 var(--ds-font); }
+.demo-root .ds-i2-panel * { box-sizing:border-box; min-width:0; }
+.demo-root .ds-i2-heading { display:flex; flex-direction:column; gap:8px; margin:0 0 20px; }
+.demo-root .ds-i2-title { display:block; margin:0; color:var(--ds-ink); font:600 var(--ds-demo-heading)/1.5 var(--ds-font); letter-spacing:0; }
+.demo-root .ds-i2-meta { margin:0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.demo-root .ds-i2-panel :is(button,input,[tabindex]):focus-visible { outline:2px solid var(--ds-accent); outline-offset:2px; }
+.demo-root .ds-i2-panel :is(button,input):disabled { opacity:.45; cursor:not-allowed; }
+.demo-root .ds-i2-panel input[aria-invalid="true"] { border-color:var(--ds-danger)!important; }
+.demo-root .ds-i2-panel button { min-height:44px; max-width:100%; padding:10px 16px!important; border:1px solid var(--ds-border)!important; border-radius:var(--ds-r-min)!important; background:var(--ds-surface)!important; color:var(--ds-ink)!important; font:500 14px/1.5 var(--ds-font)!important; white-space:normal; cursor:pointer; }
+.demo-root .ds-i2-panel button:hover:not(:disabled) { background:var(--ds-accent-50)!important; filter:none; }
+.demo-root .ds-i2-panel button:active:not(:disabled) { background:var(--ds-accent-100)!important; }
+.demo-root .ds-i2-panel :is(.media-actions,.pager-actions,.extra-drop-controls) { display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+.demo-root .ds-i2-panel :is(.extra-status,.carousel-status) { display:block; margin:16px 0 0; color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.demo-root .ds-i2-img { display:block; width:100%; max-width:100%; height:100%; object-fit:cover; }
+.demo-root .ds-i2-photo { position:relative; background:var(--ds-fill); overflow:hidden; isolation:isolate; }
+.demo-root .ds-i2-photo::after { content:""; position:absolute; inset:0; border:1px solid var(--ds-line); border-radius:inherit; pointer-events:none; }
+.demo-root .ds-i2-photo > .ds-i2-img { position:absolute; inset:0; z-index:-1; }
+@container demo-stage (max-width:480px) { .demo-root .ds-i2-panel { padding:16px; } .demo-root .ds-i2-heading { margin-bottom:16px; } }
+@container demo-stage (max-width:240px) { .demo-root .ds-i2-panel { padding:12px; } .demo-root .ds-i2-title { font-size:16px; } .demo-root .ds-i2-panel button { padding:8px!important; } }
+@media(prefers-reduced-motion:reduce) { :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-i2-panel { scroll-behavior:auto; } }
+
+.demo-root .stage:has(>.ds-i2-panel) { display:flex; flex-direction:column; gap:16px; }
+.demo-root .ds-i2-panel.extra-scene { min-height:0; overflow:visible; }
+.demo-root .ds-i2-panel .extra-heading { margin:0 0 20px; }
+.demo-root .ds-i2-panel .extra-heading strong { color:var(--ds-ink); font:600 var(--ds-demo-heading)/1.5 var(--ds-font); letter-spacing:0; }
+
+.demo-root .ds-i2-panel .extra-page-frame { width:100%; height:340px; border:1px solid var(--ds-line); border-radius:var(--ds-r-min); background:var(--ds-surface); }
+.demo-root .ds-i2-panel .extra-page-controls { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-top:16px; color:var(--ds-ink-2); font-size:12px; }
+@container demo-stage (max-width:240px) { .demo-root .ds-i2-panel .extra-page-frame { height:390px; } }
+
+:host(:not([data-interactive])) .demo-root .ds-i2-panel { border-radius:calc(var(--ds-r-surface) - 2px); }
+
+
+.demo-root .ds-i2-panel .extra-page-frame { height:430px; }
+
+/* Keep the specimen to three typographic levels. */
+.demo-root .ds-i2-panel .extra-heading strong { font-size:20px; }
+@container demo-stage (max-width:240px) { .demo-root .ds-i2-panel .extra-heading strong { font-size:16px; } }

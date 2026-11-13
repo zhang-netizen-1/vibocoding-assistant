@@ -1,0 +1,20 @@
+.ds-navbar-panel { width:min(100%,var(--ds-subject-width)); overflow:hidden; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); box-shadow:var(--ds-shadow-1); }
+.demo-root .ds-navbar-panel .navbar { display:flex; align-items:center; justify-content:space-between; gap:16px; width:100%; padding:16px 24px; border:0; border-bottom:1px solid var(--ds-line); border-radius:0; background:var(--ds-surface); color:var(--ds-ink); font:500 14px/1.5 var(--ds-font); box-shadow:none; }
+.ds-navbar-panel .brandw { display:flex; align-items:center; flex:none; gap:8px; font-weight:600; }
+.ds-brand-mark { display:grid; place-items:center; width:28px; height:28px; border-radius:8px; background:var(--ds-accent-50); color:var(--ds-accent); font-size:16px; }
+.demo-root .ds-navbar-panel .links { display:flex; align-items:center; gap:16px; }
+.demo-root .ds-navbar-panel .links span { color:var(--ds-ink-2); font-size:12px; line-height:1.5; white-space:nowrap; }
+.demo-root .ds-navbar-panel .links .ds-nav-current { color:var(--ds-accent); font-weight:600; }
+.demo-root .ds-navbar-panel .links .ds-nav-login { padding:8px 12px; border:1px solid var(--ds-line); border-radius:8px; color:var(--ds-ink); }
+.demo-root .ds-navbar-panel .links span:hover { color:var(--ds-accent); }
+.ds-navbar-content { display:flex; flex-direction:column; gap:8px; padding:32px 24px; text-align:left; }
+.ds-navbar-content>span { color:var(--ds-ink-3); font:400 12px/1.5 var(--ds-font); }
+.ds-navbar-content strong { color:var(--ds-ink); font:600 var(--ds-demo-heading)/1.5 var(--ds-font); }
+.ds-navbar-content p { margin:0; color:var(--ds-ink-2); font:400 14px/1.6 var(--ds-font); }
+@container demo-stage (max-width:480px) {
+  .demo-root .ds-navbar-panel .navbar { padding:16px; gap:12px; flex-wrap:wrap; }
+  .demo-root .ds-navbar-panel .links { flex:1; justify-content:flex-end; gap:12px; }
+  .demo-root .ds-navbar-panel .links .ds-nav-login { padding:8px; }
+  .ds-navbar-content { padding:24px 16px; }
+}
+:host(:not([data-interactive])) .ds-navbar-content p { display:none; }

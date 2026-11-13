@@ -1,0 +1,19 @@
+.demo-root .stage[data-effect="scroll-parallax"] { flex-direction:column; gap:16px; }
+.demo-root .stage[data-effect="scroll-parallax"] .mini-scroll { width:min(100%,var(--ds-subject-width)); height:280px; border:1px solid var(--ds-line); border-radius:16px; background:var(--ds-surface); box-shadow:var(--ds-shadow-1); scrollbar-color:var(--ds-border) transparent; }
+.stage[data-effect="scroll-parallax"] .scroll-top { display:flex; align-items:center; justify-content:center; height:40px; background:var(--ds-surface); color:var(--ds-ink-2); font:400 12px/1.5 var(--ds-font); }
+.stage[data-effect="scroll-parallax"] .scroll-spacer { height:48px; }
+.stage[data-effect="scroll-parallax"] .scroll-spacer.end { height:180px; }
+.demo-root .stage[data-effect="scroll-parallax"] .parallax-sky { position:relative; height:240px; overflow:hidden; background:#5B4B3D; }
+.stage[data-effect="scroll-parallax"] .parallax-back { position:absolute; inset:-48px 0 0; height:calc(100% + 48px); font-size:0; opacity:1; transform:translateY(calc(var(--p)*45px)); }
+.stage[data-effect="scroll-parallax"] .parallax-front { position:absolute; inset:-24px 0; height:calc(100% + 48px); font-size:0; opacity:1; transform:translateY(calc(var(--p)*-18px)); mask-image:linear-gradient(transparent 40%,#000 72%); }
+.stage[data-effect="scroll-parallax"] .parallax-sky .ds-img { width:100%; height:100%; object-fit:cover; object-position:center; border-radius:0; }
+.stage[data-effect="scroll-parallax"] .parallax-sky::after { content:""; position:absolute; inset:0; z-index:1; background:linear-gradient(180deg,transparent 10%,rgb(0 0 0 / .6) 65%,rgb(0 0 0 / .6)); box-shadow:inset 0 0 0 1px rgb(17 24 39 / .06); pointer-events:none; }
+.ds-parallax-copy { position:absolute; z-index:2; inset:auto 24px 24px; display:flex; flex-direction:column; align-items:flex-start; gap:8px; color:#fff; text-align:left; }
+.ds-parallax-copy strong { font:600 var(--ds-demo-heading)/1.5 var(--ds-font); }
+.ds-parallax-copy span { font:400 14px/1.6 var(--ds-font); }
+.demo-root .stage[data-effect="scroll-parallax"] .scroll-meter { width:min(100%,var(--ds-subject-width)); height:4px; background:var(--ds-accent-200); }
+.stage[data-effect="scroll-parallax"] .scroll-meter i { background:var(--ds-accent); }
+@container demo-stage (max-width:480px) { .ds-parallax-copy { inset:auto 16px 24px; } }
+@media(prefers-reduced-motion:reduce) {
+  :host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .stage[data-effect="scroll-parallax"] :is(.parallax-back,.parallax-front) { transform:none; }
+}

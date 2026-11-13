@@ -1,0 +1,26 @@
+/* Card surface itself is the subject; no extra surface is nested around it. */
+.stage.ds-lift-demo[data-effect="component-lift"]{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;min-width:0;width:100%;padding:8px 0 0;border:0;background:transparent;overflow:visible}
+.stage[data-effect="component-lift"] .micro-card.lift-card{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;width:min(100%,var(--ds-subject-width));height:auto;min-height:0;padding:0;border:1px solid var(--ds-line);border-radius:16px;background:var(--ds-surface);color:var(--ds-ink);box-shadow:var(--ds-shadow-1);text-align:left;overflow:hidden;cursor:pointer;transform:translateY(0);transition:transform var(--ds-dur-fast) var(--ds-ease-standard),box-shadow var(--ds-dur-fast) var(--ds-ease-standard)}
+.stage[data-effect="component-lift"] .ds-lift-media{display:block;position:relative;width:100%;line-height:0;overflow:hidden;border-radius:12px 12px 0 0}
+.stage[data-effect="component-lift"] .ds-lift-media::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 60%,rgb(17 24 39 / .12));box-shadow:inset 0 0 0 1px rgb(17 24 39 / .06)}
+.stage[data-effect="component-lift"] .ds-lift-media .ds-img{display:block;width:100%;height:auto;aspect-ratio:1280/724;object-fit:cover;object-position:50% 44%;border-radius:inherit}
+.stage[data-effect="component-lift"] .ds-lift-details{display:flex;flex-direction:column;gap:4px;position:relative;padding:16px;z-index:1}
+.stage[data-effect="component-lift"] .ds-lift-details strong{font-size:var(--ds-demo-heading);line-height:1.5;font-weight:600;color:var(--ds-ink)}
+.stage[data-effect="component-lift"] .ds-lift-details>span{font-size:var(--ds-demo-body);line-height:1.6;color:var(--ds-ink-2)}
+.stage[data-effect="component-lift"] .lift-card:is(:hover,:focus-visible,[data-preview-hover],.touch-open){transform:translateY(-7px);box-shadow:var(--ds-shadow-2)}
+.stage[data-effect="component-lift"] .lift-card:focus-visible{outline:2px solid var(--ds-accent);outline-offset:2px}
+.stage[data-effect="component-lift"] .lift-card:is(:active,[data-preview-active]){transform:translateY(-7px) scale(.98)}
+.stage[data-effect="component-lift"] .lift-card:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:var(--ds-shadow-1)}
+.ds-lift-demo .ds-hint-touch{display:none}
+@media(hover:none){.ds-lift-demo .ds-hint-pointer{display:none}.ds-lift-demo .ds-hint-touch{display:inline}.stage[data-effect="component-lift"] .lift-card:hover:not(.touch-open):not([data-preview-hover]){transform:none;box-shadow:var(--ds-shadow-1)}}
+@media(prefers-reduced-motion:reduce){:host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .stage[data-effect="component-lift"] .lift-card{transform:none;transition:none}}
+:host(:not([data-interactive])) .ds-lift-details{padding:12px}
+:host(:not([data-interactive])) .ds-lift-details>span{display:none}
+/* Override the later shared control border and legacy micro-card padding. */
+.demo-root .stage[data-effect="component-lift"] .micro-card.lift-card{border:1px solid var(--ds-line)!important;padding:0}
+
+@container demo-stage (min-width:640px){.stage[data-effect="component-lift"] .ds-lift-details{padding:24px;gap:12px}}
+/* Reserve the 7px lift above the subject as well as the stage's 16px inset. */
+:host([data-interactive]) .demo-root.ds-stage > .stage.ds-lift-demo[data-effect="component-lift"]:has(> .ds-hint) {
+  padding-top:max(24px,var(--ds-stage-inset))!important;
+}

@@ -1,0 +1,26 @@
+/* Persistent and floating labels share the same field geometry. */
+.ds-input-demo.canvas{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;width:100%;min-width:0;min-height:0;padding:0;border:0;border-radius:0;background:transparent;overflow:visible}
+.ds-input-panel{display:flex;flex-direction:column;gap:24px;width:min(100%,var(--ds-subject-width));box-sizing:border-box;padding:24px}
+.ds-input-field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.ds-input-label{color:var(--ds-ink);font-size:13px;line-height:1.4;font-weight:500}
+.ds-input-demo .i{display:block;width:100%;max-width:none;min-width:0;height:var(--ds-demo-control);box-sizing:border-box;margin:0;padding:10px 12px;border:1px solid var(--ds-border);border-radius:8px;background:var(--ds-surface);color:var(--ds-ink);font-family:inherit;font-size:var(--ds-demo-body);line-height:1.6;box-shadow:none;transition:border-color var(--ds-dur-fast) var(--ds-ease-standard)}
+.ds-input-demo .i::placeholder{color:var(--ds-ink-2);opacity:1}
+.ds-input-demo .i:hover:not(:disabled){border-color:var(--ds-ink-2)}
+.ds-input-demo .i:focus-visible,:host(.force-focus) .ds-input-demo .i{border-color:var(--ds-accent);outline:2px solid var(--ds-accent);outline-offset:2px;box-shadow:none}
+.ds-input-demo .floatfield{display:block;position:relative;isolation:isolate;width:100%;min-width:0;min-height:var(--ds-demo-control);margin:0}
+.ds-input-demo .floatfield .fflabel{position:absolute;top:12px;left:9px;padding:0 4px;margin:0;border-radius:4px;background:var(--ds-surface);color:var(--ds-ink);font-size:13px;line-height:1.4;font-weight:500;pointer-events:none;transform:translateY(0);transform-origin:left center;transition:transform var(--ds-dur-fast) var(--ds-ease-standard),color var(--ds-dur-fast) var(--ds-ease-standard)}
+.ds-input-demo .floatfield input:focus + .fflabel,.ds-input-demo .floatfield input:not(:placeholder-shown) + .fflabel,:host(.force-focus) .ds-input-demo .floatfield .fflabel{top:12px;font-size:13px;font-weight:500;background:var(--ds-surface);color:var(--ds-accent);transform:translateY(-21px)}
+.ds-input-note{width:100%;text-align:left;font-size:12px;line-height:1.5;color:var(--ds-ink-2);margin:-8px 0 0}
+.ds-input-demo .demo-field-state{width:100%;min-width:0;max-width:none;gap:8px}
+.ds-input-demo .demo-field-error{max-width:none;font-size:12px;line-height:1.5;color:var(--ds-danger)}
+:host(.force-error) .ds-input-demo .i,.ds-input-demo .i[aria-invalid=true]{border-color:var(--ds-danger)!important}
+:host(.force-error) .ds-input-demo .fflabel{color:var(--ds-danger)}
+:host(.force-disabled) .ds-input-demo .i:disabled,.ds-input-demo .i:disabled{opacity:.45;cursor:not-allowed;background:var(--ds-surface);color:var(--ds-ink);-webkit-text-fill-color:var(--ds-ink)}
+@media(max-width:767px){.ds-input-panel{padding:20px 16px;gap:24px}}
+@media(prefers-reduced-motion:reduce){:host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-input-demo .fflabel{transition:none}}
+:host(:not([data-interactive])) .ds-input-panel{padding:16px 12px}
+:host(:not([data-interactive])) :is(.ds-input-field,.ds-input-note){display:none}
+/* Keep the visible field label above the native input in every state. */
+.ds-input-demo .floatfield .fflabel{display:block;z-index:1;opacity:1;visibility:visible}
+
+@container demo-stage (min-width:640px){.ds-input-panel{gap:32px}.ds-input-field{gap:12px}}

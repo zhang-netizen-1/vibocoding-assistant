@@ -1,0 +1,34 @@
+/* Button specimen: the original four action hooks and DOM order are retained. */
+.ds-button-demo.canvas{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;min-width:0;min-height:0;width:100%;padding:0;border:0;border-radius:0;background:transparent;overflow:visible}
+.ds-button-panel{width:min(100%,var(--ds-subject-width));padding:24px;box-sizing:border-box}
+.ds-button-heading{display:flex;flex-direction:column;gap:4px;margin-bottom:24px;color:var(--ds-ink)}
+.ds-button-heading strong{font-size:var(--ds-demo-heading);font-weight:600;line-height:1.5}
+.ds-button-heading>span{font-size:12px;line-height:1.5;color:var(--ds-ink-2)}
+.ds-button-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.ds-button-demo .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-width:0;min-height:var(--ds-demo-control);padding:8px 12px;box-sizing:border-box;border:1px solid transparent;border-radius:8px;font-family:inherit;font-size:var(--ds-demo-button);font-weight:500;line-height:1.5;white-space:nowrap;box-shadow:none;cursor:pointer;transition:background-color var(--ds-dur-fast) var(--ds-ease-standard),transform var(--ds-dur-instant) var(--ds-ease-standard);-webkit-tap-highlight-color:transparent}
+.ds-button-demo .btn-pri{background:var(--ds-accent);color:var(--ds-surface)}
+.ds-button-demo .btn-ghost{background:var(--ds-surface);color:var(--ds-ink);border-color:var(--ds-border)}
+.ds-button-demo .btn-danger{background:var(--ds-danger);color:var(--ds-surface)}
+:host(.force-hover) .ds-button-demo .btn-pri,.ds-button-demo .btn-pri:hover:not(:disabled){background:var(--ds-accent-hover)}
+:host(.force-hover) .ds-button-demo .btn-ghost,.ds-button-demo .btn-ghost:hover:not(:disabled){background:var(--ds-fill);border-color:var(--ds-border)}
+:host(.force-hover) .ds-button-demo .btn-danger,.ds-button-demo .btn-danger:hover:not(:disabled){background:#991b1b}
+:host(.force-pressed) .ds-button-demo .btn,.ds-button-demo .btn:active:not(:disabled){transform:scale(.98)}
+:host(.force-pressed) .ds-button-demo .btn-pri,.ds-button-demo .btn-pri:active:not(:disabled){background:var(--ds-accent-active)}
+:host(.force-pressed) .ds-button-demo .btn-ghost,.ds-button-demo .btn-ghost:active:not(:disabled){background:var(--ds-line);border-color:#4B5563!important}
+:host(.force-pressed) .ds-button-demo .btn-danger,.ds-button-demo .btn-danger:active:not(:disabled){background:#7f1d1d}
+.ds-button-demo .btn:focus-visible,:host(.force-focus) .ds-button-demo [data-simulated-focus]{outline:2px solid var(--ds-accent);outline-offset:2px}
+:host(.force-disabled) .ds-button-demo .btn:disabled,.ds-button-demo .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+:host(.force-success) .ds-button-demo #copyDemoBtn{color:var(--ds-success);border-color:var(--ds-success);background:#ecfdf5}
+:host(.force-loading) .ds-button-demo .btn{opacity:1;gap:8px;padding-inline:8px;cursor:wait}
+.ds-button-demo .demo-loading-icon{width:14px;height:14px;box-sizing:border-box}
+@media(max-width:767px){.ds-button-panel{padding:16px}.ds-button-demo .btn{min-height:44px}}
+@media(prefers-reduced-motion:reduce){:host(:not([data-demo-motion-once]):not([data-demo-motion-step])) .ds-button-demo .btn{transition-duration:100ms;transform:none}}
+
+/* Real copy feedback is independent from the fixed inspection state. */
+.ds-button-demo #copyDemoBtn.ds-success:disabled{opacity:1;background:var(--ds-success-soft);color:var(--ds-success);-webkit-text-fill-color:var(--ds-success);border-color:var(--ds-success)!important;cursor:default}
+/* Inert catalog tiles show the representative action at readable size. */
+:host(:not([data-interactive])) .ds-button-panel{padding:12px;border-radius:var(--thumb-content-radius,14px)}
+:host(:not([data-interactive])) .ds-button-heading{margin-bottom:12px}
+:host(:not([data-interactive])) .ds-button-heading>span{display:none}
+:host(:not([data-interactive])) .ds-button-grid{grid-template-columns:minmax(0,1fr)}
+:host(:not([data-interactive])) .ds-button-grid .btn:not(.btn-pri){display:none}

@@ -1,0 +1,25 @@
+.ds-modal-demo.canvas{display:flex;align-items:center;justify-content:center;min-height:0}
+.ds-modal-preview{padding:0;overflow:hidden}
+.ds-modal-preview>.ds-img{height:180px;object-position:50% 45%;border-radius:15px 15px 0 0}
+.ds-modal-preview-copy{padding:24px;display:grid;gap:12px}
+.ds-modal-preview-copy strong{font-size:var(--ds-demo-title);line-height:1.4;font-weight:600}
+.ds-modal-preview-copy p{margin:0;color:var(--ds-ink-2);font-size:var(--ds-demo-body);line-height:1.6}
+.demo-root.ds-stage .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--ds-demo-control);padding:10px 16px;border-radius:8px;font:500 var(--ds-demo-button)/1.5 var(--ds-font);cursor:pointer;transition:background-color var(--ds-dur-fast) var(--ds-ease-standard),transform var(--ds-dur-instant) var(--ds-ease-standard)}
+.ds-modal-preview-copy>.btn{justify-self:start;margin-top:4px}
+.demo-root.ds-stage .btn-pri{background:var(--ds-accent);color:var(--ds-surface)}
+.demo-root.ds-stage .btn-pri:hover{background:var(--ds-accent-hover)}
+.demo-root.ds-stage .btn-ghost{background:var(--ds-surface);color:var(--ds-ink)}
+.demo-root.ds-stage .btn-ghost:hover{background:var(--ds-fill)}
+.demo-root.ds-stage .modal-mask{display:none;position:absolute;inset:0;padding:16px;align-items:center;justify-content:center;background:rgb(17 24 39 / .45);backdrop-filter:blur(4px);border-radius:inherit;z-index:20}
+.demo-root.ds-stage .modal-box{width:min(100%,var(--ds-subject-width));max-width:100%;margin:0;padding:24px;background:var(--ds-surface);border:1px solid rgb(17 24 39 / .08);border-radius:16px;box-shadow:var(--ds-shadow-3);color:var(--ds-ink);animation:ds-modal-in var(--ds-dur-slow) var(--ds-ease-out)}
+.modal-box #modal-title{margin:0 0 12px;font-size:var(--ds-demo-title);line-height:1.35;font-weight:600;letter-spacing:0}
+.modal-box #modal-desc{margin:0;color:var(--ds-ink-2);font-size:var(--ds-demo-body);line-height:1.6}
+.modal-box .modal-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px}
+.modal-actions .btn{min-width:80px}
+@keyframes ds-modal-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.modal-box{animation:none!important}}
+:host(:not([data-interactive])) .ds-modal-preview>.ds-img{height:120px}
+:host(:not([data-interactive])) .ds-modal-preview-copy{padding:16px}
+:host(:not([data-interactive])) .ds-modal-preview-copy p{display:none}
+
+@container demo-stage (min-width:640px){.ds-modal-preview-copy{padding:32px;gap:16px}.demo-root.ds-stage .modal-box{padding:32px}}

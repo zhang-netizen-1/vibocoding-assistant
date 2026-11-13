@@ -1,0 +1,374 @@
+{
+  "source_commit": "46f923e",
+  "source_index": "design-system/index.html",
+  "source_index_sha256": "35fee0c4fe0a8c130ccf8d9ee385b023d1a6c852f3bef0a226d928692b04d6e5",
+  "export_index_sha256": "5d8d82e42c37a71bc990a023ab3328a6fe6c633faedd6cd0d6cf9e2c467e0025",
+  "assets": {
+    "assets/favicon.svg": "12ddcd0fea90e8ab2047e88db06898d274a230f194270fa997dc4632eab0efe0",
+    "assets/redesign/base.css": "880ed8297c8c66d0909bf2f6af840757f319009b02c37f93453dc43d9a6e9aa0",
+    "assets/redesign/demo-accessibility.css": "62ed715fc4ea71433f4a604ca2bc43bf2409e3200a7bd3ebaece6ea8389d80de",
+    "assets/redesign/demo-runtime.js": "463e6c70b28964f36bda4d6d3b52aec3eefc966907aae912f56dd829ed770f46",
+    "assets/redesign/demo-skins/ui-button.css": "545785485572a47457823f9ec9f7e37975ecbd47b451492794661876d59244fd",
+    "assets/redesign/demo-spec.css": "65885f9bc4361ca69967a2cb64f2e6a878ddf86400dcefb7dee59c6ac13604e5",
+    "assets/redesign/demo-ui.css": "19dbc018ffbd878efc362736b047bd735ca1cfb829d9768ac78a811a2c66f3f1",
+    "assets/redesign/demo-ui.js": "4a1c68de6b929b68ee45ccc37469a91767dbc11fb40a0b8749a19d0b8441a721",
+    "assets/redesign/demos.css": "920fff1562511dd7cf92e19b56d2dd278c1320681f4a7378e02537dcd5cee5e2",
+    "assets/redesign/design-system.css": "266a00da24d7828991d7cf1ca60d10abd6a618b48f29f5685820d8320a999cc6",
+    "assets/redesign/search.js": "36d07d2bbbc7eff6722d4605de2c6cf9843066ac92dfe4d808e3ded0b502b106",
+    "assets/redesign/site.css": "3a09904b61d2cb56e9ace1a0e869e8e81d5e68a1cd6666c07c330d77edb90c2f",
+    "assets/redesign/site.js": "07b74f52668fce268b3c38312969607f83ab7e0a487b76c1021bf1e5972dd464",
+    "assets/redesign/tokens.css": "175ff1e83cf88efe972db9cefe3fd3e8d782ae3207a698c472077d07fbb8d802"
+  },
+  "rewrites": [
+    {
+      "file": "index.html",
+      "attribute": "data-a11y-css",
+      "old": "../assets/redesign/demo-accessibility.css",
+      "new": "assets/redesign/demo-accessibility.css",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "data-demo-css",
+      "old": "../assets/redesign/demo-ui.css",
+      "new": "assets/redesign/demo-ui.css",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "data-index-url",
+      "old": "../assets/search-index.json?v=d51d9aef",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/assets/search-index.json?v=d51d9aef",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "data-site-root",
+      "old": "../",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "data-skin-css",
+      "old": "../assets/redesign/demo-skins/ui-button.css",
+      "new": "assets/redesign/demo-skins/ui-button.css",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "data-spec-css",
+      "old": "../assets/redesign/demo-spec.css",
+      "new": "assets/redesign/demo-spec.css",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/",
+      "count": 4
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../ai/#group-auditing",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/ai/#group-auditing",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../ai/#group-usability",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/ai/#group-usability",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../ai/#group-visual-systems",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/ai/#group-visual-systems",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../ai/prompt-writing/",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/ai/prompt-writing/",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../assets/favicon.svg",
+      "new": "assets/favicon.svg",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../assets/redesign/base.css?v=880ed829",
+      "new": "assets/redesign/base.css?v=880ed829",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../assets/redesign/demos.css?v=920fff15",
+      "new": "assets/redesign/demos.css?v=920fff15",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../assets/redesign/design-system.css?v=266a00da",
+      "new": "assets/redesign/design-system.css?v=266a00da",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../assets/redesign/site.css?v=3a09904b",
+      "new": "assets/redesign/site.css?v=3a09904b",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../assets/redesign/tokens.css?v=175ff1e8",
+      "new": "assets/redesign/tokens.css?v=175ff1e8",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../basics/",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/basics/",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../basics/#group-layout",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/basics/#group-layout",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../basics/#group-tokens",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/basics/#group-tokens",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../basics/#group-visual",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/basics/#group-visual",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../bench/",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/bench/",
+      "count": 3
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../components/",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/components/",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../components/#group-actions",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/components/#group-actions",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../components/#group-charts",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/components/#group-charts",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../components/#group-content",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/components/#group-content",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../components/#group-feedback",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/components/#group-feedback",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../components/#group-forms",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/components/#group-forms",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../components/#group-navigation",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/components/#group-navigation",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../components/#group-tables",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/components/#group-tables",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../components/button/",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/components/button/",
+      "count": 3
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../components/states/",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/components/states/",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-background",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-background",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-component",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-component",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-cursor",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-cursor",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-data",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-data",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-media",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-media",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-mobile",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-mobile",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-overlay",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-overlay",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-rules",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-rules",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-scroll",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-scroll",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-text",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-text",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/#group-view",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/#group-view",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../interactions/spec/",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/interactions/spec/",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../scenarios/#group-browse",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/scenarios/#group-browse",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "href",
+      "old": "../scenarios/#group-operate",
+      "new": "https://zhang-netizen-1.github.io/vibocoding-assistant/scenarios/#group-operate",
+      "count": 2
+    },
+    {
+      "file": "index.html",
+      "attribute": "src",
+      "old": "../assets/redesign/demo-runtime.js?v=463e6c70",
+      "new": "assets/redesign/demo-runtime.js?v=463e6c70",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "src",
+      "old": "../assets/redesign/demo-ui.js?v=4a1c68de",
+      "new": "assets/redesign/demo-ui.js?v=4a1c68de",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "src",
+      "old": "../assets/redesign/search.js?v=36d07d2b",
+      "new": "assets/redesign/search.js?v=36d07d2b",
+      "count": 1
+    },
+    {
+      "file": "index.html",
+      "attribute": "src",
+      "old": "../assets/redesign/site.js?v=07b74f52",
+      "new": "assets/redesign/site.js?v=07b74f52",
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,226 @@
+{
+ "note": "原图未修改、未移动；此处只是压缩后的 webp 副本。",
+ "images": [
+  {
+   "id": "garden-dusk-01",
+   "files": {
+    "640": "garden-dusk-01-640.webp",
+    "1280": "garden-dusk-01-1280.webp"
+   },
+   "width": 1280,
+   "height": 720,
+   "dominant": "#754B35",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/古风/13423586450831885.jpeg",
+   "why": "黄昏庭院与花木，暖色，适合画廊主图与卡片封面",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "garden-dusk-02",
+   "files": {
+    "640": "garden-dusk-02-640.webp",
+    "1280": "garden-dusk-02-1280.webp"
+   },
+   "width": 1280,
+   "height": 720,
+   "dominant": "#62513B",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/古风/13423586458184512.jpeg",
+   "why": "同系列庭院，构图不同，适合交叉淡化的前后两张",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "garden-dusk-03",
+   "files": {
+    "640": "garden-dusk-03-640.webp",
+    "1280": "garden-dusk-03-1280.webp"
+   },
+   "width": 1280,
+   "height": 720,
+   "dominant": "#694C3D",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/古风/13423586463996847.jpeg",
+   "why": "同系列庭院，适合轮播/画廊连续性",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "garden-day-01",
+   "files": {
+    "640": "garden-day-01-640.webp",
+    "1280": "garden-day-01-1280.webp"
+   },
+   "width": 1280,
+   "height": 720,
+   "dominant": "#60625E",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/古风/13423586471874466.jpeg",
+   "why": "白天庭院与水面，色调明亮，适合浅色站点",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "garden-day-02",
+   "files": {
+    "640": "garden-day-02-640.webp",
+    "1280": "garden-day-02-1280.webp"
+   },
+   "width": 1280,
+   "height": 720,
+   "dominant": "#5B4B3D",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/古风/13423586475454994.jpeg",
+   "why": "白天庭院远景，适合横幅与视差",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "lake-teal-01",
+   "files": {
+    "640": "lake-teal-01-640.webp",
+    "1280": "lake-teal-01-1280.webp"
+   },
+   "width": 1280,
+   "height": 720,
+   "dominant": "#4D5B58",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/古风/13423586518432113.jpeg",
+   "why": "青绿湖面与楼阁，冷色，与暖色图形成对比",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "lake-teal-02",
+   "files": {
+    "640": "lake-teal-02-640.webp",
+    "1280": "lake-teal-02-1280.webp"
+   },
+   "width": 1280,
+   "height": 720,
+   "dominant": "#59645F",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/古风/13423586527176524.jpeg",
+   "why": "湖景另一角度，适合缩略图网格",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "lake-teal-03",
+   "files": {
+    "640": "lake-teal-03-640.webp",
+    "1280": "lake-teal-03-1280.webp"
+   },
+   "width": 1280,
+   "height": 720,
+   "dominant": "#4B5456",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/古风/13423586530799912.jpeg",
+   "why": "湖景远山，适合骨架屏加载后的真实图",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "pavilion-tree",
+   "files": {
+    "640": "pavilion-tree-640.webp",
+    "1280": "pavilion-tree-1280.webp"
+   },
+   "width": 1280,
+   "height": 720,
+   "dominant": "#6D5D46",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/古风/13423585905452019.jpeg",
+   "why": "古树与楼阁，竖向元素多，适合竖图裁切",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "studio-bright-01",
+   "files": {
+    "640": "studio-bright-01-640.webp",
+    "1280": "studio-bright-01-1280.webp"
+   },
+   "width": 1280,
+   "height": 724,
+   "dominant": "#684E3C",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/现代/13423899348168910.jpeg",
+   "why": "明亮工作室，生活场景，适合内容卡片",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "studio-bright-02",
+   "files": {
+    "640": "studio-bright-02-640.webp",
+    "1280": "studio-bright-02-1280.webp"
+   },
+   "width": 1280,
+   "height": 724,
+   "dominant": "#867868",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/现代/13423899372494362.jpeg",
+   "why": "明亮厨房/工作区，适合列表缩略图",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "studio-bright-03",
+   "files": {
+    "640": "studio-bright-03-640.webp",
+    "1280": "studio-bright-03-1280.webp"
+   },
+   "width": 1280,
+   "height": 724,
+   "dominant": "#8C7A68",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/现代/13423899370093180.jpeg",
+   "why": "明亮室内，适合媒体卡片",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "lounge-window-01",
+   "files": {
+    "640": "lounge-window-01-640.webp",
+    "1280": "lounge-window-01-1280.webp"
+   },
+   "width": 1280,
+   "height": 724,
+   "dominant": "#5D6566",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/现代/13423899480373669.jpeg",
+   "why": "落地窗城市客厅，冷暖平衡，适合模态/抽屉背景",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "lounge-window-02",
+   "files": {
+    "640": "lounge-window-02-640.webp",
+    "1280": "lounge-window-02-1280.webp"
+   },
+   "width": 1280,
+   "height": 724,
+   "dominant": "#7E6D70",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/现代/13423899484801160.jpeg",
+   "why": "同系列，适合图片切换对比",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "bedroom-warm",
+   "files": {
+    "640": "bedroom-warm-640.webp",
+    "1280": "bedroom-warm-1280.webp"
+   },
+   "width": 1280,
+   "height": 724,
+   "dominant": "#755F4A",
+   "source": "~/Downloads/晚风视频生成资料/100+3D建模场景图/现代/13423899427505345.jpeg",
+   "why": "暖光卧室，适合产品/房源卡片",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "window-cat",
+   "files": {
+    "640": "window-cat-640.webp",
+    "1280": "window-cat-1280.webp"
+   },
+   "width": 1280,
+   "height": 960,
+   "dominant": "#B28E63",
+   "source": "~/Pictures/下载图片/jimeng-2026-03-28-8146-宫崎骏动画风格，夕阳下，一只猫咪坐在门廊，远山如画。大远景。从门口看向门外远处的....png",
+   "why": "插画风夕阳窗景，无真人，适合空状态/插画位",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  },
+  {
+   "id": "attic-green",
+   "files": {
+    "640": "attic-green-640.webp",
+    "1280": "attic-green-1280.webp"
+   },
+   "width": 1280,
+   "height": 960,
+   "dominant": "#837753",
+   "source": "~/Pictures/下载图片/jimeng-2026-03-29-9967-超大景别，宫崎骏艺术风格，治愈插画，一间绿意盎然的高层卧室，木制装修风格，室内家....png",
+   "why": "插画风绿意卧室，适合大图展示",
+   "kind": "AI/3D 生成场景或插画，无真人"
+  }
+ ]
+}
