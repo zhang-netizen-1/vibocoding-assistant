@@ -191,3 +191,18 @@ button、input、component-lift、view-crossfade、modal、tooltip、scroll-reve
   - 对比图：box `fix_menu_card_390_before_after.jpg`、`fix_motion_cards_before_after.jpg`、`fix_radius_before_after.jpg`。
 - Codex I1（组件剩余 ui 10 + 图表 5，共 15 条新皮肤）和 DS（设计系统页、docs/design-system.md、两份新测试）已写完，cua 检查都是 0，**未提交，待评审截图**。
 - 排队顺序（用户定）：全量几何检查结果修复 → 复制提示词方案 D（使用卡变提示词卡，192 条共用模板）→ 390/768 全量移动端目检 → 设计系统页 → 剩余 80 条精修（I1 已做 15 条待审）。
+
+## 第 14 段（12:10–12:58）几何修复 + 方案 D + 设计系统页评审
+- 几何全量检查（192 条 × 1440/768/390 = 576 次页面加载）：
+  - 第 1 轮（a26f030 后）：radius 283 / spacing 2192 / clip 0 / indicator 0 / narrow 8。
+  - 第 2 轮（4dba45f 后）：radius 33 / spacing 200 / narrow 1。
+  - 第 3 轮（46eb7bb + 方案 D 后）：radius 17 / spacing 0 / narrow 2。
+  - 3b9faf4 修完剩余 7 处圆角和 2 处提示词悬挂空格，逐页复查为 0；全量第 4 轮放到下一段一起跑。
+- 46eb7bb：玻璃/新拟态外框、角内小框 6px、卡片图 12px、分区导航 44px 列、分段按钮分隔线；检查器按百分比解析圆角（圆环、有机形状不再误报），共用外框的分段按钮组豁免 0 间隙。
+- b09d1b6 方案 D：使用卡变提示词卡（全文、卡内滚动、卡头「复制」、注明「复制时自动附带 N 条验收要求」，复制后整卡 #6D28D9 + ✓ 已复制）；正文里重复的提示词块移除；≤1023 提示词块紧跟演示、块在视区内时底栏隐藏并 inert。192 条共用模板。测试同步加严（新 tests/test_prompt_card_d.py、tests/prompt_card_d_runtime.cjs、batch5 无头加 D 断言）。Codex 日志 cua/computer-use 调用 0。
+  - 对比图 box：`D_before_after_1440_390.jpg`（cmdk / button / view-crossfade / dashboard，列 = 前1440 前390 后1440 后390），`D_copied_state.jpg`。
+- 000ba19 I1 15 条评审通过：box `I1a_before_after.jpg`、`I1b_before_after.jpg`。
+- 1ca7aff：移动端目检发现「数字滚轮」画廊缩略图只剩「次互动」（数字靠脚本生成，缩略图不跑脚本）；初始 198 直接写进标记。
+- 597e621 设计系统页：补「嵌套圆角与间距」活例子，按下态示例不再缩小（无头检查的 44px 失败点）；docs/design-system.md 同步。
+- 测试：Python 单测 159/159；design_system_headless 通过（6 组尺寸/动态偏好）；prompt_card_d_runtime 通过。batch4 / demo_redesign / batch6 留到最终验证顺序跑。
+- 移动端目检：390 + 768 全量截图已生成（Mac `demo-redesign-work/shots/qa-mid/`，before 基线 `shots/qa-before/`），总览表 box `qa/`（43 张）。已看完 390 顶部 3/12 张 + 动效卡 1/6 张。
