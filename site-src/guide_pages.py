@@ -232,10 +232,7 @@ def render_card(section, entry):
     labels = [escape(label) for label in entry["labels"]]
     prompt = build_prompt(section, entry)
     search = escape(' '.join((entry["title"], entry["english"], entry["description"], entry["fit"])), quote=True)
-    bench_link = '<a class="guide-card-type" href="../bench/grid/">测评结果 →</a>' if section == "layout" and entry["demo"] == "grid" else ""
     card_label = '<span class="guide-card-type">LIVE STUDY</span>'
-    if bench_link:
-        card_label = f'<div>{bench_link} {card_label}</div>'
     return f'''<article class="guide-card" id="g-{section}-{entry["demo"]}" data-search="{search}">
       <div class="guide-card-head"><div><h3>{title}</h3><span>{escape(entry["english"])}</span></div>{card_label}</div>
       <div class="guide-card-stage" data-demo="{entry["demo"]}" data-mode="0">{demo_markup(section, entry)}</div>

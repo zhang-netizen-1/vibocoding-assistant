@@ -9,7 +9,7 @@ const types = {'.html':'text/html','.css':'text/css','.js':'text/javascript','.j
 const routes = [];
 (function walk(dir){ for (const name of fs.readdirSync(dir)) { const p = path.join(dir,name);
   if (fs.statSync(p).isDirectory()) walk(p);
-  else if (name === 'index.html' && !p.includes(`${path.sep}design-system${path.sep}`) && /class="demo-scope"[^>]*data-interactive/.test(fs.readFileSync(p,'utf8')))
+  else if (name === 'index.html' && /class="demo-scope"[^>]*data-interactive/.test(fs.readFileSync(p,'utf8')))
     routes.push(path.relative(root, path.dirname(p)).split(path.sep).join('/') + '/'); } })(root);
 function measure() {
   const out = [];

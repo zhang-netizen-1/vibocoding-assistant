@@ -131,7 +131,7 @@ class SampleContentTest(unittest.TestCase):
     def test_benchmark_criteria_and_original_skill_install_prompt(self):
         import json
         content = MODULE.load_content()
-        narrative = json.loads((ROOT/'site-src/bench/data/narrative.json').read_text())
+        narrative = json.loads((ROOT/'docs/evaluation/data/narrative.json').read_text())
         for name,column,slug in (('button','components','button'),('grid','basics','grid')):
             criteria = content[column+'/'+slug]['acceptance']
             for fix in narrative['entries'][name]['fixes']:
@@ -142,6 +142,71 @@ class SampleContentTest(unittest.TestCase):
         crossfade = ' '.join(content['interactions/view-crossfade']['acceptance'])
         for term in ('400ms','平滑曲线','分段直线','叠影','冻结'):
             self.assertIn(term, crossfade)
+
+    def test_evaluation_docs_preserve_report_content_and_raw_files(self):
+        import hashlib
+        import json
+        import re
+        from decimal import Decimal, ROUND_HALF_UP
+        data = ROOT / 'docs/evaluation/data'
+        report = (ROOT / 'docs/evaluation-report.md').read_text()
+        narrative = json.loads((data / 'narrative.json').read_text())
+        rounds = [json.loads((data / f'round{rnd}-results.json').read_text()) for rnd in (1,2)]
+        for key in ('title','lead','main_lesson','scale','eye_note','time_note'):
+            self.assertIn(narrative[key], report)
+        for key in ('lesson_points','method','limits'):
+            for line in narrative[key]:
+                self.assertIn(line, report)
+        for term in narrative['glossary']:
+            self.assertIn(f'| {term["term"]} | {term["text"]} |', report)
+        self.assertEqual(len(re.findall(r'^## (?:按钮|交叉淡化|响应式网格)$',report,re.M)), 3)
+        for slug in ('button','crossfade','grid'):
+            start = report.index(f'<a id="{slug}"></a>')
+            end = report.find('<a id="', start + 1)
+            section = report[start:end if end != -1 else len(report)]
+            entry = narrative['entries'][slug]
+            self.assertIn(entry['rounds_note'], section)
+            conclusion = entry['stability']['heading'] if 'stability' in entry else entry['fixes'][0]['fixed']
+            self.assertIn(conclusion, section)
+            rows = re.findall(r'^\| ([1-8]\. .*?) \| ([012]) \| ([012]) \| ([012]) \| ([012]) \|$', section, re.M)
+            self.assertEqual(len(rows), 8, slug)
+            for number, row in enumerate(rows, 1):
+                expected = [next(v['score'] for v in r['scores'][slug][a]['items'] if v['item'] == number)
+                            for a in ('codex','hermes') for r in rounds]
+                self.assertEqual([int(v) for v in row[1:]], expected, (slug, number))
+            totals = [r['scores'][slug][a]['total'] for a in ('codex','hermes') for r in rounds]
+            self.assertIn('| 总分 | ' + ' | '.join(f'{v} /16' for v in totals) + ' |', section)
+            for rnd,r in enumerate(rounds,1):
+                prompt = (data / f'round{rnd}-{slug}-prompt.txt').read_text()
+                self.assertIn('```text\n' + prompt + '```', section)
+                for a in ('codex','hermes'):
+                    for item in r['scores'][slug][a]['items']:
+                        self.assertIn(item['evidence'], section)
+                        self.assertIn(item['check'], section)
+                    first,second = [v['scores'][slug][a]['total'] for v in rounds]
+                    self.assertIn(f'{first} → {second} /16', report)
+                    self.assertIn(f'(evaluation/demos/round{rnd}/{slug}/{a}.html)', section)
+                    wall = Decimal(str(r['agents_runs'][f'{slug}/{a}']['wall_s']))
+                    m,sec = divmod(int(wall.quantize(Decimal('1'), rounding=ROUND_HALF_UP)),60)
+                    self.assertIn(f'{m} 分 {sec} 秒', report)
+                self.assertIn(f'(evaluation/data/round{rnd}-{slug}-prompt.txt)', section)
+            for fix in entry['fixes']:
+                self.assertIn(fix['sentence'], section)
+                self.assertIn(fix['fixed'], section)
+            for image in entry['images']:
+                self.assertIn(image['caption'], section)
+                self.assertIn(f'(evaluation/img/{image["file"]})', section)
+            if 'stability' in entry:
+                for line in [*entry['stability']['points'],entry['stability']['note']]:
+                    self.assertIn(line, section)
+        for ref in re.findall(r'\]\((evaluation/[^)]+)\)',report):
+            self.assertTrue((ROOT / 'docs' / ref).is_file(), ref)
+        expected = json.loads((ROOT / 'tests/fixtures/evaluation_file_hashes.json').read_text())
+        source = ROOT / 'docs/evaluation'
+        actual = {str(p.relative_to(source)):hashlib.sha256(p.read_bytes()).hexdigest()
+                  for p in source.rglob('*') if p.is_file()}
+        self.assertEqual(actual, expected)
+        self.assertFalse((ROOT / 'site-src/bench').exists())
 
 
 class ComponentsContentTest(unittest.TestCase):

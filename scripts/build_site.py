@@ -24,9 +24,6 @@ SKILL_MODULE_SPEC.loader.exec_module(SKILL_MODULE)
 SEARCH_MODULE_SPEC = importlib.util.spec_from_file_location("search_index", SITE_SOURCE / "search_index.py")
 SEARCH_MODULE = importlib.util.module_from_spec(SEARCH_MODULE_SPEC)
 SEARCH_MODULE_SPEC.loader.exec_module(SEARCH_MODULE)
-BENCH_MODULE_SPEC = importlib.util.spec_from_file_location("bench_pages", SITE_SOURCE / "bench_pages.py")
-BENCH_MODULE = importlib.util.module_from_spec(BENCH_MODULE_SPEC)
-BENCH_MODULE_SPEC.loader.exec_module(BENCH_MODULE)
 
 
 ENTRY_MODULE = importlib.util.spec_from_file_location("entries", SITE_SOURCE / "entries.py")
@@ -39,7 +36,7 @@ REDESIGN = importlib.util.module_from_spec(REDESIGN_SPEC)
 REDESIGN_SPEC.loader.exec_module(REDESIGN)
 import redirects
 
-LEGACY_ASSETS = ("favicon.svg", "bench.css")
+LEGACY_ASSETS = ("favicon.svg",)
 
 
 def demo_image_files():
@@ -60,16 +57,10 @@ def demo_image_files():
 
 
 def expected_build_files(entries):
-    bench = SITE_SOURCE / "bench"
     files = {MARKER, "index.html", "skills/index.html", *(f"{section}/index.html" for section, *_ in PAGES), *(f"{slug}/index.html" for slug in GUIDES), *(f"assets/{name}" for name in LEGACY_ASSETS)}
     files.update("motion/" + name for name in ("motion-demo-gallery.html", "motion-demo-detail.html"))
-    reports = json.loads((bench / "data/narrative.json").read_text())["entries"]
-    files.update({"bench/index.html", *(f"bench/{slug}/index.html" for slug in reports)})
-    files.update(f"bench/assets/img/{path.name}" for path in (bench/"img").glob("*.jpg"))
-    files.update(f"bench/{path.relative_to(bench)}" for path in (bench/"demos").rglob("*.html"))
+    files.update(redirects.REMOVED_BENCH_PAGES)
     files.update(REDESIGN.generated_files(entries))
-    files.add("design-system/index.html")
-    files.add("assets/redesign/design-system.css")
     files.update('demo-assets/' + name for name in demo_image_files())
     return files
 
@@ -86,7 +77,7 @@ PAGES = (
 def site_navigation(section: str) -> str:
     links = (("首页", "../", "home"), ("UI 元素", "../ui/", "ui"), ("动效", "../motion/", "motion")) + tuple(
         (guide["name"], f"../{slug}/", slug) for slug, guide in GUIDES.items()
-    ) + (("Skills", "../skills/", "skills"), ("测评结果", "../bench/", "bench"))
+    ) + (("Skills", "../skills/", "skills"),)
     parts = []
     for label, href, key in links:
         current = ' aria-current="page"' if key == section else ""
@@ -154,13 +145,7 @@ def build() -> None:
     redirects.build(OUTPUT, entries, ENTRY_ADAPTER.taxonomy(), ENTRY_ADAPTER)
     for name in ("motion-demo-gallery.html", "motion-demo-detail.html"):
         shutil.copy2(ROOT / name, OUTPUT / "motion" / name)
-    BENCH_MODULE.build(OUTPUT, SITE_SOURCE / "bench", entries, ENTRY_ADAPTER.taxonomy(), REDESIGN)
     REDESIGN.build(OUTPUT, entries, ENTRY_ADAPTER.taxonomy())
-    design_system_output = OUTPUT / "design-system"
-    design_system_output.mkdir(exist_ok=True)
-    (design_system_output / "index.html").write_text(
-        REDESIGN.design_system.render(entries, ENTRY_ADAPTER.taxonomy(), REDESIGN), encoding="utf-8"
-    )
     files = {str(path.relative_to(OUTPUT)) for path in OUTPUT.rglob("*") if path.is_file()}
     expected = expected_build_files(entries)
     if files != expected:

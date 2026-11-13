@@ -27,7 +27,7 @@ function inspectShell() {
         const css = getComputedStyle(node);
         return [css.fontSize,css.fontWeight,css.lineHeight];
       }),
-    labels:[...document.querySelectorAll('.chip,.count,.stat,.title-count,.result-count,.bench-badge')]
+    labels:[...document.querySelectorAll('.chip,.count,.stat,.title-count,.result-count')]
       .map(node => {
         const css = getComputedStyle(node);
         return [css.fontSize,css.fontWeight,css.lineHeight];

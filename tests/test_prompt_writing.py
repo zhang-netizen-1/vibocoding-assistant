@@ -34,7 +34,7 @@ class PromptWritingTest(unittest.TestCase):
         self.assertTrue(self.path.is_file())
         doc = entries.Document(self.path.read_text()).root
         links = [n.attrs['href'] for n in doc.find_all('a')]
-        for required in ('../../interactions/spec/#spec-structure', '../../interactions/spec/#spec-checklist', '../../bench/', '../../components/button/'):
+        for required in ('../../interactions/spec/#spec-structure', '../../interactions/spec/#spec-checklist', '../../components/button/'):
             self.assertIn(required, links)
         for ref in links:
             url = urlsplit(ref)

@@ -80,9 +80,9 @@ function measure() {
           });
           const page = await ctx.newPage();
           let brandX;
-          for (const [type, route] of [['home',''], ['category','components/'], ['design-system','design-system/'], ['entry','components/button/']]) {
+          for (const [type, route] of [['home',''], ['category','components/'], ['entry','components/button/']]) {
             await page.goto(origin + prefix + route, {waitUntil:'load'});
-            if (type === 'category' || type === 'design-system') {
+            if (type === 'category') {
               // Shadow content can exist before its thumbnail stylesheet is applied.
               await page.waitForFunction(() => {
                 if (document.fonts.status !== 'loaded') return false;
@@ -123,7 +123,7 @@ function measure() {
             for (const d of t.inset) close(d,17,'equal content inset');
             for (const d of t.cardStageGap) close(d,1,'card/stage outer-edge gap');
             const hidden = t.playDisplay === 'none' && t.reducedDisplay === 'none';
-            const shownControlReservation = type === 'design-system' ? 60 : 72;
+            const shownControlReservation = 72;
             close(t.paddingBottom, t.hover && !t.reduced && hidden ? 0 : shownControlReservation, 'thumbnail control reservation');
             if (hasTouch || t.reduced || width <= 1023) assert.notEqual(t.playDisplay,'none','visible play control');
             // Root-token changes must propagate into the shadow root and both derived radii.
@@ -138,7 +138,7 @@ function measure() {
     }
   } finally { await browser.close(); }
   assert.ok(measurements.some(m => m.controls.some(c => c.inCorner && c.containingBlock === 'card')), 'measured card-corner controls');
-  for (const type of ['category', 'design-system']) {
+  for (const type of ['category']) {
     assert.ok(measurements.some(m => m.type === type && m.controls.some(c => !c.inCorner && c.containingBlock === 'mini-stage')), `measured ${type} stage controls outside card corners`);
   }
   const dir = path.resolve(__dirname,'../output/r1'); fs.mkdirSync(dir,{recursive:true});

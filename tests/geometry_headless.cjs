@@ -13,7 +13,7 @@
    segments are not each fully bordered, carry no radius on the sides that touch
    (borderless inset fills excepted) and never double the divider (<= 1.5px).
    Groups that fail lose the exemption and are reported under "segmented".
-   The design-system page is audited too; [data-geo-ignore] marks deliberate
+   [data-geo-ignore] marks deliberate
    counter-examples.
    Usage: node tests/geometry_headless.cjs [routeFilter]   (serves ../dist) */
 const fs = require('node:fs'), path = require('node:path');
@@ -22,7 +22,7 @@ const root = path.resolve(__dirname, '../dist'), prefix = '/vibocoding-assistant
 const types = {'.html':'text/html','.css':'text/css','.js':'text/javascript','.json':'application/json','.svg':'image/svg+xml','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg'};
 const filter = process.argv[2] || '';
 const routes = [];
-(function walk(dir){ for (const name of fs.readdirSync(dir)) { const p = path.join(dir,name); if (fs.statSync(p).isDirectory()) walk(p); else if (name === 'index.html') { const html = fs.readFileSync(p,'utf8'); if ((html.includes('<body class="entry-active">') || path.relative(root,path.dirname(p)) === 'design-system')) routes.push(path.relative(root,path.dirname(p)) + '/'); } } })(root);
+(function walk(dir){ for (const name of fs.readdirSync(dir)) { const p = path.join(dir,name); if (fs.statSync(p).isDirectory()) walk(p); else if (name === 'index.html') { const html = fs.readFileSync(p,'utf8'); if (html.includes('<body class="entry-active">')) routes.push(path.relative(root,path.dirname(p)) + '/'); } } })(root);
 function audit() {
   const out = {radius:[], spacing:[], clip:[], indicator:[], narrow:[], segmented:[], cards:[]};
   const px = v => parseFloat(v) || 0;

@@ -162,12 +162,11 @@ function collect(tokens) {
     const own = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
     const host = el.getRootNode().host, slug = host && host.dataset.demoSlug;
     // Rolling digit cells (odometer) size their line box to the cell height by design.
-    const specimen = SPECIMENS.includes(slug) || el.closest('.ds-type-sample,[data-ui-audit-specimen],.extra-digits');
+    const specimen = SPECIMENS.includes(slug) || el.closest('[data-ui-audit-specimen],.extra-digits');
     const iconText = /^[\s\p{Extended_Pictographic}\u2190-\u21ff\u2300-\u23ff\u25a0-\u27bf\u00d7\u2039\u203a\uff0b+]+$/u.test(el.textContent);
     if (own && !specimen && !iconText && !el.closest('svg,pre,code,kbd,.prompt-text')) {
       const s = getComputedStyle(el), set = tokens[isDemo(el) ? 'demo' : 'shell'];
-      // The design-system page documents both palettes, so either is allowed there.
-      const palette = el.closest('.ds-page') ? tokens.shell.colors.concat(tokens.demo.colors) : set.colors;
+      const palette = set.colors;
       const fs = parseFloat(s.fontSize), lh = s.lineHeight === 'normal' ? null : parseFloat(s.lineHeight), fw = +s.fontWeight;
       const okRatio = lh === null || set.ratios.some(q => Math.abs(lh - fs * q) <= 0.75) || r.height <= lh + 1 && el.matches('button,a,.chip,[role=tab],label,input');
       const rgb = s.color.match(/[\d.]+/g).map(Number), hex = '#' + rgb.slice(0,3).map(v => Math.round(v).toString(16).padStart(2,'0')).join('').toUpperCase();

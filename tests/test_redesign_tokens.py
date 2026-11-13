@@ -10,6 +10,54 @@ REDESIGN = ROOT / 'site-src/redesign'
 
 
 class RedesignTokensTest(unittest.TestCase):
+    def test_design_system_doc_preserves_shared_token_inventory_and_contrasts(self):
+        # Moved from test_design_system_page.py: shared CSS assertions survive
+        # the retirement of the public specimen page and now validate its docs.
+        doc = (ROOT / 'docs/design-system.md').read_text()
+        shell = dict(re.findall(r'(--[\w-]+)\s*:\s*([^;{}]+)',
+                               (REDESIGN / 'tokens.css').read_text().split('.demo-scope')[0]))
+        source = (REDESIGN / 'demo-spec.css').read_text()
+        demo = dict(re.findall(r'(--[\w-]+)\s*:\s*([^;{}]+)', source.split(':host {', 1)[1].split('}', 1)[0]))
+        with contextlib.redirect_stdout(io.StringIO()):
+            contrast = runpy.run_path(str(ROOT / 'docs/style-research/contrast.py'))['cr']
+        for tokens, stage in ((shell, shell['--stage'].strip()), (demo, demo['--ds-stage'].strip())):
+            for token, raw in tokens.items():
+                if tokens is demo and not token.startswith('--ds-'):
+                    continue
+                self.assertIn(f'`{token}`', doc, token)
+                self.assertIn(raw.strip(), doc, token)
+                if re.fullmatch(r'#[0-9a-fA-F]{6}', raw.strip()):
+                    expected = f'{contrast(raw.strip(), "#FFFFFF"):.2f}:1 | {contrast(raw.strip(), stage):.2f}:1'
+                    row = next(line for line in doc.splitlines() if line.startswith(f'| `{token}` |'))
+                    self.assertIn(expected, row, token)
+        for token, raw in re.findall(r'(--ds-[\w-]+)\s*:\s*([^;{}]+)', source):
+            self.assertIn(f'`{token}`', doc)
+            self.assertIn(raw.strip(), doc)
+        shell_scale = ['12','13','14','16','18','22','28','36']
+        demo_scale = ['12','13','14','16','20','28']
+        self.assertEqual([shell['--text-' + n].strip().removesuffix('px') for n in
+                          ('xs','label','small','body','lead','section','title','hero')], shell_scale)
+        self.assertEqual([demo['--ds-text-' + n].strip().removesuffix('px') for n in
+                          ('caption','label','body','strong','title','display')], demo_scale)
+        self.assertEqual([demo['--ds-dur-' + n].strip() for n in ('instant','fast','base','slow','scene')],
+                         ['100ms','160ms','240ms','360ms','560ms'])
+        self.assertEqual([demo['--ds-ease-' + n].strip() for n in ('standard','out','in','spring')],
+                         ['cubic-bezier(.2,0,0,1)','cubic-bezier(.16,1,.3,1)',
+                          'cubic-bezier(.4,0,1,1)','cubic-bezier(.34,1.36,.64,1)'])
+        for state in ('force-hover','force-pressed','force-focus','force-disabled'):
+            self.assertIn(f'`{state}`', doc)
+        images = re.findall(r'!\[([^]]+)\]\((images/design-system/[^)]+)\)', doc)
+        self.assertEqual(len(images), 10)
+        self.assertEqual({Path(ref).stem for _,ref in images},
+                         {'site-colors','site-type-scale','site-spacing-radius-shadow','site-components',
+                          'demo-colors','demo-type-scale','demo-spacing-radius-shadow-controls',
+                          'nested-radius','motion','demo-stage-hint'})
+        for alt, ref in images:
+            self.assertRegex(alt, r'[\u3400-\u9fff]')
+            self.assertTrue((ROOT / 'docs' / ref).is_file(), ref)
+        for heading in ('### Select 下拉','## 嵌套圆角与间距（强制）','## 文档与实际实现的差异','## 构建与验证交接'):
+            self.assertEqual(doc.count(heading), 1)
+
     def test_batch5_typography_and_related_link_values(self):
         base = (REDESIGN / 'base.css').read_text()
         site = (REDESIGN / 'site.css').read_text()
@@ -26,7 +74,7 @@ class RedesignTokensTest(unittest.TestCase):
             self.assertEqual(rule['line-height'], '1.3', selector)
             self.assertEqual(rule['font-weight'], '600', selector)
         for css, selector in ((base, '.chip'), (site, '.count'), (site, '.stat'),
-                              (site, '.title-count'), (site, '.result-count'), (site, '.bench-badge')):
+                              (site, '.title-count'), (site, '.result-count')):
             rule = declarations(css, selector)
             self.assertEqual(rule['font-size'], 'var(--text-label)', selector)
             self.assertEqual(rule['font-weight'], '500', selector)

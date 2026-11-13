@@ -65,7 +65,7 @@ class EntriesTest(unittest.TestCase):
                 self.assertEqual(e.get('when_avoid'), raw.get('when_avoid'))
                 if raw['source']['old_path'] == '/ui/':
                     self.assertEqual(e['acceptance'], [])
-        self.assertEqual(sum('bench' in e for e in self.entries), 3)
+        self.assertTrue(all('bench' not in e for e in self.entries))
         for pair in self.tax['component_motion']:
             self.assertIn(pair['component'], self.raw)
             self.assertIn(pair['motion'], self.raw)

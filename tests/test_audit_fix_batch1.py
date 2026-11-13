@@ -98,8 +98,6 @@ class AuditFixBatch1Test(unittest.TestCase):
 
     def test_decorative_labels_are_removed_from_generated_markup_and_styles(self):
         for page in (ROOT / 'dist').rglob('*.html'):
-            if 'bench' in page.parts:
-                continue  # Historical bench specimens have separate fidelity checks.
             self.assertNotRegex(page.read_text(), r'stage-live|stage-signature|LIVE DEMO|MOTION STUDY')
         css = (self.assets / 'demo-motion.css').read_text()
         self.assertNotRegex(css, r'stage-live|stage-signature')

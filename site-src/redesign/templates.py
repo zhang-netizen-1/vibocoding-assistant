@@ -15,7 +15,6 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import demos
 import states
-import design_system
 
 ASSETS = ('tokens.css', 'base.css', 'site.css', 'site.js', 'search.js', 'states.css')
 EXAMPLES = ('浮起来', '弹出来的小黑框', 'Crossfade', '点了会变的按钮')
@@ -28,11 +27,11 @@ def entry_destination(entry):
 
 def generated_pages(entries):
     return ['index.html', '404.html', *(f'{column}/index.html' for column in ('basics', 'components', 'interactions', 'scenarios', 'ai')),
-            *(entry_destination(e) + 'index.html' for e in entries), 'interactions/spec/index.html', 'ai/prompt-writing/index.html', 'design-system/index.html']
+            *(entry_destination(e) + 'index.html' for e in entries), 'interactions/spec/index.html', 'ai/prompt-writing/index.html']
 
 
 def generated_files(entries):
-    return generated_pages(entries) + ['assets/search-index.json', 'assets/redesign/design-system.css'] + [f'assets/redesign/{name}' for name in (*ASSETS, *demos.assets(entries))]
+    return generated_pages(entries) + ['assets/search-index.json'] + [f'assets/redesign/{name}' for name in (*ASSETS, *demos.assets(entries))]
 
 
 
@@ -96,7 +95,6 @@ def header(page, tax):
             groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, "interactions/spec/")}">动效实现规范 <span class="count">不计条目</span></a></div>')
         if slug == 'ai':
             groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, "ai/prompt-writing/")}">提示词写法 <span class="count">不计条目</span></a></div>')
-            groups.append(f'<div class="menu-group"><a class="menu-group-link" href="{relative(page, "bench/")}">测评结果</a></div>')
         # No entry lists in either menu. Only the approved component intro.
         first = f'<p class="small menu-intro">先看：<a href="{relative(page, "components/states/")}">组件状态</a></p>' if slug == 'components' else ''
         panels.append(f'<div class="mega" id="mega-{slug}" hidden><div class="wrap mega-inner"><div class="row between mega-heading"><h2>{name}</h2><span class="count">{column["expected"]} 条</span></div>{first}<div class="mega-grid">{"".join(groups)}</div></div></div><!-- mega -->')
@@ -146,8 +144,6 @@ def shell(page, title, body, entries, tax, entry=False):
     index_version = hashlib.sha256(search_index_json(entries, tax).encode()).hexdigest()[:8]
     index_url = relative(page, 'assets/search-index.json') + '?v=' + index_version
     selected = [e for e in entries if entry_destination(e) + 'index.html' == page] if entry else [e for e in entries if page == e['column'] + '/index.html']
-    if page == design_system.PAGE:
-        selected = [e for e in entries if e['column'] == 'components' and e['slug'] == 'button']
     bundle_names = set()
     for item in selected:
         bundle_names.update(demos.bundle_names(item['demo']))
@@ -162,12 +158,10 @@ def shell(page, title, body, entries, tax, entry=False):
         url = relative(page, 'assets/redesign/' + name) + '?v=' + hashlib.sha256(content.encode()).hexdigest()[:8]
         return f'<link rel="stylesheet" href="{url}">' if name.endswith('.css') else f'<script defer src="{url}"></script>'
     css = ''.join(asset_tag(name) for name in ASSETS if name.endswith('.css') and name != 'states.css')
-    if page == design_system.PAGE:
-        css += asset_tag('design-system.css')
     css += asset_tag('demos.css')
     css += ''.join(asset_tag(name) for name in sorted(bundle_names) if name.endswith('.css'))
     js = ''.join(asset_tag(name) for name in ('demo-runtime.js', *sorted(name for name in bundle_names if name.endswith('.js') and name != 'demo-runtime.js'), 'search.js', 'site.js'))
-    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="查看界面效果的中英文名称与演示，复制原始实现提示词。"><title>{escape(title)} · Vibe Design 速查</title><link rel="icon" href="{relative(page, "assets/favicon.svg")}">{css}{js}</head><body{' class="entry-active"' if entry else ''}>{header(page,tax)}<main class="wrap view" id="main" tabindex="-1">{body}</main><footer class="wrap"><div class="footer">Vibe Design 速查 · <a href="{relative(page,'bench/')}">测评结果</a> · <a href="{relative(page,'design-system/')}">设计系统</a></div></footer>
+    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="description" content="查看界面效果的中英文名称与演示，复制原始实现提示词。"><title>{escape(title)} · Vibe Design 速查</title><link rel="icon" href="{relative(page, "assets/favicon.svg")}">{css}{js}</head><body{' class="entry-active"' if entry else ''}>{header(page,tax)}<main class="wrap view" id="main" tabindex="-1">{body}</main><footer class="wrap"><div class="footer">Vibe Design 速查</div></footer>
 <dialog class="overlay search-dialog" id="search-dialog" aria-label="搜索条目" data-index-url="{index_url}" data-site-root="{relative(page, '')}"><div class="search-top"><label class="sr" for="search-input">搜索中文名、英文名或已有词</label><input id="search-input" type="search" placeholder="用你自己的说法搜，比如：鼠标放上去浮起来" autocomplete="off" role="combobox" aria-autocomplete="list" aria-haspopup="grid" aria-expanded="false" aria-describedby="search-help"><button class="close-button" data-close="search-dialog">关闭</button></div><div class="search-body" id="search-body"></div><p class="search-help" id="search-help">↑↓ 选择条目 · Enter 打开 · Tab 选择操作 · Esc 关闭</p></dialog><div class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></div></body></html>'''
 
 
@@ -219,7 +213,7 @@ def column_page(slug, entries, tax):
         cards.sort(key=lambda e: order.index(e['id']) if e['id'] in order else len(order))
         content = '<div class="gallery">' + ''.join(gallery_card(e,page) for e in cards) + '</div>' if cards else '<p class="small">三期新增</p>'
         sections.append(f'<section class="group-section" id="group-{g["slug"]}"><h2>{g["name"]} <span class="count">{len(cards)}</span></h2>{content}</section>')
-    extra = f'<p class="entry-section"><a href="{relative(page, "ai/prompt-writing/")}">提示词写法 →</a> · <a href="{relative(page, "bench/")}">测评结果 →</a></p>' if slug == 'ai' else ''
+    extra = f'<p class="entry-section"><a href="{relative(page, "ai/prompt-writing/")}">提示词写法 →</a></p>' if slug == 'ai' else ''
     if slug == 'interactions':
         extra = f'<p class="entry-section"><a href="{relative(page, "interactions/spec/")}">动效实现规范 →</a></p>'
     descriptions = ['先建立颜色、排版和布局的共同语言。', '认识界面里可复用的基本单元，理解用途、状态与实现要求。', '写清操作规则、反馈过程和界面变化。', '把组件和规则组织成完整页面与操作场景。', '把需求交给 AI，用提示词、技能和测评辅助验收。']
@@ -232,11 +226,11 @@ def copy_button(source, label='复制提示词', primary=False):
     return f'<button class="copy-btn{" btn-primary" if primary else ""}" data-copy-source="{source}">{label}</button>'
 
 
-def use_card(entry, criteria, bench):
+def use_card(entry, criteria):
     """One prompt surface: fixed on desktop, after the demos on mobile."""
     notice = f'<p class="prompt-meta">复制时自动附带 {len(entry["acceptance"])} 条验收要求</p>' if entry['acceptance'] else ''
     secondary = f'<pre class="prompt-text" id="secondary-prompt">{escape(entry["prompt_secondary"])}</pre>' if entry.get('prompt_secondary') and not entry.get('prompt_edit') else ''
-    return f'''<aside class="use-card prompt-card" aria-labelledby="use-card-title"><div class="prompt-head"><h2 id="use-card-title">提示词</h2>{copy_button("copy-prompt", "复制", primary=True)}</div><div class="prompt-body" tabindex="0" role="region" aria-label="提示词全文"><pre class="prompt-text" id="entry-prompt">{escape(entry['prompt'])}</pre>{secondary}</div>{notice}{criteria}<div class="use-actions">{copy_button("entry-english", "复制英文名")}<button class="copy-btn" data-copy-link>复制本页链接</button></div>{bench}</aside>'''
+    return f'''<aside class="use-card prompt-card" aria-labelledby="use-card-title"><div class="prompt-head"><h2 id="use-card-title">提示词</h2>{copy_button("copy-prompt", "复制", primary=True)}</div><div class="prompt-body" tabindex="0" role="region" aria-label="提示词全文"><pre class="prompt-text" id="entry-prompt">{escape(entry['prompt'])}</pre>{secondary}</div>{notice}{criteria}<div class="use-actions">{copy_button("entry-english", "复制英文名")}<button class="copy-btn" data-copy-link>复制本页链接</button></div></aside>'''
 
 
 def detail(e, entries, tax):
@@ -255,12 +249,10 @@ def detail(e, entries, tax):
     if e['acceptance']:
         items = ''.join(f'<li><p id="criterion-{i}">{escape(text)}</p>{copy_button("criterion-"+str(i), "复制这条")}</li>' for i,text in enumerate(e['acceptance']))
         criteria = f'<details class="criteria" id="acceptance"><summary>验收要求（{len(e["acceptance"])} 条）</summary><ol>{items}</ol></details>'
-    bench = f'<a class="bench-badge" href="{relative(page,"bench/"+e["bench"]["slug"]+"/")}">{escape(" · ".join(agent.title() + " " + str(score) for agent,score in e["bench"]["totals"].items()))} · 测评结果 →</a>' if 'bench' in e else ''
-    bench_line = f'<p class="bench-line">提示词测评：{bench}</p>' if bench else ''
     prompt_new = ''
     if e.get('prompt_new'):
         prompt_new = f'<details class="entry-section new-section"><summary>新做一个</summary><pre class="prompt-text" id="new-prompt">{escape(e["prompt_new"])}</pre>{copy_button("copy-new-prompt", "复制这一版")}<pre class="sr" id="copy-new-prompt" hidden>{escape(copy_payload(e, "prompt_new"))}</pre></details>'
-    prompt_card = use_card(e, criteria, bench)
+    prompt_card = use_card(e, criteria)
     def demonstration(demo):
         controls = '<div class="demo-controls"><button type="button" data-demo-replay>重播</button><button type="button" data-demo-slow aria-pressed="false">慢放 0.25 倍</button><button type="button" data-demo-step hidden>下一步</button><span class="reduced-note small" hidden>已开启减弱动态：点播放看一次</span></div>' if demo['kind'] in ('motion', 'ui', 'guide', 'token') else ''
         return '<div class="entry-demo"><div class="demo-stage">' + demo_scope(demo, page, True, e['slug']) + '</div>' + controls + '</div>'
@@ -275,7 +267,7 @@ def detail(e, entries, tax):
     if e['demo']['kind'] == 'skill-reference':
         links = re.findall(r'<a[^>]+href="([^"]+)"[^>]*>(.*?)</a>', e['demo']['html'], re.S)
         source_link = '<section class="entry-section"><h2>来源</h2>' + ''.join(f'<p><a href="{escape(url)}" rel="noopener noreferrer">{text}</a></p>' for url,text in links) + '</section>'
-    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span>{aliases}</div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{prompt_card}{motion_links(e,page,entries,tax)}{usage}{prompt_new}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>相关条目</h2><div class="chips related">{related}</div></section>{bench_line}</article></div><div class="bottom-bar" hidden inert>{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
+    body = f'''<div class="entry-layout"><article class="entry-main"><header class="entry-heading"><nav class="breadcrumbs" aria-label="面包屑"><a href="{relative(page, "")}">首页</a><span>/</span><a href="{relative(page, column_destination(e["column"]))}">{column["name"]}</a><span>/</span><a href="{relative(page, group_destination(e["column"],e["group"]))}">{group["name"]}</a></nav><div class="entry-title"><h1>{escape(e['zh'])}</h1><span class="english" id="entry-english">{escape(e['en'])}</span>{aliases}</div><p class="definition">{escape(definition_lines[0])}</p>{points}</header>{demonstrations}{prompt_card}{motion_links(e,page,entries,tax)}{usage}{prompt_new}{source_link}<pre class="sr" id="copy-prompt" hidden>{escape(copy_payload(e))}</pre><section class="entry-section related-section"><h2>相关条目</h2><div class="chips related">{related}</div></section></article></div><div class="bottom-bar" hidden inert>{'<button data-show-acceptance>验收要求</button>' if e['acceptance'] else ''}{copy_button('copy-prompt',primary=True)}</div>'''
     return shell(page, e['zh']+' '+e['en'], body, entries, tax, entry=True)
 
 
@@ -308,8 +300,7 @@ def prompt_writing_page(entries, tax):
 <section class="entry-section" id="acceptance-writing"><h2>把测评失分点写成验收要求</h2>
 <p>测评结论是写进去的稳定，没写的每次会变。按钮和网格补充验收要求后，两种工具都达到 16 分。交叉淡化原样重跑时，一次从 16 分降至 13 分，时长、缓动和连点问题此前都没有写成数字或判据。</p>
 <p>每条提示词保留 3–6 条验收要求，每条有数字或明确判据，例如正文对比度至少 4.5:1，或屏幕变宽时列数不能减少。优先写测评失分点、无障碍底线、不跳动与不溢出要求。</p>
-<p>加验收后，按钮测评的完成时长约 2 倍，网格变化不大。验收只保留容易出错的点。</p>
-<p><a href="{relative(page, 'bench/')}">查看两轮测评、原提示词与证据 →</a></p></section>
+<p>加验收后，按钮测评的完成时长约 2 倍，网格变化不大。验收只保留容易出错的点。</p></section>
 <section class="entry-section" id="choose-version"><h2>两版怎么选</h2>
 <p>项目已有对应界面时，默认选「改现有页面」。先定位对应部分，再说明修改目标，沿用现有颜色、字体和间距，限定修改范围，附验收要求，最后列出改动文件与逐条验证结果。</p>
 <p>需要从头建立对应组件时选「新做一个」，补充页面位置、文案、数据和动作上下文，并沿用项目现有设计规范。两版复制时都会包含同一组验收要求和验证说明。</p></section>
@@ -326,7 +317,6 @@ def build(output, entries, tax):
     assets.mkdir(parents=True)
     (output / 'assets/search-index.json').write_text(search_index_json(entries, tax), encoding='utf-8')
     contents = {name:(HERE/name).read_text(encoding='utf-8') for name in ASSETS}
-    contents['design-system.css'] = (HERE / 'design-system.css').read_text(encoding='utf-8')
     contents.update(demos.assets(entries))
     for name, content in contents.items():
         (assets/name).parent.mkdir(parents=True, exist_ok=True)

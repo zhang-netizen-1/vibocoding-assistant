@@ -75,104 +75,65 @@ class SiteBuildTest(unittest.TestCase):
         spec.loader.exec_module(builder)
         entries = json.loads((ROOT / "build/entries.json").read_text())
         self.assertEqual(files, builder.expected_build_files(entries))
-        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 10 + len(entries))
+        self.assertEqual(len(builder.REDESIGN.generated_pages(entries)), 9 + len(entries))
 
-    def test_bench_pages_navigation_badges_and_local_references(self):
-        paths = [DIST / "bench" / "index.html", *(DIST / "bench" / slug / "index.html" for slug in ("button", "crossfade", "grid"))]
-        image_count = 0
-        for path in paths:
-            self.assertTrue(path.is_file(), path)
-            page = path.read_text(encoding="utf-8")
-            self.assertNotRegex(page.lower(), "dsh")
-            self.assertIn('class="header"',page)
-            self.assertNotIn('assets/theme.css',page)
-            self.assertNotIn('INTERFACE FIELD GUIDE',page)
-            parsed = parse(path)
-            self.assertIn("main", parsed.ids)
-            for ref in parsed.references:
+    def test_internal_docs_are_absent_and_old_bench_routes_redirect_home(self):
+        import posixpath
+        from entries import Document
+        ENTRY_DOC = lambda html: Document(html).root
+        expected = {
+            'bench/index.html',
+            *(f'bench/{slug}/index.html' for slug in ('button', 'crossfade', 'grid')),
+            *(f'bench/demos/round{rnd}/{slug}/{agent}.html'
+              for rnd in (1, 2) for slug in ('button', 'crossfade', 'grid')
+              for agent in ('codex', 'hermes')),
+        }
+        self.assertEqual(len(expected), 16)
+        self.assertFalse((DIST / 'design-system').exists())
+        self.assertFalse((DIST / 'assets/redesign/design-system.css').exists())
+        self.assertFalse((DIST / 'assets/bench.css').exists())
+        actual = {str(p.relative_to(DIST)) for p in (DIST / 'bench').rglob('*') if p.is_file()}
+        self.assertEqual(actual, expected)
+        for name in expected:
+            page = DIST / name
+            html = page.read_text()
+            doc = ENTRY_DOC(html)
+            home = posixpath.relpath('.', posixpath.dirname(name)) + '/'
+            self.assertEqual(len(doc.find_all('meta')), 4, name)
+            self.assertTrue(any(n.attrs.get('http-equiv') == 'refresh' and
+                                n.attrs.get('content') == f'0; url={home}' for n in doc.find_all('meta')), name)
+            self.assertTrue(any(n.attrs.get('name') == 'robots' and n.attrs.get('content') == 'noindex'
+                                for n in doc.find_all('meta')), name)
+            self.assertEqual([(n.attrs.get('rel'), n.attrs.get('href')) for n in doc.find_all('link')],
+                             [('canonical', home)], name)
+            self.assertEqual([(n.text(), n.attrs.get('href')) for n in doc.find_all('a')],
+                             [('本页已移除，返回首页', home)], name)
+            self.assertEqual((page.parent / home).resolve(), DIST.resolve(), name)
+            for tag in ('script', 'style', 'header', 'footer', 'img', 'iframe'):
+                self.assertEqual(doc.find_all(tag), [], (name, tag))
+        matches = set()
+        for page in DIST.rglob('*.html'):
+            html = page.read_text()
+            if re.search(r'design-system/|bench/|测评结果', html):
+                matches.add(str(page.relative_to(DIST)))
+            self.assertNotIn('测评结果', ''.join(n.text() for n in ENTRY_DOC(html).find_all('nav')))
+            for ref in parse(page).references:
                 url = urlsplit(ref)
                 if url.scheme or url.netloc:
                     continue
-                target = (path.parent / unquote(url.path)).resolve() if url.path else path
-                self.assertTrue(target.is_relative_to(DIST.resolve()), (path, ref))
-                if target.is_dir():
-                    target /= "index.html"
-                self.assertTrue(target.is_file(), (path, ref))
-                if url.fragment:
-                    target_html=target.read_text()
-                    redirects=re.search(r'id="redirect-map">(.*?)</script>',target_html,re.S)
-                    destinations=json.loads(redirects[1]) if redirects else parse(target).ids
-                    self.assertIn(unquote(url.fragment),destinations,(path,ref))
-            for img in parsed.images:
-                self.assertTrue(img.get("alt"))
-                self.assertEqual(img.get("loading"), "lazy")
-            image_count += len(parsed.images)
-            if path.parent.name != "bench":
-                self.assertEqual(len(parsed.demo_links), 4)
-                for link in parsed.demo_links:
-                    self.assertEqual(link.get("target"), "_blank")
-                    self.assertIn("noopener", link.get("rel", "").split())
-        self.assertEqual(image_count, 14)
-        self.assertIn('./bench/',parse(DIST/'index.html').links)
-        for column,slug,report in (('components','button','button'),('interactions','view-crossfade','crossfade'),('basics','grid','grid')):
-            page=DIST/column/slug/'index.html'
-            self.assertIn('../../bench/'+report+'/',parse(page).links)
-
-    def test_bench_preserves_source_prompts_evidence_and_totals(self):
-        source = ROOT / "site-src" / "bench" / "data"
-        overview = (DIST / "bench" / "index.html").read_text(encoding="utf-8")
-        narrative = json.loads((source / "narrative.json").read_text(encoding="utf-8"))
-        self.assertIn(escape(narrative["time_note"]), overview)
-        rounds = [json.loads((source / f"round{rnd}-results.json").read_text(encoding="utf-8")) for rnd in (1, 2)]
-        for slug in ("button", "crossfade", "grid"):
-            page = (DIST / "bench" / slug / "index.html").read_text(encoding="utf-8")
-            destination={"button":"../../components/button/","crossfade":"../../interactions/view-crossfade/","grid":"../../basics/grid/"}[slug]
-            self.assertIn(f'href="{destination}">回到条目复制提示词',page)
-            entry=narrative["entries"][slug]
-            conclusion=entry["stability"]["heading"] if "stability" in entry else entry["fixes"][0]["fixed"]
-            self.assertIn(escape(conclusion),page)
-            tbody = re.search(r'<tbody>(.*?)</tbody>', page, re.S).group(1)
-            score_rows = re.findall(r'<tr>(.*?)</tr>', tbody, re.S)
-            self.assertEqual(len(score_rows), 8)
-            for number, row in enumerate(score_rows, 1):
-                actual = [int(score) for score in re.findall(r'<td>(\d+)</td>', row)]
-                expected = [next(item["score"] for item in data["scores"][slug][agent]["items"] if item["item"] == number)
-                            for agent in ("codex", "hermes") for data in rounds]
-                self.assertEqual(actual, expected, (slug, number))
-            totals = re.search(r'<tfoot>(.*?)</tfoot>', page, re.S).group(1)
-            self.assertEqual([int(score) for score in re.findall(r'<td>(\d+) /16</td>', totals)],
-                             [data["scores"][slug][agent]["total"] for agent in ("codex", "hermes") for data in rounds])
-            prompts = re.findall(r'<pre[^>]*>(.*?)</pre>', page, re.S)
-            self.assertEqual(len(prompts), 2)
-            for rnd, prompt in enumerate(prompts, 1):
-                plain = unescape(re.sub(r'<[^>]+>', '', prompt))
-                self.assertEqual(plain, (source / f"round{rnd}-{slug}-prompt.txt").read_text(encoding="utf-8"))
-            for agent in ("codex", "hermes"):
-                first, second = (data["scores"][slug][agent] for data in rounds)
-                self.assertIn(f'{first["total"]} → {second["total"]} /16', overview)
-                for data in (first, second):
-                    for item in data["items"]:
-                        self.assertIn(escape(item["evidence"]), page)
-            self.assertIn("助手目测判定", page)
-            self.assertIn("工具", page)
-        time_body = re.findall(r'<tbody>(.*?)</tbody>', overview, re.S)[1]
-        time_rows = re.findall(r'<tr>(.*?)</tr>', time_body, re.S)
-        self.assertEqual(len(time_rows), 6)
-        for row, (slug, agent) in zip(time_rows, ((slug, agent) for slug in ("button", "crossfade", "grid") for agent in ("codex", "hermes"))):
-            actual = re.findall(r'<td>(.*?)</td>', row)
-            expected = []
-            for data in rounds:
-                wall_s = Decimal(str(data["agents_runs"][f"{slug}/{agent}"]["wall_s"]))
-                minutes, seconds = divmod(int(wall_s.quantize(Decimal("1"), rounding=ROUND_HALF_UP)), 60)
-                expected.append(f"{minutes} 分 {seconds} 秒")
-            self.assertEqual(actual, expected)
-
-    def test_bench_assets_are_copied_without_changes(self):
-        source = ROOT / "site-src" / "bench"
-        for path in (source / "img").glob("*.jpg"):
-            self.assertEqual(path.read_bytes(), (DIST / "bench" / "assets" / "img" / path.name).read_bytes())
-        for path in (source / "demos").rglob("*.html"):
-            self.assertEqual(path.read_bytes(), (DIST / "bench" / path.relative_to(source)).read_bytes())
+                target = (page.parent / unquote(url.path)).resolve() if url.path else page
+                self.assertFalse(target.is_relative_to((DIST / 'design-system').resolve()), (page, ref))
+                self.assertFalse(target.is_relative_to((DIST / 'bench').resolve()), (page, ref))
+            if str(page.relative_to(DIST)) not in expected:
+                self.assertNotIn('测评结果', html)
+                self.assertNotIn('bench-badge', html)
+        self.assertEqual(matches, expected)
+        index = (DIST / 'assets/search-index.json').read_text()
+        self.assertNotRegex(index, r'design-system/|bench/|测评结果')
+        self.assertTrue(all('bench' not in entry for entry in json.loads((ROOT / 'build/entries.json').read_text())))
+        pages = list(DIST.rglob('*.html'))
+        self.assertEqual(len(pages), 229)
+        self.assertEqual(sum('/demos/' not in str(p.relative_to(DIST)) for p in pages), 217)
 
     def test_site_routes_and_all_cards(self):
         home=parse(DIST/'index.html')
@@ -326,26 +287,7 @@ class SiteBuildTest(unittest.TestCase):
                 if target.is_dir():target/='index.html'
                 self.assertTrue(target.is_file(),(path,item['href']))
 
-    def test_bench_new_shell_backlinks_and_pruned_assets(self):
-        entries=json.loads((ROOT/'build/entries.json').read_text())
-        scores=json.loads((ROOT/'site-src/bench/data/round2-results.json').read_text())['scores']
-        for entry in entries:
-            if 'bench' not in entry:continue
-            slug=entry['bench']['slug']
-            middle='skills/' if entry['column']=='ai' else ''
-            page=DIST/entry['column']/middle/entry['slug']/'index.html'
-            detail=(DIST/'bench'/slug/'index.html').read_text()
-            self.assertIn('回到条目复制提示词',detail)
-            self.assertIn('../../'+entry['column']+'/'+entry['slug']+'/',parse(DIST/'bench'/slug/'index.html').links)
-            self.assertIn('../../bench/'+slug+'/',parse(page).links)
-            self.assertEqual(entry['bench']['totals'],{agent:scores[slug][agent]['total'] for agent in ('codex','hermes')})
-            for agent,score in entry['bench']['totals'].items():
-                self.assertIn(agent.title()+' '+str(score),page.read_text())
-        for page in (DIST/'bench').glob('*/index.html'):
-            html=page.read_text()
-            self.assertNotRegex(html,r'assets/(?:theme|site|guides)\.(?:css|js)')
-            self.assertIn('assets/redesign/tokens.css',html)
-            self.assertIn('id="search-dialog"',html)
+    def test_pruned_legacy_assets(self):
         for name in ('theme.css','site.css','site.js','home.css','home.js','guides.css','guides.js','visual-styles.css','skills.css','skills.js'):
             self.assertFalse((DIST/'assets'/name).exists(),name)
             self.assertTrue((ROOT/'site-src'/name).is_file(),name)

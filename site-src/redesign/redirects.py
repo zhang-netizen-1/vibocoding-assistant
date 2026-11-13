@@ -1,6 +1,7 @@
 """Generate client-side redirects from the frozen legacy anchor inventory."""
 from html import escape
 import json
+import posixpath
 from pathlib import Path
 
 DEFAULTS = {
@@ -8,6 +9,21 @@ DEFAULTS = {
     'visual': 'basics/', 'interaction': 'interactions/',
     'pages': 'scenarios/', 'data': 'components/', 'skills': 'ai/',
 }
+
+
+# Only paths previously published on main receive removal redirects.
+REMOVED_BENCH_PAGES = (
+    'bench/index.html',
+    *(f'bench/{slug}/index.html' for slug in ('button', 'crossfade', 'grid')),
+    *(f'bench/demos/round{rnd}/{slug}/{agent}.html'
+      for rnd in (1, 2) for slug in ('button', 'crossfade', 'grid')
+      for agent in ('codex', 'hermes')),
+)
+
+
+def removed_page(page):
+    home = posixpath.relpath('.', posixpath.dirname(page)) + '/'
+    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>测评结果页面已移除</title><meta http-equiv="refresh" content="0; url={home}"><link rel="canonical" href="{home}"><meta name="robots" content="noindex"></head><body><a href="{home}">本页已移除，返回首页</a></body></html>'''
 
 
 def tables(entries, tax, adapter):
@@ -54,3 +70,7 @@ def render(old, mapping, tax):
 def build(output, entries, tax, adapter):
     for old,mapping in tables(entries,tax,adapter).items():
         (output/old/'index.html').write_text(render(old,mapping,tax),encoding='utf-8')
+    for page in REMOVED_BENCH_PAGES:
+        target = output / page
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(removed_page(page), encoding='utf-8')

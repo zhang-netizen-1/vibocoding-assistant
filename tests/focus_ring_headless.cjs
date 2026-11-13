@@ -1,6 +1,6 @@
 // node tests/focus_ring_headless.cjs <base-url> [--widths=1440,1024,768,390] -> focus rings whose painted outline is missing on a side (pixel check)
 const {chromium}=require('playwright');const base=process.argv[2];
-const R=['','basics/','components/','components/cmdk/','interactions/','ai/skills/baseline-ui/','design-system/','bench/'];
+const R=['','basics/','components/','components/cmdk/','interactions/','ai/skills/baseline-ui/'];
 (async()=>{const b=await chromium.launch();const out={};let checked=0;
 const W=(process.argv.find(a=>a.startsWith('--widths='))||'--widths=1440,390').slice(9).split(',').map(Number);for(const w of W)for(const r of R){const p=await (await b.newContext({viewport:{width:w,height:900},reducedMotion:'reduce'})).newPage();
  try{await p.goto(base+r,{waitUntil:'networkidle'});}catch(e){continue}
