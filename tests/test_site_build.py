@@ -675,9 +675,12 @@ class BatchCKindSkinTest(unittest.TestCase):
             else:
                 skips+=1
                 self.assertIn(entry['slug'],self.demos.KIND_SKIN_SKIPS.get(kind,()))
-        # I1 added 10 UI + 5 guide samples; all 192 entries still require a skin.
-        self.assertEqual(counts,{'ui':0,'motion':31,'guide':15,'token':4,'skill-reference':9})
-        self.assertEqual(samples,127)
+        # I1–I4 gave every entry its own sample skin; only the six visual styles keep their own CSS.
+        self.assertEqual(counts,{'ui':0,'motion':0,'guide':0,'token':0,'skill-reference':0})
+        self.assertEqual(samples,186)
+        for slug in ('sidebar', 'list', 'settings', 'baseline-ui', 'wizard', 'detail', 'dark-mode',
+                     'typography', 'mobile-pull', 'media-compare', 'background-aurora', 'view-stagger'):
+            self.assertIn(slug, sample_slugs)
         for slug in ('advanced-settings', 'conditional-step', 'context-options', 'infinite-scroll',
                      'inline-edit', 'progress', 'table-reorder', 'textarea', 'virtual-list',
                      'auto-save', 'bar', 'donut', 'heatmap', 'line', 'stacked'):
@@ -923,7 +926,8 @@ class BatchGSkinTest(unittest.TestCase):
         sidebar = next(row for row in self.entries if row['column'] == 'basics' and row['slug'] == 'sidebar')
         guide = self.demos.markup(sidebar['demo'], './', True, 'sidebar')
         self.assertNotIn('ui-sidebar.css', guide)
-        self.assertIn('_kind-guide.css', guide)
+        # basics/sidebar now has its own guide skin; it must never pick up the component's ui-sidebar skin.
+        self.assertIn('data-skin-css="./demo-skins/guide-sidebar.css"', guide)
         cmdk = next(row for row in self.entries if row['column'] == 'components' and row['slug'] == 'cmdk')
         result = self.Document(self.demos.markup(cmdk['demo'], './', True, 'cmdk')).root
         overlays = result.one(cls='ds-overlays')
